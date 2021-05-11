@@ -1,7 +1,18 @@
+import { useEffect, useState } from 'react'
 import Card from './Card'
-const BrowseContainer = ({ data, type }) => {
-    return(
 
+const BrowseContainer = ({ type, data, scrollPosition, getCategories }) => {
+    
+    useEffect(() => {
+        if( scrollPosition && scrollPosition === 100 ){
+            const fetchMore = () => {
+                getCategories( `offset=${data.length}`)
+            }
+            fetchMore()
+        }
+    },[ scrollPosition ])
+
+    return(
             <section className='browseContainer'> 
                 <div className='browseContainer__title'>
                     <h2>

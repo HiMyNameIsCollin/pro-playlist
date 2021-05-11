@@ -24,13 +24,14 @@ const useApiCall = (url) => {
         setApiError(true)
 
         const access_token = localStorage.getItem('access_token')
+        console.log(routes)
         fetch(`${url}${routes}`, {
             method: method,
             headers: {
                 'Content-Type' : 'application/json',
                 authorization: `Bearer ${access_token}`,
             },
-            body: body ? body : null
+            body: body && body
         })
         .then(data => data.json())
         .then(data => {
@@ -82,10 +83,7 @@ const useApiCall = (url) => {
             const arr = [...fetchQueue]
             const [x, ...remainder] = arr
             setFetchQueue( remainder )
-        } else if(fetchQueue.length === 0){
-            setMethod( null )
-            setRoutes( null )
-        }
+        } 
     }, [ apiIsPending ])
 
     useEffect(() => {

@@ -14,28 +14,6 @@ import Artist from './Artist'
 import Album from './Album'
 import Showcase from './Showcase'
 
-const routes = {
-    
-    display_name: 'v1/me',
-    recently_played: 'v1/me/player/recently-played',
-    my_playlists: 'v1/me/playlists',
-    featured_playlists: 'v1/browse/featured-playlists',
-    all_categories: 'v1/browse/categories',
-    my_albums: 'v1/me/albums',
-    recommendations: 'v1/recommendations',
-    my_top_tracks: 'v1/me/top/tracks',
-    my_top_artists: 'v1/me/top/artists',
-    // My reducer is based off a set 'Route' string attached during the fetch process,
-    // I set the top genre state with a makeshift 'my_top_genres' "route". 
-    // Hopefully Spotify adds a top genres route eventually
-    my_top_genres: 'genres',
-    featured_playlists: 'v1/browse/featured-playlists',
-    new_releases: 'v1/browse/new-releases',
-    search: 'v1/search',
-    available_genre_seeds: 'v1/recommendations/available-genre-seeds'
-    
-}
-
 const initialState = {
     display_name: '',
     my_top_genres: [],
@@ -46,6 +24,27 @@ const initialState = {
     my_top_artists: [],
     all_categories: [],
     available_genre_seeds: []
+}
+const routes = {
+        
+    display_name: 'v1/me',
+    recently_played: 'v1/me/player/recently-played',
+    my_playlists: 'v1/me/playlists',
+    featured_playlists: 'v1/browse/featured-playlists',
+    all_categories: 'v1/browse/categories',
+    my_albums: 'v1/me/albums',
+    recommendations: 'v1/recommendations',
+    my_top_tracks: 'v1/me/top/tracks',
+    my_top_artists: 'v1/me/top/artists',
+    featured_playlists: 'v1/browse/featured-playlists',
+    new_releases: 'v1/browse/new-releases',
+    search: 'v1/search',
+    available_genre_seeds: 'v1/recommendations/available-genre-seeds',
+    // My reducer is based off a set 'Route' string attached during the fetch process,
+    // I set the top genre state with a makeshift 'my_top_genres' "route". 
+    // Hopefully Spotify adds a top genres route eventually :(
+    my_top_genres: 'genres',
+
 }
 
 const reducer = (state, action) => {
@@ -59,7 +58,7 @@ const reducer = (state, action) => {
             case routes.my_playlists:
                 return{
                     ...state,
-                    my_playlists: action.items
+                    my_playlists: [...state.my_playlists, ...action.items]
                 }
                 
             case routes.my_albums:
@@ -77,7 +76,7 @@ const reducer = (state, action) => {
             case routes.all_categories:
                 return{
                     ...state,
-                    all_categories: action.categories.items
+                    all_categories: [ ...state.all_categories, ...action.categories.items ]
                 }
                 
             case routes.new_releases:
@@ -122,33 +121,33 @@ const Dashboard = ({ setAuth }) => {
     const [hiddenUI, setHiddenUI] = useState(false)
     const scrollRef = useRef(scrollPosition)
 
-    const calcTopGenre = (arr) => {
-        let genres = {}
-        arr.map((ele, i) => {
-            ele.genres.map((genre, j) => {
-                if(genres[genre]){
-                    genres[genre].total += 1
-                }else {
-                    genres[genre] = {total: 1, images: ele.images}
-                }
-            })
-        })
-        let sortable = []
-        for(const genre in genres){
-            sortable.push([genre, genres[genre].images, genres[genre].total])
-        }
-        sortable.sort((a,b) => {
-            return b[2] - a[2]
-        })
-        let newArr = []
-        sortable.map((item, i) => {
-            newArr.push({ name: capital( item[0] ) ,  images: item[1]})
-        })
-        return newArr
-    }
-
+// CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
         if(state.my_top_artists.length > 0) {
+            const calcTopGenre = (arr) => {
+                let genres = {}
+                arr.map((ele, i) => {
+                    ele.genres.map((genre, j) => {
+                        if(genres[genre]){
+                            genres[genre].total += 1
+                        }else {
+                            genres[genre] = {total: 1, images: ele.images}
+                        }
+                    })
+                })
+                let sortable = []
+                for(const genre in genres){
+                    sortable.push([genre, genres[genre].images, genres[genre].total])
+                }
+                sortable.sort((a,b) => {
+                    return b[2] - a[2]
+                })
+                let newArr = []
+                sortable.map((item, i) => {
+                    newArr.push({ name: capital( item[0] ) ,  images: item[1]})
+                })
+                return newArr
+            }
             let topArtists = [...state.my_top_artists]
             const topGenres = calcTopGenre(topArtists)
             const payload = {
@@ -159,45 +158,11 @@ const Dashboard = ({ setAuth }) => {
             dispatch(payload)
         }
     },[state.my_top_artists])
-    
-    useEffect(() => {
-        getUser()
-        setTimeout(() => {
-            getMyPlaylists('?&limit=5')
-        }, 1)
-        setTimeout(() => {
-            getMyAlbums('?&limit=5')
-        }, 2)
-        setTimeout(() => {
-            getRecentlyPlayed('?&limit=6')
-        },3)
-        setTimeout(() => {
-            getCategories('?&limit=50')
-        },4)
-        setTimeout(() => {
-            getNewReleases()
-        },5)
-        setTimeout(() => {
-            getAvailableGenreSeeds()
-        }, 6)
-        setTimeout(() => {
-            getTopTracks()
-        }, 7)
-        setTimeout(() => {
-            getTopArtists()
-        }, 8)
-    },[])
-
-    useEffect(() => {
-        if(apiPayload){
-            dispatch(apiPayload)
-        }
-    },[apiPayload])
 
 // HANDLE SCROLL PERCENTAGE AND DISPLAY OF UI 
 
     useEffect(() => {
-        if(scrollPosition < scrollRef.current || scrollPosition === 0 || scrollPosition === 100 ){
+        if(scrollPosition < scrollRef.current || scrollPosition < 1 || scrollPosition === 100 ){
             if( hiddenUI ){
                 setHiddenUI(false)   
             }                     
@@ -208,9 +173,7 @@ const Dashboard = ({ setAuth }) => {
     }, [ scrollPosition ])
 
     useEffect(() => {
-        const percent = calcScrollPercent()
-        scrollRef.current = percent
-        setScrollPosition(percent)
+        handleDashboard()
         window.addEventListener('scroll', handleDashboard)
     },[])
 
@@ -227,7 +190,6 @@ const Dashboard = ({ setAuth }) => {
     }
 
 // API CALLS 
-
     const getUser = (...args) => {
         finalizeRoute('get', routes.display_name, ...args)
     }
@@ -239,7 +201,6 @@ const Dashboard = ({ setAuth }) => {
     const getMyAlbums = (...args) => {
         finalizeRoute('get', routes.my_albums, ...args)
     }
-
 
     const getFeaturedPlaylists = ( ...args ) => {
         finalizeRoute('get', routes.featured_playlists, ...args)
@@ -268,18 +229,54 @@ const Dashboard = ({ setAuth }) => {
     const getTopArtists = ( ...args ) => {
         finalizeRoute('get', routes.my_top_artists, ...args)
     }
-
-
     const finalizeRoute = (method, route, ...args) => {
         let finalRoute = route
         if(args.length > 0){
             args.forEach((arg, i) => {
-                finalRoute += arg
+                if( i === 0 ) {
+                    finalRoute += `?${arg}`
+                }else {
+                    finalRoute += `&${arg}`
+                }
             })
         }
         setMethod(method)
         setRoutes(finalRoute)
     }
+
+    useEffect(() => {
+        getUser()
+        setTimeout(() => {
+            getMyPlaylists('limit=5')
+        }, 1)
+        setTimeout(() => {
+            getMyAlbums('limit=5')
+        }, 2)
+        setTimeout(() => {
+            getRecentlyPlayed('limit=6')
+        },3)
+        setTimeout(() => {
+            getCategories('limit=10')
+        },4)
+        setTimeout(() => {
+            getNewReleases()
+        },5)
+        setTimeout(() => {
+            getAvailableGenreSeeds()
+        }, 6)
+        setTimeout(() => {
+            getTopTracks()
+        }, 7)
+        setTimeout(() => {
+            getTopArtists()
+        }, 8)
+    },[])
+
+    useEffect(() => {
+        if(apiPayload){
+            dispatch(apiPayload)
+        }
+    },[apiPayload])
 //  END OF API CALLS 
 
 //  NAVIGATION TRANSITIONS
@@ -297,7 +294,9 @@ const Dashboard = ({ setAuth }) => {
             
             <Switch >
                 <Route exact path='/'>
-                    <HomeHeader setAuth={ setAuth } hiddenUI={ hiddenUI } /> 
+                    <HomeHeader 
+                    setAuth={ setAuth } 
+                    hiddenUI={ hiddenUI } /> 
                 </Route> 
                 <Route path='/search'>
                     <SearchHeader hiddenUI={ hiddenUI }/>
@@ -312,13 +311,16 @@ const Dashboard = ({ setAuth }) => {
                 <animated.div  style={ props }>
                     <Switch location={ item }>
                         <Route exact path='/'>
-                            <Home item={item} state={ state } />
+                            <Home 
+                            item={item} 
+                            state={ state } />
                         </Route> 
                         <Route path='/search'>
-                            <Search 
-                            state={ state } 
-                            Switch={ Switch } 
-                            Route={ Route } 
+                            <Search
+                            scrollPosition={ scrollPosition } 
+                            state={ state }
+                            getCategories={ getCategories }  
+                            apiIsPending={ apiIsPending }
                             Link={ Link }/>
                         </Route> 
                         <Route path='/manage'>
