@@ -4,10 +4,19 @@ import { whichPicture } from '../../utils/whichPicture'
 
 
 
-const Card = ({ item, cardType }) => {
+const Card = ({ item, cardType, Link }) => {
 
     return(
         <div className={`card ${cardType}__card` }>
+            <Link to={
+                item.type === 'artist' ?
+                `/artist/${item.id}` :
+                item.type === 'album' || 
+                item.type === 'playlist' ?
+                `/album/${item.id}` :
+                `/showcase/${item.id}`
+                
+            }>
             <div className='card__image'>
                 <img 
                 src={ item.images ? 
@@ -27,7 +36,7 @@ const Card = ({ item, cardType }) => {
                     { item.tracks.total }songs
                 </p>
             }
-            
+            </Link>
         </div>
     )
 }

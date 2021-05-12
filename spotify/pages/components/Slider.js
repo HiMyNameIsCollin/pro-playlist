@@ -1,11 +1,11 @@
 import Card from './Card'
 
-const Slider = ({ type, items }) => {
+const Slider = ({ message, items, Link }) => {
     return(
         <section className='slider'>
             <div className='slider__title'>
                 <h2>
-                   My { type }
+                { message }
                 </h2>
             </div>
             <div className='slider__carousel'>
@@ -14,7 +14,8 @@ const Slider = ({ type, items }) => {
                     <Card 
                     cardType='slider'
                     key={ i } 
-                    item={ type ==='albums' ? item.album : item }/>)) :
+                    item={ item }
+                    Link={ Link } />)) :
                     <div className='slider__loading'>
                         Loading
                     </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Card from './Card'
 
-const BrowseContainer = ({ type, data, scrollPosition, getCategories }) => {
+const BrowseContainer = ({ message, data, scrollPosition, getCategories, Link }) => {
     
     useEffect(() => {
         if( scrollPosition && scrollPosition === 100 ){
@@ -16,7 +16,7 @@ const BrowseContainer = ({ type, data, scrollPosition, getCategories }) => {
             <section className='browseContainer'> 
                 <div className='browseContainer__title'>
                     <h2>
-                        { type }
+                        { message }
                     </h2>
                     
                 </div> 
@@ -26,7 +26,8 @@ const BrowseContainer = ({ type, data, scrollPosition, getCategories }) => {
                         <Card
                         key={ i } 
                         item={ item } 
-                        cardType='browseContainer' />
+                        cardType='browseContainer'
+                        Link={ Link } />
                     )
                    })
                }

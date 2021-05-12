@@ -3,12 +3,18 @@ import TabsContainer from './TabsContainer'
 
 import { useState, useEffect } from 'react'
 
-const Home = ({  state }) => {
+const Home = ({  state , Link }) => {
     return(
         <div className='page'>
             <TabsContainer items={ state.recently_played } />
-            <Slider type='playlists' items={ state.my_playlists }/>
-            <Slider type='albums' items={ state.my_albums }/>
+            <Slider 
+            message='New Releases' 
+            items={ state.new_releases }
+            Link={ Link } />
+            <Slider 
+            message='Featured playlists' 
+            items={ state.featured_playlists }
+            Link={ Link }/>
         </div>
     )
 }

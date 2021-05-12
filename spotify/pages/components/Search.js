@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react'
 import BrowseContainer from './BrowseContainer'
 
-const Search = ({ state, scrollPosition, getCategories, apiIsPending }) => {
+const Search = ({ state, scrollPosition, getCategories, apiIsPending, Link }) => {
 
     return(
         <div className='page page--bg'>
             <BrowseContainer 
-            type='My top genres' 
-            data={ state.my_top_genres.slice(0, 4) }/>
+            message='My top genres' 
+            data={ state.my_top_genres.slice(0, 4) }
+            Link={ Link } />
             <BrowseContainer
-            type='Browse all' 
+            message='Browse all' 
             data={ state.all_categories }
             scrollPosition={ scrollPosition }
             getCategories={ getCategories }
-            apiIsPending={ apiIsPending }/>
+            apiIsPending={ apiIsPending }
+            Link={ Link } />
         </div>
     )
 }

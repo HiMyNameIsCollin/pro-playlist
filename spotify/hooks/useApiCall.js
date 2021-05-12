@@ -12,19 +12,20 @@ const useApiCall = (url) => {
     const [apiPayload, setApiPayload] = useState(null)
     const TOKENURL = 'https://accounts.spotify.com/api/token'
     const { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody } = useFetchToken(TOKENURL)
+    
     const fetchApi = (url, routes, method, body) => {
         const errorHandling = (err) => {
             console.log(err, 1234)
             setApiError(true)
             setApiPending(false)
-            setMethod( null )
-            setRoutes( null )
+            if(err.status === 401){
+                const refresh_token = localStorage.getItem('refresh_token')
+                refreshToken( refresh_token, setTokenBody )
+            }
         }
         setApiPending(true)
         setApiError(true)
-
         const access_token = localStorage.getItem('access_token')
-        console.log(routes)
         fetch(`${url}${routes}`, {
             method: method,
             headers: {
@@ -62,17 +63,10 @@ const useApiCall = (url) => {
 
     useEffect(() => {
         if(method && routes){
-            const refresh_token = localStorage.getItem('refresh_token')
-            const expired = checkToken(refresh_token)
-            if (expired){
-                refreshToken( refresh_token, setTokenBody )
-            }else {
-                if( apiIsPending ) {
-                    setFetchQueue( fetchQueue => [...fetchQueue, {routes: routes, method: method}] )
-                } else {
-                    fetchApi( url, routes, method )
-                
-                }
+            if( apiIsPending ) {
+                setFetchQueue( fetchQueue => [...fetchQueue, {routes: routes, method: method}] )
+            } else {
+                fetchApi( url, routes, method )
             }
         }
     },[ method, routes ])

@@ -23,7 +23,10 @@ const initialState = {
     my_top_tracks: [],
     my_top_artists: [],
     all_categories: [],
-    available_genre_seeds: []
+    featured_playlists: [],
+    new_releases: [],
+    available_genre_seeds: [],
+    active_category: {}
 }
 const routes = {
         
@@ -44,6 +47,7 @@ const routes = {
     // I set the top genre state with a makeshift 'my_top_genres' "route". 
     // Hopefully Spotify adds a top genres route eventually :(
     my_top_genres: 'genres',
+    active_category: ''
 
 }
 
@@ -82,9 +86,20 @@ const reducer = (state, action) => {
             case routes.new_releases:
                 return{
                     ...state,
-                    new_releases: action.items
+                    new_releases: action.albums.items
                 }
+            
+            case routes.featured_playlists:
+                return{
+                    ...state,
+                    featured_playlists: action.playlists.items
+                }    
 
+            case routes.recommendations:
+                return{
+                    ...state,
+                    recommendations: action.items
+                }
             case routes.available_genre_seeds:
                 return{
                     ...state,
@@ -106,8 +121,9 @@ const reducer = (state, action) => {
                     ...state,
                     my_top_genres: action.items
                 }
-            default:
-                break
+            case state.activeCategory.route:
+
+  
         }
           
 }
@@ -206,8 +222,20 @@ const Dashboard = ({ setAuth }) => {
         finalizeRoute('get', routes.featured_playlists, ...args)
     }
 
+    const getNewReleases = ( ...args ) => {
+        finalizeRoute('get', routes.new_releases, ...args)
+    }
+
     const getCategories = ( ...args ) => {
         finalizeRoute('get', routes.all_categories, ...args)
+    }
+
+    const getOneCategory = (cat_id, ...args ) => {
+        finalizeRoute('get', routes.all_categories + `/${cat_id}`, ...args)
+    }
+
+     const getOneCategoryPlaylists = (cat_id, ...args ) => {
+        finalizeRoute('get', routes.all_categories + `/${cat_id}` + '/playlists', ...args)
     }
 
     const getAvailableGenreSeeds = ( ...args ) => {
@@ -216,10 +244,6 @@ const Dashboard = ({ setAuth }) => {
 
     const getRecentlyPlayed = ( ...args ) => {
         finalizeRoute('get', routes.recently_played, ...args)
-    }
-
-    const getNewReleases = ( ...args ) => {
-        finalizeRoute('get', routes.new_releases, ...args)
     }
 
     const getTopTracks = ( ...args ) => {
@@ -247,10 +271,10 @@ const Dashboard = ({ setAuth }) => {
     useEffect(() => {
         getUser()
         setTimeout(() => {
-            getMyPlaylists('limit=5')
+            getFeaturedPlaylists()
         }, 1)
         setTimeout(() => {
-            getMyAlbums('limit=5')
+            getNewReleases()
         }, 2)
         setTimeout(() => {
             getRecentlyPlayed('limit=6')
@@ -308,12 +332,12 @@ const Dashboard = ({ setAuth }) => {
             
             {
             transitions((props, item) => (
-                <animated.div  style={ props }>
+                <animated.div style={ props }>
                     <Switch location={ item }>
                         <Route exact path='/'>
                             <Home 
-                            item={item} 
-                            state={ state } />
+                            state={ state }
+                            Link={ Link } />
                         </Route> 
                         <Route path='/search'>
                             <Search
@@ -329,11 +353,12 @@ const Dashboard = ({ setAuth }) => {
                         <Route path='/artist/:id'>
                             <Artist />
                         </Route> 
-                        <Route path='/manage/:id'>
+                        <Route path='/album/:id'>
                             <Album />
                         </Route> 
-                        <Route path='/genre/:id'>
-                            <Showcase />
+                        <Route path='/showcase/:id'>
+                            <Showcase 
+                            location={ location } />
                         </Route> 
                     </Switch>
                 </animated.div>
