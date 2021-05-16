@@ -1,5 +1,5 @@
-import { useState, useEffect, useReducer, useRef } from 'react'
-import { Switch, Route, useLocation, NavLink, Link } from 'react-router-dom'
+import { useState, useEffect, useReducer, useRef, createContext } from 'react'
+import { Switch, Route, useLocation, useHistory, NavLink, Link } from 'react-router-dom'
 import { capital } from '../../utils/capital'
 import  useApiCall  from '../../hooks/useApiCall'
 import { useTransition, animated } from 'react-spring'
@@ -15,22 +15,22 @@ import Album from './Album'
 import Showcase from './Showcase'
 
 const initialState = {
-    display_name: '',
+    user_info: {},
     my_top_genres: [],
     my_playlists: [],
+    featured_playlists: [],
+    new_releases: [],
     my_albums: [],
     recently_played: [],
     my_top_tracks: [],
     my_top_artists: [],
     all_categories: [],
-    featured_playlists: [],
-    new_releases: [],
     available_genre_seeds: [],
-    active_category: {}
+    current_selection: {}
 }
 const routes = {
         
-    display_name: 'v1/me',
+    user_info: 'v1/me',
     recently_played: 'v1/me/player/recently-played',
     my_playlists: 'v1/me/playlists',
     featured_playlists: 'v1/browse/featured-playlists',
@@ -43,87 +43,119 @@ const routes = {
     new_releases: 'v1/browse/new-releases',
     search: 'v1/search',
     available_genre_seeds: 'v1/recommendations/available-genre-seeds',
+    get_album: 'v1/albums',
     // My reducer is based off a set 'Route' string attached during the fetch process,
     // I set the top genre state with a makeshift 'my_top_genres' "route". 
     // Hopefully Spotify adds a top genres route eventually :(
     my_top_genres: 'genres',
-    active_category: ''
 
 }
 
 const reducer = (state, action) => {
-        switch(action.route) {
-            case routes.display_name:
-                return{
-                    ...state,
-                    display_name: action.display_name 
+        const { route , method } =  action
+
+        switch(route) {
+            case routes.user_info:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        user_info: action
+                    }
                 }
-                
+
             case routes.my_playlists:
-                return{
-                    ...state,
-                    my_playlists: [...state.my_playlists, ...action.items]
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        my_playlists: action.items
+                    }
                 }
-                
+
             case routes.my_albums:
-                return{
-                    ...state,
-                    my_albums: action.items
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        my_albums: action.items
+                    }
                 }
                 
             case routes.recently_played:
-                return{
-                    ...state,
-                    recently_played: action.items
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        recently_played: action.items
+                    }
                 }
                 
             case routes.all_categories:
-                return{
-                    ...state,
-                    all_categories: [ ...state.all_categories, ...action.categories.items ]
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        all_categories: [ ...state.all_categories, ...action.categories.items ]
+                    }
                 }
-                
+                    
             case routes.new_releases:
-                return{
-                    ...state,
-                    new_releases: action.albums.items
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        new_releases: action.albums.items
+                    }
                 }
-            
+
             case routes.featured_playlists:
-                return{
-                    ...state,
-                    featured_playlists: action.playlists.items
-                }    
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        featured_playlists: action.playlists.items
+                    }  
+                }  
 
             case routes.recommendations:
-                return{
-                    ...state,
-                    recommendations: action.items
-                }
-            case routes.available_genre_seeds:
-                return{
-                    ...state,
-                    available_genre_seeds: action.genres
-                }
-            case routes.my_top_tracks:
-                return{
-                    ...state,
-                    my_top_tracks: action.items
-                }
-            case routes.my_top_artists:
-                return{
-                    ...state,
-                    my_top_artists: action.items
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        recommendations: action.items
+                    }
                 }
 
+            case routes.available_genre_seeds:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        available_genre_seeds: action.genres
+                    }
+                }
+
+            case routes.my_top_tracks:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        my_top_tracks: action.items
+                    }
+                }
+
+            case routes.my_top_artists:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        my_top_artists: action.items
+                    }
+                } 
+
             case routes.my_top_genres:
+                // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
                 return{
                     ...state,
                     my_top_genres: action.items
                 }
-            case state.activeCategory.route:
 
-  
+            default:
+                console.log(123) 
+                return{
+                    ...state,
+                    current_selection: action
+                }
         }
           
 }
@@ -131,10 +163,12 @@ const reducer = (state, action) => {
 const Dashboard = ({ setAuth }) => {
     const API = 'https://api.spotify.com/'
     const location = useLocation()
+    const history = useHistory()
     const { setMethod, setRoutes,  apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [state, dispatch] = useReducer(reducer, initialState)
     const [scrollPosition, setScrollPosition] = useState()
     const [hiddenUI, setHiddenUI] = useState(false)
+    const [active, setActive] = useState(null)
     const scrollRef = useRef(scrollPosition)
 
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
@@ -160,7 +194,7 @@ const Dashboard = ({ setAuth }) => {
                 })
                 let newArr = []
                 sortable.map((item, i) => {
-                    newArr.push({ name: capital( item[0] ) ,  images: item[1]})
+                    newArr.push({ name: capital( item[0] ), id: item[0] , type: 'genre' ,  images: item[1]})
                 })
                 return newArr
             }
@@ -207,7 +241,7 @@ const Dashboard = ({ setAuth }) => {
 
 // API CALLS 
     const getUser = (...args) => {
-        finalizeRoute('get', routes.display_name, ...args)
+        finalizeRoute('get', routes.user_info, ...args)
     }
 
     const getMyPlaylists = (...args) => {
@@ -236,6 +270,15 @@ const Dashboard = ({ setAuth }) => {
 
      const getOneCategoryPlaylists = (cat_id, ...args ) => {
         finalizeRoute('get', routes.all_categories + `/${cat_id}` + '/playlists', ...args)
+    }
+
+    const getSeveralAlbums = ( ...args ) => {
+        finalizeRoute('get', routes.get_album, ...args)
+    }
+
+    const getSingleAlbum = ( id, ...args ) => {
+        console.log(id)
+        finalizeRoute('get', routes.get_album + `/${id}`, ...args)
     }
 
     const getAvailableGenreSeeds = ( ...args ) => {
@@ -301,7 +344,10 @@ const Dashboard = ({ setAuth }) => {
             dispatch(apiPayload)
         }
     },[apiPayload])
+
+
 //  END OF API CALLS 
+
 
 //  NAVIGATION TRANSITIONS
     const transitions = useTransition(location, {
@@ -311,6 +357,29 @@ const Dashboard = ({ setAuth }) => {
         enter: { transform: 'translatex(0%)' },
         leave: { transform: 'translatex(-100%)', position: 'absolute'},
     })
+
+    useEffect(() => {
+        if(active){
+            switch(active.type){
+                case 'artist':
+                    history.push(`/artist/${active.id}`)
+                    break
+                case 'album':
+                    history.push(`/album/${active.id}`)
+                    break
+                case 'playlist':
+                    history.push(`/album/${active.id}`)
+                    break
+                case 'genre':
+                    history.push(`/search/${active.id}`)
+                    break
+                default:
+                    history.push(`/showcase/${active.id}`)
+                    break
+            }
+        }
+
+    },[ active ])
 
     return(
         <section className="wrapper">
@@ -337,7 +406,7 @@ const Dashboard = ({ setAuth }) => {
                         <Route exact path='/'>
                             <Home 
                             state={ state }
-                            Link={ Link } />
+                            setActive={ setActive } />
                         </Route> 
                         <Route path='/search'>
                             <Search
@@ -345,7 +414,7 @@ const Dashboard = ({ setAuth }) => {
                             state={ state }
                             getCategories={ getCategories }  
                             apiIsPending={ apiIsPending }
-                            Link={ Link }/>
+                            setActive={ setActive }/>
                         </Route> 
                         <Route path='/manage'>
                             <Manage />
@@ -354,7 +423,11 @@ const Dashboard = ({ setAuth }) => {
                             <Artist />
                         </Route> 
                         <Route path='/album/:id'>
-                            <Album />
+                            <Album
+                            active={ active }
+                            setActive={ setActive } 
+                            getSingleAlbum={ getSingleAlbum }
+                            location={ location } />
                         </Route> 
                         <Route path='/showcase/:id'>
                             <Showcase 

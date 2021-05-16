@@ -3,7 +3,7 @@ import useFetchToken from './useFetchToken'
 import { checkToken, refreshToken } from '../utils/tokenTools'
 
 const useApiCall = (url) => {
-    const [fetchQueue, setFetchQueue] = useState([])
+    // const [fetchQueue, setFetchQueue] = useState([])
     const [method, setMethod] = useState(null)
     const [routes, setRoutes] = useState(null)
     const [body, setBody] = useState(null)
@@ -40,6 +40,7 @@ const useApiCall = (url) => {
                 errorHandling(data.error)
             }else{
                 data['route'] = breakdownRoute(routes)
+                data['method'] = method
                 setApiPayload(data)
                 setApiPending(false)
                 setMethod( null )
@@ -63,22 +64,10 @@ const useApiCall = (url) => {
 
     useEffect(() => {
         if(method && routes){
-            if( apiIsPending ) {
-                setFetchQueue( fetchQueue => [...fetchQueue, {routes: routes, method: method}] )
-            } else {
-                fetchApi( url, routes, method )
-            }
+            fetchApi( url, routes, method )
         }
     },[ method, routes ])
 
-    useEffect(() => {
-        if(fetchQueue.length > 0 && !apiIsPending ) {
-            fetchApi( url, fetchQueue[0].routes, fetchQueue[0].method )
-            const arr = [...fetchQueue]
-            const [x, ...remainder] = arr
-            setFetchQueue( remainder )
-        } 
-    }, [ apiIsPending ])
 
     useEffect(() => {
         if(tokenFetchComplete){
@@ -86,7 +75,7 @@ const useApiCall = (url) => {
         } 
     },[ tokenFetchComplete ])
 
-    return { setMethod, setRoutes, fetchQueue, apiError, apiIsPending, apiPayload }
+    return { setMethod, setRoutes, fetchApi, apiError, apiIsPending, apiPayload }
 }
 
 export default useApiCall

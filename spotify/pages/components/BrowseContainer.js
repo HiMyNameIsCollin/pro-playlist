@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Card from './Card'
 
-const BrowseContainer = ({ message, data, scrollPosition, getCategories, Link }) => {
+const BrowseContainer = ({ message, data, scrollPosition, getCategories, setActive }) => {
     
     useEffect(() => {
         if( scrollPosition && scrollPosition === 100 ){
@@ -27,7 +27,7 @@ const BrowseContainer = ({ message, data, scrollPosition, getCategories, Link })
                         key={ i } 
                         item={ item } 
                         cardType='browseContainer'
-                        Link={ Link } />
+                        setActive={ setActive } />
                     )
                    })
                }

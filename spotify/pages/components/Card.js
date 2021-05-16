@@ -4,19 +4,12 @@ import { whichPicture } from '../../utils/whichPicture'
 
 
 
-const Card = ({ item, cardType, Link }) => {
+const Card = ({ item, cardType, setActive }) => {
 
     return(
-        <div className={`card ${cardType}__card` }>
-            <Link to={
-                item.type === 'artist' ?
-                `/artist/${item.id}` :
-                item.type === 'album' || 
-                item.type === 'playlist' ?
-                `/album/${item.id}` :
-                `/showcase/${item.id}`
-                
-            }>
+        <div 
+        onClick={ () => setActive(item) } 
+        className={`card ${cardType}__card` }>
             <div className='card__image'>
                 <img 
                 src={ item.images ? 
@@ -36,7 +29,6 @@ const Card = ({ item, cardType, Link }) => {
                     { item.tracks.total }songs
                 </p>
             }
-            </Link>
         </div>
     )
 }

@@ -1,6 +1,6 @@
 import Card from './Card'
 
-const Slider = ({ message, items, Link }) => {
+const Slider = ({ message, items, setActive }) => {
     return(
         <section className='slider'>
             <div className='slider__title'>
@@ -15,7 +15,7 @@ const Slider = ({ message, items, Link }) => {
                     cardType='slider'
                     key={ i } 
                     item={ item }
-                    Link={ Link } />)) :
+                    setActive={ setActive } />)) :
                     <div className='slider__loading'>
                         Loading
                     </div>
