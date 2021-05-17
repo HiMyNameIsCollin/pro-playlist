@@ -1,20 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import useFetchToken from './useFetchToken'
 import { checkToken, refreshToken } from '../utils/tokenTools'
 
 const useApiCall = (url) => {
     // const [fetchQueue, setFetchQueue] = useState([])
-    const [method, setMethod] = useState(null)
-    const [routes, setRoutes] = useState(null)
-    const [body, setBody] = useState(null)
     const [apiError, setApiError] = useState(false)
     const [apiIsPending, setApiPending] = useState(false)
     const [apiPayload, setApiPayload] = useState(null)
     const TOKENURL = 'https://accounts.spotify.com/api/token'
     const { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody } = useFetchToken(TOKENURL)
-    
-    const fetchApi = (url, routes, method, body) => {
+    const thisCallRef = useRef()
+    const fetchApi = ( route, method, body ) => {
         const errorHandling = (err) => {
+            console.log(route)
             console.log(err, 1234)
             setApiError(true)
             setApiPending(false)
@@ -23,10 +21,11 @@ const useApiCall = (url) => {
                 refreshToken( refresh_token, setTokenBody )
             }
         }
+        thisCallRef.current = ({ route, method, body, })
         setApiPending(true)
-        setApiError(true)
+        setApiError(false)
         const access_token = localStorage.getItem('access_token')
-        fetch(`${url}${routes}`, {
+        fetch(`${ url }${ route }`, {
             method: method,
             headers: {
                 'Content-Type' : 'application/json',
@@ -39,16 +38,11 @@ const useApiCall = (url) => {
             if(data.error){
                 errorHandling(data.error)
             }else{
-                data['route'] = breakdownRoute(routes)
+                data['route'] = breakdownRoute(route)
                 data['method'] = method
                 setApiPayload(data)
                 setApiPending(false)
-                setMethod( null )
-                setRoutes( null )
             }
-        })
-        .catch(err => {
-            errorHandling(err)
         })
     }
 
@@ -63,19 +57,13 @@ const useApiCall = (url) => {
     }
 
     useEffect(() => {
-        if(method && routes){
-            fetchApi( url, routes, method )
-        }
-    },[ method, routes ])
-
-
-    useEffect(() => {
         if(tokenFetchComplete){
-            fetchApi( url, routes, method )
+            const { route, method, body } = thisCallRef.current
+            fetchApi( route, method, body )
         } 
     },[ tokenFetchComplete ])
 
-    return { setMethod, setRoutes, fetchApi, apiError, apiIsPending, apiPayload }
+    return { fetchApi, apiError, apiIsPending, apiPayload }
 }
 
 export default useApiCall

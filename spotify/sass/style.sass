@@ -9,6 +9,8 @@ $darkGrey: #212121
 $bg__1--sm: url('../public/bgsm.jpg')
 $bg__1--lg: url('../public/bglg.jpg')
 
+\:root
+    --albumBackground: ''
 
 @mixin shadowA
     box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px
@@ -24,6 +26,14 @@ $bg__1--lg: url('../public/bglg.jpg')
         position: absolute
         width: 100%
         z-index: -1
+    &::after
+        content: ''
+        top: 0
+        left: 0
+        height: 100%
+        position: absolute
+        width: 100%
+        z-index: -2
 
 @mixin sectionTitle
     align-items: flex-end
@@ -160,14 +170,48 @@ a
     min-width: 100vw
     padding: 8rem .5rem 0 .5rem
     &--bg
-        background: $darkGrey
         @include overlay
+        background: $darkGrey
         padding: 10rem .5rem 0 .5rem
+        &::before
+            @include scrimGradient($grey, '135deg')
+            opacity: .7
+    &--album
+        @include overlay
+        background: $black
+        padding: 0
         &::before
             @include scrimGradient($grey, '135deg')
             opacity: .7
     section:nth-last-of-type(1)
         margin-bottom: 4rem
+
+.album
+    background: $black
+    color: $white
+    &__header
+        @include overlay
+        &::before
+            @include scrimGradient($black, 'to top')
+            opacity: 1
+        &::after
+            background-image: var(--albumBackground)
+            background-size: 300%
+            opacity: .1
+    &__imgContainer
+        display: flex
+        padding: 2rem 0
+        img
+            display: block
+            margin: auto
+    &__meta
+        align-items: center
+        display: flex
+        img
+            border-radius: 50%
+        p
+            font-weight: 700
+            padding: 0 1rem
 
 .homeHeader
     align-items: center
@@ -186,7 +230,6 @@ a
         max-width: 32px
       
         
-
 .searchHeader
     @include overlay
     background: $black
@@ -307,8 +350,6 @@ a
         &:nth-of-type(1)
             margin-left: 0
 
-       
-
 .card
     color: $white
     position: relative
@@ -341,6 +382,7 @@ a
             white-space: nowrap
             overflow: hidden
             text-overflow: ellipsis
+
 
 
 

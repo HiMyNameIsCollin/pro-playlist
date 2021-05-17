@@ -12,6 +12,7 @@ import Manage from './Manage'
 import Search from './Search'
 import Artist from './Artist'
 import Album from './Album'
+import Playlist from './Playlist'
 import Showcase from './Showcase'
 
 const initialState = {
@@ -26,7 +27,7 @@ const initialState = {
     my_top_artists: [],
     all_categories: [],
     available_genre_seeds: [],
-    current_selection: {}
+    current_selection: null
 }
 const routes = {
         
@@ -44,6 +45,7 @@ const routes = {
     search: 'v1/search',
     available_genre_seeds: 'v1/recommendations/available-genre-seeds',
     get_album: 'v1/albums',
+    get_artist: 'v1/artists',
     // My reducer is based off a set 'Route' string attached during the fetch process,
     // I set the top genre state with a makeshift 'my_top_genres' "route". 
     // Hopefully Spotify adds a top genres route eventually :(
@@ -52,7 +54,13 @@ const routes = {
 }
 
 const reducer = (state, action) => {
-        const { route , method } =  action
+        let route
+        let method
+        if(action){
+            route = action.route
+            method = action.method
+        }
+        
 
         switch(route) {
             case routes.user_info:
@@ -151,11 +159,21 @@ const reducer = (state, action) => {
                 }
 
             default:
-                console.log(123) 
-                return{
-                    ...state,
-                    current_selection: action
+                console.log(123)
+                if( state.current_selection === null ){
+                    return{
+                        ...state,
+                        current_selection: action
+                    }
+                }else {
+                    let state2 = {...state}
+                    state2.current_selection['main_artist'] = action
+                    return{
+                        ...state,
+                        current_selection: state2.current_selection
+                    }
                 }
+                
         }
           
 }
@@ -164,7 +182,7 @@ const Dashboard = ({ setAuth }) => {
     const API = 'https://api.spotify.com/'
     const location = useLocation()
     const history = useHistory()
-    const { setMethod, setRoutes,  apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [state, dispatch] = useReducer(reducer, initialState)
     const [scrollPosition, setScrollPosition] = useState()
     const [hiddenUI, setHiddenUI] = useState(false)
@@ -174,6 +192,8 @@ const Dashboard = ({ setAuth }) => {
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
         if(state.my_top_artists.length > 0) {
+            console.log('Leakin')
+            let mounted = true
             const calcTopGenre = (arr) => {
                 let genres = {}
                 arr.map((ele, i) => {
@@ -204,8 +224,8 @@ const Dashboard = ({ setAuth }) => {
                 route: 'genres',
                 items: topGenres
             }
-        
-            dispatch(payload)
+            if(mounted) dispatch(payload)
+            return () => mounted = false
         }
     },[state.my_top_artists])
 
@@ -281,6 +301,10 @@ const Dashboard = ({ setAuth }) => {
         finalizeRoute('get', routes.get_album + `/${id}`, ...args)
     }
 
+    const getSingleArtist = ( id, ...args ) => {
+        finalizeRoute('get', routes.get_artist + `/${id}`, ...args)
+    }
+
     const getAvailableGenreSeeds = ( ...args ) => {
         finalizeRoute('get', routes.available_genre_seeds, ...args)
     }
@@ -307,8 +331,7 @@ const Dashboard = ({ setAuth }) => {
                 }
             })
         }
-        setMethod(method)
-        setRoutes(finalRoute)
+        fetchApi( finalRoute, method )
     }
 
     useEffect(() => {
@@ -345,6 +368,10 @@ const Dashboard = ({ setAuth }) => {
         }
     },[apiPayload])
 
+    useEffect(() => {
+        setActive(state.current_selection)
+
+    },[state.current_selection])
 
 //  END OF API CALLS 
 
@@ -353,28 +380,42 @@ const Dashboard = ({ setAuth }) => {
     const transitions = useTransition(location, {
         initial: { transform: 'translatex(100%)' },
         from: { transform: 'translatex(100%)', position: 'absolute', width: '100%'},
-        update: { transform: 'translatex(0%)', position: 'relative'},
+        update: {  position: 'relative'},
         enter: { transform: 'translatex(0%)' },
         leave: { transform: 'translatex(-100%)', position: 'absolute'},
     })
 
     useEffect(() => {
-        if(active){
+        if(active && active.type){
+            dispatch(null)
             switch(active.type){
                 case 'artist':
-                    history.push(`/artist/${active.id}`)
+                    if(location.pathname !== `/artist/${active.id}`){
+                        history.push(`/artist/${active.id}`)
+                    }
                     break
                 case 'album':
-                    history.push(`/album/${active.id}`)
+                    if(location.pathname !== `/album/${active.id}`){
+                        history.push(`/album/${active.id}`)
+                    }
+                    
                     break
                 case 'playlist':
-                    history.push(`/album/${active.id}`)
+                    if(location.pathname !== `/playlist/${active.id}`){
+                        history.push(`/playlist/${active.id}`)
+                    }
+                    
                     break
                 case 'genre':
-                    history.push(`/search/${active.id}`)
+                    if(location.pathname !== `/search/${active.id}`){
+                        history.push(`/search/${active.id}`)
+                    }
                     break
                 default:
-                    history.push(`/showcase/${active.id}`)
+                    if(location.pathname !== `/showcase/${active.id}`){
+                        history.push(`/showcase/${active.id}`)
+                    }
+                    
                     break
             }
         }
@@ -427,6 +468,13 @@ const Dashboard = ({ setAuth }) => {
                             active={ active }
                             setActive={ setActive } 
                             getSingleAlbum={ getSingleAlbum }
+                            getSingleArtist={ getSingleArtist }
+                            location={ location } />
+                        </Route>
+                        <Route path='/playlist/:id'>
+                            <Playlist
+                            active={ active }
+                            setActive={ setActive } 
                             location={ location } />
                         </Route> 
                         <Route path='/showcase/:id'>
