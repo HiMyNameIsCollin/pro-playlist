@@ -50,6 +50,8 @@ const routes = {
     // I set the top genre state with a makeshift 'my_top_genres' "route". 
     // Hopefully Spotify adds a top genres route eventually :(
     my_top_genres: 'genres',
+    // Not a route, but my reducers switch statement is set up to match routes to cases. ¯\_(ツ)_/¯ 
+    current_selection: 'current_selection',
 
 }
 
@@ -61,7 +63,6 @@ const reducer = (state, action) => {
             method = action.method
         }
         
-
         switch(route) {
             case routes.user_info:
                 if(method === 'get'){
@@ -157,25 +158,28 @@ const reducer = (state, action) => {
                     ...state,
                     my_top_genres: action.items
                 }
+            case routes.current_selection:
+                return{
+                    ...state,
+                    current_selection: action
+                }
 
             default:
-                console.log(123)
-                if( state.current_selection === null ){
+                if( !action ){
                     return{
                         ...state,
-                        current_selection: action
+                        current_selection: null
                     }
-                }else {
-                    let state2 = {...state}
-                    state2.current_selection['main_artist'] = action
+                } else{
+                    const state2 = { ... state.current_selection }
+                    state2['main_artist'] = action
                     return{
                         ...state,
-                        current_selection: state2.current_selection
+                        current_selection: state2
                     }
                 }
                 
         }
-          
 }
 
 const Dashboard = ({ setAuth }) => {
@@ -186,9 +190,8 @@ const Dashboard = ({ setAuth }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
     const [scrollPosition, setScrollPosition] = useState()
     const [hiddenUI, setHiddenUI] = useState(false)
-    const [active, setActive] = useState(null)
     const scrollRef = useRef(scrollPosition)
-
+    const locationRef = useRef([location.pathname])
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
         if(state.my_top_artists.length > 0) {
@@ -368,11 +371,6 @@ const Dashboard = ({ setAuth }) => {
         }
     },[apiPayload])
 
-    useEffect(() => {
-        setActive(state.current_selection)
-
-    },[state.current_selection])
-
 //  END OF API CALLS 
 
 
@@ -386,41 +384,52 @@ const Dashboard = ({ setAuth }) => {
     })
 
     useEffect(() => {
-        if(active && active.type){
-            dispatch(null)
-            switch(active.type){
+        if(state.current_selection && state.current_selection.type){
+
+            switch(state.current_selection.type){
                 case 'artist':
-                    if(location.pathname !== `/artist/${active.id}`){
-                        history.push(`/artist/${active.id}`)
+                    if(location.pathname !== `/artist/${state.current_selection.id}`){
+                        history.push(`/artist/${state.current_selection.id}`)
                     }
                     break
                 case 'album':
-                    if(location.pathname !== `/album/${active.id}`){
-                        history.push(`/album/${active.id}`)
+                    if(location.pathname !== `/album/${state.current_selection.id}`){
+                        history.push(`/album/${state.current_selection.id}`)
                     }
                     
                     break
                 case 'playlist':
-                    if(location.pathname !== `/playlist/${active.id}`){
-                        history.push(`/playlist/${active.id}`)
+                    if(location.pathname !== `/playlist/${state.current_selection.id}`){
+                        history.push(`/playlist/${state.current_selection.id}`)
                     }
                     
                     break
                 case 'genre':
-                    if(location.pathname !== `/search/${active.id}`){
-                        history.push(`/search/${active.id}`)
+                    if(location.pathname !== `/search/${state.current_selection.id}`){
+                        history.push(`/search/${state.current_selection.id}`)
                     }
                     break
                 default:
-                    if(location.pathname !== `/showcase/${active.id}`){
-                        history.push(`/showcase/${active.id}`)
+                    if(location.pathname !== `/showcase/${state.current_selection.id}`){
+                        history.push(`/showcase/${state.current_selection.id}`)
                     }
                     
                     break
             }
         }
 
-    },[ active ])
+    },[ state.current_selection ])
+
+    useEffect(() => {
+        if(locationRef.current[0] !== location.pathname){
+            if(locationRef.current.length < 5 ){
+                locationRef.current.unshift( location.pathname )
+            } else {
+                locationRef.current.pop()
+                locationRef.current.unshift( location.pathname )
+            }
+        }
+    },[ location.pathname ])
 
     return(
         <section className="wrapper">
@@ -445,36 +454,33 @@ const Dashboard = ({ setAuth }) => {
                 <animated.div style={ props }>
                     <Switch location={ item }>
                         <Route exact path='/'>
-                            <Home 
-                            state={ state }
-                            setActive={ setActive } />
+                            <Home
+                            state={ state } 
+                            dispatch={ dispatch } />
                         </Route> 
                         <Route path='/search'>
                             <Search
                             scrollPosition={ scrollPosition } 
                             state={ state }
                             getCategories={ getCategories }  
-                            apiIsPending={ apiIsPending }
-                            setActive={ setActive }/>
+                            apiIsPending={ apiIsPending }/>
                         </Route> 
                         <Route path='/manage'>
                             <Manage />
                         </Route> 
                         <Route path='/artist/:id'>
-                            <Artist />
+                            <Artist  />
                         </Route> 
                         <Route path='/album/:id'>
                             <Album
-                            active={ active }
-                            setActive={ setActive } 
                             getSingleAlbum={ getSingleAlbum }
                             getSingleArtist={ getSingleArtist }
+                            item={ state.current_selection }
+                            dispatch={ dispatch }
                             location={ location } />
                         </Route>
                         <Route path='/playlist/:id'>
                             <Playlist
-                            active={ active }
-                            setActive={ setActive } 
                             location={ location } />
                         </Route> 
                         <Route path='/showcase/:id'>

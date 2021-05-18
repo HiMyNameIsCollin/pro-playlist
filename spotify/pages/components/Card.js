@@ -4,11 +4,17 @@ import { whichPicture } from '../../utils/whichPicture'
 
 
 
-const Card = ({ item, cardType, setActive }) => {
+const Card = ({ item, cardType, dispatch }) => {
+
+    const setCurrentSelection = () => {
+        let payload = { ...item }
+        payload['route'] = 'current_selection'
+        dispatch( payload )
+    }
 
     return(
         <div 
-        onClick={ () => setActive(item) } 
+        onClick={ setCurrentSelection } 
         className={`card ${cardType}__card` }>
             <div className='card__image'>
                 <img 

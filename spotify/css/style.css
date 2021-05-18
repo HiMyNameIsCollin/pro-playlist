@@ -221,42 +221,14 @@ a {
   opacity: 0.7;
 }
 .page--album {
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
   background: #191414;
+  color: #FFFFFF;
   padding: 0;
-}
-.page--album::before {
-  content: "";
-  top: 0;
-  left: 0;
-  height: 100%;
-  position: absolute;
-  width: 100%;
-  z-index: -1;
-}
-.page--album::after {
-  content: "";
-  top: 0;
-  left: 0;
-  height: 100%;
-  position: absolute;
-  width: 100%;
-  z-index: -2;
-}
-.page--album::before {
-  background: linear-gradient(135deg, #535353 0%, rgba(83, 83, 83, 0.738) 19%, rgba(83, 83, 83, 0.541) 34%, rgba(83, 83, 83, 0.382) 47%, rgba(83, 83, 83, 0.278) 56.5%, rgba(83, 83, 83, 0.194) 65%, rgba(83, 83, 83, 0.126) 73%, rgba(83, 83, 83, 0.075) 80.2%, rgba(83, 83, 83, 0.042) 86.1%, rgba(83, 83, 83, 0.021) 91%, rgba(83, 83, 83, 0.008) 95.2%, rgba(83, 83, 83, 0.002) 98.2%, rgba(83, 83, 83, 0) 100%);
-  opacity: 0.7;
 }
 .page section:nth-last-of-type(1) {
   margin-bottom: 4rem;
 }
 
-.album {
-  background: #191414;
-  color: #FFFFFF;
-}
 .album__header {
   position: relative;
   overflow: hidden;
@@ -286,8 +258,12 @@ a {
 }
 .album__header::after {
   background-image: var(--albumBackground);
-  background-size: 300%;
-  opacity: 0.1;
+  background-size: 200%;
+  background-position: 50% 50%;
+  opacity: 0.3;
+}
+.album__header > * {
+  margin-bottom: 1rem;
 }
 .album__imgContainer {
   display: flex;
@@ -297,16 +273,25 @@ a {
   display: block;
   margin: auto;
 }
-.album__meta {
+.album__artist {
   align-items: center;
   display: flex;
 }
-.album__meta img {
+.album__artist img {
   border-radius: 50%;
 }
-.album__meta p {
+.album__artist p {
   font-weight: 700;
   padding: 0 1rem;
+}
+.album__meta {
+  color: #b3b3b3;
+  font-size: 0.8rem;
+}
+@media only screen and (min-width: 920px) {
+  .album__header::after {
+    background-size: cover;
+  }
 }
 
 .homeHeader {

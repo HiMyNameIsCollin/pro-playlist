@@ -1,45 +1,60 @@
 import { useState, useEffect } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
+import { capital } from '../../utils/capital'
 
-const Album = ({ active, setActive, getSingleAlbum, getSingleArtist, location }) => {
+const Album = ({ getSingleAlbum, getSingleArtist, item, dispatch, location }) => {
 
     useEffect(() => {
-        if( !active ) getSingleAlbum( location.pathname.substring(7) )
+        if( item && item.images && item.artists && !item.main_artist){
+            document.documentElement.style.setProperty('--albumBackground', `url(${whichPicture(item.images, 'lrg')})`)  
+            getSingleArtist( item.artists[0].id , true )
+        } 
+    }, [ item ])
+
+    useEffect(() => {
+
     }, [])
 
-    useEffect(() => {
-        if( active && active.images && active.artists){
-            document.documentElement.style.setProperty('--albumBackground', `url(${whichPicture(active.images, 'lrg')})`)  
-            getSingleArtist( active.artists[0].id )
-        } 
-    }, [active])
+    const handleViewArtist = () => {
+        console.log(item.artists)
+        if(item.artists.length === 1) {
+            let payload = [ ...item.artists ]
+            payload['route'] = 'current_selection'
+            dispatch( payload )
+        }
+    }
 
     return(
         <div className='page page--album album'>
-            {active &&
+            {item &&
             <header className='album__header'>
                 {
-                    active.images && 
+                    item.images && 
                     <div className='album__imgContainer'>
-                        <img src={ whichPicture(active.images, 'med') } />
+                        <img src={ whichPicture(item.images, 'med') } />
                     </div> 
                 }
-                <h1> { active.name } </h1>
+                <h1> { item.name } </h1>
                 {
-                    active.artists && active.main_artist &&
-                    <div className='album__meta'>
+                    item.artists && item.main_artist &&
+                    <div className='album__artist'>
                         <img
                         height='48px'
                         width='48px' 
-                        src={ whichPicture(active.main_artist.images, 'sm' ) } 
+                        src={ whichPicture(item.main_artist.images, 'sm' ) } 
                         alt='Artist' />
-                        <p>{ active.artists.map((artist, i) =>  i !== active.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }</p>
-                        <p>  </p>
+                        <p onClick={ handleViewArtist }>{ item.artists.map((artist, i) =>  i !== item.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }</p>
                     </div>
                 }
-
+                <div className='album__meta'>
+                    <span> { capital(item.album_type)} </span>
+                    | |
+                    <span> { item.release_date }</span> 
+                </div>
+                    
            </header>          
             }
+            <h3>Test</h3>
         </div>
     )
 }
