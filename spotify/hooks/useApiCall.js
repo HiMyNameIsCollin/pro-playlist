@@ -8,11 +8,10 @@ const useApiCall = (url) => {
     const [apiIsPending, setApiPending] = useState(false)
     const [apiPayload, setApiPayload] = useState(null)
     const TOKENURL = 'https://accounts.spotify.com/api/token'
-    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody } = useFetchToken(TOKENURL)
+    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken(TOKENURL)
     const thisCallRef = useRef()
     const fetchApi = ( route, method, body ) => {
         const errorHandling = (err) => {
-            console.log(route)
             console.log(err, 1234)
             setApiError(true)
             setApiPending(false)
@@ -38,7 +37,7 @@ const useApiCall = (url) => {
             if(data.error){
                 errorHandling(data.error)
             }else{
-                data['route'] = breakdownRoute(route)
+                data['route'] = breakdownRoute(route, data.id)
                 data['method'] = method
                 setApiPayload(data)
                 setApiPending(false)
@@ -46,13 +45,21 @@ const useApiCall = (url) => {
         })
     }
 
-    const breakdownRoute = (route) => {
+    const breakdownRoute = (route , id) => {
+        let newRoute 
         if(route.includes('?')){
             const regexp = /['?']/
             const queryIndex = route.search(regexp)
-            return route.substring(0, queryIndex)
+            newRoute = route.substr(0, queryIndex)
         } else {
-            return route
+            newRoute = route
+        }
+        let finalRoute
+        if(newRoute.includes( id )){
+            finalRoute = newRoute.replace(`/${id}`, '')
+            return finalRoute
+        }else{
+            return finalRoute = newRoute
         }
     }
 
@@ -60,6 +67,7 @@ const useApiCall = (url) => {
         if(tokenFetchComplete){
             const { route, method, body } = thisCallRef.current
             fetchApi( route, method, body )
+            setTokenFetchComplete(false)
         } 
     },[ tokenFetchComplete ])
 

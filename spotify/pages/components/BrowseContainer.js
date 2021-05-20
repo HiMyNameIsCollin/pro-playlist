@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import Card from './Card'
 
-const BrowseContainer = ({ message, data, scrollPosition, getCategories, setActive }) => {
+const BrowseContainer = ({ message, data, scrollPosition, setActive }) => {
     
     useEffect(() => {
         if( scrollPosition && scrollPosition === 100 ){
             const fetchMore = () => {
-                getCategories( `offset=${data.length}`)
+                
             }
             fetchMore()
         }

@@ -4,12 +4,10 @@ import { whichPicture } from '../../utils/whichPicture'
 
 
 
-const Card = ({ item, cardType, dispatch }) => {
+const Card = ({ item, cardType, setActiveItem }) => {
 
     const setCurrentSelection = () => {
-        let payload = { ...item }
-        payload['route'] = 'current_selection'
-        dispatch( payload )
+        setActiveItem( item )
     }
 
     return(

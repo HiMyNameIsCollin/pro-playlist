@@ -1,6 +1,8 @@
 import { useState, useEffect, useReducer, useRef, createContext } from 'react'
 import { Switch, Route, useLocation, useHistory, NavLink, Link } from 'react-router-dom'
 import { capital } from '../../utils/capital'
+import { finalizeRoute } from '../../utils/finalizeRoute'
+import { whichPicture } from '../../utils/whichPicture'
 import  useApiCall  from '../../hooks/useApiCall'
 import { useTransition, animated } from 'react-spring'
 
@@ -14,6 +16,7 @@ import Artist from './Artist'
 import Album from './Album'
 import Playlist from './Playlist'
 import Showcase from './Showcase'
+import Loading from './Loading'
 
 const initialState = {
     user_info: {},
@@ -27,10 +30,8 @@ const initialState = {
     my_top_artists: [],
     all_categories: [],
     available_genre_seeds: [],
-    current_selection: null
 }
-const routes = {
-        
+const routes = {   
     user_info: 'v1/me',
     recently_played: 'v1/me/player/recently-played',
     my_playlists: 'v1/me/playlists',
@@ -50,11 +51,7 @@ const routes = {
     // I set the top genre state with a makeshift 'my_top_genres' "route". 
     // Hopefully Spotify adds a top genres route eventually :(
     my_top_genres: 'genres',
-    // Not a route, but my reducers switch statement is set up to match routes to cases. ¯\_(ツ)_/¯ 
-    current_selection: 'current_selection',
-
 }
-
 const reducer = (state, action) => {
         let route
         let method
@@ -62,7 +59,6 @@ const reducer = (state, action) => {
             route = action.route
             method = action.method
         }
-        
         switch(route) {
             case routes.user_info:
                 if(method === 'get'){
@@ -158,31 +154,15 @@ const reducer = (state, action) => {
                     ...state,
                     my_top_genres: action.items
                 }
-            case routes.current_selection:
-                return{
-                    ...state,
-                    current_selection: action
-                }
 
             default:
-                if( !action ){
-                    return{
-                        ...state,
-                        current_selection: null
-                    }
-                } else{
-                    const state2 = { ... state.current_selection }
-                    state2['main_artist'] = action
-                    return{
-                        ...state,
-                        current_selection: state2
-                    }
-                }
+                break
                 
         }
 }
 
 const Dashboard = ({ setAuth }) => {
+    // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
     const location = useLocation()
     const history = useHistory()
@@ -190,6 +170,7 @@ const Dashboard = ({ setAuth }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
     const [scrollPosition, setScrollPosition] = useState()
     const [hiddenUI, setHiddenUI] = useState(false)
+    const [activeItem, setActiveItem] = useState(null)
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([location.pathname])
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
@@ -263,116 +244,21 @@ const Dashboard = ({ setAuth }) => {
     }
 
 // API CALLS 
-    const getUser = (...args) => {
-        finalizeRoute('get', routes.user_info, ...args)
-    }
-
-    const getMyPlaylists = (...args) => {
-        finalizeRoute('get', routes.my_playlists, ...args)
-    }
-
-    const getMyAlbums = (...args) => {
-        finalizeRoute('get', routes.my_albums, ...args)
-    }
-
-    const getFeaturedPlaylists = ( ...args ) => {
-        finalizeRoute('get', routes.featured_playlists, ...args)
-    }
-
-    const getNewReleases = ( ...args ) => {
-        finalizeRoute('get', routes.new_releases, ...args)
-    }
-
-    const getCategories = ( ...args ) => {
-        finalizeRoute('get', routes.all_categories, ...args)
-    }
-
-    const getOneCategory = (cat_id, ...args ) => {
-        finalizeRoute('get', routes.all_categories + `/${cat_id}`, ...args)
-    }
-
-     const getOneCategoryPlaylists = (cat_id, ...args ) => {
-        finalizeRoute('get', routes.all_categories + `/${cat_id}` + '/playlists', ...args)
-    }
-
-    const getSeveralAlbums = ( ...args ) => {
-        finalizeRoute('get', routes.get_album, ...args)
-    }
-
-    const getSingleAlbum = ( id, ...args ) => {
-        console.log(id)
-        finalizeRoute('get', routes.get_album + `/${id}`, ...args)
-    }
-
-    const getSingleArtist = ( id, ...args ) => {
-        finalizeRoute('get', routes.get_artist + `/${id}`, ...args)
-    }
-
-    const getAvailableGenreSeeds = ( ...args ) => {
-        finalizeRoute('get', routes.available_genre_seeds, ...args)
-    }
-
-    const getRecentlyPlayed = ( ...args ) => {
-        finalizeRoute('get', routes.recently_played, ...args)
-    }
-
-    const getTopTracks = ( ...args ) => {
-        finalizeRoute('get', routes.my_top_tracks, ...args)
-    }
-
-    const getTopArtists = ( ...args ) => {
-        finalizeRoute('get', routes.my_top_artists, ...args)
-    }
-    const finalizeRoute = (method, route, ...args) => {
-        let finalRoute = route
-        if(args.length > 0){
-            args.forEach((arg, i) => {
-                if( i === 0 ) {
-                    finalRoute += `?${arg}`
-                }else {
-                    finalRoute += `&${arg}`
-                }
-            })
-        }
-        fetchApi( finalRoute, method )
-    }
-
     useEffect(() => {
-        getUser()
-        setTimeout(() => {
-            getFeaturedPlaylists()
-        }, 1)
-        setTimeout(() => {
-            getNewReleases()
-        }, 2)
-        setTimeout(() => {
-            getRecentlyPlayed('limit=6')
-        },3)
-        setTimeout(() => {
-            getCategories('limit=10')
-        },4)
-        setTimeout(() => {
-            getNewReleases()
-        },5)
-        setTimeout(() => {
-            getAvailableGenreSeeds()
-        }, 6)
-        setTimeout(() => {
-            getTopTracks()
-        }, 7)
-        setTimeout(() => {
-            getTopArtists()
-        }, 8)
+        finalizeRoute('get', routes.user_info, fetchApi)
+        setTimeout(() => finalizeRoute( 'get', routes.featured_playlists, fetchApi ), 1)
+        setTimeout(() => finalizeRoute( 'get', routes.new_releases, fetchApi ), 2)
+        setTimeout(() => finalizeRoute( 'get', routes.recently_played, fetchApi, 'limit=6' ) , 3)
+        setTimeout(() => finalizeRoute( 'get', routes.all_categories, fetchApi, 'limit=10' ) , 4)
+        setTimeout(() => finalizeRoute( 'get', routes.new_releases, fetchApi ), 5)
+        setTimeout(() => finalizeRoute( 'get', routes.available_genre_seeds, fetchApi ), 6)
+        setTimeout(() => finalizeRoute( 'get', routes.my_top_tracks, fetchApi ), 7)
+        setTimeout(() => finalizeRoute( 'get', routes.my_top_artists, fetchApi ), 8)
     },[])
-
     useEffect(() => {
-        if(apiPayload){
-            dispatch(apiPayload)
-        }
+        if(apiPayload) dispatch(apiPayload)
     },[apiPayload])
-
 //  END OF API CALLS 
-
 
 //  NAVIGATION TRANSITIONS
     const transitions = useTransition(location, {
@@ -384,52 +270,57 @@ const Dashboard = ({ setAuth }) => {
     })
 
     useEffect(() => {
-        if(state.current_selection && state.current_selection.type){
-
-            switch(state.current_selection.type){
+        if(activeItem && activeItem.type){
+            switch(activeItem.type){
                 case 'artist':
-                    if(location.pathname !== `/artist/${state.current_selection.id}`){
-                        history.push(`/artist/${state.current_selection.id}`)
+                    if(location.pathname !== `/artist/${activeItem.id}`){
+                        history.push(`/artist/${activeItem.id}`)
                     }
                     break
                 case 'album':
-                    if(location.pathname !== `/album/${state.current_selection.id}`){
-                        history.push(`/album/${state.current_selection.id}`)
+                    if(location.pathname !== `/album/${activeItem.id}`){
+                        history.push(`/album/${activeItem.id}`)
                     }
                     
                     break
                 case 'playlist':
-                    if(location.pathname !== `/playlist/${state.current_selection.id}`){
-                        history.push(`/playlist/${state.current_selection.id}`)
+                    if(location.pathname !== `/playlist/${activeItem.id}`){
+                        history.push(`/playlist/${activeItem.id}`)
                     }
                     
                     break
                 case 'genre':
-                    if(location.pathname !== `/search/${state.current_selection.id}`){
-                        history.push(`/search/${state.current_selection.id}`)
+                    if(location.pathname !== `/search/${activeItem.id}`){
+                        history.push(`/search/${activeItem.id}`)
                     }
                     break
                 default:
-                    if(location.pathname !== `/showcase/${state.current_selection.id}`){
-                        history.push(`/showcase/${state.current_selection.id}`)
+                    if(location.pathname !== `/showcase/${activeItem.id}`){
+                        history.push(`/showcase/${activeItem.id}`)
                     }
                     
                     break
             }
         }
 
-    },[ state.current_selection ])
-
+    },[ activeItem ])
+//  Track location and active page for back btn
     useEffect(() => {
-        if(locationRef.current[0] !== location.pathname){
+        if(locationRef.current[0].pathname !== location.pathname){
             if(locationRef.current.length < 5 ){
-                locationRef.current.unshift( location.pathname )
+                locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem} )
             } else {
                 locationRef.current.pop()
-                locationRef.current.unshift( location.pathname )
+                locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem} )
             }
         }
     },[ location.pathname ])
+
+    useEffect(() => {
+        if(location.pathname === '/' || location.pathname === 'search' || location.pathname === '/manage'){
+            setActiveItem( null )
+        }
+    }, [ location.pathname ] )
 
     return(
         <section className="wrapper">
@@ -455,14 +346,13 @@ const Dashboard = ({ setAuth }) => {
                     <Switch location={ item }>
                         <Route exact path='/'>
                             <Home
-                            state={ state } 
-                            dispatch={ dispatch } />
+                            state={ state }
+                            setActiveItem={ setActiveItem } />
                         </Route> 
                         <Route path='/search'>
                             <Search
                             scrollPosition={ scrollPosition } 
-                            state={ state }
-                            getCategories={ getCategories }  
+                            state={ state } 
                             apiIsPending={ apiIsPending }/>
                         </Route> 
                         <Route path='/manage'>
@@ -473,10 +363,8 @@ const Dashboard = ({ setAuth }) => {
                         </Route> 
                         <Route path='/album/:id'>
                             <Album
-                            getSingleAlbum={ getSingleAlbum }
-                            getSingleArtist={ getSingleArtist }
-                            item={ state.current_selection }
-                            dispatch={ dispatch }
+                            item={ activeItem }
+                            setActiveItem={ setActiveItem }
                             location={ location } />
                         </Route>
                         <Route path='/playlist/:id'>

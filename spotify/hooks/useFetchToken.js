@@ -29,7 +29,7 @@ const useFetchToken = (url) => {
         }
 
     },[url, tokenBody])
-    return { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody }
+    return { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody }
 }
 
 export default useFetchToken

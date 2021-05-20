@@ -262,9 +262,6 @@ a {
   background-position: 50% 50%;
   opacity: 0.3;
 }
-.album__header > * {
-  margin-bottom: 1rem;
-}
 .album__imgContainer {
   display: flex;
   padding: 2rem 0;
@@ -273,14 +270,22 @@ a {
   display: block;
   margin: auto;
 }
-.album__artist {
+.album__info {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
+  padding: 0 1rem;
 }
-.album__artist img {
+.album__info > * {
+  margin-bottom: 1rem;
+}
+.album__info h1 {
+  width: 100%;
+}
+.album__info img {
   border-radius: 50%;
 }
-.album__artist p {
+.album__info p {
   font-weight: 700;
   padding: 0 1rem;
 }
@@ -547,6 +552,17 @@ a {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.loading {
+  align-items: center;
+  background: #191414;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  position: fixed;
+  width: 100%;
+  z-index: 3;
 }
 
 @media only screen and (min-width: 768px) {

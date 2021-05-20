@@ -13,8 +13,6 @@ const Search = ({ state, scrollPosition, getCategories, apiIsPending, setActive 
             message='Browse all' 
             data={ state.all_categories }
             scrollPosition={ scrollPosition }
-            getCategories={ getCategories }
-            apiIsPending={ apiIsPending }
             setActive={ setActive } />
         </div>
     )
