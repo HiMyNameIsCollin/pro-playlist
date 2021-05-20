@@ -1,4 +1,4 @@
-export const finalizeRoute = (method, route, func, ...args) => {
+export const finalizeRoute = (method, route, func, requestID, ...args) => {
     let finalRoute = route
     
     if(args.length > 0){
@@ -10,5 +10,5 @@ export const finalizeRoute = (method, route, func, ...args) => {
             }
         })
     }
-    func( finalRoute, method )
+    func( finalRoute, method , requestID)
 }

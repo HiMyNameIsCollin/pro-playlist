@@ -41,13 +41,12 @@ const reducer = (state, action) => {
     }
 }
 
-const Album = ({ item, setActiveItem, location }) => {
+const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
     const initialState = {
         album: item ? item : null ,
         tracks: null,
         main_artist: null
     }
-    
     // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
@@ -62,6 +61,7 @@ const Album = ({ item, setActiveItem, location }) => {
     }, [])
 
     useEffect(() => {
+        // Set background image of Album header
         if( album ) document.documentElement.style.setProperty('--albumBackground', `url(${whichPicture(album.images, 'lrg')})`) 
     }, [album])
 
@@ -71,57 +71,80 @@ const Album = ({ item, setActiveItem, location }) => {
         } 
     }, [ album ])
 
+
+    useEffect(() => {
+        if( album && !state.tracks){
+            let tracksRoute = routes.tracks.substr( 0, routes.tracks.length - 7 )
+            tracksRoute += `/${album.id}`
+            tracksRoute += '/tracks'
+            console.log(tracksRoute)
+            finalizeRoute( 'get', tracksRoute , fetchApi , album.id)
+        } 
+    }, [ album ])
+
     useEffect(() => {
         if(apiPayload) dispatch( apiPayload )
     }, [apiPayload])
 
+    useEffect(() => {
+        if( !item && album ) setActiveItem( album )
+    }, [album])
+
     const handleViewArtist = () => {
         if( album.artists.length === 1){
             setActiveItem(album.artists[0])
+        } else {
+            const popupData = {
+                title: 'Choose Artist',
+                array: album.artists
+            }
+            setOverlay({type: 'listMenu', data: popupData, func: setActiveItem })
         }
         
     }
 
     const handleLoading = () => {
-        console.log(123)
         setLoaded(true)
     }
 
     return(
-        <div className='page page--album album'>
-            
+        <div className={ `page page--album album ${ overlay ? 'page--blurred' : ''}` }>
             <Loading loaded={ loaded }/>
-            
+
             {
                 album &&
                 <>
-                <header className='album__header'>
-                    <div className='album__imgContainer'>
-                        <img src={ whichPicture(album.images, 'med') } />
-                    </div> 
-                </header>          
-                    
-                    
-                <div className='album__info'>
-                    {main_artist && 
-                    <>
+                    <header className='album__header'>
+                        <div className='album__imgContainer'>
+                            <img src={ whichPicture(album.images, 'med') } />
+                        </div> 
                         <h1> { album.name } </h1>
-                        <img
-                        onLoad={ handleLoading }
-                        height='48px'
-                        width='48px' 
-                        src={ whichPicture(main_artist.images, 'sm' ) } 
-                        alt='Artist' />
-                        <p onClick={ handleViewArtist }>{ album.artists.map((artist, i) =>  i !== album.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }</p>
-                    </>
-                    }
-    
-                </div>          
-                <h3>Test</h3>
-                </> 
+                    </header>          
+                        
+                    <div className='album__artists'>
+                        {main_artist && 
+                        <>  
+                            <img
+                            onLoad={ handleLoading }
+                            height='48px'
+                            width='48px' 
+                            src={ whichPicture(main_artist.images, 'sm' ) } 
+                            alt='Artist' />
+                            <p onClick={ handleViewArtist }>{ album.artists.map((artist, i) =>  i !== album.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }</p>
+                        </>
+                        }
+
+                    </div>   
+                </>
             }
- 
-        
+            {
+                tracks &&
+                
+                tracks.items.map((track, i) => {
+                    return <h2> { track.name }</h2> 
+                })
+                
+            }
         </div>
     )
 }

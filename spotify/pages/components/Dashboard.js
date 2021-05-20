@@ -16,7 +16,7 @@ import Artist from './Artist'
 import Album from './Album'
 import Playlist from './Playlist'
 import Showcase from './Showcase'
-import Loading from './Loading'
+import Overlay from './Overlay'
 
 const initialState = {
     user_info: {},
@@ -169,15 +169,15 @@ const Dashboard = ({ setAuth }) => {
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [state, dispatch] = useReducer(reducer, initialState)
     const [scrollPosition, setScrollPosition] = useState()
+    const [ overlay, setOverlay ] = useState(null)
     const [hiddenUI, setHiddenUI] = useState(false)
     const [activeItem, setActiveItem] = useState(null)
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([location.pathname])
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
+         console.log('Leakin')
         if(state.my_top_artists.length > 0) {
-            console.log('Leakin')
-            let mounted = true
             const calcTopGenre = (arr) => {
                 let genres = {}
                 arr.map((ele, i) => {
@@ -208,8 +208,7 @@ const Dashboard = ({ setAuth }) => {
                 route: 'genres',
                 items: topGenres
             }
-            if(mounted) dispatch(payload)
-            return () => mounted = false
+            dispatch(payload)
         }
     },[state.my_top_artists])
 
@@ -261,7 +260,7 @@ const Dashboard = ({ setAuth }) => {
 //  END OF API CALLS 
 
 //  NAVIGATION TRANSITIONS
-    const transitions = useTransition(location, {
+    const pageTransition = useTransition(location, {
         initial: { transform: 'translatex(100%)' },
         from: { transform: 'translatex(100%)', position: 'absolute', width: '100%'},
         update: {  position: 'relative'},
@@ -316,6 +315,7 @@ const Dashboard = ({ setAuth }) => {
         }
     },[ location.pathname ])
 
+    // Reset activeItem to null, otherwise you cant access same section twice in a row.
     useEffect(() => {
         if(location.pathname === '/' || location.pathname === 'search' || location.pathname === '/manage'){
             setActiveItem( null )
@@ -325,23 +325,28 @@ const Dashboard = ({ setAuth }) => {
     return(
         <section className="wrapper">
             <div className='dashboard'>
-            
-            <Switch >
-                <Route exact path='/'>
-                    <HomeHeader 
-                    setAuth={ setAuth } 
-                    hiddenUI={ hiddenUI } /> 
-                </Route> 
-                <Route path='/search'>
-                    <SearchHeader hiddenUI={ hiddenUI }/>
-                </Route> 
-                <Route path='/manage'>
-                    <SearchHeader hiddenUI={ hiddenUI }/>
-                </Route> 
-            </Switch>
-            
+
+
+                <Overlay 
+                overlay={ overlay } 
+                setOverlay={ setOverlay } />
+                
+                <Switch >
+                    <Route exact path='/'>
+                        <HomeHeader 
+                        setAuth={ setAuth } 
+                        hiddenUI={ hiddenUI } /> 
+                    </Route> 
+                    <Route path='/search'>
+                        <SearchHeader hiddenUI={ hiddenUI }/>
+                    </Route> 
+                    <Route path='/manage'>
+                        <SearchHeader hiddenUI={ hiddenUI }/>
+                    </Route> 
+                </Switch>
+                
             {
-            transitions((props, item) => (
+            pageTransition((props, item) => (
                 <animated.div style={ props }>
                     <Switch location={ item }>
                         <Route exact path='/'>
@@ -365,6 +370,8 @@ const Dashboard = ({ setAuth }) => {
                             <Album
                             item={ activeItem }
                             setActiveItem={ setActiveItem }
+                            overlay={ overlay }
+                            setOverlay={ setOverlay }
                             location={ location } />
                         </Route>
                         <Route path='/playlist/:id'>

@@ -10,7 +10,7 @@ const useApiCall = (url) => {
     const TOKENURL = 'https://accounts.spotify.com/api/token'
     const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken(TOKENURL)
     const thisCallRef = useRef()
-    const fetchApi = ( route, method, body ) => {
+    const fetchApi = ( route, method, requestID, body,  ) => {
         const errorHandling = (err) => {
             console.log(err, 1234)
             setApiError(true)
@@ -20,7 +20,7 @@ const useApiCall = (url) => {
                 refreshToken( refresh_token, setTokenBody )
             }
         }
-        thisCallRef.current = ({ route, method, body, })
+        thisCallRef.current = ({ route, method, body, requestID})
         setApiPending(true)
         setApiError(false)
         const access_token = localStorage.getItem('access_token')
@@ -37,7 +37,7 @@ const useApiCall = (url) => {
             if(data.error){
                 errorHandling(data.error)
             }else{
-                data['route'] = breakdownRoute(route, data.id)
+                data['route'] = breakdownRoute(route, data.id ? data.id : requestID)
                 data['method'] = method
                 setApiPayload(data)
                 setApiPending(false)
@@ -46,6 +46,7 @@ const useApiCall = (url) => {
     }
 
     const breakdownRoute = (route , id) => {
+
         let newRoute 
         if(route.includes('?')){
             const regexp = /['?']/
@@ -55,11 +56,15 @@ const useApiCall = (url) => {
             newRoute = route
         }
         let finalRoute
-        if(newRoute.includes( id )){
+        console.log(route, newRoute, id)
+        if(newRoute.includes(id)){
+            console.log(newRoute)
             finalRoute = newRoute.replace(`/${id}`, '')
             return finalRoute
         }else{
-            return finalRoute = newRoute
+            
+            finalRoute = newRoute
+            return finalRoute
         }
     }
 
