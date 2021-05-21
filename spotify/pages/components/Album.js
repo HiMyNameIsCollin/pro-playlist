@@ -126,24 +126,48 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                         <>  
                             <img
                             onLoad={ handleLoading }
-                            height='48px'
-                            width='48px' 
+                            height='32px'
+                            width='32px' 
                             src={ whichPicture(main_artist.images, 'sm' ) } 
                             alt='Artist' />
                             <p onClick={ handleViewArtist }>{ album.artists.map((artist, i) =>  i !== album.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }</p>
                         </>
                         }
 
-                    </div>   
+                    </div> 
+                    <div className='album__info'>
+                        <span>
+                            { capital( album.album_type ) }  
+                        </span>
+                        ||
+                        <span>
+                            { album.release_date }
+                        </span>
+                    </div>  
                 </>
             }
             {
                 tracks &&
-                
-                tracks.items.map((track, i) => {
-                    return <h2> { track.name }</h2> 
-                })
-                
+                <section className='trackContainer'>
+                {
+                    tracks.items.map((track, i) => {
+                        return (
+                        <div className='track'>
+                            <p>
+                                { track.name }
+                            </p>
+                            <span>
+                                { 
+                                track.artists.map((artist , j) => j !== track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`)
+                                }
+                            </span>
+                            <i class="fas fa-ellipsis-h"></i>
+
+                        </div>
+                        ) 
+                    })
+                }
+                </section>
             }
         </div>
     )

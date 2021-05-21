@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 const Login = ({ useFetchToken }) => {
     const router = useRouter()    
     const authorize = 'https://accounts.spotify.com/authorize'
-    const redirect_uri = 'http://localhost:3000/'
+    const redirect_uri = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/'
 
     const { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody } = useFetchToken
 

@@ -244,15 +244,21 @@ const Dashboard = ({ setAuth }) => {
 
 // API CALLS 
     useEffect(() => {
-        finalizeRoute('get', routes.user_info, fetchApi)
-        setTimeout(() => finalizeRoute( 'get', routes.featured_playlists, fetchApi ), 1)
-        setTimeout(() => finalizeRoute( 'get', routes.new_releases, fetchApi ), 2)
-        setTimeout(() => finalizeRoute( 'get', routes.recently_played, fetchApi, 'limit=6' ) , 3)
-        setTimeout(() => finalizeRoute( 'get', routes.all_categories, fetchApi, 'limit=10' ) , 4)
-        setTimeout(() => finalizeRoute( 'get', routes.new_releases, fetchApi ), 5)
-        setTimeout(() => finalizeRoute( 'get', routes.available_genre_seeds, fetchApi ), 6)
-        setTimeout(() => finalizeRoute( 'get', routes.my_top_tracks, fetchApi ), 7)
-        setTimeout(() => finalizeRoute( 'get', routes.my_top_artists, fetchApi ), 8)
+        // First four arguments in 'finalizeRoute' are 
+        // Method of fetch
+        // Route of fetch (From the routes object)
+        // Callback function from fetchHook
+        // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
+        // 5th and onwards arguments will add query params to final url (Limit, offset, etc)
+        finalizeRoute('get', routes.user_info, fetchApi, null)
+        setTimeout(() => finalizeRoute( 'get', routes.featured_playlists, fetchApi, null ), 1)
+        setTimeout(() => finalizeRoute( 'get', routes.new_releases, fetchApi, null ), 2)
+        setTimeout(() => finalizeRoute( 'get', routes.recently_played, fetchApi, null, 'limit=6' ) , 3)
+        setTimeout(() => finalizeRoute( 'get', routes.all_categories, fetchApi, null, 'limit=10' ) , 4)
+        setTimeout(() => finalizeRoute( 'get', routes.new_releases, fetchApi, null ), 5)
+        setTimeout(() => finalizeRoute( 'get', routes.available_genre_seeds, fetchApi, null ), 6)
+        setTimeout(() => finalizeRoute( 'get', routes.my_top_tracks, fetchApi, null ), 7)
+        setTimeout(() => finalizeRoute( 'get', routes.my_top_artists, fetchApi, null ), 8)
     },[])
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)

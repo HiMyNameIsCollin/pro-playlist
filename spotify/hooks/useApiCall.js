@@ -46,7 +46,7 @@ const useApiCall = (url) => {
     }
 
     const breakdownRoute = (route , id) => {
-
+        // Check for queries and remove them
         let newRoute 
         if(route.includes('?')){
             const regexp = /['?']/
@@ -56,7 +56,7 @@ const useApiCall = (url) => {
             newRoute = route
         }
         let finalRoute
-        console.log(route, newRoute, id)
+        // Check route to see if its dynamic, if so make it static for reducer reference
         if(newRoute.includes(id)){
             console.log(newRoute)
             finalRoute = newRoute.replace(`/${id}`, '')
