@@ -461,7 +461,7 @@ a
     animation: slideUp .25s forwards ease-out
     color: $white
     width: 100% 
-    &__listMenu
+    &__listMenu, &__trackMenu
         padding: 1rem
         button
             align-items: center
@@ -469,7 +469,16 @@ a
             justify-content: space-between
             padding: 1rem 0 
             width: 100%
-
+            span
+                font-weight: 700
+                
+            i
+                font-size: 2rem
+    &__trackMenu
+        button
+            justify-content: flex-start
+            span
+                padding-left: 1rem
 @keyframes slideUp
     0%
         transform: translateY(100%)

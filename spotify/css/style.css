@@ -658,15 +658,27 @@ a {
   color: #FFFFFF;
   width: 100%;
 }
-.popup__listMenu {
+.popup__listMenu, .popup__trackMenu {
   padding: 1rem;
 }
-.popup__listMenu button {
+.popup__listMenu button, .popup__trackMenu button {
   align-items: center;
   display: flex;
   justify-content: space-between;
   padding: 1rem 0;
   width: 100%;
+}
+.popup__listMenu button span, .popup__trackMenu button span {
+  font-weight: 700;
+}
+.popup__listMenu button i, .popup__trackMenu button i {
+  font-size: 2rem;
+}
+.popup__trackMenu button {
+  justify-content: flex-start;
+}
+.popup__trackMenu button span {
+  padding-left: 1rem;
 }
 
 @keyframes slideUp {

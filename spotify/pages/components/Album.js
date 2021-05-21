@@ -95,12 +95,20 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
             setActiveItem(album.artists[0])
         } else {
             const popupData = {
-                title: 'Choose Artist',
+                text: 'Choose Artist',
                 array: album.artists
             }
             setOverlay({type: 'listMenu', data: popupData, func: setActiveItem })
         }
         
+    }
+
+    const handleTrackMenu = () => {
+        setOverlay( {type: 'trackMenu', data: popupData, func: null} )
+        const popupData = [
+            album, 
+            tracks, 
+        ]
     }
 
     const handleLoading = () => {
@@ -152,7 +160,7 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                 {
                     tracks.items.map((track, i) => {
                         return (
-                        <div className='track'>
+                        <div className='track' key={i}>
                             <p>
                                 { track.name }
                             </p>
@@ -161,7 +169,7 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                                 track.artists.map((artist , j) => j !== track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`)
                                 }
                             </span>
-                            <i class="fas fa-ellipsis-h"></i>
+                            <i onClick={ handleTrackMenu } className="fas fa-ellipsis-h"></i>
 
                         </div>
                         ) 
@@ -169,6 +177,7 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                 }
                 </section>
             }
+
         </div>
     )
 }
