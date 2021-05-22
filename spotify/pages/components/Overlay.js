@@ -3,7 +3,7 @@ import { useSpring, animated } from 'react-spring'
 import ListMenu from './overlay/ListMenu'
 import TrackMenu from './overlay/TrackMenu'
 
-const Overlay = ({ overlay , setOverlay }) => {
+const Overlay = ({ overlay , setOverlay, setActiveItem }) => {
     
 
     const fadeIn = useSpring({
@@ -11,10 +11,16 @@ const Overlay = ({ overlay , setOverlay }) => {
         pointerEvents: overlay ? 'auto' : 'none'
     })
 
+    const closeOverlay = (e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        setOverlay( null )
+    }
+
     return (
         <animated.div 
             style={fadeIn}
-            onClick={ () => setOverlay( null ) } 
+            onClick={ closeOverlay } 
             className='overlay'>
             {
             overlay &&
@@ -25,7 +31,7 @@ const Overlay = ({ overlay , setOverlay }) => {
                 }
                 {
                     overlay.type === 'trackMenu' &&
-                    <TrackMenu data={overlay.data} func={overlay.func}/>
+                    <TrackMenu data={overlay.data} overlay={ overlay } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 }
             </div>
 

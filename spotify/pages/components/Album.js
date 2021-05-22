@@ -103,12 +103,14 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
         
     }
 
-    const handleTrackMenu = () => {
-        setOverlay( {type: 'trackMenu', data: popupData, func: null} )
-        const popupData = [
+    const handleTrackMenu = (i) => {
+        
+        const popupData = {
             album, 
-            tracks, 
-        ]
+            tracks,
+            trackIndex:  i
+        }
+        setOverlay( {type: 'trackMenu', data: popupData, func: null} )
     }
 
     const handleLoading = () => {
@@ -169,7 +171,7 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                                 track.artists.map((artist , j) => j !== track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`)
                                 }
                             </span>
-                            <i onClick={ handleTrackMenu } className="fas fa-ellipsis-h"></i>
+                            <i onClick={ () => handleTrackMenu(i) } className="fas fa-ellipsis-h"></i>
 
                         </div>
                         ) 

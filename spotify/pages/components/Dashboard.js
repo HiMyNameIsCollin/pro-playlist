@@ -335,7 +335,8 @@ const Dashboard = ({ setAuth }) => {
 
                 <Overlay 
                 overlay={ overlay } 
-                setOverlay={ setOverlay } />
+                setOverlay={ setOverlay } 
+                setActiveItem={ setActiveItem }/>
                 
                 <Switch >
                     <Route exact path='/'>
@@ -393,7 +394,11 @@ const Dashboard = ({ setAuth }) => {
             ))
             }
             </div>
-            <Nav location={ location } hiddenUI={ hiddenUI } NavLink={ NavLink } /> 
+            {
+                !overlay &&
+                <Nav location={ location } hiddenUI={ hiddenUI } NavLink={ NavLink } /> 
+            }
+            
         </section>
     )
 }
