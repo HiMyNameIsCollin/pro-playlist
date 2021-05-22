@@ -3,6 +3,7 @@ import  useApiCall  from '../../hooks/useApiCall'
 import { whichPicture } from '../../utils/whichPicture'
 import { capital } from '../../utils/capital'
 import { finalizeRoute } from '../../utils/finalizeRoute'
+import { handleViewArtist } from '../../utils/handleViewArtist'
 import Loading from './Loading'
 
 const routes = {
@@ -33,7 +34,7 @@ const reducer = (state, action) => {
         case routes.tracks :
             return{
                 ...state,
-                tracks: action
+                tracks: action.items
             }
         default:
             console.log(action)
@@ -90,25 +91,12 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
         if( !item && album ) setActiveItem( album )
     }, [album])
 
-    const handleViewArtist = () => {
-        if( album.artists.length === 1){
-            setActiveItem(album.artists[0])
-        } else {
-            const popupData = {
-                text: 'Choose Artist',
-                array: album.artists
-            }
-            setOverlay({type: 'listMenu', data: popupData, func: setActiveItem })
-        }
-        
-    }
-
     const handleTrackMenu = (i) => {
         
         const popupData = {
             album, 
             tracks,
-            trackIndex:  i
+            track:  tracks[i]
         }
         setOverlay( {type: 'trackMenu', data: popupData, func: null} )
     }
@@ -140,7 +128,7 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                             width='32px' 
                             src={ whichPicture(main_artist.images, 'sm' ) } 
                             alt='Artist' />
-                            <p onClick={ handleViewArtist }>{ album.artists.map((artist, i) =>  i !== album.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }</p>
+                            <p onClick={ (e) => handleViewArtist( e, album.artists, setOverlay, setActiveItem ) }>{ album.artists.map((artist, i) =>  i !== album.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }</p>
                         </>
                         }
 
@@ -160,7 +148,7 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                 tracks &&
                 <section className='trackContainer'>
                 {
-                    tracks.items.map((track, i) => {
+                    tracks.map((track, i) => {
                         return (
                         <div className='track' key={i}>
                             <p>

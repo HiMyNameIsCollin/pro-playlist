@@ -11,9 +11,7 @@ const Overlay = ({ overlay , setOverlay, setActiveItem }) => {
         pointerEvents: overlay ? 'auto' : 'none'
     })
 
-    const closeOverlay = (e) => {
-        e.stopPropagation()
-        e.preventDefault()
+    const closeOverlay = () => {
         setOverlay( null )
     }
 
