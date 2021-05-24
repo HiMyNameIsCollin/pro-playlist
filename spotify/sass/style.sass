@@ -85,6 +85,9 @@ a
     color: inherit
     text-decoration: none
 
+.noScroll
+    overflow: hidden
+
 .wrapper
     background-image: $bg__1--sm
     background-position: center center
@@ -103,6 +106,7 @@ a
     display: flex
     flex-direction: column
     width: 100%
+
     &::before
         background: $darkGrey
         opacity: 0.9
@@ -454,6 +458,7 @@ a
     display: flex
     min-height: 100vh
     position: fixed
+    overflow-y: auto
     width: 100%
     z-index: 3
     &::before

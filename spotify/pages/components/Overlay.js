@@ -4,7 +4,6 @@ import ListMenu from './overlay/ListMenu'
 import TrackMenu from './overlay/TrackMenu'
 
 const Overlay = ({ overlay , setOverlay, setActiveItem }) => {
-    
 
     const fadeIn = useSpring({
         opacity: overlay ? 1 : 0,
@@ -20,7 +19,7 @@ const Overlay = ({ overlay , setOverlay, setActiveItem }) => {
         from: { transform: 'translateY(100%)' , position: 'absolute', width: '100%'},
         update: { position: 'relative' },
         enter: { transform: 'translateY(0%)' },
-        leave: { transform: 'translateY(-100%)', position: 'absolute'}
+        leave: { transform: 'translateY(-100%)' , position: 'absolute'}
     })
 
     return (

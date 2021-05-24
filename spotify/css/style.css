@@ -31,6 +31,10 @@ a {
   text-decoration: none;
 }
 
+.noScroll {
+  overflow: hidden;
+}
+
 .wrapper {
   background-image: url("../public/bgsm.jpg");
   background-position: center center;
@@ -627,6 +631,7 @@ a {
   display: flex;
   min-height: 100vh;
   position: fixed;
+  overflow-y: auto;
   width: 100%;
   z-index: 3;
 }
