@@ -348,10 +348,9 @@ a
         font-weight: 700
         font-size: .7rem
         justify-content: center
-        padding-bottom: .5rem
         i
-            font-size: 1.5rem
-            margin: .5rem 0
+            font-size: 2rem
+            margin: .25rem 0
         &--active
             pointer-events: none
         &:nth-last-of-type(1)
@@ -396,7 +395,7 @@ a
         display: flex
         overflow-y: hidden
         overflow-x: scroll
-        min-height: 12rem
+        
         position: relative
         width: auto
     &__card
@@ -408,6 +407,7 @@ a
 
 .card
     color: $white
+    min-height: 12rem
     position: relative
     &__title
         padding: .5rem 0
@@ -464,9 +464,8 @@ a
 
 .popup
     align-self: flex-end
-    animation: slideUp .25s forwards ease-out
     color: $white
-    width: 100% 
+    width: 100%
     &__listMenu, &__trackMenu
         padding: 1rem
         button
@@ -485,11 +484,6 @@ a
             span
                 padding-left: 1rem
                 
-@keyframes slideUp
-    0%
-        transform: translateY(100%)
-    100%
-        transform: translateY(0%)
 
 @media only screen and (min-width: 768px)
     .login

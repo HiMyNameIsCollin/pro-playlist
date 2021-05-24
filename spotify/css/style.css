@@ -474,11 +474,10 @@ a {
   font-weight: 700;
   font-size: 0.7rem;
   justify-content: center;
-  padding-bottom: 0.5rem;
 }
 .nav__item i {
-  font-size: 1.5rem;
-  margin: 0.5rem 0;
+  font-size: 2rem;
+  margin: 0.25rem 0;
 }
 .nav__item--active {
   pointer-events: none;
@@ -548,7 +547,6 @@ a {
   display: flex;
   overflow-y: hidden;
   overflow-x: scroll;
-  min-height: 12rem;
   position: relative;
   width: auto;
 }
@@ -563,6 +561,7 @@ a {
 
 .card {
   color: #FFFFFF;
+  min-height: 12rem;
   position: relative;
 }
 .card__title {
@@ -659,7 +658,6 @@ a {
 
 .popup {
   align-self: flex-end;
-  animation: slideUp 0.25s forwards ease-out;
   color: #FFFFFF;
   width: 100%;
 }
@@ -686,14 +684,6 @@ a {
   padding-left: 1rem;
 }
 
-@keyframes slideUp {
-  0% {
-    transform: translateY(100%);
-  }
-  100% {
-    transform: translateY(0%);
-  }
-}
 @media only screen and (min-width: 768px) {
   .login {
     padding: 4rem 4rem 2rem 4rem;

@@ -9,13 +9,14 @@ const TrackMenu = ({ data, overlay, setOverlay, setActiveItem }) => {
         // ILL BE BACK FOR THIS ONCE I FIGURE IF I WANNA SHARE ON SPOTIFY OR MY APP
     }
 
-    const openSpotify = ( url ) => {
+    const openSpotify = ( e , url ) => {
+        e.stopPropagation()
         window.open( url )
     }
 
     return(
         <div className='popup__trackMenu'>
-            <button onClick={ () => openSpotify( selectedTrack.external_urls.spotify )} >
+            <button onClick={ (e) => openSpotify(e, selectedTrack.external_urls.spotify )} >
                 <Image 
                 src='/Spotify_Icon_RGB_Green.png'
                 alt='View via Spotify' 
