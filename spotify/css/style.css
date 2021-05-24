@@ -555,6 +555,7 @@ a {
 .slider__card {
   flex: 0 0 auto;
   margin: 0 0.5rem;
+  width: min(60vw, 10rem);
 }
 .slider__card:nth-of-type(1) {
   margin-left: 0;
@@ -563,7 +564,6 @@ a {
 .card {
   color: #FFFFFF;
   position: relative;
-  width: min(60vw, 10rem);
 }
 .card__title {
   padding: 0.5rem 0;
@@ -579,7 +579,7 @@ a {
   height: auto;
   max-width: 100%;
   width: 100%;
-  object-fit: cover;
+  object-fit: fill;
 }
 
 .browseContainer {
@@ -601,6 +601,7 @@ a {
   margin-left: auto;
 }
 .browseContainer__card {
+  margin: auto;
   width: 100%;
 }
 .browseContainer__card__title {

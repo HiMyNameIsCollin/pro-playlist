@@ -402,13 +402,13 @@ a
     &__card
         flex: 0 0 auto
         margin: 0 .5rem
+        width: min(60vw, 10rem)
         &:nth-of-type(1)
             margin-left: 0
 
 .card
     color: $white
     position: relative
-    width: min(60vw, 10rem)
     &__title
         padding: .5rem 0
     &__image
@@ -421,17 +421,18 @@ a
             height: auto
             max-width: 100%
             width: 100%
-            object-fit: cover
+            object-fit: fill
 
 .browseContainer
     display: grid
-    grid-template-columns: repeat(auto-fill, clamp(8rem, calc(50vw - 1rem), 10rem)) 
+    grid-template-columns: repeat(auto-fill,  clamp(8rem, calc(50vw - 1rem), 10rem)) 
     grid-gap: 1rem
     justify-content: space-around
     &__title
         grid-column: 1/-1
         @include sectionTitle
     &__card
+        margin: auto
         width: 100%
         &__title
             white-space: nowrap
