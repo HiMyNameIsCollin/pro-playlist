@@ -584,9 +584,9 @@ a {
 
 .browseContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, clamp(8rem, calc(50vw - 1rem), 10rem));
+  grid-template-columns: repeat(auto-fill, 10rem);
   grid-gap: 1rem;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 .browseContainer__title {
   grid-column: 1/-1;
