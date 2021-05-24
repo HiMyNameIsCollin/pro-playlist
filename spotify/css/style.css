@@ -631,7 +631,6 @@ a {
   display: flex;
   min-height: 100vh;
   position: fixed;
-  overflow-y: auto;
   width: 100%;
   z-index: 3;
 }
@@ -664,6 +663,7 @@ a {
 .popup {
   align-self: flex-end;
   color: #FFFFFF;
+  overflow-y: auto;
   width: 100%;
 }
 .popup__listMenu, .popup__trackMenu {

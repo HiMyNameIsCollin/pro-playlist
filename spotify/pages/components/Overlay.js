@@ -11,15 +11,18 @@ const Overlay = ({ overlay , setOverlay, setActiveItem }) => {
     })
 
     const closeOverlay = () => {
-        setOverlay( null )
+        let overlayMod = { ...overlay}
+        overlayMod.type = ''
+        setOverlay(overlayMod)
+        setTimeout(() => setOverlay(null) , 150)
     }
 
     const menuTransition = useTransition(overlay ,{
         initial: { transform: 'translateY(100%)'},
-        from: { transform: 'translateY(100%)' , position: 'absolute', width: '100%'},
+        from: { transform: 'translateY(100%)' , position: 'absolute', width: '100%', pointerEvents: 'none'},
         update: { position: 'relative' },
-        enter: { transform: 'translateY(0%)' },
-        leave: { transform: 'translateY(-100%)' , position: 'absolute'}
+        enter: { transform: 'translateY(0%)', pointerEvents: 'auto' },
+        leave: { transform: 'translateY(100%)' , position: 'absolute'}
     })
 
     return (
@@ -29,23 +32,18 @@ const Overlay = ({ overlay , setOverlay, setActiveItem }) => {
             className='overlay'>
             {
             overlay &&
-            <div className='popup'>
-                {
-                    menuTransition((props) => (
-                        
-                            overlay.type === 'listMenu' ?
-                            <animated.div style={ props }>
-                                <ListMenu data={overlay.data} func={overlay.func}/>
-                            </animated.div> : 
-                     
-                            overlay.type === 'trackMenu' &&
-                            <animated.div style={ props }>
-                            <TrackMenu data={overlay.data} overlay={ overlay } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
-                            </animated.div>
-                    ))
-                }
-
-            </div>
+            
+                menuTransition((props, item) => (
+                    item && item.type === 'trackMenu' ?
+                    <animated.div className='popup' style={props}>
+                        <TrackMenu data={overlay.data} overlay={ overlay } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                    </animated.div> :
+                    item && item.type === 'listMenu' &&
+                    <animated.div className='popup'  style={props}>
+                        <ListMenu data={overlay.data} func={overlay.func}/>
+                    </animated.div> 
+                    )
+                )
 
             }
         </animated.div>
