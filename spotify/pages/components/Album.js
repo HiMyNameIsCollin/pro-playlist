@@ -116,12 +116,13 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
             seconds = Math.floor((duration / 1000) % 60),
             minutes = Math.floor((duration / (1000 * 60)) % 60),
             hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
-          
-            hours = (hours < 10) ? "0" + hours : hours;
+            hours = (hours > 0) ? (hours < 10) ? '0' + hours : hours : 0
             minutes = (minutes < 10) ? "0" + minutes : minutes;
             seconds = (seconds < 10) ? "0" + seconds : seconds;
-          
-            return hours + ":" + minutes + ":" + seconds
+            hours = (hours > 0) ? (hours > 1 ) ? hours + ' ' + 'hour' : hours + ' ' + 'hours' : false
+            minutes = minutes + ' ' + 'minutes'
+            seconds = seconds + ' ' + 'seconds'
+            return hours ? hours + minutes + seconds : minutes + seconds
         }
         const albumLength = msToTime(total)
         return albumLength
@@ -132,26 +133,25 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
             <Loading loaded={ loaded }/>
             {
                 album &&
-                <>
+                
                     <header className='album__header'>
                         <div className='album__imgContainer'>
                             <img src={ whichPicture(album.images, 'med') } />
                         </div> 
                         <h1> { album.name } </h1>
-                    </header>          
                         
-                    <div className='album__artists'>
+                        <div className='album__artists'>
                         {main_artist && 
-                        <>  
+                        
                             <img
                             onLoad={ handleLoading }
                             height='32px'
                             width='32px' 
                             src={ whichPicture(main_artist.images, 'sm' ) } 
                             alt='Artist' />
-                            <p onClick={ (e) => handleViewArtist( e, album.artists, setOverlay, setActiveItem ) }>{ album.artists.map((artist, i) =>  i !== album.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }</p>
-                        </>
+                        
                         }
+                            <p onClick={ (e) => handleViewArtist( e, album.artists, setOverlay, setActiveItem ) }>{ album.artists.map((artist, i) =>  i !== album.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }</p>
 
                     </div> 
                     <div className='album__info'>
@@ -163,7 +163,8 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                             { album.release_date.substr(0,4) }
                         </span>
                     </div>  
-                </>
+                    </header>          
+
             }
             {
                 tracks &&
@@ -197,6 +198,7 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                     <span>
                         {tracks.length} {tracks.length === 1 ? 'track' : 'tracks'}
                     </span>
+                    || 
                     <span>
                         { calculateAlbumLength(tracks) }
                     </span>
