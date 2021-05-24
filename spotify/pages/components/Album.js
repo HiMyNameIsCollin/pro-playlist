@@ -87,16 +87,17 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
         if(apiPayload) dispatch( apiPayload )
     }, [apiPayload])
 
+    // If users first page is Album, fetch the data from here, and then set in the dashboard component.
+
     useEffect(() => {
         if( !item && album ) setActiveItem( album )
     }, [album])
 
-    const handleTrackMenu = (i) => {
-        
+    const handleTrackMenu = ( selectedTrack ) => {
         const popupData = {
             album, 
             tracks,
-            track:  tracks[i]
+            selectedTrack,
         }
         setOverlay( {type: 'trackMenu', data: popupData, func: null} )
     }
@@ -159,7 +160,7 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                                 track.artists.map((artist , j) => j !== track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`)
                                 }
                             </span>
-                            <i onClick={ () => handleTrackMenu(i) } className="fas fa-ellipsis-h"></i>
+                            <i onClick={ () => handleTrackMenu(track) } className="fas fa-ellipsis-h"></i>
 
                         </div>
                         ) 

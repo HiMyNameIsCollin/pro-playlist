@@ -167,11 +167,11 @@ const Dashboard = ({ setAuth }) => {
     const location = useLocation()
     const history = useHistory()
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
-    const [state, dispatch] = useReducer(reducer, initialState)
-    const [scrollPosition, setScrollPosition] = useState()
+    const [ state, dispatch ] = useReducer(reducer, initialState)
+    const [ scrollPosition, setScrollPosition ] = useState()
     const [ overlay, setOverlay ] = useState(null)
-    const [hiddenUI, setHiddenUI] = useState(false)
-    const [activeItem, setActiveItem] = useState(null)
+    const [ hiddenUI, setHiddenUI ] = useState(false)
+    const [ activeItem, setActiveItem ] = useState(null)
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([location.pathname])
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
@@ -309,19 +309,24 @@ const Dashboard = ({ setAuth }) => {
         }
 
     },[ activeItem ])
-//  Track location and active page for back btn
+//   Track location and active page for back btn
     useEffect(() => {
         if(locationRef.current[0].pathname !== location.pathname){
             if(locationRef.current.length < 5 ){
-                locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem} )
+                locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem, scrollPosition : scrollPosition } )
             } else {
                 locationRef.current.pop()
-                locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem} )
+                locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem , scrollPosition : scrollPosition} )
             }
         }
     },[ location.pathname ])
 
-    // Reset activeItem to null, otherwise you cant access same section twice in a row.
+//     useEffect(() => {
+//         const page = locationRef.current.find((page) => page.pathname === location.pathname)
+//         console.log(page)
+//     },[ location.pathname ])
+
+    // Reset activeItem to null, otherwise you cant access same page twice in a row.
     useEffect(() => {
         if(location.pathname === '/' || location.pathname === 'search' || location.pathname === '/manage'){
             setActiveItem( null )
