@@ -106,10 +106,30 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
         setLoaded(true)
     }
 
+    const calculateAlbumLength = ( tracks ) => {
+        let total = 0
+        tracks.map((single, i) => {
+            total += single.duration_ms
+        })
+        const msToTime = ( duration ) => {
+            let milliseconds = Math.floor((duration % 1000) / 100),
+            seconds = Math.floor((duration / 1000) % 60),
+            minutes = Math.floor((duration / (1000 * 60)) % 60),
+            hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+          
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+          
+            return hours + ":" + minutes + ":" + seconds
+        }
+        const albumLength = msToTime(total)
+        return albumLength
+    }
+
     return(
         <div className={ `page page--album album ${ overlay ? 'page--blurred' : ''}` }>
             <Loading loaded={ loaded }/>
-
             {
                 album &&
                 <>
@@ -140,7 +160,7 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                         </span>
                         ||
                         <span>
-                            { album.release_date }
+                            { album.release_date.substr(0,4) }
                         </span>
                     </div>  
                 </>
@@ -166,6 +186,20 @@ const Album = ({ item, setActiveItem, overlay, setOverlay, location }) => {
                         ) 
                     })
                 }
+                </section>
+            }
+            {
+                album && tracks &&
+                <section className='album__meta'>
+                    <p>
+                        { album.release_date }
+                    </p>
+                    <span>
+                        {tracks.length} {tracks.length === 1 ? 'track' : 'tracks'}
+                    </span>
+                    <span>
+                        { calculateAlbumLength(tracks) }
+                    </span>
                 </section>
             }
 
