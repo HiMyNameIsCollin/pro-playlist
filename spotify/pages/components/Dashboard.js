@@ -12,7 +12,7 @@ import Nav from './Nav'
 import Manage from './Manage'
 import Search from './Search'
 import Artist from './Artist'
-import Album from './Album'
+import Collection from './Collection'
 import Playlist from './Playlist'
 import Showcase from './Showcase'
 import Overlay from './Overlay'
@@ -379,7 +379,8 @@ const Dashboard = ({ setAuth }) => {
                             <Artist  />
                         </Route> 
                         <Route path='/album/:id'>
-                            <Album
+                            <Collection
+                            type='album'
                             item={ activeItem }
                             setActiveItem={ setActiveItem }
                             overlay={ overlay }
