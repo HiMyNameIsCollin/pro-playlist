@@ -58,7 +58,6 @@ const useApiCall = (url) => {
         let finalRoute
         // Check route to see if its dynamic, if so make it static for reducer reference
         if(newRoute.includes(id)){
-            console.log(newRoute)
             finalRoute = newRoute.replace(`/${id}`, '')
             return finalRoute
         }else{

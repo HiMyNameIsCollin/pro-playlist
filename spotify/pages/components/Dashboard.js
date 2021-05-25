@@ -177,7 +177,6 @@ const Dashboard = ({ setAuth }) => {
     const locationRef = useRef([location.pathname])
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
-         console.log('Leakin')
         if(state.my_top_artists.length > 0) {
             const calcTopGenre = (arr) => {
                 let genres = {}
@@ -385,6 +384,7 @@ const Dashboard = ({ setAuth }) => {
                             setActiveItem={ setActiveItem }
                             overlay={ overlay }
                             setOverlay={ setOverlay }
+                            genreSeeds={ state.available_genre_seeds}
                             location={ location } />
                         </Route>
                         <Route path='/playlist/:id'>

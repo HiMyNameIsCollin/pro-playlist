@@ -20,7 +20,7 @@ const CollectionMeta = ({ data , setOverlay , setActiveItem }) => {
 
         {
             collection.artists.map((artist, i) => (
-                <div className='collection__meta__artists'>
+                <div key={i} className='collection__meta__artists'>
                     <img
                     height='48px'
                     width='48px' 

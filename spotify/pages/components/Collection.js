@@ -7,6 +7,7 @@ import { calculateTotalDuration } from '../../utils/calculateTotalDuration'
 import CollectionHeader from './collection/CollectionHeader'
 import CollectionMeta from './collection/CollectionMeta'
 import TracksContainer from './collection/TracksContainer'
+import Recommendations from './collection/Recommendations'
 import Loading from './Loading'
 
 const routes = {
@@ -47,6 +48,7 @@ const reducer = (state, action) => {
                 tracks: action.items
             }
         case routes.recommendations :
+            console.log(action)
             return {
                 ...state,
                 recommendations: action
@@ -57,7 +59,7 @@ const reducer = (state, action) => {
     }
 }
 
-const Collection = ({ type, item, setActiveItem, overlay, setOverlay, location }) => {
+const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds, location }) => {
     const initialState = {
         collection: item ? item : null ,
         tracks: null,
@@ -99,14 +101,48 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, location }
             let tracksRoute = routes.tracks.substr( 0, routes.tracks.length - 7 )
             tracksRoute += `/${collection.id}`
             tracksRoute += '/tracks'
-            console.log(tracksRoute)
             finalizeRoute( 'get', tracksRoute , fetchApi , collection.id)
         } 
     }, [ collection ])
 
+    const getSeeds = ( genreSeeds , collection ) => {
+        let seeds = {
+            seedGenres: [],
+            seedArtists: [],
+            seedTracks: []
+        }
+        let { seedGenres, seedArtists, seedTracks } = seeds
+        collection.artists.forEach(( artist, i ) => {
+            if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
+                artist.genres.forEach(( genre, j ) => {
+                    if(genreSeeds.includes( genre )){
+                        seedGenres.push( genre )
+                    }
+                })
+                seedArtists.push( artist.id )
+            } 
+        })
+        collection.tracks.items.forEach( track => {
+            if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
+                seedTracks.push( track.id )
+            }
+        })
+        console.log(seeds)
+        return seeds
+    }
+    
+
     useEffect(() => {
-        if( collection && !state.recommendations ){
-            let recommendationRoute = routes.recommendations
+        if( collection && collection.artists[0].genres && !state.recommendations ){
+            let seeds = getSeeds(genreSeeds, collection)
+            const { seedGenres, seedArtists, seedTracks } = seeds
+            finalizeRoute( 'get',
+            `${routes.recommendations}`, 
+            fetchApi, 
+            null, 
+            `seed_genres=${seedGenres.join()}`, 
+            `seed_artists=${seedArtists.join()}`, 
+            `seed_tracks=${seedTracks.join()}` )
 
         }
     }, [ collection ])
