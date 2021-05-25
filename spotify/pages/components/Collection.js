@@ -136,9 +136,9 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, location }
             {
                 loaded &&
                 <>
-                    <CollectionHeader data={ state } />
+                    <CollectionHeader data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                     <TracksContainer data={ state } setOverlay={ setOverlay }/>
-                    <CollectionMeta data={ state }  />
+                    <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 </>
             }
 

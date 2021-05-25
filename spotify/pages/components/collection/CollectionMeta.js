@@ -1,6 +1,6 @@
 import { calculateTotalDuration } from '../../../utils/calculateTotalDuration'
 import { whichPicture } from '../../../utils/whichPicture'
-
+import { handleViewArtist } from '../../../utils/handleViewArtist' 
 const CollectionMeta = ({ data , setOverlay , setActiveItem }) => {
 
     const { collection, tracks } = {...data}

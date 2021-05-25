@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
+import { handleViewArtist } from '../../../utils/handleViewArtist'
 import { capital } from '../../../utils/capital'
 
 
