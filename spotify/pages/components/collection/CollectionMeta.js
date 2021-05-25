@@ -1,10 +1,12 @@
 import { calculateTotalDuration } from '../../../utils/calculateTotalDuration'
+import { whichPicture } from '../../../utils/whichPicture'
 
-const CollectionMeta = ({ data }) => {
+const CollectionMeta = ({ data , setOverlay , setActiveItem }) => {
 
-    const { collection, main_artist, tracks } = {...data}
+    const { collection, tracks } = {...data}
     return(
         <section className='collection__meta'>
+
             <p>
                 { collection.release_date }
             </p>
@@ -15,6 +17,24 @@ const CollectionMeta = ({ data }) => {
             <span>
                 { calculateTotalDuration(tracks) }
             </span>
+
+        {
+            collection.artists.map((artist, i) => (
+                <div className='collection__meta__artists'>
+                    <img
+                    height='48px'
+                    width='48px' 
+                    src={ whichPicture( artist.images, 'sm' ) } 
+                    alt='Artist' />
+                
+                    <p onClick={
+                        (e) => handleViewArtist( e, [artist], setOverlay, setActiveItem ) }>
+                        { artist.name }
+                    </p>
+
+                </div>  
+            ))
+        }
         </section>       
     )
 }

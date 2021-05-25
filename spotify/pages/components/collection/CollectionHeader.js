@@ -2,8 +2,9 @@ import { useEffect } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
 import { capital } from '../../../utils/capital'
 
-const CollectionHeader = ({ data  }) => {
-    const { collection, main_artist, tracks } = { ...data }
+
+const CollectionHeader = ({ data , setOverlay, setActiveItem }) => {
+    const { collection, tracks } = { ...data }
 
     return(
         <header className='collection__header'>
@@ -14,11 +15,11 @@ const CollectionHeader = ({ data  }) => {
             
             <div className='collection__artists'>
             {
-                main_artist && 
+                collection.artists.length === 1 &&
                 <img
                 height='32px'
                 width='32px' 
-                src={ whichPicture(main_artist.images, 'sm' ) } 
+                src={ whichPicture(collection.artists[0].images, 'sm' ) } 
                 alt='Artist' />
             }
                 <p onClick={

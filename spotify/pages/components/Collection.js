@@ -12,7 +12,7 @@ import Loading from './Loading'
 const routes = {
     album: 'v1/albums',
     tracks: 'v1/albums/tracks',
-    main_artist: 'v1/artists',
+    artist: 'v1/artists',
     recommendations: 'v1/recommendations'
 }
 
@@ -29,10 +29,17 @@ const reducer = (state, action) => {
                 ...state, 
                 collection: action
             }
-        case routes.main_artist :
+        case routes.artist :
+            let newState = {...state}
+            newState.collection.artists.map((artist, i) => {
+                if(artist.id === action.id){
+                    newState.collection.artists[i] = action
+                }
+            })
             return{
                 ...state, 
-                main_artist: action
+                collection: newState.collection,
+                
             }
         case routes.tracks :
             return{
@@ -54,7 +61,6 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, location }
     const initialState = {
         collection: item ? item : null ,
         tracks: null,
-        main_artist: null,
         recommendations: null
     }
     // ENV VARIABLE FOR API?
@@ -63,7 +69,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, location }
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
 
-    const { collection, main_artist, tracks } = {...state}
+    const { collection, tracks } = {...state}
 
     useEffect(() => {
         if( !item ) {
@@ -80,14 +86,16 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, location }
     }, [collection])
 
     useEffect(() => {
-        if( collection && !state.main_artist){
-            finalizeRoute( 'get', `${routes.main_artist}/${collection.artists[0].id}` , fetchApi , collection.artists[0].id)
+        if( collection && !collection.artists[0].images ){
+            collection.artists.map((artist, i) => {
+                finalizeRoute( 'get', `${routes.artist}/${artist.id}` , fetchApi , artist.id)
+            })
         } 
     }, [ collection ])
 
 
     useEffect(() => {
-        if( collection && !state.tracks){
+        if( collection && !tracks){
             let tracksRoute = routes.tracks.substr( 0, routes.tracks.length - 7 )
             tracksRoute += `/${collection.id}`
             tracksRoute += '/tracks'
@@ -118,12 +126,8 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, location }
     }
 
     useEffect(()=> {
-        if( collection && main_artist && tracks) handleLoading()
+        if( collection && collection.artists[0].images && tracks) handleLoading()
     },[state])
-
-
-
-
 
     return(
         <div className={ `page page--collection collection ${ overlay ? 'page--blurred' : ''}` }>
@@ -134,7 +138,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, location }
                 <>
                     <CollectionHeader data={ state } />
                     <TracksContainer data={ state } setOverlay={ setOverlay }/>
-                    <CollectionMeta data={ state } />
+                    <CollectionMeta data={ state }  />
                 </>
             }
 

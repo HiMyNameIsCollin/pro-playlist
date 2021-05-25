@@ -333,6 +333,20 @@ a {
 .collection__meta span:nth-of-type(2) {
   padding-left: 0.5rem;
 }
+.collection__meta__artists {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 1rem;
+  padding: 1rem 0;
+}
+.collection__meta__artists img {
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+.collection__meta__artists p {
+  font-weight: 700;
+}
 @media only screen and (min-width: 920px) {
   .collection__header::after {
     background-size: cover;
