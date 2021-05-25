@@ -34,13 +34,14 @@ const reducer = (state, action) => {
             let newState = {...state}
             newState.collection.artists.map((artist, i) => {
                 if(artist.id === action.id){
-                    newState.collection.artists[i] = action
+                    newState.collection.artists[i].images = action.images
+                    newState.collection.artists[i].genres = action.genres
                 }
             })
             return{
                 ...state, 
                 collection: newState.collection,
-                
+                artists: state.artists ? [...state.artists, action ] : [action]
             }
         case routes.tracks :
             return{
@@ -48,10 +49,10 @@ const reducer = (state, action) => {
                 tracks: action.items
             }
         case routes.recommendations :
-            console.log(action)
+            const recommendations = action.tracks.map(track => track.album)
             return {
                 ...state,
-                recommendations: action
+                recommendations: recommendations
             }
         default:
             console.log(action)
@@ -63,6 +64,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
     const initialState = {
         collection: item ? item : null ,
         tracks: null,
+        artists: null,
         recommendations: null
     }
     // ENV VARIABLE FOR API?
@@ -71,7 +73,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
 
-    const { collection, tracks } = {...state}
+    const { collection, artists, tracks, recommendations } = {...state}
 
     useEffect(() => {
         if( !item ) {
@@ -83,12 +85,16 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
     }, [])
 
     useEffect(() => {
+        if(apiPayload) dispatch( apiPayload )
+    }, [apiPayload])
+
+    useEffect(() => {
         // Set background image of Album header
         if( collection ) document.documentElement.style.setProperty('--collectionBackground', `url(${whichPicture(collection.images, 'lrg')})`) 
     }, [collection])
 
     useEffect(() => {
-        if( collection && !collection.artists[0].images ){
+        if( collection && !artists ){
             collection.artists.map((artist, i) => {
                 finalizeRoute( 'get', `${routes.artist}/${artist.id}` , fetchApi , artist.id)
             })
@@ -105,14 +111,14 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
         } 
     }, [ collection ])
 
-    const getSeeds = ( genreSeeds , collection ) => {
+    const getSeeds = ( genreSeeds , theseArtists, theseTracks ) => {
         let seeds = {
             seedGenres: [],
             seedArtists: [],
             seedTracks: []
         }
         let { seedGenres, seedArtists, seedTracks } = seeds
-        collection.artists.forEach(( artist, i ) => {
+        theseArtists.forEach(( artist, i ) => {
             if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
                 artist.genres.forEach(( genre, j ) => {
                     if(genreSeeds.includes( genre )){
@@ -122,7 +128,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
                 seedArtists.push( artist.id )
             } 
         })
-        collection.tracks.items.forEach( track => {
+        theseTracks.forEach( track => {
             if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
                 seedTracks.push( track.id )
             }
@@ -133,8 +139,8 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
     
 
     useEffect(() => {
-        if( collection && collection.artists[0].genres && !state.recommendations ){
-            let seeds = getSeeds(genreSeeds, collection)
+        if( collection && artists && tracks && !state.recommendations ){
+            let seeds = getSeeds(genreSeeds, artists, tracks)
             const { seedGenres, seedArtists, seedTracks } = seeds
             finalizeRoute( 'get',
             `${routes.recommendations}`, 
@@ -145,11 +151,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
             `seed_tracks=${seedTracks.join()}` )
 
         }
-    }, [ collection ])
-
-    useEffect(() => {
-        if(apiPayload) dispatch( apiPayload )
-    }, [apiPayload])
+    }, [ collection, artists, tracks ])
 
     // If users first page is Album, fetch the data from here, and then set in the dashboard component.
 
@@ -162,7 +164,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
     }
 
     useEffect(()=> {
-        if( collection && collection.artists[0].images && tracks) handleLoading()
+        if( collection && artists && tracks && recommendations ) handleLoading()
     },[state])
 
     return(
@@ -175,6 +177,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
                     <CollectionHeader data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                     <TracksContainer data={ state } setOverlay={ setOverlay }/>
                     <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                    <Recommendations data={ state.recommendations } setActiveItem={ setActiveItem } />
                 </>
             }
 

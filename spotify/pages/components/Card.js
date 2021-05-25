@@ -17,8 +17,12 @@ const Card = ({ item, cardType, setActiveItem }) => {
             <div className='card__image'>
                 <img 
                 src={ item.images ? 
-                    whichPicture(item.images, 'med') :  
-                    item.icons[0].url }
+                    whichPicture(item.images, 'med') :
+                    item.album.images ?
+                    whichPicture(item.album.images, 'med') :
+                    item.icons ?
+                    item.icons[0].url:
+                    null }
                     alt='Track art'/>
             </div>
             {
