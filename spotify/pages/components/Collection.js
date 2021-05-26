@@ -7,7 +7,7 @@ import { calculateTotalDuration } from '../../utils/calculateTotalDuration'
 import CollectionHeader from './collection/CollectionHeader'
 import CollectionMeta from './collection/CollectionMeta'
 import TracksContainer from './collection/TracksContainer'
-import Recommendations from './collection/Recommendations'
+import Slider from './Slider'
 import Loading from './Loading'
 
 const routes = {
@@ -177,7 +177,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
                     <CollectionHeader data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                     <TracksContainer data={ state } setOverlay={ setOverlay }/>
                     <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
-                    <Recommendations data={ state.recommendations } setActiveItem={ setActiveItem } />
+                    <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
                 </>
             }
 
