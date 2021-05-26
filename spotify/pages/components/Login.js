@@ -35,6 +35,10 @@ const Login = ({ useFetchToken }) => {
       url += 'user-read-recently-played'
       url += ' '
       url += 'user-top-read'
+      url += ' '
+      url += 'user-read-currently-playing'
+      url += ' ' 
+      url += 'user-read-playback-state'
 
       window.location.href=url
     }

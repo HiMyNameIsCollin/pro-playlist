@@ -19,6 +19,7 @@ import Overlay from './Overlay'
 
 const initialState = {
     user_info: {},
+    currently_playing: {},
     my_top_genres: [],
     my_playlists: [],
     featured_playlists: [],
@@ -33,6 +34,7 @@ const initialState = {
 
 const routes = {   
     user_info: 'v1/me',
+    currently_playing: 'v1/me/player',
     recently_played: 'v1/me/player/recently-played',
     my_playlists: 'v1/me/playlists',
     featured_playlists: 'v1/browse/featured-playlists',
@@ -68,7 +70,13 @@ const reducer = (state, action) => {
                         user_info: action
                     }
                 }
-
+            case routes.currently_playing:
+                if(method==='get'){
+                    return{
+                        ...state,
+                        player_info: action
+                    }
+                }
             case routes.my_playlists:
                 if(method === 'get'){
                     return{
@@ -157,6 +165,7 @@ const reducer = (state, action) => {
                 }
 
             default:
+                console.log(action)
                 break
                 
         }
@@ -252,14 +261,15 @@ const Dashboard = ({ setAuth }) => {
         // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
         // 5th and onwards arguments will add query params to final url (Limit, offset, etc)
         finalizeRoute('get', routes.user_info, fetchApi, null)
-        setTimeout(() => finalizeRoute( 'get', routes.featured_playlists, fetchApi, null ), 1)
-        setTimeout(() => finalizeRoute( 'get', routes.new_releases, fetchApi, null ), 2)
-        setTimeout(() => finalizeRoute( 'get', routes.recently_played, fetchApi, null, 'limit=6' ) , 3)
-        setTimeout(() => finalizeRoute( 'get', routes.all_categories, fetchApi, null, 'limit=10' ) , 4)
-        setTimeout(() => finalizeRoute( 'get', routes.new_releases, fetchApi, null ), 5)
-        setTimeout(() => finalizeRoute( 'get', routes.available_genre_seeds, fetchApi, null ), 6)
-        setTimeout(() => finalizeRoute( 'get', routes.my_top_tracks, fetchApi, null ), 7)
-        setTimeout(() => finalizeRoute( 'get', routes.my_top_artists, fetchApi, null ), 8)
+        finalizeRoute( 'get', routes.currently_playing, fetchApi, null)
+        finalizeRoute( 'get', routes.featured_playlists, fetchApi, null )
+        finalizeRoute( 'get', routes.new_releases, fetchApi, null )
+        finalizeRoute( 'get', routes.recently_played, fetchApi, null, 'limit=6' ) 
+        finalizeRoute( 'get', routes.all_categories, fetchApi, null, 'limit=10' ) 
+        finalizeRoute( 'get', routes.new_releases, fetchApi, null )
+        finalizeRoute( 'get', routes.available_genre_seeds, fetchApi, null )
+        finalizeRoute( 'get', routes.my_top_tracks, fetchApi, null )
+        finalizeRoute( 'get', routes.my_top_artists, fetchApi, null )
     },[])
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
