@@ -598,31 +598,9 @@ a {
   margin-left: 0;
 }
 
-.card {
-  color: #FFFFFF;
-  min-height: 12rem;
-  position: relative;
-}
-.card__title {
-  padding: 0.5rem 0;
-}
-.card__image {
-  display: flex;
-  height: 10rem;
-  position: relative;
-  width: 100%;
-}
-.card__image img {
-  display: block;
-  height: auto;
-  max-width: 100%;
-  width: 100%;
-  object-fit: fill;
-}
-
 .browseContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 10rem);
+  grid-template-columns: repeat(2, min(320px, calc(50vw - 1rem)));
   grid-gap: 1rem;
   justify-content: space-between;
 }
@@ -646,6 +624,33 @@ a {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+@media only screen and (min-width: 768px) {
+  .browseContainer {
+    grid-template-columns: repeat(auto-fill, 10rem);
+  }
+}
+
+.card {
+  color: #FFFFFF;
+  min-height: 12rem;
+  position: relative;
+}
+.card__title {
+  padding: 0.5rem 0;
+}
+.card__image {
+  display: flex;
+  height: 10rem;
+  position: relative;
+  width: 100%;
+}
+.card__image img {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  width: 100%;
+  object-fit: fill;
 }
 
 .loading {

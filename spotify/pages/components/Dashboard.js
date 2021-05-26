@@ -182,10 +182,12 @@ const Dashboard = ({ setAuth }) => {
                 let genres = {}
                 arr.map((ele, i) => {
                     ele.genres.map((genre, j) => {
-                        if(genres[genre]){
-                            genres[genre].total += 1
-                        }else {
-                            genres[genre] = {total: 1, images: ele.images}
+                        if( state.available_genre_seeds.includes( genre ) ){
+                            if(genres[genre]){
+                                genres[genre].total += 1
+                            }else {
+                                genres[genre] = {total: 1, images: ele.images}
+                            }
                         }
                     })
                 })

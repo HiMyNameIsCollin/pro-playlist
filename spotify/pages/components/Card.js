@@ -16,13 +16,15 @@ const Card = ({ item, cardType, setActiveItem }) => {
         className={`card ${cardType}__card` }>
             <div className='card__image'>
                 <img 
-                src={ item.images ? 
+                src={ 
+                    item.images ? 
                     whichPicture(item.images, 'med') :
-                    item.album.images ?
+                    item.album && item.album.images ?
                     whichPicture(item.album.images, 'med') :
                     item.icons ?
                     item.icons[0].url:
-                    null }
+                    null 
+                }
                     alt='Track art'/>
             </div>
             {

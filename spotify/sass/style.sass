@@ -431,6 +431,25 @@ a
         &:nth-of-type(1)
             margin-left: 0
 
+.browseContainer
+    display: grid
+    grid-template-columns: repeat( 2, Min( 320px, calc(50vw - 1rem)) )
+    grid-gap: 1rem
+    justify-content: space-between
+    &__title
+        grid-column: 1/-1
+        @include sectionTitle
+    &__card
+        margin: auto
+        width: 100%
+        &__title
+            white-space: nowrap
+            overflow: hidden
+            text-overflow: ellipsis
+    @media only screen and (min-width: 768px)
+        grid-template-columns: repeat(auto-fill, 10rem)
+
+
 .card
     color: $white
     min-height: 12rem
@@ -448,22 +467,6 @@ a
             max-width: 100%
             width: 100%
             object-fit: fill
-
-.browseContainer
-    display: grid
-    grid-template-columns: repeat(auto-fill,  10rem) 
-    grid-gap: 1rem
-    justify-content: space-between
-    &__title
-        grid-column: 1/-1
-        @include sectionTitle
-    &__card
-        margin: auto
-        width: 100%
-        &__title
-            white-space: nowrap
-            overflow: hidden
-            text-overflow: ellipsis
 
 .loading
     align-items: center
