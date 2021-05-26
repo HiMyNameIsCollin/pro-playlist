@@ -278,11 +278,11 @@ const Dashboard = ({ setAuth }) => {
 
 //  NAVIGATION TRANSITIONS
     const pageTransition = useTransition(location, {
-        initial: { transform: 'translateX(100%)' },
-        from: { transform: 'translateX(100%)', position: 'absolute', width: '100%'},
+        initial: { transform: 'translatey(100%)' },
+        from: { transform: 'translatey(100%)', position: 'absolute', width: '100%'},
         update: {  position: 'relative'},
-        enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-100%)', position: 'absolute'},
+        enter: { transform: 'translatey(0%)' },
+        leave: { transform: 'translatey(100%)', position: 'absolute'},
     })
 
     useEffect(() => {
