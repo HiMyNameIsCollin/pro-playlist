@@ -5,7 +5,7 @@ import { capital } from '../../../utils/capital'
 
 
 const CollectionHeader = ({ data , setOverlay, setActiveItem }) => {
-    const { collection, tracks } = { ...data }
+    const { collection, artists, tracks } = { ...data }
 
     return(
         <header className='collection__header'>
@@ -16,27 +16,41 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem }) => {
             
             <div className='collection__artists'>
             {
-                collection.artists.length === 1 &&
+                artists &&
+                artists.length === 1 ?
                 <img
                 height='32px'
                 width='32px' 
                 src={ whichPicture(collection.artists[0].images, 'sm' ) } 
-                alt='Artist' />
+                alt='Artist' /> :
+                null
             }
                 <p onClick={
-                    (e) => handleViewArtist( e, collection.artists, setOverlay, setActiveItem ) }>
-                    { collection.artists.map((artist, i) =>  i !== collection.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }` ) }
+                    (e) => handleViewArtist( e, artists, setOverlay, setActiveItem ) }>
+                    { artists.map((artist, i) =>  (
+                        i !== artists.length - 1 ? 
+                        `${ artist.name ? artist.name : artist.display_name }, ` : 
+                        `${ artist.name ? artist.name : artist.display_name }` 
+                    ))
+                    }
                     </p>
 
             </div>  
             <div className='collection__info'>
                 <span>
-                    { capital( collection.album_type ) }  
+                    { capital( album_type ? album_type : collection.type ) }  
                 </span>
                 ||
-                <span>
-                    { collection.release_date.substr(0,4) }
-                </span>
+                {
+                    type ==='album' ?
+                    <span>
+                        { collection.release_date.substr(0,4) }
+                    </span> :
+                    <p> 
+                        { collection.description }
+                    </p>
+                }
+                
             </div>  
         </header>
     )   

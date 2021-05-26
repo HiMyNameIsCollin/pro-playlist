@@ -388,7 +388,13 @@ const Dashboard = ({ setAuth }) => {
                             location={ location } />
                         </Route>
                         <Route path='/playlist/:id'>
-                            <Playlist
+                            <Collection
+                            type='playlist'
+                            item={ activeItem }
+                            setActiveItem={ setActiveItem }
+                            overlay={ overlay }
+                            setOverlay={ setOverlay }
+                            genreSeeds={ state.available_genre_seeds}
                             location={ location } />
                         </Route> 
                         <Route path='/showcase/:id'>
