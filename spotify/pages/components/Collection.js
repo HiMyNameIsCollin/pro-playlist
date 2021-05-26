@@ -13,7 +13,7 @@ import Loading from './Loading'
 
 const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds, location }) => {
     const initialState = {
-        collection: item ? item : null ,
+        collection: null,
         tracks: null,
         artists: null,
         recommendations: null
@@ -42,6 +42,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
                     collection: action
                 }
             case routes.playlist :
+                console.log(action)
                 return{
                     ...state,
                     collection: action
@@ -89,16 +90,22 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
     const { collection, artists, tracks, recommendations } = {...state}
 
     useEffect(() => {
-        if( !item ) {
             if(type === 'album'){
-                const id = location.pathname.substr( routes.album.length - 2 )
-                finalizeRoute( 'get', `${routes.album}/${id}`, fetchApi)
+                if(item){
+                    finalizeRoute( 'get', `${routes.album}/${item.id}`, fetchApi)
+                }else{
+                    const id = location.pathname.substr( routes.album.length - 2 )
+                    finalizeRoute( 'get', `${routes.album}/${id}`, fetchApi)
+                } 
             } else if(type === 'playlist'){
-                const id = location.pathname.substr( routes.playlist.length - 2 )
-                finalizeRoute( 'get', `${routes.playlist}/${id}`, fetchApi)
+                if( item ){
+                    finalizeRoute( 'get', `${routes.playlist}/${item.id}`, fetchApi)
+                }else {
+                    const id = location.pathname.substr( routes.playlist.length - 2 )
+                    finalizeRoute( 'get', `${routes.playlist}/${id}`, fetchApi)
+                }
             }
-        }
-    }, [])
+        }, [])
 
     useEffect(() => {
         if(apiPayload) dispatch( apiPayload )
@@ -163,7 +170,11 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
     }
     
     useEffect(() => {
-        if( collection && artists && tracks && !state.recommendations ){
+        if( type === 'album' && 
+            collection && 
+            artists && 
+            tracks && 
+            !state.recommendations ){
             let seeds = getSeeds(genreSeeds, artists, tracks)
             const { seedGenres, seedArtists, seedTracks } = seeds
             finalizeRoute( 'get',
@@ -177,7 +188,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
         }
     }, [ collection, artists, tracks ])
 
-    // If users first page is Album, fetch the data from here, and then set in the dashboard component.
+    // If users first page is Collection, fetch the data from here, and then set in the dashboard component.
 
     useEffect(() => {
         if( !item && collection ) setActiveItem( collection )
@@ -188,7 +199,11 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
     }
 
     useEffect(()=> {
-        if( collection && artists && tracks && recommendations ) handleLoading()
+        if( type === 'album' ) {
+            if( collection && artists && tracks && recommendations ) handleLoading()
+        } else {
+            if( collection && artists && tracks ) handleLoading()           
+        }
     },[state])
 
     return(
@@ -200,8 +215,14 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
             <>
                 <CollectionHeader data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 <TracksContainer data={ state } setOverlay={ setOverlay }/>
-                <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
-                <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
+                
+                {
+                    type === 'album' &&
+                    <>
+                        <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                        <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
+                    </>
+                }
             </>
             }
 

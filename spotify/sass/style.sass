@@ -231,22 +231,24 @@ a
             margin-bottom: 1rem
     &__imgContainer
         display: flex
-        padding: 2rem 0 1rem 0
+        padding: 2rem 1rem 1rem 1rem
         img
             display: block
+            max-width: 100%
             margin: auto
     &__artists
         @include artistDisplay
             
     &__info
-        color: $grey
+        color: $lightGrey
         font-size: 0.8rem
         font-weight: 700
         padding: 0 1rem
-        span:nth-of-type(1)
-            padding-right: .5rem
-        span:nth-of-type(2)
-            padding-left: .5rem
+        p
+            color: $white
+            font-weight: 400
+        i
+            padding: 0 .5rem
     &__meta
         color: $white
         font-size: 0.8rem

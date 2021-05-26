@@ -3,7 +3,7 @@ import { whichPicture } from '../../../utils/whichPicture'
 import { handleViewArtist } from '../../../utils/handleViewArtist' 
 const CollectionMeta = ({ data , setOverlay , setActiveItem }) => {
 
-    const { collection, tracks } = {...data}
+    const { collection, artists, tracks } = {...data}
     return(
         <section className='collection__meta'>
 
@@ -13,13 +13,13 @@ const CollectionMeta = ({ data , setOverlay , setActiveItem }) => {
             <span>
                 {tracks.length} { tracks.length === 1 ? 'track' : 'tracks' }
             </span>
-            || 
+            <i className="fas fa-dot-circle"></i>
             <span>
                 { calculateTotalDuration(tracks) }
             </span>
 
         {
-            collection.artists.map((artist, i) => (
+            artists.map((artist, i) => (
                 <div key={i} className='collection__meta__artists'>
                     <img
                     height='48px'

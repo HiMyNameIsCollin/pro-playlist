@@ -21,7 +21,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem }) => {
                 <img
                 height='32px'
                 width='32px' 
-                src={ whichPicture(collection.artists[0].images, 'sm' ) } 
+                src={ whichPicture(artists[0].images, 'sm' ) } 
                 alt='Artist' /> :
                 null
             }
@@ -38,17 +38,21 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem }) => {
             </div>  
             <div className='collection__info'>
                 <span>
-                    { capital( album_type ? album_type : collection.type ) }  
+                    {/* Ternary operators determine if this is a playlist or an album. */}
+                    { collection.type === 'playlist' ? `${collection.followers.total} followers` : capital( collection.album_type ) }  
                 </span>
-                ||
                 {
-                    type ==='album' ?
-                    <span>
-                        { collection.release_date.substr(0,4) }
-                    </span> :
+                    collection.type ==='playlist' ?
                     <p> 
                         { collection.description }
-                    </p>
+                    </p> :
+                    <>
+                        <i className="fas fa-dot-circle"></i>
+                        <span>
+                        { collection.release_date.substr(0,4) }
+                        </span>
+                    </> 
+
                 }
                 
             </div>  

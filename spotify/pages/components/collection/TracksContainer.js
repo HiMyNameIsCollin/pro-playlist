@@ -18,15 +18,18 @@ const TracksContainer = ({ data , setOverlay }) => {
             tracks.map((track, i) => {
                 return (
                 <div className='track' key={i}>
+                    {/* Ternary operators determine if this is a playlist or an album. */}
                     <p>
-                        { track.name }
+                        { track.name ? track.name : track.track.name }
                     </p>
                     <span>
                         { 
-                        track.artists.map((artist , j) => j !== track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`)
+                        collection.type !== 'playlist' ?
+                        track.artists.map((artist , j) => j !== track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`) :
+                        track.track.artists.map((artist , j) => j !== track.track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`) 
                         }
                     </span>
-                    <i onClick={ () => handleTrackMenu(track) } className="fas fa-ellipsis-h"></i>
+                    <i onClick={ () => handleTrackMenu( collection.type === 'playlist' ? track.track : track ) } className="fas fa-ellipsis-h"></i>
 
                 </div>
                 ) 
