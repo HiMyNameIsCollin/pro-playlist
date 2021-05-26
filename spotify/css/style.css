@@ -510,12 +510,11 @@ a {
   border-right: 2px solid #b3b3b3;
   display: flex;
   flex-direction: column;
-  font-weight: 700;
   font-size: 0.7rem;
   justify-content: center;
 }
 .nav__item i {
-  font-size: 2rem;
+  font-size: 1.5rem;
   margin: 0.25rem 0;
 }
 .nav__item--active {
