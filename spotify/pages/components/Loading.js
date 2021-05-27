@@ -4,7 +4,7 @@ import { useSpring, animated } from 'react-spring'
 const Loading = ({ loaded }) => {
 
     const animation = useSpring({
-        transform: loaded ? 'translatey(100%)' : 'translatey(0%)' 
+        opacity: loaded ? 0 : 1 
     })
 
     return(
