@@ -1,5 +1,5 @@
 import { useSpring, animated } from 'react-spring'
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useEffect, useState, useRef } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
 import { handleViewArtist } from '../../../utils/handleViewArtist'
 import { capital } from '../../../utils/capital'
@@ -7,14 +7,24 @@ import { capital } from '../../../utils/capital'
 
 const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted , scrollPosition}) => {
     const { collection, artists, tracks } = { ...data }
+    const [ elementHeight, setElementHeight ] = useState(null)
+    
+    const elementPercentRef = useRef(elementHeight)
 
     useLayoutEffect(() => {
         const thisHeader = document.querySelector('.collectionHeader')
         document.documentElement.style.setProperty('--fixedHeaderPadding', thisHeader.offsetHeight + 'px')
-        
+        setElementHeight(thisHeader.offsetHeight)
     }, [])
 
-
+    useEffect(() => {
+        // WILL NEED TO MAKE A RESIZING HOOK AND MAKE THIS IT A DEPENDENCY OF THIS UE
+        if( elementHeight ){
+            const totalHeight = document.documentElement.scrollHeight
+            const percentOfTotal = ( elementHeight / totalHeight ) * 100 
+            elementPercentRef.current = percentOfTotal
+        }
+    },[ elementHeight ])
 
     return(
         <header className={`collectionHeader ${headerMounted ? 'collectionHeader--active' : ''}`}>
