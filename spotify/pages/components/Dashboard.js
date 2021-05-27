@@ -7,6 +7,7 @@ import { useTransition, animated } from 'react-spring'
 import  useApiCall  from '../../hooks/useApiCall'
 import HomeHeader from './HomeHeader'
 import SearchHeader from './SearchHeader'
+import CollectionHeader from './collection/CollectionHeader'
 import Home from './Home'
 import Nav from './Nav'
 import Manage from './Manage'
@@ -16,6 +17,7 @@ import Collection from './Collection'
 import Playlist from './Playlist'
 import Showcase from './Showcase'
 import Overlay from './Overlay'
+import Loading from './Loading'
 
 const initialState = {
     user_info: {},
@@ -182,6 +184,10 @@ const Dashboard = ({ setAuth }) => {
     const [ overlay, setOverlay ] = useState(null)
     const [ hiddenUI, setHiddenUI ] = useState(false)
     const [ activeItem, setActiveItem ] = useState(null)
+// activeHeader contains the data from the active page required for certain headers to function
+    const [ activeHeader , setActiveHeader ] = useState(null)
+// headerMounted is used to let the loading element in each page know that its header has mounted and loaded
+    const [ headerMounted, setHeaderMounted ] = useState(false)
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([location.pathname])
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
@@ -287,6 +293,7 @@ const Dashboard = ({ setAuth }) => {
 
     useEffect(() => {
         if(activeItem && activeItem.type){
+
             switch(activeItem.type){
                 case 'artist':
                     if(location.pathname !== `/artist/${activeItem.id}`){
@@ -334,6 +341,7 @@ const Dashboard = ({ setAuth }) => {
     useEffect(() => {
         if(location.pathname === '/' || location.pathname === 'search' || location.pathname === '/manage'){
             setActiveItem( null )
+            setActiveHeader( null )
         }
     }, [ location.pathname ] )
 
@@ -349,11 +357,9 @@ const Dashboard = ({ setAuth }) => {
     return(
         <section className="wrapper">
             <div className='dashboard'>
-                <Overlay 
-                overlay={ overlay } 
-                setOverlay={ setOverlay } 
-                setActiveItem={ setActiveItem }/>
                 
+{/* Headers are kept seperate from their respective pages because these are fixed positiong, 
+and if I put them inside the page, they will be fixed to the container and not the page. */}
                 <Switch >
                     <Route exact path='/'>
                         <HomeHeader 
@@ -364,9 +370,36 @@ const Dashboard = ({ setAuth }) => {
                         <SearchHeader hiddenUI={ hiddenUI }/>
                     </Route> 
                     <Route path='/manage'>
-                        <SearchHeader hiddenUI={ hiddenUI }/>
+                        
                     </Route> 
+                    <Route path='/album/:id' >
+                        {
+                            activeHeader &&
+                            <CollectionHeader 
+                            data={ activeHeader } 
+                            setOverlay={ setOverlay } 
+                            setActiveItem={ setActiveItem } 
+                            headerMounted={ headerMounted }
+                            setHeaderMounted={ setHeaderMounted }/>
+                        }
+                    </Route>
+                    <Route path='/playlist/:id' >
+                        {
+                            activeHeader &&
+                            <CollectionHeader 
+                            data={ activeHeader } 
+                            setOverlay={ setOverlay } 
+                            setActiveItem={ setActiveItem } 
+                            headerMounted={ headerMounted }
+                            setHeaderMounted={ setHeaderMounted } />
+                        }
+                    </Route>
                 </Switch>
+
+                <Overlay 
+                overlay={ overlay } 
+                setOverlay={ setOverlay } 
+                setActiveItem={ setActiveItem }/>
                 
             {
             pageTransition((props, item) => (
@@ -394,8 +427,10 @@ const Dashboard = ({ setAuth }) => {
                             type='album'
                             item={ activeItem }
                             setActiveItem={ setActiveItem }
+                            setActiveHeader={ setActiveHeader }
                             overlay={ overlay }
                             setOverlay={ setOverlay }
+                            headerMounted={ headerMounted }
                             genreSeeds={ state.available_genre_seeds}
                             location={ location } />
                         </Route>
@@ -404,8 +439,10 @@ const Dashboard = ({ setAuth }) => {
                             type='playlist'
                             item={ activeItem }
                             setActiveItem={ setActiveItem }
+                            setActiveHeader={ setActiveHeader }
                             overlay={ overlay }
                             setOverlay={ setOverlay }
+                            headerMounted={ headerMounted }
                             genreSeeds={ state.available_genre_seeds}
                             location={ location } />
                         </Route> 

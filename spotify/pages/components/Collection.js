@@ -1,17 +1,14 @@
-import { useState, useEffect, useReducer } from 'react'
+import { useState, useEffect, useReducer, useLayoutEffect } from 'react'
 import  useApiCall  from '../../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
-import { handleViewArtist } from '../../utils/handleViewArtist'
-import { calculateTotalDuration } from '../../utils/calculateTotalDuration'
 import CollectionHeader from './collection/CollectionHeader'
 import CollectionMeta from './collection/CollectionMeta'
 import TracksContainer from './collection/TracksContainer'
 import Slider from './Slider'
 import Loading from './Loading'
 
-
-const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds, location }) => {
+const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOverlay, headerMounted, genreSeeds, location }) => {
     const initialState = {
         collection: null,
         tracks: null,
@@ -81,12 +78,12 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
                 break
         }
     }
+
     // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
-
     const { collection, artists, tracks, recommendations } = {...state}
 
     useEffect(() => {
@@ -165,7 +162,7 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
                 seedTracks.push( track.id )
             }
         })
-        console.log(seeds)
+
         return seeds
     }
     
@@ -194,30 +191,30 @@ const Collection = ({ type, item, setActiveItem, overlay, setOverlay, genreSeeds
         if( !item && collection ) setActiveItem( collection )
     }, [collection])
 
-    const handleLoading = () => {
-        setLoaded(true)
-    }
-
     useEffect(()=> {
         if( type === 'album' ) {
-            if( collection && artists && tracks && recommendations ) handleLoading()
+            if( collection && artists && tracks && recommendations ) setActiveHeader({ collection, artists, tracks })  
         } else {
-            if( collection && artists && tracks ) handleLoading()           
+            if( collection && artists && tracks ) setActiveHeader({ collection, artists, tracks })           
         }
     },[state])
 
+    useLayoutEffect(() => {
+        if( headerMounted ) setTimeout(() => setLoaded(true), 250)
+    }, [ headerMounted ])
+
     return(
         <div className={ `page page--collection collection ${ overlay ? 'page--blurred' : ''}` }>
+            
             <Loading loaded={ loaded }/>
 
             {
-            loaded &&
+            loaded && collection && tracks &&
             <>
-                <CollectionHeader data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 <TracksContainer data={ state } setOverlay={ setOverlay }/>
                 
                 {
-                    type === 'album' &&
+                    type === 'album' && recommendations &&
                     <>
                         <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                         <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                

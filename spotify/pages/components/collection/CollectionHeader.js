@@ -1,20 +1,29 @@
-import { useEffect } from 'react'
+import { useSpring, animated } from 'react-spring'
+import { useLayoutEffect } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
 import { handleViewArtist } from '../../../utils/handleViewArtist'
 import { capital } from '../../../utils/capital'
 
 
-const CollectionHeader = ({ data , setOverlay, setActiveItem }) => {
+const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted }) => {
     const { collection, artists, tracks } = { ...data }
 
+    useLayoutEffect(() => {
+        const thisHeader = document.querySelector('.collectionHeader')
+        document.documentElement.style.setProperty('--fixedHeaderPadding', thisHeader.offsetHeight + 'px')
+        
+    }, [])
+
+
+
     return(
-        <header className='collection__header'>
-            <div className='collection__imgContainer'>
-                <img src={ whichPicture(collection.images, 'med') } />
+        <header className={`collectionHeader ${headerMounted ? 'collectionHeader--active' : ''}`}>
+            <div className='collectionHeader__imgContainer'>
+                <img onLoad={() => setHeaderMounted(true)} src={ whichPicture(collection.images, 'med') } />
             </div> 
             <h1> { collection.name } </h1>
             
-            <div className='collection__artists'>
+            <div className='collectionHeader__artists'>
             {
                 artists &&
                 artists.length === 1 ?
@@ -36,7 +45,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem }) => {
                     </p>
 
             </div>  
-            <div className='collection__info'>
+            <div className='collectionHeader__info'>
                 <span>
                     {/* Ternary operators determine if this is a playlist or an album. */}
                     { collection.type === 'playlist' ? `${collection.followers.total} followers` : capital( collection.album_type ) }  
