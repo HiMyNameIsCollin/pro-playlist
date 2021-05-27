@@ -5,7 +5,7 @@ import { handleViewArtist } from '../../../utils/handleViewArtist'
 import { capital } from '../../../utils/capital'
 
 
-const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted }) => {
+const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted , scrollPosition}) => {
     const { collection, artists, tracks } = { ...data }
 
     useLayoutEffect(() => {

@@ -200,7 +200,7 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
     },[state])
 
     useLayoutEffect(() => {
-        if( headerMounted ) setTimeout(() => setLoaded(true), 250)
+        if( headerMounted ) setLoaded(true)
     }, [ headerMounted ])
 
     return(
@@ -222,8 +222,6 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
                 }
             </>
             }
-
-
 
         </div>
     )

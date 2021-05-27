@@ -380,7 +380,8 @@ and if I put them inside the page, they will be fixed to the container and not t
                             setOverlay={ setOverlay } 
                             setActiveItem={ setActiveItem } 
                             headerMounted={ headerMounted }
-                            setHeaderMounted={ setHeaderMounted }/>
+                            setHeaderMounted={ setHeaderMounted }
+                            scrollPosition={ scrollPosition }/>
                         }
                     </Route>
                     <Route path='/playlist/:id' >
@@ -391,7 +392,8 @@ and if I put them inside the page, they will be fixed to the container and not t
                             setOverlay={ setOverlay } 
                             setActiveItem={ setActiveItem } 
                             headerMounted={ headerMounted }
-                            setHeaderMounted={ setHeaderMounted } />
+                            setHeaderMounted={ setHeaderMounted }
+                            scrollPosition={ scrollPosition } />
                         }
                     </Route>
                 </Switch>
