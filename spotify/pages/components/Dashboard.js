@@ -292,6 +292,8 @@ const Dashboard = ({ setAuth }) => {
     })
 
     useEffect(() => {
+        setActiveHeader( null )
+        setHeaderMounted(false)
         if(activeItem && activeItem.type){
 
             switch(activeItem.type){
@@ -341,7 +343,7 @@ const Dashboard = ({ setAuth }) => {
     useEffect(() => {
         if(location.pathname === '/' || location.pathname === 'search' || location.pathname === '/manage'){
             setActiveItem( null )
-            setActiveHeader( null )
+            
         }
     }, [ location.pathname ] )
 

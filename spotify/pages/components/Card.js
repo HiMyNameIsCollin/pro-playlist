@@ -16,6 +16,7 @@ const Card = ({ item, cardType, setActiveItem }) => {
         className={`card ${cardType}__card` }>
             <div className='card__image'>
                 <img 
+                loading='lazy'
                 src={ 
                     item.images ? 
                     whichPicture(item.images, 'med') :

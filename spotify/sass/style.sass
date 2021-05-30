@@ -106,6 +106,7 @@ a
     background-attachment: fixed
     display: flex
     min-height: 100vh
+    max-width: 100vw
     &--overlay
         @include overlay
         &::before
@@ -482,8 +483,10 @@ a
     background: $black
     display: flex
     justify-content: center
+    top: 0
     left: 0
     min-height: 100vh
+    max-height: 100vh
     position: fixed
     min-width: 100vw
     max-width: 100vw

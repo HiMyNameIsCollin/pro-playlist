@@ -1,4 +1,4 @@
-import { useSpring, animated } from 'react-spring'
+import { useSpring, useTransition, animated } from 'react-spring'
 import { useLayoutEffect, useEffect, useState, useRef } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
 import { handleViewArtist } from '../../../utils/handleViewArtist'
@@ -8,7 +8,7 @@ import { capital } from '../../../utils/capital'
 const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted , scrollPosition}) => {
     const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
-    
+    const [ scrolled, setScrolled ] = useState(null)
     const elementPercentRef = useRef(elementHeight)
 
     useLayoutEffect(() => {
@@ -26,8 +26,41 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
         }
     },[ elementHeight ])
 
+    useEffect(() => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const percent = (winScroll / elementHeight) *100
+        setScrolled( percent <= 100 ? percent : 100 )
+    }, [scrollPosition , elementHeight])
+
+    const props = useSpring({
+        y: scrolled > 90 ?
+        .1 :
+        scrolled > 80 ?
+        .2 :
+        scrolled > 70 ?
+        .3 :
+        scrolled > 60 ?
+        .4 :
+        scrolled > 50 ?
+        .5 :
+        scrolled > 40 ?
+        .6 :
+        scrolled > 30 ?
+        .7 :
+        scrolled > 20 ?
+        .8 :
+        scrolled > 10 ?
+        .9 :
+        scrolled < 10 &&
+        1.00
+    })
+    
     return(
-        <header className={`collectionHeader ${headerMounted ? 'collectionHeader--active' : ''}`}>
+        <animated.header 
+        style={{
+            transform: props.y.to( y =>  `scaleY(${y})`)
+        }}
+        className={`collectionHeader ${headerMounted ? 'collectionHeader--active' : ''}`}>
             <div className='collectionHeader__imgContainer'>
                 <img onLoad={() => setHeaderMounted(true)} src={ whichPicture(collection.images, 'med') } />
             </div> 
@@ -75,7 +108,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
                 }
                 
             </div>  
-        </header>
+        </animated.header>
     )   
 }
 

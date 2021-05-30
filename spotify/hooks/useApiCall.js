@@ -24,7 +24,6 @@ const useApiCall = (url) => {
         setApiPending(true)
         setApiError(false)
         const access_token = localStorage.getItem('access_token')
-        console.log(route)
         fetch(`${ url }${ route }`, {
             method: method,
             headers: {

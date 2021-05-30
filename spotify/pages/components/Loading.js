@@ -4,7 +4,8 @@ import { useSpring, animated } from 'react-spring'
 const Loading = ({ loaded }) => {
 
     const animation = useSpring({
-        opacity: loaded ? 0 : 1 
+        opacity: loaded ? 0 : 1,
+        pointerEvents: loaded ? 'none' : 'auto'
     })
 
     return(
