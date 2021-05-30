@@ -28,42 +28,29 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
 
     useEffect(() => {
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const percent = (winScroll / elementHeight) *100
+        const percent = (winScroll / elementHeight) * 100
         setScrolled( percent <= 100 ? percent : 100 )
     }, [scrollPosition , elementHeight])
 
     const props = useSpring({
-        y: scrolled > 90 ?
-        .1 :
-        scrolled > 80 ?
-        .2 :
-        scrolled > 70 ?
-        .3 :
-        scrolled > 60 ?
-        .4 :
-        scrolled > 50 ?
-        .5 :
-        scrolled > 40 ?
-        .6 :
-        scrolled > 30 ?
-        .7 :
-        scrolled > 20 ?
-        .8 :
-        scrolled > 10 ?
-        .9 :
-        scrolled < 10 &&
-        1.00
+        to: {
+            scale: `${ 1.00 - (scrolled * 0.01)  }`
+        }
     })
     
     return(
         <animated.header 
         style={{
-            transform: props.y.to( y =>  `scaleY(${y})`)
+            transform: props.scale.to( scale =>  `scaleY(${scale})`)
         }}
         className={`collectionHeader ${headerMounted ? 'collectionHeader--active' : ''}`}>
-            <div className='collectionHeader__imgContainer'>
+            <animated.div
+                style={{
+                    transform: props.scale.to( scale => `scale(${scale})`)
+                }} 
+                className='collectionHeader__imgContainer'>
                 <img onLoad={() => setHeaderMounted(true)} src={ whichPicture(collection.images, 'med') } />
-            </div> 
+            </animated.div> 
             <h1> { collection.name } </h1>
             
             <div className='collectionHeader__artists'>
