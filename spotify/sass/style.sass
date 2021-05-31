@@ -11,7 +11,9 @@ $bg__1--lg: url('../public/bglg.jpg')
 
 \:root
     --collectionBackground: ''
-    --fixedHeaderPadding: 0
+    --collectionHeaderHeight: 0
+    --collectionHeaderColor: $black
+
 
 @mixin shadowA
     box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px
@@ -206,7 +208,7 @@ a
     &--collection
         background: $black
         color: $white
-        padding-top: var(--fixedHeaderPadding)
+        padding-top: var(--collectionHeaderHeight)
         .slider
             margin: 0 1rem
     &--blurred
@@ -239,18 +241,15 @@ a
     top: 0
     left: 0
     opacity: 0
-    transition: opacity .5s ease-in-out
+    transition: opacity .75s ease-in-out
     transform-origin: top left
     width: 100%
     h1
         padding: 0 1rem
     &::before
-        @include scrimGradient($black, 'to top')
+        
         opacity: 1
     &::after
-        background-image: var(--collectionBackground)
-        background-size: 200%
-        background-position: 50% 50%
         opacity: .5
     > *
         margin-bottom: 1rem
@@ -259,7 +258,7 @@ a
         padding: 2rem 1rem 1rem 1rem
         img
             display: block
-            height: 300px
+            height: 200px
             max-width: 100%
             margin: auto
     &__info
@@ -279,6 +278,33 @@ a
             background-size: cover
     &--active
         opacity: 1
+    &::before
+        @include scrimGradient($black , 'to top')
+
+.test
+    @include overlay
+    background-image: var(--collectionBackground)
+    background-size: cover
+    background-position: 50% 50%
+    min-height: var(--collectionHeaderHeight)
+    position: absolute
+    opacity: 0
+    overflow: hidden
+    top: 0
+    transition: opacity .75s ease-in-out
+    left: 0
+    width: 100%
+    z-index: 1
+    &--active
+        opacity: 1
+    &::before
+        background: linear-gradient(to bottom, var(--collectionHeaderColor1) , var(--collectionHeaderColor0))
+        opacity: .75
+        z-index: -1
+    &::after
+        background: linear-gradient(to right, var(--collectionHeaderColor1) , var(--collectionHeaderColor0))
+        opacity: .33
+        z-index: -2
 .track
     align-items: flex-start
     display: grid
@@ -530,6 +556,8 @@ a
                 padding-left: 1rem
                 
 
+        
+
 @media only screen and (min-width: 768px)
     .login
         padding: 4rem 4rem 2rem 4rem
@@ -537,3 +565,4 @@ a
 @media only screen and (min-width: 1536px)
     .wrapper
         background-image: $bg__1--lg
+

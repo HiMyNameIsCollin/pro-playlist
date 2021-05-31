@@ -8,6 +8,7 @@ import TracksContainer from './collection/TracksContainer'
 import Slider from './Slider'
 import Loading from './Loading'
 
+
 const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOverlay, headerMounted, genreSeeds, location }) => {
     const initialState = {
         collection: null,
@@ -110,7 +111,11 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
 
     useEffect(() => {
         // Set background image of Album header
-        if( collection ) document.documentElement.style.setProperty('--collectionBackground', `url(${whichPicture(collection.images, 'lrg')})`) 
+        if( collection ) {
+            
+            const img = whichPicture(collection.images, 'lrg')
+            document.documentElement.style.setProperty('--collectionBackground', `url(${img})`)
+        }
     }, [collection])
 
     useEffect(() => {
@@ -200,7 +205,7 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
     },[state])
 
     useLayoutEffect(() => {
-        if( headerMounted ) setTimeout(() => setLoaded(true), 250)
+        if( headerMounted ) setLoaded(true)
     }, [ headerMounted ])
 
     return(
@@ -211,6 +216,7 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
             {
             loaded && collection && tracks &&
             <>
+                
                 <TracksContainer data={ state } setOverlay={ setOverlay }/>
                 
                 {
