@@ -29,7 +29,7 @@ const Container = () => {
     },[ tokenFetchComplete ])
 
     return(
-    <main>
+    <main className='container'>
       {
         auth ?
         <Dashboard setAuth={ setAuth } /> :

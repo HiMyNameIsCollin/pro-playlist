@@ -11,6 +11,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
     const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ scrolled, setScrolled ] = useState(null)
+    const [ fullHeader, setFullHeader ] = useState(true)
     const elementPercentRef = useRef(elementHeight)
 
     useLayoutEffect(() => {
@@ -39,19 +40,36 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
         setScrolled( percent <= 100 ? percent : 100 )
     }, [scrollPosition , elementHeight])
 
+    useEffect(() => {
+        if(scrolled >= 50){
+            setFullHeader(false)
+        } else{
+            setFullHeader(true)
+        }
+    }, [ scrolled ])
 
-
-    const props = useSpring({
+    const headerAni = useSpring({
         to: {
+            
             scaleDown: `${ 1.00 - ( scrolled * 0.01 )  }`,
             scaleUp: `${ 1.00 + ( scrolled * 0.01 ) }`,
-            fadeOut: `${ 1 - ( scrolled * 0.02 )}`
+            fadeOut: `${ 1 - ( scrolled * 0.02 )}`,
+            fadeIn: `${ 0 + ( scrolled * 0.01 )}`,
+            slideUp: `${ -scrolled - 2 }`,
+            textScroll: `${ 300 - ( scrolled * 3 )}`
         },
         config: {
             precision: 1,
-            friction: 0
         }
     })
+
+    const showFixedHeader = useSpring({
+        transform: fullHeader ? 'translateY(-100%)' : 'translateY(0%)',
+        opacity: fullHeader ? 0 : 1
+    })
+
+    
+
 
     const handleColorThief = (e) => {
         const colorThief = new ColorThief()
@@ -70,16 +88,28 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
     
     return(
         <>
-            <div 
-            className={ `test ${ headerMounted && 'test--active' }`} ></div>
+            <div className={ `collectionBackingImg ${ headerMounted && 'collectionBackingImg--active' }`} >
+            </div>
+  
+            <animated.div
+            style={ showFixedHeader } 
+            className='collectionHeaderSticky'>
+                <animated.h1 style={{
+                    opacity: headerAni.fadeIn.to( o => o),
+                    transform: headerAni.textScroll.to( y => `translateY(${ y }%)`)
+                }}> { collection.name } </animated.h1>
+            </animated.div>
+            
+            
             <animated.header 
-        style={{
-            transform: props.scaleDown.to( scaleDown =>  `scaleY(${scaleDown})`)
-        }}
-        className={`collectionHeader ${headerMounted && 'collectionHeader--active' }`}>
+                style={{
+                    transform: headerAni.scaleDown.to( scaleDown =>  `scaleY(${scaleDown})`)
+                }}
+                className={`collectionHeader ${headerMounted && 'collectionHeader--active' }`}>
             <animated.div
                 style={{
-                    transform: props.scaleDown.to( scaleDown => `scale(${scaleDown})`)
+                    transform: headerAni.scaleDown.to( scaleDown => `scale(${scaleDown})`),
+                    opacity: headerAni.fadeOut.to( fadeOut => fadeOut )
                 }} 
                 className='collectionHeader__imgContainer'>
                 <img
@@ -89,14 +119,15 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
                 src={ whichPicture(collection.images, 'med') } />
             </animated.div> 
             <animated.h1 style={{
-                transform: props.scaleUp.to( scaleUp => `scaleY(${ scaleUp })`),
-                opacity: props.fadeOut.to( fadeOut => fadeOut )
+                transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp })`),
+                opacity: headerAni.fadeOut.to( fadeOut => fadeOut )
             }}> { collection.name } </animated.h1>
             
             <animated.div
             style={{
-                transform: props.scaleUp.to( scaleUp => `scaleY(${ scaleUp })`),
-                opacity: props.fadeOut.to( fadeOut => fadeOut )
+                transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp })`),
+                opacity: headerAni.fadeOut.to( fadeOut => fadeOut ),
+                transform: headerAni.slideUp.to( slideUp => `translateY(${ slideUp })`)
             }} 
             className='collectionHeader__artists'>
             {
@@ -122,8 +153,8 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
             </animated.div>  
             <animated.div 
             style={{
-                transform: props.scaleUp.to( scaleUp => `scaleY(${ scaleUp })`),
-                opacity: props.fadeOut.to( fadeOut => fadeOut )
+                transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp })`),
+                opacity: headerAni.fadeOut.to( fadeOut => fadeOut )
             }}
             className='collectionHeader__info'>
                 <span>

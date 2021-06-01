@@ -357,8 +357,7 @@ const Dashboard = ({ setAuth }) => {
     }, [overlay])
 
     return(
-        <section className="wrapper">
-            <div className='dashboard'>
+            <section className='dashboard'>
                 
 {/* Headers are kept seperate from their respective pages because these are fixed positiong, 
 and if I put them inside the page, they will be fixed to the container and not the page. */}
@@ -458,13 +457,11 @@ and if I put them inside the page, they will be fixed to the container and not t
                 </animated.div>
             ))
             }
-            </div>
             {
                 !overlay &&
                 <Nav location={ location } hiddenUI={ hiddenUI } NavLink={ NavLink } /> 
             }
-            
-        </section>
+        </section>    
     )
 }
 export default Dashboard
