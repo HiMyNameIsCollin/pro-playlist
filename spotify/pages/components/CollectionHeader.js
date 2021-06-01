@@ -48,14 +48,14 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
         }
     }, [ scrolled ])
 
-    const headerAni = useSpring({
+    const {scaleDown, scaleUp, fadeOut, fadeIn, slideUp, textScroll} = useSpring({
         to: {
             
             scaleDown: `${ 1.00 - ( scrolled * 0.01 )  }`,
             scaleUp: `${ 1.00 + ( scrolled * 0.01 ) }`,
             fadeOut: `${ 1 - ( scrolled * 0.02 )}`,
             fadeIn: `${ 0 + ( scrolled * 0.01 )}`,
-            slideUp: `${ -scrolled - 2 }`,
+            slideUp: `${ scrolled * -5 }`,
             textScroll: `${ 300 - ( scrolled * 3 )}`
         },
         config: {
@@ -66,44 +66,47 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
     return(
         <>  
             <HeaderBacking
-            headerAni={ headerAni }
+            fadeIn={ fadeIn }
+            textScroll={ textScroll }
             fullHeader={ fullHeader } 
             collection={ collection }
             headerMounted={ headerMounted }
              />          
             <animated.header 
             style={{
-                transform: headerAni.scaleDown.to( scaleDown =>  `scaleY(${scaleDown})`)
+                transform: scaleDown.to( scaleDown => `scaleY(${ scaleDown })` )
             }}
             className={`collectionHeader ${headerMounted && 'collectionHeader--active' }`}>
                 
                 <animated.div
                     style={{
-                        transform: headerAni.scaleDown.to( scaleDown => `scale(${scaleDown})`),
-                        opacity: headerAni.fadeOut.to( fadeOut => fadeOut )
+                        transform: scaleDown.to( scaleDown => `scale(${scaleDown})`),
+                        opacity: fadeOut.to( fadeOut => fadeOut )
                     }} 
                     className='collectionHeader__imgContainer'>
                     <img
                     crossorigin='anonymous' 
-                    // ON LOAD HERE ////////////////////////////////////
+                    // ON LOAD HERE ########################################
                     onLoad={(e) => handleColorThief(e, 2)} 
                     className='collectionHeader__img' 
                     src={ whichPicture(collection.images, 'med') } />
                 </animated.div> 
 
                 <animated.h1 style={{
-                    transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp *1.1 })`),
-                    opacity: headerAni.fadeOut.to( fadeOut => fadeOut )
+                    transform: scaleUp.to( scaleUp => `scaleY(${ scaleUp })` ),
+                    opacity: fadeOut.to( fadeOut => fadeOut ),
+                    
                 }}> 
                 { collection.name } 
                 </animated.h1>
                 
                 <animated.div
-                style={{
-                    transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp *1.1 })`),
-                    opacity: headerAni.fadeOut.to( fadeOut => fadeOut )
-                }} 
-                className='collectionHeader__artists'>
+                    style={{
+                        transform: scaleUp.to( scaleUp => `scaleY(${ scaleUp })` ),
+                        opacity: fadeOut.to( fadeOut => fadeOut ),
+                        
+                    }} 
+                    className='collectionHeader__artists'>
                 {
                     artists &&
                     artists.length === 1 ?
@@ -128,8 +131,8 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
 
                 <animated.div 
                 style={{
-                    transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp })`),
-                    opacity: headerAni.fadeOut.to( fadeOut => fadeOut )
+                    transform: scaleUp.to( scaleUp => `scaleY(${ scaleUp })` ),
+                    opacity: fadeOut.to( fadeOut => fadeOut )
                 }}
                 className='collectionHeader__info'>
                     <span>
