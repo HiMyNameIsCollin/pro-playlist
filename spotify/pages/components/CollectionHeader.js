@@ -56,7 +56,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
             fadeOut: `${ 1 - ( scrolled * 0.02 )}`,
             fadeIn: `${ 0 + ( scrolled * 0.01 )}`,
             textScroll: `${ 300 - ( scrolled * 3 )}`,
-            moveDown: `${ scrolled * 3 }`
+            moveDown: `${ (scrolled * 1.5 ) + 1 }`
         },
         config: {
             precision: 1,
@@ -97,18 +97,14 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
                 </animated.div> 
 
                 <animated.h1 style={{
-                    transform: scaleUp.to( scaleUp => `scaleY(${ scaleUp })` ),
-                    opacity: fadeOut.to( fadeOut => fadeOut ),
-                    
+                    opacity: fadeOut.to( fadeOut => fadeOut ),                  
                 }}> 
                 { collection.name } 
                 </animated.h1>
                 
                 <animated.div
                     style={{
-                        
                         opacity: fadeOut.to( fadeOut => fadeOut ),
-                        
                     }} 
                     className='collectionHeader__artists'>
                 {
@@ -135,7 +131,6 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
 
                 <animated.div 
                 style={{
-                    
                     opacity: fadeOut.to( fadeOut => fadeOut )
                 }}
                 className='collectionHeader__info'>
