@@ -243,7 +243,7 @@ a
         
 .collectionHeader
     color: $white
-    position: fixed
+    position: absolute
     top: 0
     left: 0
     opacity: 0
@@ -256,13 +256,17 @@ a
     > *
         margin-bottom: 1rem
     &__imgContainer
+        align-items: center
         display: flex
+        justify-content: center
+        position: relative
         padding: 2rem 1rem 1rem 1rem
-        img
-            display: block
-            height: 200px
-            max-width: 100%
-            margin: auto
+        div
+            img
+                display: block
+                height: 200px
+                max-width: 100%
+                margin: auto
     &__info
         color: $lightGrey
         font-size: 0.8rem

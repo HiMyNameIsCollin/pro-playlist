@@ -1,4 +1,4 @@
-import { useSpring, useTransition, animated } from 'react-spring'
+import { useSpring, animated } from 'react-spring'
 import { useLayoutEffect, useEffect, useState, useRef } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleViewArtist } from '../../utils/handleViewArtist'
@@ -48,15 +48,15 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
         }
     }, [ scrolled ])
 
-    const {scaleDown, scaleUp, fadeOut, fadeIn, slideUp, textScroll} = useSpring({
+    const {scaleDown, scaleUp, fadeOut, fadeIn, moveDown, textScroll} = useSpring({
         to: {
             
             scaleDown: `${ 1.00 - ( scrolled * 0.01 )  }`,
             scaleUp: `${ 1.00 + ( scrolled * 0.01 ) }`,
             fadeOut: `${ 1 - ( scrolled * 0.02 )}`,
             fadeIn: `${ 0 + ( scrolled * 0.01 )}`,
-            slideUp: `${ scrolled * -5 }`,
-            textScroll: `${ 300 - ( scrolled * 3 )}`
+            textScroll: `${ 300 - ( scrolled * 3 )}`,
+            moveDown: `${ scrolled * 3 }`
         },
         config: {
             precision: 1,
@@ -73,23 +73,27 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
             headerMounted={ headerMounted }
              />          
             <animated.header 
-            style={{
-                transform: scaleDown.to( scaleDown => `scaleY(${ scaleDown })` )
-            }}
             className={`collectionHeader ${headerMounted && 'collectionHeader--active' }`}>
                 
                 <animated.div
                     style={{
-                        transform: scaleDown.to( scaleDown => `scale(${scaleDown})`),
+                        transform: scaleDown.to( scaleDown => `scale(${scaleDown}) `),
                         opacity: fadeOut.to( fadeOut => fadeOut )
                     }} 
                     className='collectionHeader__imgContainer'>
-                    <img
-                    crossorigin='anonymous' 
-                    // ON LOAD HERE ########################################
-                    onLoad={(e) => handleColorThief(e, 2)} 
-                    className='collectionHeader__img' 
-                    src={ whichPicture(collection.images, 'med') } />
+                    <animated.div 
+                    style={{
+                        transform: moveDown.to( moveDown => `translateY(${ moveDown }%)`)
+                    }}
+                    className='collectionHeader__imgTransform'>
+                        <img
+                        crossorigin='anonymous' 
+                        // ON LOAD HERE ########################################
+                        onLoad={(e) => handleColorThief(e, 2)} 
+                        className='collectionHeader__img' 
+                        src={ whichPicture(collection.images, 'med') } />
+                    </animated.div>
+                    
                 </animated.div> 
 
                 <animated.h1 style={{
@@ -102,7 +106,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
                 
                 <animated.div
                     style={{
-                        transform: scaleUp.to( scaleUp => `scaleY(${ scaleUp })` ),
+                        
                         opacity: fadeOut.to( fadeOut => fadeOut ),
                         
                     }} 
@@ -131,7 +135,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
 
                 <animated.div 
                 style={{
-                    transform: scaleUp.to( scaleUp => `scaleY(${ scaleUp })` ),
+                    
                     opacity: fadeOut.to( fadeOut => fadeOut )
                 }}
                 className='collectionHeader__info'>
