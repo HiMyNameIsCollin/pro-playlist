@@ -114,7 +114,7 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
         if( collection ) {
             
             const img = whichPicture(collection.images, 'lrg')
-            document.documentElement.style.setProperty('--collectionBackground', `url(${img})`)
+            document.documentElement.style.setProperty('--headerBackground', `url(${img})`)
         }
     }, [collection])
 

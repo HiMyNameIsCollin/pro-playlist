@@ -3,10 +3,8 @@ import { useLayoutEffect, useEffect, useState, useRef } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleViewArtist } from '../../utils/handleViewArtist'
 import { capital } from '../../utils/capital'
-import ColorThief from '../../node_modules/colorthief/dist/color-thief.mjs'
+import useColorThief from '../../hooks/useColorThief'
 import HeaderBacking from './HeaderBacking'
-
-
 
 const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted , scrollPosition}) => {
     const { collection, artists, tracks } = { ...data }
@@ -14,15 +12,16 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
     const [ scrolled, setScrolled ] = useState(null)
     const [ fullHeader, setFullHeader ] = useState(true)
     const elementPercentRef = useRef(elementHeight)
+    const { handleColorThief } = useColorThief( setHeaderMounted , 'headerColor')
 
     useLayoutEffect(() => {
         const thisHeader = document.querySelector('.collectionHeader')
-        document.documentElement.style.setProperty('--collectionHeaderHeight', thisHeader.offsetHeight + 'px')
+        document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
         setElementHeight(thisHeader.offsetHeight)
 
         return () => {
-            document.documentElement.style.setProperty('--collectionHeaderColor0', 'initial')
-            document.documentElement.style.setProperty('--collectionHeaderColor1', 'initial')
+            document.documentElement.style.setProperty('--headerColor0', 'initial')
+            document.documentElement.style.setProperty('--headerColor1', 'initial')
         }
     }, [])
 
@@ -64,21 +63,6 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
         }
     })
 
-    const handleColorThief = (e) => {
-        const colorThief = new ColorThief()
-        const palette = colorThief.getPalette(e.target , 2)
-        const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
-            const hex = x.toString(16)
-            return hex.length === 1 ? '0' + hex : hex
-          }).join('')
-        console.log(palette)
-        const colors = palette.map((clrArray) => {
-            return rgbToHex(...clrArray)
-        })
-        colors.map((clr, i) => document.documentElement.style.setProperty(`--collectionHeaderColor${i}`, clr) )
-        setHeaderMounted(true)
-    }
-    
     return(
         <>  
             <HeaderBacking
@@ -101,7 +85,8 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
                     className='collectionHeader__imgContainer'>
                     <img
                     crossorigin='anonymous' 
-                    onLoad={handleColorThief} 
+                    // ON LOAD HERE ////////////////////////////////////
+                    onLoad={(e) => handleColorThief(e, 2)} 
                     className='collectionHeader__img' 
                     src={ whichPicture(collection.images, 'med') } />
                 </animated.div> 
@@ -166,7 +151,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
                     }
                     
                 </animated.div>  
-                
+
             </animated.header>
         </>
 

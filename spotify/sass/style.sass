@@ -10,9 +10,9 @@ $bg__1--sm: url('../public/bgsm.jpg')
 $bg__1--lg: url('../public/bglg.jpg')
 
 \:root
-    --collectionBackground: ''
-    --collectionHeaderHeight: 0
-    --collectionHeaderColor: $black
+    --headerBackground: ''
+    --headerHeight: 0
+
 
 
 @mixin shadowA
@@ -102,10 +102,6 @@ a
     overflow: hidden
 
 .container
-    background-image: $bg__1--sm
-    background-position: center center
-    background-size: cover
-    background-attachment: fixed
     display: flex
     justify-content: center
     align-items: center
@@ -120,6 +116,10 @@ a
 
 .dashboard
     @include overlay
+    background-image: $bg__1--sm
+    background-position: center center
+    background-size: cover
+    background-attachment: fixed
     min-height: 100vh
     min-width: 100vw
     max-width: 100vw
@@ -214,7 +214,7 @@ a
     &--collection
         background: $black
         color: $white
-        padding-top: var(--collectionHeaderHeight)
+        padding-top: var(--headerHeight)
         .slider
             margin: 0 1rem
     &--blurred
@@ -284,10 +284,10 @@ a
 
 .headerBacking
     @include overlay
-    background-image: var(--collectionBackground)
+    background-image: var(--headerBackground)
     background-size: cover
     background-position: 50% 50%
-    min-height: var(--collectionHeaderHeight)
+    min-height: var(--headerHeight)
     position: absolute
     opacity: 0
     overflow: hidden
@@ -302,13 +302,13 @@ a
         @include scrimGradient($black, 'to top')
         z-index: -1
     &::after
-        background: linear-gradient(to bottom, var(--collectionHeaderColor1) 0% , var(--collectionHeaderColor0)), linear-gradient(to right, var(--collectionHeaderColor1) , var(--collectionHeaderColor0))
+        background: linear-gradient(to bottom, var(--headerColor1) 0% , var(--headerColor0)), linear-gradient(to right, var(--headerColor1) , var(--headerColor0))
         opacity: .75
         z-index: -2
 
 .fixedHeader
     @include overlay
-    background: linear-gradient(to bottom, var(--collectionHeaderColor1) 0% , var(--collectionHeaderColor0)), linear-gradient(to right, var(--collectionHeaderColor1) , var(--collectionHeaderColor0))
+    background: linear-gradient(to bottom, var(--headerColor1) 0% , var(--headerColor0)), linear-gradient(to right, var(--headerColor1) , var(--headerColor0))
     color: $white
     font-size: 1rem
     position: fixed 

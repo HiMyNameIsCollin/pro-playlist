@@ -1,7 +1,6 @@
 :root {
-  --collectionBackground: "";
-  --collectionHeaderHeight: 0;
-  --collectionHeaderColor: $black;
+  --headerBackground: "";
+  --headerHeight: 0;
 }
 
 * {
@@ -38,10 +37,6 @@ a {
 }
 
 .container {
-  background-image: url("../public/bgsm.jpg");
-  background-position: center center;
-  background-size: cover;
-  background-attachment: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,6 +76,10 @@ a {
   position: relative;
   overflow: hidden;
   z-index: 1;
+  background-image: url("../public/bgsm.jpg");
+  background-position: center center;
+  background-size: cover;
+  background-attachment: fixed;
   min-height: 100vh;
   min-width: 100vw;
   max-width: 100vw;
@@ -247,7 +246,7 @@ a {
 .page--collection {
   background: #191414;
   color: #FFFFFF;
-  padding-top: var(--collectionHeaderHeight);
+  padding-top: var(--headerHeight);
 }
 .page--collection .slider {
   margin: 0 1rem;
@@ -354,10 +353,10 @@ a {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  background-image: var(--collectionBackground);
+  background-image: var(--headerBackground);
   background-size: cover;
   background-position: 50% 50%;
-  min-height: var(--collectionHeaderHeight);
+  min-height: var(--headerHeight);
   position: absolute;
   opacity: 0;
   overflow: hidden;
@@ -393,7 +392,7 @@ a {
   z-index: -1;
 }
 .headerBacking::after {
-  background: linear-gradient(to bottom, var(--collectionHeaderColor1) 0%, var(--collectionHeaderColor0)), linear-gradient(to right, var(--collectionHeaderColor1), var(--collectionHeaderColor0));
+  background: linear-gradient(to bottom, var(--headerColor1) 0%, var(--headerColor0)), linear-gradient(to right, var(--headerColor1), var(--headerColor0));
   opacity: 0.75;
   z-index: -2;
 }
@@ -402,7 +401,7 @@ a {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  background: linear-gradient(to bottom, var(--collectionHeaderColor1) 0%, var(--collectionHeaderColor0)), linear-gradient(to right, var(--collectionHeaderColor1), var(--collectionHeaderColor0));
+  background: linear-gradient(to bottom, var(--headerColor1) 0%, var(--headerColor0)), linear-gradient(to right, var(--headerColor1), var(--headerColor0));
   color: #FFFFFF;
   font-size: 1rem;
   position: fixed;
