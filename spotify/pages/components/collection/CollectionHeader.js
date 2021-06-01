@@ -119,15 +119,14 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
                 src={ whichPicture(collection.images, 'med') } />
             </animated.div> 
             <animated.h1 style={{
-                transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp })`),
+                transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp *1.1 })`),
                 opacity: headerAni.fadeOut.to( fadeOut => fadeOut )
             }}> { collection.name } </animated.h1>
             
             <animated.div
             style={{
-                transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp })`),
-                opacity: headerAni.fadeOut.to( fadeOut => fadeOut ),
-                transform: headerAni.slideUp.to( slideUp => `translateY(${ slideUp })`)
+                transform: headerAni.scaleUp.to( scaleUp => `scaleY(${ scaleUp *1.1 })`),
+                opacity: headerAni.fadeOut.to( fadeOut => fadeOut )
             }} 
             className='collectionHeader__artists'>
             {
