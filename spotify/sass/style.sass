@@ -282,7 +282,7 @@ a
     &::before
         
 
-.collectionBackingImg
+.headerBacking
     @include overlay
     background-image: var(--collectionBackground)
     background-size: cover
@@ -306,7 +306,7 @@ a
         opacity: .75
         z-index: -2
 
-.collectionHeaderSticky
+.fixedHeader
     @include overlay
     background: linear-gradient(to bottom, var(--collectionHeaderColor1) 0% , var(--collectionHeaderColor0)), linear-gradient(to right, var(--collectionHeaderColor1) , var(--collectionHeaderColor0))
     color: $white
