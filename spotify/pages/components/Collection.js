@@ -228,7 +228,13 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
                 }
             </>
             }
-
+            {
+                collection && collection.copyrights &&
+                <section className='collection__copyright'>
+                     <p>{ collection.copyrights[0].text } </p>
+                </section>
+                
+            }
         </div>
     )
 }

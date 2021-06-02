@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const Artist = () => {
+const Artist = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted , scrollPosition }) => {
     return(
         <div className='page page--bg'>
 

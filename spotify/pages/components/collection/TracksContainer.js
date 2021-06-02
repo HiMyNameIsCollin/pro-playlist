@@ -13,7 +13,7 @@ const TracksContainer = ({ data , setOverlay }) => {
     }
 
     return(
-        <section className='trackContainer'>
+        <section className='collection__trackContainer'>
         {
             tracks.map((track, i) => {
                 return (

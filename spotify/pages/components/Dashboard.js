@@ -424,7 +424,16 @@ and if I put them inside the page, they will be fixed to the container and not t
                             <Manage />
                         </Route> 
                         <Route path='/artist/:id'>
-                            <Artist  />
+                            <Artist 
+                            type='album'
+                            item={ activeItem }
+                            setActiveItem={ setActiveItem }
+                            setActiveHeader={ setActiveHeader }
+                            overlay={ overlay }
+                            setOverlay={ setOverlay }
+                            headerMounted={ headerMounted }
+                            genreSeeds={ state.available_genre_seeds}
+                            location={ location }/>
                         </Route> 
                         <Route path='/album/:id'>
                             <Collection

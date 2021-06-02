@@ -261,6 +261,9 @@ a {
 .collection > * {
   margin-bottom: 1rem;
 }
+.collection__trackContainer {
+  padding-top: 1rem;
+}
 .collection__meta {
   color: #FFFFFF;
   font-size: 0.8rem;
@@ -288,6 +291,10 @@ a {
 }
 .collection .recommendations {
   padding: 0 1rem;
+}
+.collection__copyright {
+  font-size: 0.8rem;
+  padding: 1rem;
 }
 
 .collectionHeader {

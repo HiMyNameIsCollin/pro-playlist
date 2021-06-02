@@ -51,12 +51,12 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
     const {scaleDown, scaleUp, fadeOut, fadeIn, moveDown, textScroll} = useSpring({
         to: {
             
-            scaleDown: `${ 1.00 - ( scrolled * 0.01 )  }`,
+            scaleDown: `${ 1.00 - ( scrolled * 0.005 )  }`,
             scaleUp: `${ 1.00 + ( scrolled * 0.01 ) }`,
             fadeOut: `${ 1 - ( scrolled * 0.02 )}`,
             fadeIn: `${ 0 + ( scrolled * 0.01 )}`,
-            textScroll: `${ 300 - ( scrolled * 3 )}`,
-            moveDown: `${ (scrolled * 1.5 ) + 1 }`
+            textScroll: `${ 200 - ( scrolled * 2 )}`,
+            moveDown: `${ (scrolled * 2 )  }`
         },
         config: {
             precision: 1,
