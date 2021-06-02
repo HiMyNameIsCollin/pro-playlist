@@ -3,6 +3,7 @@ import { Switch, Route, useLocation, useHistory, NavLink, Link } from 'react-rou
 import { capital } from '../../utils/capital'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
+import { calcScroll } from '../../utils/calcScroll'
 import { useTransition, animated } from 'react-spring'
 import  useApiCall  from '../../hooks/useApiCall'
 import HomeHeader from './HomeHeader'
@@ -246,15 +247,10 @@ const Dashboard = ({ setAuth }) => {
         window.addEventListener('scroll', handleScroll)
     },[])
 
-    const calcScrollPercent = () => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const percent = (winScroll / height) * 100
-        return percent
-    }
+
  
     const handleScroll = () => {
-        const percent = calcScrollPercent()
+        const percent = calcScroll()
         setScrollPosition( percent ? percent : 0)
     }
 

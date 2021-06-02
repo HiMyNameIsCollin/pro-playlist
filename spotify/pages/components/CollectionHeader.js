@@ -3,7 +3,8 @@ import { useLayoutEffect, useEffect, useState, useRef } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleViewArtist } from '../../utils/handleViewArtist'
 import { capital } from '../../utils/capital'
-import useColorThief from '../../hooks/useColorThief'
+import { handleColorThief } from '../../utils/handleColorThief'
+import { calcScroll } from '../../utils/calcScroll'
 import HeaderBacking from './HeaderBacking'
 
 const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted , scrollPosition}) => {
@@ -11,8 +12,6 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ scrolled, setScrolled ] = useState(null)
     const [ fullHeader, setFullHeader ] = useState(true)
-    const elementPercentRef = useRef(elementHeight)
-    const { handleColorThief } = useColorThief( setHeaderMounted , 'headerColor')
 
     useLayoutEffect(() => {
         const thisHeader = document.querySelector('.collectionHeader')
@@ -26,17 +25,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
     }, [])
 
     useEffect(() => {
-        // WILL NEED TO MAKE A RESIZING HOOK AND MAKE THIS IT A DEPENDENCY OF THIS UE
-        if( elementHeight ){
-            const totalHeight = document.documentElement.scrollHeight
-            const percentOfTotal = ( elementHeight / totalHeight ) * 100 
-            elementPercentRef.current = percentOfTotal
-        }
-    },[ elementHeight ])
-
-    useEffect(() => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const percent = (winScroll / elementHeight) * 100
+        const percent = calcScroll(elementHeight )
         setScrolled( percent <= 100 ? percent : 100 )
     }, [scrollPosition , elementHeight])
 
@@ -47,6 +36,12 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
             setFullHeader(true)
         }
     }, [ scrolled ])
+
+    const finishMount = (e, amount)=>{
+        const colors = handleColorThief(e.target, amount)
+        colors.map((clr, i) => document.documentElement.style.setProperty(`'--headerColor${i}'`, clr))
+        setHeaderMounted(true)
+    }
 
     const {scaleDown, scaleUp, fadeOut, fadeIn, moveDown, textScroll} = useSpring({
         to: {
@@ -89,7 +84,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
                         <img
                         crossorigin='anonymous' 
                         // ON LOAD HERE ########################################
-                        onLoad={(e) => handleColorThief(e, 2)} 
+                        onLoad={(e) => finishMount(e, 2)} 
                         className='collectionHeader__img' 
                         src={ whichPicture(collection.images, 'med') } />
                     </animated.div>
