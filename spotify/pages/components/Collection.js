@@ -3,8 +3,8 @@ import  useApiCall  from '../../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
 import CollectionHeader from './CollectionHeader'
-import CollectionMeta from './collection/CollectionMeta'
-import TracksContainer from './collection/TracksContainer'
+import CollectionMeta from './CollectionMeta'
+import TracksContainer from './TracksContainer'
 import Slider from './Slider'
 import Loading from './Loading'
 
@@ -205,7 +205,7 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
             loaded && collection && tracks &&
             <>
                 
-                <TracksContainer data={ state } setOverlay={ setOverlay }/>
+                <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
                 
                 {
                     type === 'album' && recommendations &&

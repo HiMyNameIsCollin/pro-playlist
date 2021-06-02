@@ -14,7 +14,7 @@ const Overlay = ({ overlay , setOverlay, setActiveItem }) => {
         let overlayMod = { ...overlay}
         overlayMod.type = ''
         setOverlay(overlayMod)
-        setTimeout(() => setOverlay(null) , 150)
+        setTimeout(() => setOverlay(null) , 250)
     }
 
     const menuTransition = useTransition(overlay ,{

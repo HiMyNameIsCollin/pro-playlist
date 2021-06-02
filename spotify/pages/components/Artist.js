@@ -1,4 +1,5 @@
 import { useState, useEffect, useReducer } from 'react'
+import TracksContainer from './TracksContainer'
 import useApiCall from '../../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
@@ -44,7 +45,7 @@ const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, hea
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
-    const { artist } = { ...state }
+    const { artist , top_tracks } = { ...state }
     useEffect(() => {
         let id = item && item.id ? item.id : location.pathname.substr( routes.artist.length - 2 )
         finalizeRoute( 'get', `${routes.artist}/${id}`, fetchApi, id)
@@ -60,7 +61,6 @@ const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, hea
     },[ artist ])
 
 
-    
     return(
         <div className={ `page page--artist artist ${ overlay ? 'page--blurred' : ''}` }>
             {
@@ -73,8 +73,11 @@ const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, hea
                         /> 
                     </div>
                     <h1> {artist.name} </h1>
-                    
                 </header>
+            }
+            {
+                top_tracks &&
+                <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks} } setOverlay={ setOverlay }/>
             }
         </div>
     )
