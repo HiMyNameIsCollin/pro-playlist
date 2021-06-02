@@ -190,7 +190,7 @@ const Dashboard = ({ setAuth }) => {
 // headerMounted is used to let the loading element in each page know that its header has mounted and loaded
     const [ headerMounted, setHeaderMounted ] = useState(false)
     const scrollRef = useRef(scrollPosition)
-    const locationRef = useRef([location.pathname])
+    const locationRef = useRef([{ pathname: location.pathname, activeItem: activeItem, scrollPosition: scrollPosition }])
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
         if(state.my_top_artists.length > 0) {
@@ -247,8 +247,6 @@ const Dashboard = ({ setAuth }) => {
         window.addEventListener('scroll', handleScroll)
     },[])
 
-
- 
     const handleScroll = () => {
         const percent = calcScroll()
         setScrollPosition( percent ? percent : 0)
@@ -332,8 +330,8 @@ const Dashboard = ({ setAuth }) => {
                 locationRef.current.pop()
                 locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem , scrollPosition : scrollPosition} )
             }
-        }
-    },[ location.pathname ])
+        } 
+    },[])
 
 // Reset activeItem to null, otherwise you cant access same page twice in a row.
     useEffect(() => {

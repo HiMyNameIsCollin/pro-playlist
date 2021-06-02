@@ -88,35 +88,15 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
     const { collection, artists, tracks, recommendations } = {...state}
 
     useEffect(() => {
-            if(type === 'album'){
-                if(item){
-                    finalizeRoute( 'get', `${routes.album}/${item.id}`, fetchApi)
-                }else{
-                    const id = location.pathname.substr( routes.album.length - 2 )
-                    finalizeRoute( 'get', `${routes.album}/${id}`, fetchApi)
-                } 
-            } else if(type === 'playlist'){
-                if( item ){
-                    finalizeRoute( 'get', `${routes.playlist}/${item.id}`, fetchApi)
-                }else {
-                    const id = location.pathname.substr( routes.playlist.length - 2 )
-                    finalizeRoute( 'get', `${routes.playlist}/${id}`, fetchApi)
-                }
-            }
-        }, [])
-
-    useEffect(() => {
-        if(apiPayload) dispatch( apiPayload )
-    }, [apiPayload])
-
-    useEffect(() => {
-        // Set background image of Album header
-        if( collection ) {
-            
-            const img = whichPicture(collection.images, 'lrg')
-            document.documentElement.style.setProperty('--headerBackground', `url(${img})`)
-        }
-    }, [collection])
+        let id
+        id = item && item.id ? 
+        item.id :
+        type ==='album' ?
+        location.pathname.substr( routes.album.length - 2 ) :
+        location.pathname.substr( routes.playlist.length - 2 )
+        finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, fetchApi, id)
+    
+    }, [])
 
     useEffect(() => {
         if( collection && !artists ){
@@ -130,15 +110,23 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
         } 
     }, [ collection ])
 
+    useEffect(() => {
+        if(apiPayload) dispatch( apiPayload )
+    }, [apiPayload])
+
+    useEffect(() => {
+        // Set background image of Album header
+        if( collection ) {
+            const img = whichPicture(collection.images, 'lrg')
+            document.documentElement.style.setProperty('--headerBackground', `url(${img})`)
+        }
+    }, [collection])
 
     useEffect(() => {
         if( collection && !tracks){
-            let tracksRoute 
-            if( type === 'album' ){
-                tracksRoute = routes.tracks.substr( 0, routes.tracks.length - 7 )
-            } else {
-                tracksRoute = routes.playlist.substr( 0, routes.tracks.length - 7 )
-            }
+            let tracksRoute = type === 'album' ? 
+            routes.tracks.substr( 0, routes.tracks.length - 7 ):
+            tracksRoute = routes.playlist.substr( 0, routes.tracks.length - 7 )
             tracksRoute += `/${collection.id}`
             tracksRoute += '/tracks'
             finalizeRoute( 'get', tracksRoute , fetchApi , collection.id)

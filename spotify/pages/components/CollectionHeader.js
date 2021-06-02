@@ -39,7 +39,7 @@ const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, set
 
     const finishMount = (e, amount)=>{
         const colors = handleColorThief(e.target, amount)
-        colors.map((clr, i) => document.documentElement.style.setProperty(`'--headerColor${i}'`, clr))
+        colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${i}`, clr))
         setHeaderMounted(true)
     }
 
