@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 
-const Artist = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted , scrollPosition }) => {
+const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, headerMounted, genreSeeds, location }) => {
     return(
-        <div className='page page--bg'>
-
+        <div className={ `page page--artist artist ${ overlay ? 'page--blurred' : ''}` }>
+            Test
         </div>
     )
 }

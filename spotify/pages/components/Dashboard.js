@@ -425,7 +425,6 @@ and if I put them inside the page, they will be fixed to the container and not t
                         </Route> 
                         <Route path='/artist/:id'>
                             <Artist 
-                            type='album'
                             item={ activeItem }
                             setActiveItem={ setActiveItem }
                             setActiveHeader={ setActiveHeader }
