@@ -308,21 +308,37 @@ a {
 }
 
 .artist__trackContainer .track {
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
   grid-template-rows: 1fr 1fr;
 }
-.artist__trackContainer .track p {
-  grid-column: 2/3;
-}
-.artist__trackContainer .track span {
-  grid-column: 2/3;
-}
-.artist__trackContainer .track i {
+.artist__trackContainer .track h5 {
   grid-column: 3/4;
 }
-.artist__trackContainer .track img {
+.artist__trackContainer .track span {
+  grid-column: 3/4;
+}
+.artist__trackContainer .track i {
+  grid-column: 4/5;
+}
+.artist__trackContainer .track__imgContainer {
+  align-self: center;
+  display: flex;
+  grid-column: 2/3;
+  grid-row: 1/3;
+  height: 2.5rem;
+  margin-right: 1rem;
+  width: 2.5rem;
+}
+.artist__trackContainer .track__imgContainer img {
+  height: 100%;
+  width: 100%;
+}
+.artist__trackContainer .track p {
+  align-self: center;
+  font-size: 0.8rem;
   grid-column: 1/2;
   grid-row: 1/3;
+  padding-right: 1rem;
 }
 .artist__trackContainer h4 {
   padding: 1rem 0.5rem;
@@ -335,7 +351,7 @@ a {
   grid-template-rows: 1fr 1fr;
   padding: 0.5rem;
 }
-.track p {
+.track h5 {
   grid-column: 1/2;
   grid-row: 1/2;
   font-weight: 700;
@@ -368,6 +384,7 @@ a {
   left: 0;
   position: absolute;
   top: 0;
+  padding-bottom: 20rem;
   width: 100%;
 }
 .artistHeader::before {
@@ -406,7 +423,9 @@ a {
   padding: 1rem;
   flex-grow: 0;
   font-size: clamp(2rem, 10vw, 3rem);
-  margin-top: 12rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
   line-height: 40px;
   z-index: 1;
 }

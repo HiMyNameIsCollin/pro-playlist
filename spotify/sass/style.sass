@@ -251,17 +251,32 @@ a
 .artist
     &__trackContainer
         .track
-            grid-template-columns: auto minmax(0, 1fr) auto
+            grid-template-columns: auto auto minmax(0, 1fr) auto
             grid-template-rows: 1fr 1fr
-            p
-                grid-column: 2/3
-            span
-                grid-column: 2/3
-            i
+            h5
                 grid-column: 3/4
-            img
+                
+            span
+                grid-column: 3/4
+            i
+                grid-column: 4/5
+            &__imgContainer
+                align-self: center
+                display: flex
+                grid-column: 2/3
+                grid-row: 1/3
+                height: 2.5rem
+                margin-right: 1rem
+                width: 2.5rem
+                img
+                    height: 100%
+                    width: 100%
+            p
+                align-self: center
+                font-size: .8rem
                 grid-column: 1/2
                 grid-row: 1/3
+                padding-right: 1rem
         h4
             padding: 1rem .5rem
 
@@ -271,7 +286,7 @@ a
     grid-template-columns: minmax(0, 1fr) auto
     grid-template-rows: 1fr 1fr
     padding: .5rem 
-    p
+    h5
         grid-column: 1/2
         grid-row: 1/2
         font-weight: 700
@@ -299,7 +314,7 @@ a
     left: 0
     position: absolute
     top: 0
-    
+    padding-bottom: 20rem
     width: 100%
     &__imgContainer
         height: 100%
@@ -317,7 +332,9 @@ a
         padding: 1rem
         flex-grow: 0
         font-size: clamp(2rem, 10vw, 3rem)
-        margin-top: 12rem
+        position: absolute
+        bottom: 0
+        left: 0
         line-height: 40px
         z-index: 1
     &::before

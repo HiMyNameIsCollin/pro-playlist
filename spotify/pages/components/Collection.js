@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer, useLayoutEffect } from 'react'
+import { useState, useEffect, useReducer, useLayoutEffect, useContext } from 'react'
 import  useApiCall  from '../../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
@@ -7,9 +7,13 @@ import CollectionMeta from './CollectionMeta'
 import TracksContainer from './TracksContainer'
 import Slider from './Slider'
 import Loading from './Loading'
+import { DbHookContext } from './Dashboard'
 
 
-const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOverlay, headerMounted, genreSeeds, location }) => {
+const Collection = ({ type, genreSeeds, location }) => {
+    
+    const { activeItem, setActiveItem, overlay, setOverlay, setActiveHeader, headerMounted } = useContext( DbHookContext )
+
     const initialState = {
         collection: null,
         tracks: null,
@@ -89,8 +93,8 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
 
     useEffect(() => {
         let id
-        id = item && item.id ? 
-        item.id :
+        id = activeItem && activeItem.id ? 
+        activeItem.id :
         type ==='album' ?
         location.pathname.substr( routes.album.length - 2 ) :
         location.pathname.substr( routes.playlist.length - 2 )
@@ -181,7 +185,7 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
     // If users first page is Collection, fetch the data from here, and then set in the dashboard component.
 
     useEffect(() => {
-        if( !item && collection ) setActiveItem( collection )
+        if( !activeItem && collection ) setActiveItem( collection )
     }, [collection])
 
     useEffect(()=> {
@@ -204,15 +208,14 @@ const Collection = ({ type, item, setActiveItem, setActiveHeader, overlay, setOv
             {
             loaded && collection && tracks &&
             <>
-                
                 <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
                 
                 {
-                    type === 'album' && recommendations &&
-                    <>
-                        <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
-                        <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
-                    </>
+                type === 'album' && recommendations &&
+                <>
+                    <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                    <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
+                </>
                 }
             </>
             }

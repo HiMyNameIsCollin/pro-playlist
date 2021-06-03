@@ -28,6 +28,8 @@ const Login = ({ useFetchToken }) => {
       url += ' '
       url += 'user-library-read'
       url += ' '
+      url += 'user-follow-read'
+      url += ' '
       url += 'user-library-modify'
       url += ' '
       url += 'playlist-read-collaborative'

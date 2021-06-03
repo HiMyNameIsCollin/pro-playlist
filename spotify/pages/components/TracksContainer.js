@@ -25,13 +25,18 @@ const TracksContainer = ({ type, data , setOverlay }) => {
                     {/* Ternary operators determine if this is a playlist or an album. */}
                     {
                         type==='artist' &&
-                        <img
-                            alt='Album' 
-                            src={ whichPicture( track.album.images, 'sm')}/>
+                        <>
+                            <p>{i + 1}</p>
+                            <div className='track__imgContainer'>
+                                <img
+                                alt='Album' 
+                                src={ whichPicture( track.album.images, 'sm')}/>
+                            </div>
+                        </>
                     }
-                    <p>
+                    <h5>
                         { track.name ? track.name : track.track.name }
-                    </p>
+                    </h5>
                     <span>
                         {
                         type ==='collection' ?
@@ -41,7 +46,7 @@ const TracksContainer = ({ type, data , setOverlay }) => {
                         track.artists.map((artist , j) => j !== track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`)  
                         }
                     </span>
-                    <i onClick={ () => handleTrackMenu( collection.type === 'playlist' ? track.track : track ) } className="fas fa-ellipsis-h"></i>
+                    <i onClick={ () => handleTrackMenu( type!=='artist' ? collection.type === 'playlist' ? track.track : track : track) } className="fas fa-ellipsis-h"></i>
 
                 </div>
                 ) 

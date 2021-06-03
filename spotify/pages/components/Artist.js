@@ -1,19 +1,26 @@
-import { useState, useEffect, useReducer , useLayoutEffect} from 'react'
+import { useState, useEffect, useReducer , useLayoutEffect, useContext} from 'react'
 import TracksContainer from './TracksContainer'
 import useApiCall from '../../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
+import { DbHookContext } from './Dashboard'
 
-const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, headerMounted, genreSeeds, location }) => {
+const Artist = ({ item, genreSeeds, location }) => {
+
+    const { activeItem, setActiveItem, overlay, setOverlay, setActiveHeader, headerMounted } = useContext( DbHookContext )
 
     const initialState = {
         artist: null,
-        top_tracks: null
+        top_tracks: null,
+        albums: null,
+        follow: false,
     }
 
     const routes = {
         artist: 'v1/artists',
-        top_tracks: 'v1/artists/top-tracks'
+        top_tracks: 'v1/artists/top-tracks',
+        albums: 'v1/artists/albums',
+        following: 'v1/me/following/contains'
     }
 
     const reducer = ( state, action ) => {
@@ -25,16 +32,26 @@ const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, hea
         }
         switch(route){
             case routes.artist :
-                return{
+                return {
                     ...state,
                     artist: action
                 }
             case routes.top_tracks :
-                return{
+                return {
                     ...state,
                     top_tracks: action.tracks
                 }
-                default: 
+            case routes.albums :
+                return {
+                    ...state,
+                    albums: action.items
+                }
+            case routes.following :
+                return {
+                    ...state,
+                    following: action[0]
+                }
+            default: 
                 console.log(action)
                 break
         }
@@ -53,6 +70,7 @@ const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, hea
         let id = item && item.id ? item.id : location.pathname.substr( routes.artist.length - 2 )
         finalizeRoute( 'get', `${routes.artist}/${id}`, fetchApi, id)
         finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, fetchApi, id, `market=ES`)
+        finalizeRoute( 'get', `${routes.artist}/${id}/albums`, fetchApi, id, 'limit=50')
     }, [])
 
     useEffect(() => {
@@ -92,7 +110,7 @@ const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, hea
             }
             {
                 top_tracks &&
-                <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks} } setOverlay={ setOverlay }/>
+                <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks.slice(0, 5)} } setOverlay={ setOverlay }/>
             }
         </div>
     )

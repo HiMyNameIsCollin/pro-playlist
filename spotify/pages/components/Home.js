@@ -1,10 +1,12 @@
 import Slider from './Slider'
 import TabsContainer from './TabsContainer'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { DbHookContext } from './Dashboard'
 
+const Home = ({  state  }) => {
 
-const Home = ({  state , setActiveItem  }) => {
+    const { setActiveItem } = useContext(DbHookContext)
     return(
         <div className='page'>
             <TabsContainer items={ state.recently_played } />

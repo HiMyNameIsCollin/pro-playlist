@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer, useRef, useLayoutEffect } from 'react'
+import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
 import { Switch, Route, useLocation, useHistory, NavLink, Link } from 'react-router-dom'
 import { capital } from '../../utils/capital'
 import { finalizeRoute } from '../../utils/finalizeRoute'
@@ -50,8 +50,7 @@ const routes = {
     new_releases: 'v1/browse/new-releases',
     search: 'v1/search',
     available_genre_seeds: 'v1/recommendations/available-genre-seeds',
-    get_album: 'v1/albums',
-    get_artist: 'v1/artists',
+    followed_artists: 'v1/me/following',
     // My reducer is based off a set 'Route' string attached during the fetch process,
     // I set the top genre state with a makeshift 'my_top_genres' "route". 
     // Hopefully Spotify adds a top genres route eventually :(
@@ -159,6 +158,11 @@ const reducer = (state, action) => {
                         my_top_artists: action.items
                     }
                 } 
+            case routes.followed_artists:
+                return{
+                    ...state,
+                    followed_artists: action.artists.items
+                }
 
             case routes.my_top_genres:
                 // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
@@ -173,6 +177,8 @@ const reducer = (state, action) => {
                 
         }
 }
+
+export const DbHookContext = createContext()
 
 const Dashboard = ({ setAuth }) => {
     // ENV VARIABLE FOR API?
@@ -191,6 +197,8 @@ const Dashboard = ({ setAuth }) => {
     const [ headerMounted, setHeaderMounted ] = useState(false)
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([{ pathname: location.pathname, activeItem: activeItem, scrollPosition: scrollPosition }])
+    const dbHookState = {activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, headerMounted, setHeaderMounted, scrollPosition }
+
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
         if(state.my_top_artists.length > 0) {
@@ -270,6 +278,7 @@ const Dashboard = ({ setAuth }) => {
         finalizeRoute( 'get', routes.available_genre_seeds, fetchApi, null )
         finalizeRoute( 'get', routes.my_top_tracks, fetchApi, null )
         finalizeRoute( 'get', routes.my_top_artists, fetchApi, null )
+        finalizeRoute ('get', routes.followed_artists, fetchApi, null, 'type=artist')
     },[])
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
@@ -351,53 +360,40 @@ const Dashboard = ({ setAuth }) => {
     }, [overlay])
 
     return(
-            <section className='dashboard'>
-                
+        <DbHookContext.Provider value={ dbHookState }>
+        <section className='dashboard'>  
 {/* Headers are kept seperate from their respective pages because these are fixed positiong, 
 and if I put them inside the page, they will be fixed to the container and not the page. */}
-                <Switch >
-                    <Route exact path='/'>
-                        <HomeHeader 
-                        setAuth={ setAuth } 
-                        hiddenUI={ hiddenUI } /> 
-                    </Route> 
-                    <Route path='/search'>
-                        <SearchHeader hiddenUI={ hiddenUI }/>
-                    </Route> 
-                    <Route path='/manage'>
-                        
-                    </Route> 
-                    <Route path='/album/:id' >
-                        {
-                            activeHeader &&
-                            
-                            <CollectionHeader 
-                            data={ activeHeader } 
-                            setOverlay={ setOverlay } 
-                            setActiveItem={ setActiveItem } 
-                            headerMounted={ headerMounted }
-                            setHeaderMounted={ setHeaderMounted }
-                            scrollPosition={ scrollPosition }/>
-                        }
-                    </Route>
-                    <Route path='/playlist/:id' >
-                        {
-                            activeHeader &&
-                            <CollectionHeader 
-                            data={ activeHeader } 
-                            setOverlay={ setOverlay } 
-                            setActiveItem={ setActiveItem } 
-                            headerMounted={ headerMounted }
-                            setHeaderMounted={ setHeaderMounted }
-                            scrollPosition={ scrollPosition } />
-                        }
-                    </Route>
-                </Switch>
 
-                <Overlay 
-                overlay={ overlay } 
-                setOverlay={ setOverlay } 
-                setActiveItem={ setActiveItem }/>
+            <Switch >
+                <Route exact path='/'>
+                    <HomeHeader 
+                    setAuth={ setAuth } 
+                    hiddenUI={ hiddenUI } /> 
+                </Route> 
+                <Route path='/search'>
+                    <SearchHeader hiddenUI={ hiddenUI }/>
+                </Route> 
+                <Route path='/manage'>
+                    
+                </Route> 
+                <Route path='/album/:id' >
+                    {
+                        activeHeader &&
+                        <CollectionHeader 
+                        data={ activeHeader } />
+                    }
+                </Route>
+                <Route path='/playlist/:id' >
+                    {
+                        activeHeader &&
+                        <CollectionHeader 
+                        data={ activeHeader } />
+                    }
+                </Route>
+            </Switch>
+
+            <Overlay />
                 
             {
             pageTransition((props, item) => (
@@ -405,8 +401,7 @@ and if I put them inside the page, they will be fixed to the container and not t
                     <Switch location={ item }>
                         <Route exact path='/'>
                             <Home
-                            state={ state }
-                            setActiveItem={ setActiveItem } />
+                            state={ state }/>
                         </Route> 
                         <Route path='/search'>
                             <Search
@@ -419,36 +414,18 @@ and if I put them inside the page, they will be fixed to the container and not t
                         </Route> 
                         <Route path='/artist/:id'>
                             <Artist 
-                            item={ activeItem }
-                            setActiveItem={ setActiveItem }
-                            setActiveHeader={ setActiveHeader }
-                            overlay={ overlay }
-                            setOverlay={ setOverlay }
-                            headerMounted={ headerMounted }
                             genreSeeds={ state.available_genre_seeds}
                             location={ location }/>
                         </Route> 
                         <Route path='/album/:id'>
                             <Collection
                             type='album'
-                            item={ activeItem }
-                            setActiveItem={ setActiveItem }
-                            setActiveHeader={ setActiveHeader }
-                            overlay={ overlay }
-                            setOverlay={ setOverlay }
-                            headerMounted={ headerMounted }
                             genreSeeds={ state.available_genre_seeds}
                             location={ location } />
                         </Route>
                         <Route path='/playlist/:id'>
                             <Collection
                             type='playlist'
-                            item={ activeItem }
-                            setActiveItem={ setActiveItem }
-                            setActiveHeader={ setActiveHeader }
-                            overlay={ overlay }
-                            setOverlay={ setOverlay }
-                            headerMounted={ headerMounted }
                             genreSeeds={ state.available_genre_seeds}
                             location={ location } />
                         </Route> 
@@ -456,7 +433,11 @@ and if I put them inside the page, they will be fixed to the container and not t
                             <Showcase 
                             location={ location } />
                         </Route> 
+                        
                     </Switch>
+                
+                
+                    
                 </animated.div>
             ))
             }
@@ -464,7 +445,8 @@ and if I put them inside the page, they will be fixed to the container and not t
                 !overlay &&
                 <Nav location={ location } hiddenUI={ hiddenUI } NavLink={ NavLink } /> 
             }
-        </section>    
+        </section>  
+        </DbHookContext.Provider>  
     )
 }
 export default Dashboard

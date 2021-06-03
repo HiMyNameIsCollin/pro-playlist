@@ -1,17 +1,20 @@
 import { useSpring, animated } from 'react-spring'
-import { useLayoutEffect, useEffect, useState, useRef } from 'react'
+import { useLayoutEffect, useEffect, useState, useRef, useContext } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleViewArtist } from '../../utils/handleViewArtist'
 import { capital } from '../../utils/capital'
 import { handleColorThief } from '../../utils/handleColorThief'
 import { calcScroll } from '../../utils/calcScroll'
 import HeaderBacking from './HeaderBacking'
+import { DbHookContext } from './Dashboard'
 
-const CollectionHeader = ({ data , setOverlay, setActiveItem, headerMounted, setHeaderMounted , scrollPosition}) => {
+const CollectionHeader = ({ data }) => {
     const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ scrolled, setScrolled ] = useState(null)
     const [ fullHeader, setFullHeader ] = useState(true)
+
+    const { setOverlay, setActiveItem, headerMounted, setHeaderMounted, scrollPosition } = useContext( DbHookContext )
 
     useLayoutEffect(() => {
         const thisHeader = document.querySelector('.collectionHeader')
