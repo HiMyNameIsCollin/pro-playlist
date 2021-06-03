@@ -1,5 +1,6 @@
 import { useState, useEffect, useReducer , useLayoutEffect, useContext} from 'react'
 import TracksContainer from './TracksContainer'
+import Loading from './Loading'
 import useApiCall from '../../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
@@ -7,7 +8,7 @@ import { DbHookContext } from './Dashboard'
 
 const Artist = ({ genreSeeds, location }) => {
 
-    const { activeItem, setActiveItem, overlay, setOverlay, setActiveHeader, headerMounted } = useContext( DbHookContext )
+    const { activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, headerMounted } = useContext( DbHookContext )
 
     const initialState = {
         artist: [],
@@ -103,45 +104,22 @@ const Artist = ({ genreSeeds, location }) => {
         if(artist.id && !activeItem) setActiveItem(artist)
     },[ artist ])
 
-    useLayoutEffect(() => {
-        if(artist.id ){
-            const thisHeader = document.querySelector('.artistHeader')
-            document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
-            setElementHeight(thisHeader.offsetHeight)
-    
-            return () => {
-                document.documentElement.style.setProperty('--headerColor0', 'initial')
-                document.documentElement.style.setProperty('--headerColor1', 'initial')
-            }
+    useEffect(() => {
+        if(artist.id && !activeHeader){
+            setActiveHeader({ artist })
         }
-    }, [artist])
+    }, [ state ])
 
-    const loadLoader = useTransition(loaded, {
-        from: { opacity: 0 } ,
-        enter: { opacity: 1 },
-        leave: { opacity: 0 }
-    })
+    useEffect(() => {
+        if( headerMounted ) setLoaded(true)
+    },[ headerMounted ])
 
-    const Loader = loadLoader((style, item) => {
-         return <animated.div style={style}> <Loading/> </animated.div>
-    })
 
     return(
         <div className={ `page page--artist artist ${ overlay ? 'page--blurred' : ''}` }>
             {
-                artist.images &&
-                <header className='artistHeader'>
-                    <div className='artistHeader__imgContainer'>
-                        <img 
-                        src={ whichPicture(artist.images, 'lrg') }
-                        alt='Artist'
-                        /> 
-                    </div>
-                    <h1> {artist.name} </h1>
-                </header>
-            }
-            {
-                top_tracks[0] &&
+                !loaded ?
+                <Loading />:
                 <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks.slice(0, 5)} } setOverlay={ setOverlay }/>
             }
         </div>

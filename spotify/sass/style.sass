@@ -248,6 +248,12 @@ a
         font-size: .8rem
         padding: 1rem
 
+.trackContainer
+    opacity: 0
+    transition: opacity .75s ease-in-out
+    &--active
+        opacity: 1
+
 .artist
     &__trackContainer
         .track
@@ -312,9 +318,11 @@ a
     @include overlay
     display: flex
     left: 0
-    position: absolute
-    top: 0
     padding-bottom: 20rem
+    position: absolute
+    opacity: 0
+    top: 0
+    transition: opacity .75s ease-in-out
     width: 100%
     &__imgContainer
         height: 100%
@@ -340,6 +348,8 @@ a
     &::before
         @include scrimGradient($black ,'to top')
         z-index: 1
+    &--active
+        opacity: 1
         
 .collectionHeader
     color: $white

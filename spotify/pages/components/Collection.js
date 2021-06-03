@@ -13,7 +13,6 @@ import { DbHookContext } from './Dashboard'
 
 const Collection = ({ type, genreSeeds, location }) => {
     
-    const { activeItem, setActiveItem, overlay, setOverlay, setActiveHeader, headerMounted } = useContext( DbHookContext )
 
     const initialState = {
         collection: {},
@@ -90,6 +89,8 @@ const Collection = ({ type, genreSeeds, location }) => {
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
+    const { activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, headerMounted } = useContext( DbHookContext )
+
     const { collection, artists, tracks, recommendations } = {...state}
 
     useEffect(() => {
@@ -190,32 +191,26 @@ const Collection = ({ type, genreSeeds, location }) => {
     }, [collection])
 
     useEffect(()=> {
-        if( type === 'album' ) {
-            if( recommendations ) setActiveHeader({ collection, artists, tracks })  
-        } else {
-            if( collection.id && artists[0] && tracks[0] ) setActiveHeader({ collection, artists, tracks })           
+        if(!activeHeader){
+            if( type === 'album' ) {
+                if( recommendations[0] ) setActiveHeader({ collection, artists, tracks })  
+            } else {
+                if( collection.id && artists[0] && tracks[0] ) setActiveHeader({ collection, artists, tracks })           
+            }  
         }
     },[state])
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if( headerMounted ) setLoaded(true)
     }, [ headerMounted ])
 
-    const loadLoader = useTransition(loaded, {
-        from: { opacity: 0 } ,
-        enter: { opacity: 1 },
-        leave: { opacity: 0 }
-    })
-
-    const Loader = loadLoader((style, item) => {
-        if(!item) return <animated.div style={style}> <Loading/> </animated.div>
-    })
 
     return(
         <div className={ `page page--collection collection ${ overlay ? 'page--blurred' : ''}` }>
-        <div>{Loader}</div>
+        
         {
-        loaded && 
+        !loaded ?
+        <Loading/> :
         <>
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             
@@ -224,12 +219,11 @@ const Collection = ({ type, genreSeeds, location }) => {
             <>
                 <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
+                <section className='collection__copyright'>
+                        <p>{ collection.copyrights[0].text } </p>
+                </section>
             </>
             }
-
-            <section className='collection__copyright'>
-                    <p>{ collection.copyrights[0].text } </p>
-            </section>
         </>
         }
         </div>

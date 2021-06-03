@@ -9,6 +9,7 @@ import  useApiCall  from '../../hooks/useApiCall'
 import HomeHeader from './HomeHeader'
 import SearchHeader from './SearchHeader'
 import CollectionHeader from './CollectionHeader'
+import ArtistHeader from './ArtistHeader'
 import Home from './Home'
 import Nav from './Nav'
 import Manage from './Manage'
@@ -376,8 +377,12 @@ and if I put them inside the page, they will be fixed to the container and not t
                 <Route path='/search'>
                     <SearchHeader hiddenUI={ hiddenUI }/>
                 </Route> 
-                <Route path='/manage'>
-                    
+                <Route path='/artist/:id'>
+                    {
+                        activeHeader &&
+                        <ArtistHeader 
+                        data={ activeHeader } />
+                    }
                 </Route> 
                 <Route path='/album/:id' >
                     {

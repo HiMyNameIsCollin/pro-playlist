@@ -1,7 +1,13 @@
 import { whichPicture } from '../../utils/whichPicture'
+import { useState , useEffect } from 'react'
 const TracksContainer = ({ type, data , setOverlay }) => {
 
     const { collection, tracks } = { ...data }
+    const [ mounted, setMounted ] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    },[])
 
     const handleTrackMenu = ( selectedTrack ) => {
         const popupData = {
@@ -13,7 +19,7 @@ const TracksContainer = ({ type, data , setOverlay }) => {
     }
 
     return(
-        <section className={ `${type}__trackContainer`}>
+        <section className={ `${type}__trackContainer trackContainer ${mounted && 'trackContainer--active'}`}>
         {
             type === 'artist' &&
             <h4> Popular </h4> 
