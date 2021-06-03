@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import BrowseContainer from './BrowseContainer'
 
 const Search = ({ state, scrollPosition, getCategories, apiIsPending, setActive }) => {

@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useContext } from 'react'
 import Card from './Card'
+import { DbHookContext } from './Dashboard'
 
-const BrowseContainer = ({ message, data, scrollPosition, setActive }) => {
+const BrowseContainer = ({ message, data}) => {
     
+    const { scrollPosition } = useContext( DbHookContext )
+
     useEffect(() => {
         if( scrollPosition && scrollPosition === 100 ){
             const fetchMore = () => {

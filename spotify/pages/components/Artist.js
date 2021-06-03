@@ -5,22 +5,24 @@ import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 
-const Artist = ({ item, genreSeeds, location }) => {
+const Artist = ({ genreSeeds, location }) => {
 
     const { activeItem, setActiveItem, overlay, setOverlay, setActiveHeader, headerMounted } = useContext( DbHookContext )
 
     const initialState = {
-        artist: null,
-        top_tracks: null,
-        albums: null,
+        artist: [],
+        top_tracks: [],
+        artistAlbums: [],
+        albumsFull: [],
         follow: false,
     }
 
     const routes = {
         artist: 'v1/artists',
         top_tracks: 'v1/artists/top-tracks',
-        albums: 'v1/artists/albums',
-        following: 'v1/me/following/contains'
+        artistAlbums: 'v1/artists/albums',
+        following: 'v1/me/following/contains',
+        albumsFull: 'v1/albums'
     }
 
     const reducer = ( state, action ) => {
@@ -41,10 +43,30 @@ const Artist = ({ item, genreSeeds, location }) => {
                     ...state,
                     top_tracks: action.tracks
                 }
-            case routes.albums :
+            case routes.artistAlbums :
+                const ids = action.items.map(album => album.id)
+                const multiCall = ( arr, limit ) => {
+                    const makeCall = ( arr ) => {
+                        finalizeRoute('get', `${routes.albumsFull}`, fetchApi, null, `ids=${ [ ...arr ] }`)
+                    }
+                    if( arr.length > limit ){
+                        makeCall( arr.slice( 0, limit ) )
+                        arr.splice( 0, limit )
+                        multiCall( arr, limit)
+                    } else {
+                        makeCall( arr )
+                    }
+                }
+                multiCall(ids, 20)
                 return {
                     ...state,
                     albums: action.items
+                }
+            case routes.albumsFull :
+                console.log(action)
+                return{
+                    ...state,
+                    albumsFull: [...state.albumsFull, ...action.albums]
                 }
             case routes.following :
                 return {
@@ -67,7 +89,7 @@ const Artist = ({ item, genreSeeds, location }) => {
 
 
     useEffect(() => {
-        let id = item && item.id ? item.id : location.pathname.substr( routes.artist.length - 2 )
+        let id = activeItem && activeItem.id ? activeItem.id : location.pathname.substr( routes.artist.length - 2 )
         finalizeRoute( 'get', `${routes.artist}/${id}`, fetchApi, id)
         finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, fetchApi, id, `market=ES`)
         finalizeRoute( 'get', `${routes.artist}/${id}/albums`, fetchApi, id, 'limit=50')
@@ -78,11 +100,11 @@ const Artist = ({ item, genreSeeds, location }) => {
     },[ apiPayload ])
 
     useEffect(() => {
-        if(artist && !item) setActiveItem(artist)
+        if(artist.id && !activeItem) setActiveItem(artist)
     },[ artist ])
 
     useLayoutEffect(() => {
-        if(artist){
+        if(artist.id ){
             const thisHeader = document.querySelector('.artistHeader')
             document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
             setElementHeight(thisHeader.offsetHeight)
@@ -94,10 +116,20 @@ const Artist = ({ item, genreSeeds, location }) => {
         }
     }, [artist])
 
+    const loadLoader = useTransition(loaded, {
+        from: { opacity: 0 } ,
+        enter: { opacity: 1 },
+        leave: { opacity: 0 }
+    })
+
+    const Loader = loadLoader((style, item) => {
+         return <animated.div style={style}> <Loading/> </animated.div>
+    })
+
     return(
         <div className={ `page page--artist artist ${ overlay ? 'page--blurred' : ''}` }>
             {
-                artist &&
+                artist.images &&
                 <header className='artistHeader'>
                     <div className='artistHeader__imgContainer'>
                         <img 
@@ -109,7 +141,7 @@ const Artist = ({ item, genreSeeds, location }) => {
                 </header>
             }
             {
-                top_tracks &&
+                top_tracks[0] &&
                 <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks.slice(0, 5)} } setOverlay={ setOverlay }/>
             }
         </div>

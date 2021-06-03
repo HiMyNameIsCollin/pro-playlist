@@ -1,11 +1,11 @@
-import { useEffect , useState, useContext } from 'react'
+import { useContext } from 'react'
 import { useSpring, useTransition, animated } from 'react-spring'
 import ListMenu from './overlay/ListMenu'
 import TrackMenu from './overlay/TrackMenu'
 import { DbHookContext } from './Dashboard'
 const Overlay = () => {
 
-    const { overlay, setOverlay, setActiveItem } = useContext(DbHookContext)
+    const { overlay, setOverlay, setActiveItem } = useContext( DbHookContext )
 
     const fadeIn = useSpring({
         opacity: overlay ? 1 : 0,

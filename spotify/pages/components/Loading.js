@@ -1,15 +1,11 @@
 import Image from 'next/image'
 import { useSpring, animated } from 'react-spring'
 
-const Loading = ({ loaded }) => {
-
-    const animation = useSpring({
-        opacity: loaded ? 0 : 1,
-        pointerEvents: loaded ? 'none' : 'auto'
-    })
+const Loading = ({  }) => {
 
     return(
-        <animated.div style={animation} className='loading'>
+        <animated.div 
+            className='loading'>
             {/* <Image 
             src='/Spotify_Icon_RGB_Green.png' 
             alt='Loading'

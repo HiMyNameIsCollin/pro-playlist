@@ -1,4 +1,5 @@
 import { useState, useEffect, useReducer, useLayoutEffect, useContext } from 'react'
+import { useTransition, animated } from 'react-spring'
 import  useApiCall  from '../../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
@@ -15,10 +16,10 @@ const Collection = ({ type, genreSeeds, location }) => {
     const { activeItem, setActiveItem, overlay, setOverlay, setActiveHeader, headerMounted } = useContext( DbHookContext )
 
     const initialState = {
-        collection: null,
-        tracks: null,
-        artists: null,
-        recommendations: null
+        collection: {},
+        tracks: [],
+        artists: [],
+        recommendations: []
     }
     
     const routes = {
@@ -103,7 +104,7 @@ const Collection = ({ type, genreSeeds, location }) => {
     }, [])
 
     useEffect(() => {
-        if( collection && !artists ){
+        if( collection.id && !artists[0] ){
             if(type === 'album'){
                 collection.artists.map((artist, i) => {
                     finalizeRoute( 'get', `${routes.artist}/${artist.id}` , fetchApi , artist.id)
@@ -120,14 +121,14 @@ const Collection = ({ type, genreSeeds, location }) => {
 
     useEffect(() => {
         // Set background image of Album header
-        if( collection ) {
+        if( collection.id ) {
             const img = whichPicture(collection.images, 'lrg')
             document.documentElement.style.setProperty('--headerBackground', `url(${img})`)
         }
     }, [collection])
 
     useEffect(() => {
-        if( collection && !tracks){
+        if( collection.id && !tracks[0]){
             let tracksRoute = type === 'album' ? 
             routes.tracks.substr( 0, routes.tracks.length - 7 ):
             tracksRoute = routes.playlist.substr( 0, routes.tracks.length - 7 )
@@ -165,10 +166,10 @@ const Collection = ({ type, genreSeeds, location }) => {
     
     useEffect(() => {
         if( type === 'album' && 
-            collection && 
-            artists && 
-            tracks && 
-            !state.recommendations ){
+            collection.id && 
+            artists[0] && 
+            tracks[0] && 
+            !recommendations[0] ){
             let seeds = getSeeds(genreSeeds, artists, tracks)
             const { seedGenres, seedArtists, seedTracks } = seeds
             finalizeRoute( 'get',
@@ -185,14 +186,14 @@ const Collection = ({ type, genreSeeds, location }) => {
     // If users first page is Collection, fetch the data from here, and then set in the dashboard component.
 
     useEffect(() => {
-        if( !activeItem && collection ) setActiveItem( collection )
+        if( !activeItem && collection.id ) setActiveItem( collection )
     }, [collection])
 
     useEffect(()=> {
         if( type === 'album' ) {
-            if( collection && artists && tracks && recommendations ) setActiveHeader({ collection, artists, tracks })  
+            if( recommendations ) setActiveHeader({ collection, artists, tracks })  
         } else {
-            if( collection && artists && tracks ) setActiveHeader({ collection, artists, tracks })           
+            if( collection.id && artists[0] && tracks[0] ) setActiveHeader({ collection, artists, tracks })           
         }
     },[state])
 
@@ -200,32 +201,37 @@ const Collection = ({ type, genreSeeds, location }) => {
         if( headerMounted ) setLoaded(true)
     }, [ headerMounted ])
 
+    const loadLoader = useTransition(loaded, {
+        from: { opacity: 0 } ,
+        enter: { opacity: 1 },
+        leave: { opacity: 0 }
+    })
+
+    const Loader = loadLoader((style, item) => {
+        if(!item) return <animated.div style={style}> <Loading/> </animated.div>
+    })
+
     return(
         <div className={ `page page--collection collection ${ overlay ? 'page--blurred' : ''}` }>
+        <div>{Loader}</div>
+        {
+        loaded && 
+        <>
+            <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             
-            <Loading loaded={ loaded }/>
-
             {
-            loaded && collection && tracks &&
+            type === 'album' && 
             <>
-                <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
-                
-                {
-                type === 'album' && recommendations &&
-                <>
-                    <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
-                    <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
-                </>
-                }
+                <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
             </>
             }
-            {
-                collection && collection.copyrights &&
-                <section className='collection__copyright'>
-                     <p>{ collection.copyrights[0].text } </p>
-                </section>
-                
-            }
+
+            <section className='collection__copyright'>
+                    <p>{ collection.copyrights[0].text } </p>
+            </section>
+        </>
+        }
         </div>
     )
 }

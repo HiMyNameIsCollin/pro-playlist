@@ -1,10 +1,10 @@
-import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useContext } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
+import { DbHookContext } from './Dashboard'
 
+const Card = ({ item, cardType }) => {
 
-
-const Card = ({ item, cardType, setActiveItem }) => {
+    const { setActiveItem } = useContext( DbHookContext )
 
     const setCurrentSelection = () => {
         setActiveItem( item )
