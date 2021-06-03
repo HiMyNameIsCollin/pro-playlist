@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer } from 'react'
+import { useState, useEffect, useReducer , useLayoutEffect} from 'react'
 import TracksContainer from './TracksContainer'
 import useApiCall from '../../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
@@ -45,7 +45,10 @@ const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, hea
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
+    const [ elementHeight, setElementHeight ] = useState(null)
     const { artist , top_tracks } = { ...state }
+
+
     useEffect(() => {
         let id = item && item.id ? item.id : location.pathname.substr( routes.artist.length - 2 )
         finalizeRoute( 'get', `${routes.artist}/${id}`, fetchApi, id)
@@ -60,6 +63,18 @@ const Artist = ({ item, setActiveItem, setActiveHeader, overlay, setOverlay, hea
         if(artist && !item) setActiveItem(artist)
     },[ artist ])
 
+    useLayoutEffect(() => {
+        if(artist){
+            const thisHeader = document.querySelector('.artistHeader')
+            document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
+            setElementHeight(thisHeader.offsetHeight)
+    
+            return () => {
+                document.documentElement.style.setProperty('--headerColor0', 'initial')
+                document.documentElement.style.setProperty('--headerColor1', 'initial')
+            }
+        }
+    }, [artist])
 
     return(
         <div className={ `page page--artist artist ${ overlay ? 'page--blurred' : ''}` }>

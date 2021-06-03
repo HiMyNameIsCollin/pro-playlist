@@ -259,7 +259,7 @@ a {
 .page--artist {
   background: #191414;
   color: #FFFFFF;
-  padding: 50vh 0.5rem 0 0.5rem;
+  padding: var(--headerHeight) 0.5rem 0 0.5rem;
 }
 .page--blurred {
   filter: blur(5px);
@@ -366,11 +366,8 @@ a {
   z-index: 1;
   display: flex;
   left: 0;
-  align-items: flex-end;
   position: absolute;
   top: 0;
-  min-height: 50vh;
-  max-height: 50vh;
   width: 100%;
 }
 .artistHeader::before {
@@ -406,9 +403,11 @@ a {
 }
 .artistHeader h1 {
   color: #FFFFFF;
-  padding: 0 1rem;
+  padding: 1rem;
   flex-grow: 0;
-  font-size: 3rem;
+  font-size: clamp(2rem, 10vw, 3rem);
+  margin-top: 12rem;
+  line-height: 40px;
   z-index: 1;
 }
 .artistHeader::before {

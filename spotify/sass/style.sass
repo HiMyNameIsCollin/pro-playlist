@@ -220,7 +220,7 @@ a
     &--artist
         background: $black
         color: $white
-        padding: 50vh .5rem 0 .5rem
+        padding: var(--headerHeight) .5rem 0 .5rem
     &--blurred
         filter: blur(5px)
     section:nth-last-of-type(1)
@@ -297,11 +297,9 @@ a
     @include overlay
     display: flex
     left: 0
-    align-items: flex-end
     position: absolute
     top: 0
-    min-height: 50vh
-    max-height: 50vh
+    
     width: 100%
     &__imgContainer
         height: 100%
@@ -316,9 +314,11 @@ a
             object-fit: contain            
     h1
         color: $white
-        padding: 0 1rem
+        padding: 1rem
         flex-grow: 0
-        font-size: 3rem
+        font-size: clamp(2rem, 10vw, 3rem)
+        margin-top: 12rem
+        line-height: 40px
         z-index: 1
     &::before
         @include scrimGradient($black ,'to top')
