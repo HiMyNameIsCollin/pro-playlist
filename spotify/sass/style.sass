@@ -323,9 +323,7 @@ a
         font-size: 2rem
         grid-column: 2/3
         grid-row: 1/3
-
 .artistHeader
-    @include overlay
     left: 0
     padding-bottom: 20rem
     position: absolute
@@ -333,15 +331,24 @@ a
     top: 0
     transition: opacity .75s ease-in-out
     width: 100%
+    z-index: 1
     &__imgContainer
+        @include overlay
         height: 100%
+        position: relative
+        top: 0
         overflow: hidden
+        padding: 0
         width: 100%
+        z-index: -1
         img
             display: block
             height: auto
             width: 100%
-            object-fit: contain            
+            object-fit: contain
+        &::before
+            @include scrimGradient($black ,'to top')
+            z-index: 1          
     h1
         color: $white
         padding: 1rem
@@ -351,9 +358,6 @@ a
         bottom: 0
         left: 0
         line-height: 40px
-        z-index: 2
-    &::before
-        @include scrimGradient($black ,'to top')
         z-index: 1
     &--active
         opacity: 1

@@ -2,7 +2,6 @@ import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext
 import { Switch, Route, useLocation, useHistory, NavLink, Link } from 'react-router-dom'
 import { capital } from '../../utils/capital'
 import { finalizeRoute } from '../../utils/finalizeRoute'
-import { whichPicture } from '../../utils/whichPicture'
 import { calcScroll } from '../../utils/calcScroll'
 import { useTransition, animated } from 'react-spring'
 import  useApiCall  from '../hooks/useApiCall'

@@ -1,6 +1,5 @@
 import Login from './Login'
 import Dashboard from './Dashboard'
-import Loading from './Loading'
 import {useState, useEffect} from 'react'
 import { checkToken, refreshToken } from '../../utils/tokenTools'
 import useFetchToken from '../hooks/useFetchToken'
