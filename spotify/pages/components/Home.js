@@ -8,7 +8,7 @@ const Home = ({  state  }) => {
 
     const { setActiveItem } = useContext(DbHookContext)
     return(
-        <div className='page'>
+        <div className='page page--home'>
             <TabsContainer items={ state.recently_played } />
             <Slider 
             message='New Releases' 

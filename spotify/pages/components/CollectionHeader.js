@@ -21,10 +21,10 @@ const CollectionHeader = ({ data }) => {
         document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
         setElementHeight(thisHeader.offsetHeight)
 
-        return () => {
-            document.documentElement.style.setProperty('--headerColor0', 'initial')
-            document.documentElement.style.setProperty('--headerColor1', 'initial')
-        }
+        // return () => {
+        //     document.documentElement.style.setProperty('--headerColor0', 'initial')
+        //     document.documentElement.style.setProperty('--headerColor1', 'initial')
+        // }
     }, [])
 
     useEffect(() => {
@@ -42,6 +42,7 @@ const CollectionHeader = ({ data }) => {
 
     const finishMount = (e, amount)=>{
         const colors = handleColorThief(e.target, amount)
+
         colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${i}`, clr))
         setHeaderMounted(true)
     }

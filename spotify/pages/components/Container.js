@@ -1,20 +1,17 @@
 import Login from './Login'
 import Dashboard from './Dashboard'
+import Loading from './Loading'
 import {useState, useEffect} from 'react'
 import { checkToken, refreshToken } from '../../utils/tokenTools'
-import useFetchToken from '../../hooks/useFetchToken'
+import useFetchToken from '../hooks/useFetchToken'
 
 const Container = () => {
-    const TOKENURL = 'https://accounts.spotify.com/api/token'
+    const host = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://spotify-himynameiscollin.vercel.app/'
+    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody } = useFetchToken(host)
 
-    const useFetchTokenHook = useFetchToken(TOKENURL)
-    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody } = useFetchTokenHook
-
-    const [auth, setAuth] = useState(false)
-
+    const [ auth, setAuth ] = useState(false)
 
     useEffect(() => {
-
       const access_token = localStorage.getItem('access_token')
       if( access_token  ) {
         const token_expiry = localStorage.getItem( 'token_expiry' )
@@ -24,16 +21,18 @@ const Container = () => {
           refreshToken(refresh_token, setTokenBody)
         }else {
           setAuth(true)
+
         }
-      }
+      } 
     },[ tokenFetchComplete ])
 
     return(
     <main className='container'>
+
       {
         auth ?
         <Dashboard setAuth={ setAuth } /> :
-        <Login useFetchToken={ useFetchTokenHook }/>
+        <Login setTokenBody={ setTokenBody } />
       }
     </main>    
     )

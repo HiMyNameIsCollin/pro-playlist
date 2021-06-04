@@ -43,6 +43,10 @@ a {
 }
 
 .container {
+  background-image: url("../public/bgsm.jpg");
+  background-position: center center;
+  background-size: cover;
+  background-attachment: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -82,10 +86,6 @@ a {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  background-image: url("../public/bgsm.jpg");
-  background-position: center center;
-  background-size: cover;
-  background-attachment: fixed;
   display: flex;
   min-height: 100vh;
   min-width: 100vw;
@@ -146,8 +146,12 @@ a {
 }
 
 .login {
+  display: flex;
+}
+.login__card {
   box-shadow: #26394d 0px 20px 30px -10px;
   background: #212121;
+  border: #191414 2px solid;
   color: #FFFFFF;
   margin: auto;
   padding: 2rem;
@@ -216,8 +220,6 @@ a {
 .page {
   min-height: 100vh;
   min-width: 100vw;
-  padding: 8rem 0.5rem 0 0.5rem;
-  transition: all 0.25s ease-in-out;
 }
 .page--bg {
   position: relative;
@@ -247,6 +249,9 @@ a {
 .page--bg::before {
   background: linear-gradient(135deg, #535353 0%, rgba(83, 83, 83, 0.738) 19%, rgba(83, 83, 83, 0.541) 34%, rgba(83, 83, 83, 0.382) 47%, rgba(83, 83, 83, 0.278) 56.5%, rgba(83, 83, 83, 0.194) 65%, rgba(83, 83, 83, 0.126) 73%, rgba(83, 83, 83, 0.075) 80.2%, rgba(83, 83, 83, 0.042) 86.1%, rgba(83, 83, 83, 0.021) 91%, rgba(83, 83, 83, 0.008) 95.2%, rgba(83, 83, 83, 0.002) 98.2%, rgba(83, 83, 83, 0) 100%);
   opacity: 0.7;
+}
+.page--home {
+  padding: 8rem 0.5rem 0 0.5rem;
 }
 .page--collection {
   background: #191414;

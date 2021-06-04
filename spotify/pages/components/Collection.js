@@ -1,6 +1,7 @@
-import { useState, useEffect, useReducer, useLayoutEffect, useContext } from 'react'
-import { useTransition, animated } from 'react-spring'
-import  useApiCall  from '../../hooks/useApiCall'
+
+import { useState, useEffect, useReducer, useContext } from 'react'
+import  useApiCall  from '../hooks/useApiCall'
+
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
 import CollectionHeader from './CollectionHeader'

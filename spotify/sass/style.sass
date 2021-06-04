@@ -13,6 +13,11 @@ $bg__1--lg: url('../public/bglg.jpg')
     --headerBackground: ''
     --headerHeight: 0
 
+@mixin opacTransition
+    opacity: 0
+    transition: opacity .75s ease-in-out
+    &--active
+        opacity: 1
 @mixin shadowA
     box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px
 @mixin overlay
@@ -103,6 +108,10 @@ a
     overflow: hidden
 
 .container
+    background-image: $bg__1--sm
+    background-position: center center
+    background-size: cover
+    background-attachment: fixed
     display: flex
     justify-content: center
     align-items: center
@@ -117,10 +126,7 @@ a
 
 .dashboard
     @include overlay
-    background-image: $bg__1--sm
-    background-position: center center
-    background-size: cover
-    background-attachment: fixed
+
     display: flex
     min-height: 100vh
     min-width: 100vw
@@ -142,12 +148,15 @@ a
 
 
 .login
-    @include shadowA
-    background: $darkGrey
-    color: $white
-    margin: auto
-    padding: 2rem
-    position: relative
+    display: flex
+    &__card
+        @include shadowA
+        background: $darkGrey
+        border: $black 2px solid
+        color: $white
+        margin: auto
+        padding: 2rem
+        position: relative
     &__brand
         margin: 2rem 0 4rem 0
         position: relative
@@ -202,8 +211,7 @@ a
 .page
     min-height: 100vh
     min-width: 100vw
-    padding: 8rem .5rem 0 .5rem
-    transition: all .25s ease-in-out
+   
     &--bg
         @include overlay
         background: $darkGrey
@@ -211,6 +219,8 @@ a
         &::before
             @include scrimGradient($grey, '135deg')
             opacity: .7
+    &--home
+         padding: 8rem .5rem 0 .5rem
     &--collection
         background: $black
         color: $white
