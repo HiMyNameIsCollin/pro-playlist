@@ -25,7 +25,9 @@ const ArtistHeader = ({ data }) => {
         }
     },[])
     
-    const finishMount = (e, amount) => {
+    const finishMount = (e, amount)=>{
+        const colors = handleColorThief(e.target, amount)
+        colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${i}`, clr))
         setHeaderMounted(true)
     }
 
@@ -33,6 +35,8 @@ const ArtistHeader = ({ data }) => {
         <header className={ `artistHeader ${headerMounted && 'artistHeader--active' }`}>
             <div className='artistHeader__imgContainer'>
                 <img 
+                crossorigin='anonymous' 
+                // ON LOAD HERE ########################################
                 onLoad={(e) => finishMount(e, 2)}
                 src={ whichPicture(artist.images, 'lrg') }
                 alt='Artist'
@@ -40,7 +44,9 @@ const ArtistHeader = ({ data }) => {
                 <h1> {artist.name} </h1>
             </div>
             <div className='artistHeader__info'>
-                2 followers
+                <p> { artist.followers.total } followers </p>
+                <button> Follow </button>
+                <i className="fas fa-ellipsis-h"></i>
             </div>
         </header>      
     )
