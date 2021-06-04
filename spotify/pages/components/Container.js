@@ -2,12 +2,11 @@ import Login from './Login'
 import Dashboard from './Dashboard'
 import {useState, useEffect} from 'react'
 import { checkToken, refreshToken } from '../../utils/tokenTools'
-import useFetchToken from '../../hooks/useFetchToken'
+import useFetchToken from '../hooks/useFetchToken'
 
 const Container = () => {
-    const TOKENURL = 'https://accounts.spotify.com/api/token'
-
-    const useFetchTokenHook = useFetchToken(TOKENURL)
+    const host = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/'
+    const useFetchTokenHook = useFetchToken(host)
     const { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody } = useFetchTokenHook
 
     const [auth, setAuth] = useState(false)

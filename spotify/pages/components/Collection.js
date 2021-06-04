@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer, useLayoutEffect } from 'react'
-import  useApiCall  from '../../hooks/useApiCall'
+import  useApiCall  from '../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
 import CollectionHeader from './CollectionHeader'

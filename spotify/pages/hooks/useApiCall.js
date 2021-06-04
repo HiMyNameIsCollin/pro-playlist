@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import useFetchToken from './useFetchToken'
-import { checkToken, refreshToken } from '../utils/tokenTools'
+import { checkToken, refreshToken } from '../../utils/tokenTools'
 
 const useApiCall = (url) => {
     // const [fetchQueue, setFetchQueue] = useState([])
     const [apiError, setApiError] = useState(false)
     const [apiIsPending, setApiPending] = useState(false)
     const [apiPayload, setApiPayload] = useState(null)
-    const TOKENURL = 'https://accounts.spotify.com/api/token'
-    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken(TOKENURL)
+    const host = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/'
+    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken(host)
     const thisCallRef = useRef()
     const fetchApi = ( route, method, requestID, body,  ) => {
         const errorHandling = (err) => {
