@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 
 const Home = ({  state , setActiveItem  }) => {
     return(
-        <div className='page'>
+        <div className='page page--home'>
             <TabsContainer items={ state.recently_played } />
             <Slider 
             message='New Releases' 

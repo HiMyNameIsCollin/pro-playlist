@@ -5,7 +5,7 @@ export default (req, res) => {
         method: 'post',
         headers: {
           'Content-Type' : 'application/x-www-form-urlencoded ',
-          'Authorization' : 'Basic ' + (Buffer.from(process.env.CLIENT_ID + ':' + process.env.CLIENT_SECRET).toString('base64'))
+          'Authorization' : 'Basic ' + (Buffer.from(process.env.NEXT_PUBLIC_CLIENT_ID + ':' + process.env.NEXT_PUBLIC_CLIENT_SECRET).toString('base64'))
         },
         body: req.body.tokenBody
       })

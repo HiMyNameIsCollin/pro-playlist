@@ -5,12 +5,10 @@ import {useState, useEffect} from 'react'
 import { useRouter } from 'next/router'
 
 
-const Login = ({ useFetchToken }) => {
+const Login = ({ setTokenBody }) => {
     const router = useRouter()    
     const authorize = 'https://accounts.spotify.com/authorize'
-    const redirect_uri = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/'
-
-    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody } = useFetchToken
+    const redirect_uri = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://spotify-himynameiscollin.vercel.app/'
 
     const initAuth = () => {
       let url = authorize
@@ -78,8 +76,8 @@ const Login = ({ useFetchToken }) => {
       }
     }, [])
     return(
-        <section className='wrapper'>
-          <div className='login'>
+        <section className={`login page `}>
+          <div className='login__card'>
               <div className='login__icon'>
                   <Image 
                       src='/Spotify_Icon_RGB_Green.png'
