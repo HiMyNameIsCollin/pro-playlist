@@ -47,8 +47,9 @@ const Login = ({ useFetchToken }) => {
     
     const handleRedirect = () => {
       let code = getCode()
-      if( code ) initTokenFetch( code )
       clearUrl()
+      if( code ) initTokenFetch( code )
+      
     }
   
     const clearUrl = () => {

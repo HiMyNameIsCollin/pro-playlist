@@ -37,8 +37,11 @@ const ArtistHeader = ({ data }) => {
                 src={ whichPicture(artist.images, 'lrg') }
                 alt='Artist'
                 /> 
+                <h1> {artist.name} </h1>
             </div>
-            <h1> {artist.name} </h1>
+            <div className='artistHeader__info'>
+                2 followers
+            </div>
         </header>      
     )
 
