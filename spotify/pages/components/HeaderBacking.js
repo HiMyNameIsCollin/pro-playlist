@@ -1,6 +1,6 @@
 import { useSpring, animated } from "react-spring"
 
-const HeaderBacking = ({ fadeIn, textScroll, fullHeader, collection, headerMounted }) => {
+const HeaderBacking = ({ fadeIn, textScroll, fullHeader, data, headerMounted }) => {
 
     const showFixedHeader = useSpring({
         transform: fullHeader ? 'translateY(-100%)' : 'translateY(0%)',
@@ -11,14 +11,18 @@ const HeaderBacking = ({ fadeIn, textScroll, fullHeader, collection, headerMount
         <>
             <div className={ `headerBacking ${ headerMounted && 'headerBacking--active' }`} >
             </div>
+            
             <animated.div
             style={ showFixedHeader } 
             className='fixedHeader'>
+                
                 <animated.h1 style={{
                     opacity: fadeIn.to( o => o),
                     transform: textScroll.to( y => `translateY(${ y }%)`)
-                }}> { collection.name } </animated.h1>
+                }}> { data.name } </animated.h1>
             </animated.div>
+            
+            
         </>
     )
 }

@@ -238,17 +238,7 @@ const Dashboard = ({ setAuth }) => {
         }
     },[state.my_top_artists])
 
-// HANDLE SCROLL PERCENTAGE AND DISPLAY OF UI 
-    useEffect(() => {
-        if(scrollPosition < scrollRef.current || scrollPosition < 1 || scrollPosition === 100 ){
-            if( hiddenUI ){
-                setHiddenUI(false)   
-            }                     
-        } else {
-            setHiddenUI(true)
-        }
-        scrollRef.current = scrollPosition
-    }, [ scrollPosition ])
+// HANDLE SCROLL PERCENTAGE  
 
     useEffect(() => {
         handleScroll()
@@ -294,11 +284,20 @@ const Dashboard = ({ setAuth }) => {
         leave: { transform: 'translateX(-100%)', position: 'absolute'},
     })
 
+    const trackHistory = () => {
+        if(locationRef.current.length < 5 ){
+            locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem, scrollPosition : scrollPosition } )
+        } else {
+            locationRef.current.pop()
+            locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem , scrollPosition : scrollPosition} )
+        }
+    }
+
     useEffect(() => {
         setActiveHeader( null )
         setHeaderMounted(false)
+        setHiddenUI( true )
         if(activeItem && activeItem.type){
-
             switch(activeItem.type){
                 case 'artist':
                     if(location.pathname !== `/artist/${activeItem.id}`){
@@ -330,17 +329,6 @@ const Dashboard = ({ setAuth }) => {
             }
         }
     },[ activeItem ])
-//   Track location and active page for back btn
-    useEffect(() => {
-        if(locationRef.current[0].pathname !== location.pathname){
-            if(locationRef.current.length < 5 ){
-                locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem, scrollPosition : scrollPosition } )
-            } else {
-                locationRef.current.pop()
-                locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem , scrollPosition : scrollPosition} )
-            }
-        } 
-    },[])
 
 // Reset activeItem to null, otherwise you cant access same page twice in a row.
     useEffect(() => {
@@ -358,6 +346,17 @@ const Dashboard = ({ setAuth }) => {
             body.classList.remove('noScroll')
         }
     }, [overlay])
+
+// HANDLE UI 
+    useEffect(() => {
+        if(scrollPosition < scrollRef.current || scrollPosition > 97 ){
+            setHiddenUI(false)   
+        } else {
+            setHiddenUI(true)
+        }
+        scrollRef.current = scrollPosition
+    }, [ scrollPosition ])
+
 
     return(
         <DbHookContext.Provider value={ dbHookState }>

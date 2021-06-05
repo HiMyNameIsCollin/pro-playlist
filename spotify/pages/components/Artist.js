@@ -1,6 +1,7 @@
 import { useState, useEffect, useReducer , useLayoutEffect, useContext} from 'react'
 import TracksContainer from './TracksContainer'
 import Loading from './Loading'
+import AlbumContainer from './AlbumContainer'
 import useApiCall from '../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
@@ -86,7 +87,7 @@ const Artist = ({ genreSeeds, location }) => {
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
     const [ elementHeight, setElementHeight ] = useState(null)
-    const { artist , top_tracks } = { ...state }
+    const { artist , top_tracks, albumsFull } = { ...state }
 
 
     useEffect(() => {
@@ -120,7 +121,10 @@ const Artist = ({ genreSeeds, location }) => {
             {
                 !loaded ?
                 <Loading />:
-                <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks.slice(0, 5)} } setOverlay={ setOverlay }/>
+                <>
+                    <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks.slice(0, 5)} } setOverlay={ setOverlay }/>
+                    <AlbumContainer type='artist--page' albums={ albumsFull } />
+                </>
             }
         </div>
     )

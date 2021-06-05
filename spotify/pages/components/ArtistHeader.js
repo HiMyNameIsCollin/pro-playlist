@@ -1,4 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useContext } from 'react'
+import { useSpring, animated } from 'react-spring'
 import { capital } from '../../utils/capital'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleColorThief } from '../../utils/handleColorThief'
@@ -31,7 +32,42 @@ const ArtistHeader = ({ data }) => {
         setHeaderMounted(true)
     }
 
+    useEffect(() => {
+        const percent = calcScroll(elementHeight )
+        setScrolled( percent <= 100 ? percent : 100 )
+    }, [scrollPosition , elementHeight])
+
+    useEffect(() => {
+        if(scrolled >= 50){
+            setFullHeader(false)
+        } else{
+            setFullHeader(true)
+        }
+    }, [ scrolled ])
+
+    const {scaleDown, scaleUp, fadeOut, fadeIn, moveDown, textScroll} = useSpring({
+        to: {
+            
+            scaleDown: `${ 1.00 - ( scrolled * 0.005 )  }`,
+            scaleUp: `${ 1.00 + ( scrolled * 0.01 ) }`,
+            fadeOut: `${ 1 - ( scrolled * 0.02 )}`,
+            fadeIn: `${ 0 + ( scrolled * 0.01 )}`,
+            textScroll: `${ 200 - ( scrolled * 2 )}`,
+            moveDown: `${ (scrolled * 2 )  }`
+        },
+        config: {
+            precision: 1,
+        }
+    })
+
     return(
+        <>
+        <HeaderBacking 
+        fadeIn={ fadeIn } 
+        textScroll={ textScroll } 
+        fullHeader={ fullHeader }
+        data={ artist } 
+        headerMounted={ headerMounted } />
         <header className={ `artistHeader ${headerMounted && 'artistHeader--active' }`}>
             <div className='artistHeader__imgContainer'>
                 <img 
@@ -41,14 +77,17 @@ const ArtistHeader = ({ data }) => {
                 src={ whichPicture(artist.images, 'lrg') }
                 alt='Artist'
                 /> 
-                <h1> {artist.name} </h1>
+                <animated.h1 style={{
+                    opacity: fadeOut.to( o => o )
+                }}> {artist.name} </animated.h1>
             </div>
             <div className='artistHeader__info'>
                 <p> { artist.followers.total } followers </p>
                 <button> Follow </button>
                 <i className="fas fa-ellipsis-h"></i>
             </div>
-        </header>      
+        </header>  
+        </>    
     )
 
 }

@@ -21,10 +21,11 @@ const CollectionHeader = ({ data }) => {
         document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
         setElementHeight(thisHeader.offsetHeight)
 
-        // return () => {
-        //     document.documentElement.style.setProperty('--headerColor0', 'initial')
-        //     document.documentElement.style.setProperty('--headerColor1', 'initial')
-        // }
+        return () => {
+            document.documentElement.style.setProperty('--headerBackground', 'initial')
+            document.documentElement.style.setProperty('--headerColor0', 'initial')
+            document.documentElement.style.setProperty('--headerColor1', 'initial')
+        }
     }, [])
 
     useEffect(() => {
@@ -68,7 +69,7 @@ const CollectionHeader = ({ data }) => {
             fadeIn={ fadeIn }
             textScroll={ textScroll }
             fullHeader={ fullHeader } 
-            collection={ collection }
+            data={ collection }
             headerMounted={ headerMounted }
              />          
             <animated.header 
