@@ -36,7 +36,10 @@ const AlbumContainer = ({ type, albums }) => {
 
                 }
             })
-
+        }
+        {
+            type === 'artist--page' &&
+            <button className='albumContainer__btn'> See discography </button>
         }
         </section>
     )

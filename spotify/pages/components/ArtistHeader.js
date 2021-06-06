@@ -71,7 +71,7 @@ const ArtistHeader = ({ data }) => {
         <header className={ `artistHeader ${headerMounted && 'artistHeader--active' }`}>
             <div className='artistHeader__imgContainer'>
                 <img 
-                crossorigin='anonymous' 
+                crossOrigin='anonymous' 
                 // ON LOAD HERE ########################################
                 onLoad={(e) => finishMount(e, 2)}
                 src={ whichPicture(artist.images, 'lrg') }

@@ -329,10 +329,20 @@ i {
 }
 
 .albumContainer {
+  display: flex;
+  flex-direction: column;
   padding: 0 0.5rem;
 }
 .albumContainer h4 {
   padding: 0.5rem 0;
+}
+.albumContainer__btn {
+  border: solid #FFFFFF 1px;
+  border-radius: 25px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin: 1rem auto;
+  padding: 0.25rem 1rem;
 }
 .albumContainer--active {
   opacity: 1;
@@ -352,17 +362,18 @@ i {
   height: 100%;
   width: 100%;
 }
-.album__text {
-  font-size: 0.8rem;
-}
 .album__text h5 {
+  font-size: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.album__text span {
+  color: #b3b3b3;
+  font-size: 0.8rem;
+}
 .album__text i {
   font-size: 0.8rem;
-  padding: 0 0.5rem;
 }
 
 .artist__trackContainer .track {
@@ -666,7 +677,7 @@ i {
   padding: 1rem;
   text-align: center;
   width: 100%;
-  z-index: 2;
+  z-index: 999;
 }
 .fixedHeader::before {
   content: "";
@@ -950,6 +961,9 @@ i {
   max-width: 100%;
   width: 100%;
   object-fit: fill;
+}
+.card--artist img {
+  border-radius: 50%;
 }
 
 .loading {

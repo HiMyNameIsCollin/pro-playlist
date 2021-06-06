@@ -349,7 +349,7 @@ const Dashboard = ({ setAuth }) => {
 
 // HANDLE UI 
     useEffect(() => {
-        if(scrollPosition < scrollRef.current || scrollPosition > 97 ){
+        if(scrollPosition < scrollRef.current || scrollPosition > 97 || scrollPosition < 5){
             setHiddenUI(false)   
         } else {
             setHiddenUI(true)
@@ -360,97 +360,92 @@ const Dashboard = ({ setAuth }) => {
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
-        <section className='dashboard'>  
-
-        
+            <section className='dashboard'>  
 {/* Headers are kept seperate from their respective pages because these are fixed positiong, 
 and if I put them inside the page, they will be fixed to the container and not the page. */}
 
-            <Switch >
-                <Route exact path='/'>
-                    <HomeHeader 
-                    setAuth={ setAuth } 
-                    hiddenUI={ hiddenUI } /> 
-                </Route> 
-                <Route path='/search'>
-                    <SearchHeader hiddenUI={ hiddenUI }/>
-                </Route> 
-                <Route path='/artist/:id'>
-                    {
-                        activeHeader &&
-                        <ArtistHeader 
-                        data={ activeHeader } />
-                    }
-                </Route> 
-                <Route path='/album/:id' >
-                    {
-                        activeHeader &&
-                        <CollectionHeader 
-                        data={ activeHeader } />
-                    }
-                </Route>
-                <Route path='/playlist/:id' >
-                    {
-                        activeHeader &&
-                        <CollectionHeader 
-                        data={ activeHeader } />
-                    }
-                </Route>
-            </Switch>
+                <Switch >
+                    <Route exact path='/'>
+                        <HomeHeader 
+                        setAuth={ setAuth } 
+                        hiddenUI={ hiddenUI } /> 
+                    </Route> 
+                    <Route path='/search'>
+                        <SearchHeader hiddenUI={ hiddenUI }/>
+                    </Route> 
+                    <Route path='/artist/:id'>
+                        {
+                            activeHeader &&
+                            <ArtistHeader 
+                            data={ activeHeader } />
+                        }
+                    </Route> 
+                    <Route path='/album/:id' >
+                        {
+                            activeHeader &&
+                            <CollectionHeader 
+                            data={ activeHeader } />
+                        }
+                    </Route>
+                    <Route path='/playlist/:id' >
+                        {
+                            activeHeader &&
+                            <CollectionHeader 
+                            data={ activeHeader } />
+                        }
+                    </Route>
+                </Switch>
 
-            <Overlay />
+                <Overlay />
                 
             {
-            pageTransition((props, item) => (
-                <animated.div style={ props }>
-                    <Switch location={ item }>
-                        <Route exact path='/'>
-                            <Home
-                            state={ state }/>
-                        </Route> 
-                        <Route path='/search'>
-                            <Search
-                            scrollPosition={ scrollPosition } 
-                            state={ state } 
-                            apiIsPending={ apiIsPending }/>
-                        </Route> 
-                        <Route path='/manage'>
-                            <Manage />
-                        </Route> 
-                        <Route path='/artist/:id'>
-                            <Artist 
-                            genreSeeds={ state.available_genre_seeds}
-                            location={ location }/>
-                        </Route> 
-                        <Route path='/album/:id'>
-                            <Collection
-                            type='album'
-                            genreSeeds={ state.available_genre_seeds}
-                            location={ location } />
-                        </Route>
-                        <Route path='/playlist/:id'>
-                            <Collection
-                            type='playlist'
-                            genreSeeds={ state.available_genre_seeds}
-                            location={ location } />
-                        </Route> 
-                        <Route path='/showcase/:id'>
-                            <Showcase 
-                            location={ location } />
-                        </Route> 
-                        
-                    </Switch>
-                
-                
-                    
-                </animated.div>
-            ))
-            }
-            {
-                !overlay &&
-                <Nav location={ location } hiddenUI={ hiddenUI } NavLink={ NavLink } /> 
-            }
-        </section>  
+                pageTransition((props, item) => (
+                    <animated.div style={ props }>
+                        <Switch location={ item }>
+                            <Route exact path='/'>
+                                <Home
+                                state={ state }/>
+                            </Route> 
+                            <Route path='/search'>
+                                <Search
+                                scrollPosition={ scrollPosition } 
+                                state={ state } 
+                                apiIsPending={ apiIsPending }/>
+                            </Route> 
+                            <Route path='/manage'>
+                                <Manage />
+                            </Route> 
+                            <Route path='/artist/:id'>
+                                <Artist 
+                                genreSeeds={ state.available_genre_seeds}
+                                location={ location }/>
+                            </Route> 
+                            <Route path='/album/:id'>
+                                <Collection
+                                type='album'
+                                genreSeeds={ state.available_genre_seeds}
+                                location={ location } />
+                            </Route>
+                            <Route path='/playlist/:id'>
+                                <Collection
+                                type='playlist'
+                                genreSeeds={ state.available_genre_seeds}
+                                location={ location } />
+                            </Route> 
+                            <Route path='/showcase/:id'>
+                                <Showcase 
+                                location={ location } />
+                            </Route> 
+                            
+                        </Switch>
+                    </animated.div>
+                ))
+                }
+                {
+                    !overlay &&
+                    <Nav location={ location } hiddenUI={ hiddenUI } NavLink={ NavLink } /> 
+                }
+            </section>  
         </DbHookContext.Provider>  
     )
 }
