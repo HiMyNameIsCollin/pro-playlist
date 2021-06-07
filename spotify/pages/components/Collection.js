@@ -202,8 +202,8 @@ const Collection = ({ type, genreSeeds, location }) => {
     },[state])
 
     useEffect(() => {
-        if( headerMounted ) setLoaded(true)
-    }, [ headerMounted ])
+        if( activeHeader ) setLoaded(true)
+    }, [ activeHeader ])
 
 
     return(
@@ -213,6 +213,7 @@ const Collection = ({ type, genreSeeds, location }) => {
         !loaded ?
         <Loading/> :
         <>
+            <CollectionHeader data={{collection, tracks, artists,}}/>
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             
             {

@@ -284,14 +284,6 @@ const Dashboard = ({ setAuth }) => {
         leave: { transform: 'translateX(-20%)', position: 'absolute'},
     })
 
-    const headerTransition = useTransition(location, {
-        initial: { transform: 'translateX(100%)' },
-        from: { transform: 'translateX(100%)', position: 'fixed', width: '100%'},
-        update: {  position: 'fixed'},
-        enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-20%)', position: 'fixed'},
-    })
-
 
     const trackHistory = () => {
         if(locationRef.current.length < 5 ){
@@ -382,27 +374,6 @@ and if I put them inside the page, they will be fixed to the container and not t
                     <Route path='/search'>
                         <SearchHeader hiddenUI={ hiddenUI }/>
                     </Route> 
-                    <Route path='/artist/:id'>
-                        {
-                            activeHeader &&
-                            <ArtistHeader 
-                            data={ activeHeader } />
-                        }
-                    </Route> 
-                    <Route path='/album/:id' >
-                        {
-                            activeHeader &&
-                            <CollectionHeader 
-                            data={ activeHeader } />
-                        }
-                    </Route>
-                    <Route path='/playlist/:id' >
-                        {
-                            activeHeader &&
-                            <CollectionHeader 
-                            data={ activeHeader } />
-                        }
-                    </Route>
                 </Switch>
 
                 <Overlay />
