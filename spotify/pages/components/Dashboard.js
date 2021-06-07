@@ -281,8 +281,17 @@ const Dashboard = ({ setAuth }) => {
         from: { transform: 'translateX(100%)', position: 'absolute', width: '100%'},
         update: {  position: 'relative'},
         enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-100%)', position: 'absolute'},
+        leave: { transform: 'translateX(-20%)', position: 'absolute'},
     })
+
+    const headerTransition = useTransition(location, {
+        initial: { transform: 'translateX(100%)' },
+        from: { transform: 'translateX(100%)', position: 'fixed', width: '100%'},
+        update: {  position: 'fixed'},
+        enter: { transform: 'translateX(0%)' },
+        leave: { transform: 'translateX(-20%)', position: 'fixed'},
+    })
+
 
     const trackHistory = () => {
         if(locationRef.current.length < 5 ){

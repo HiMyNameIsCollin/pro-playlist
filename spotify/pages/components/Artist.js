@@ -122,7 +122,7 @@ const Artist = ({ genreSeeds, location }) => {
     }, [ state ])
 
     useEffect(() => {
-        if( headerMounted ) setLoaded(true)
+        if( headerMounted ) setTimeout(() => setLoaded(true), 250)
     },[ headerMounted ])
 
 
