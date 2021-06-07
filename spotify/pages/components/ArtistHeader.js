@@ -4,56 +4,35 @@ import { capital } from '../../utils/capital'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleColorThief } from '../../utils/handleColorThief'
 import { calcScroll } from '../../utils/calcScroll'
-import HeaderBacking from './HeaderBacking'
 import { DbHookContext } from './Dashboard'
 
-const ArtistHeader = ({ data }) => {
+const ArtistHeader = ({ data  }) => {
 
     const { collection, artist, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
-    const [ scrolled, setScrolled ] = useState(null)
-    const [ fullHeader, setFullHeader ] = useState(true)
-    const { setOverlay, setActiveItem, headerMounted, setHeaderMounted, scrollPosition } = useContext( DbHookContext )
+    const { activeHeader, setActiveHeader, scrollPosition, headerScrolled, setHeaderScrolled } = useContext( DbHookContext )
     
     useLayoutEffect(() => {
         const thisHeader = document.querySelector('.artistHeader')
         document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
         setElementHeight(thisHeader.offsetHeight)
-        
-        return () => {
-            document.documentElement.style.setProperty('--headerColor0', 'initial')
-            document.documentElement.style.setProperty('--headerColor1', 'initial')
-        }
     },[])
     
     const finishMount = (e, amount)=>{
         const colors = handleColorThief(e.target, amount)
         colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${i}`, clr))
-        setHeaderMounted(true)
+        setActiveHeader({ data: artist.name})
     }
 
     useEffect(() => {
-        const percent = calcScroll(elementHeight )
-        setScrolled( percent <= 100 ? percent : 100 )
+        const percent = calcScroll( elementHeight )
+        setHeaderScrolled( percent <= 100 ? percent : 100 )
     }, [scrollPosition , elementHeight])
 
-    useEffect(() => {
-        if(scrolled >= 50){
-            setFullHeader(false)
-        } else{
-            setFullHeader(true)
-        }
-    }, [ scrolled ])
 
-    const {scaleDown, scaleUp, fadeOut, fadeIn, moveDown, textScroll} = useSpring({
+    const { fadeOut } = useSpring({
         to: {
-            
-            scaleDown: `${ 1.00 - ( scrolled * 0.005 )  }`,
-            scaleUp: `${ 1.00 + ( scrolled * 0.01 ) }`,
-            fadeOut: `${ 1 - ( scrolled * 0.02 )}`,
-            fadeIn: `${ 0 + ( scrolled * 0.01 )}`,
-            textScroll: `${ 200 - ( scrolled * 2 )}`,
-            moveDown: `${ (scrolled * 2 )  }`
+            fadeOut: `${ 1 - ( headerScrolled * 0.02 )}`,
         },
         config: {
             precision: 1,
@@ -61,15 +40,9 @@ const ArtistHeader = ({ data }) => {
     })
 
     return(
-        <>
-        <HeaderBacking 
-        fadeIn={ fadeIn } 
-        textScroll={ textScroll } 
-        fullHeader={ fullHeader }
-        data={ artist } 
-        headerMounted={ headerMounted } />
-        <header className={ `artistHeader ${headerMounted && 'artistHeader--active' }`}>
-            <div className='artistHeader__imgContainer'>
+        <header className={ `artistHeader  }`}>
+            <div className='headerBacking'></div>
+                <div className='artistHeader__imgContainer'>
                 <img 
                 crossOrigin='anonymous' 
                 // ON LOAD HERE ########################################
@@ -87,7 +60,7 @@ const ArtistHeader = ({ data }) => {
                 <i className="fas fa-ellipsis-h"></i>
             </div>
         </header>  
-        </>    
+         
     )
 
 }

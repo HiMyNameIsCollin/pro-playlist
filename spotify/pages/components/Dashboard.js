@@ -7,8 +7,7 @@ import { useTransition, animated } from 'react-spring'
 import  useApiCall  from '../hooks/useApiCall'
 import HomeHeader from './HomeHeader'
 import SearchHeader from './SearchHeader'
-import CollectionHeader from './CollectionHeader'
-import ArtistHeader from './ArtistHeader'
+import FixedHeader from './FixedHeader'
 import Home from './Home'
 import Nav from './Nav'
 import Manage from './Manage'
@@ -193,11 +192,10 @@ const Dashboard = ({ setAuth }) => {
     const [ activeItem, setActiveItem ] = useState(null)
 // activeHeader contains the data from the active page required for certain headers to function
     const [ activeHeader , setActiveHeader ] = useState(null)
-// headerMounted is used to let the loading element in each page know that its header has mounted and loaded
-    const [ headerMounted, setHeaderMounted ] = useState(false)
+    const [ headerScrolled, setHeaderScrolled] = useState(null)
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([{ pathname: location.pathname, activeItem: activeItem, scrollPosition: scrollPosition }])
-    const dbHookState = {activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, headerMounted, setHeaderMounted, scrollPosition }
+    const dbHookState = {activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, scrollPosition, headerScrolled, setHeaderScrolled }
 
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
@@ -296,7 +294,6 @@ const Dashboard = ({ setAuth }) => {
 
     useEffect(() => {
         setActiveHeader( null )
-        setHeaderMounted(false)
         setHiddenUI( true )
         if(activeItem && activeItem.type){
             switch(activeItem.type){
@@ -373,6 +370,24 @@ and if I put them inside the page, they will be fixed to the container and not t
                     </Route> 
                     <Route path='/search'>
                         <SearchHeader hiddenUI={ hiddenUI }/>
+                    </Route> 
+                    <Route path='/artist/:id'>
+                        {
+                            activeHeader &&
+                            <FixedHeader activeHeader={ activeHeader }  headerScrolled={ headerScrolled }/>
+                        }
+                    </Route> 
+                    <Route path='/album/:id'>
+                        {
+                            activeHeader &&
+                            <FixedHeader activeHeader={ activeHeader } headerScrolled={ headerScrolled } />
+                        }
+                    </Route>
+                    <Route path='/playlist/:id'>
+                        {
+                            activeHeader &&
+                            <FixedHeader activeHeader={ activeHeader }  headerScrolled={ headerScrolled }/>
+                        }
                     </Route> 
                 </Switch>
 

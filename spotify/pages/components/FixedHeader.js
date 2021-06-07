@@ -1,10 +1,27 @@
 import { useState, useEffect } from 'react'
 import { useSpring, animated } from 'react-spring'
 
-const FixedHeader = () => {
+const FixedHeader = ({ activeHeader, headerScrolled}) => {
+    const [ hidden, setHidden ] = useState(true)
 
+    useEffect(() => {
+        if( headerScrolled > 50 ){
+            setHidden(false)
+        } else{
+            setHidden( true )
+        }
+    },[headerScrolled])
 
-    
+    const showFixedHeader = useSpring({
+        transform: hidden ? 'translateY(-100%)' : 'translateY(0%)',
+        opacity: hidden ? 0 : 1
+    })
+
+    const {scaleUp, fadeIn, textScroll} = useSpring({
+        scaleUp: `${ 1.00 + ( headerScrolled * 0.01 ) }`,
+        fadeIn: `${ 0 + ( headerScrolled * 0.01 )}`,
+        textScroll: `${ 200 - ( headerScrolled * 2 )}`,
+    })
     return(
         <animated.div
         style={ showFixedHeader } 
@@ -13,7 +30,7 @@ const FixedHeader = () => {
             <animated.h1 style={{
                 opacity: fadeIn.to( o => o),
                 transform: textScroll.to( y => `translateY(${ y }%)`)
-            }}> { data.name } </animated.h1>
+            }}> { activeHeader.data } </animated.h1>
         </animated.div>
     )
 }

@@ -91,7 +91,6 @@ const Collection = ({ type, genreSeeds, location }) => {
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
     const { activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, headerMounted } = useContext( DbHookContext )
-
     const { collection, artists, tracks, recommendations } = {...state}
 
     useEffect(() => {
@@ -121,13 +120,6 @@ const Collection = ({ type, genreSeeds, location }) => {
         if(apiPayload) dispatch( apiPayload )
     }, [apiPayload])
 
-    useEffect(() => {
-        // Set background image of Album header
-        if( collection.id ) {
-            const img = whichPicture(collection.images, 'lrg')
-            document.documentElement.style.setProperty('--headerBackground', `url(${img})`)
-        }
-    }, [collection])
 
     useEffect(() => {
         if( collection.id && !tracks[0]){
@@ -191,29 +183,21 @@ const Collection = ({ type, genreSeeds, location }) => {
         if( !activeItem && collection.id ) setActiveItem( collection )
     }, [collection])
 
-    useEffect(()=> {
-        if(!activeHeader){
-            if( type === 'album' ) {
-                if( recommendations[0] ) setActiveHeader({ collection, artists, tracks })  
-            } else {
-                if( collection.id && artists[0] && tracks[0] ) setActiveHeader({ collection, artists, tracks })           
-            }  
-        }
-    },[state])
-
     useEffect(() => {
-        if( activeHeader ) setLoaded(true)
+        if( activeHeader ) setTimeout(() => setLoaded(true), 250)
     }, [ activeHeader ])
 
 
     return(
         <div className={ `page page--collection collection ${ overlay ? 'page--blurred' : ''}` }>
-        
+        {
+            collection.id&&
+            <CollectionHeader data={{collection, tracks, artists,}}/>
+        }
         {
         !loaded ?
         <Loading/> :
         <>
-            <CollectionHeader data={{collection, tracks, artists,}}/>
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             
             {

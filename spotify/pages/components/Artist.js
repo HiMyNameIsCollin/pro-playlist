@@ -2,6 +2,7 @@ import { useState, useEffect, useReducer , useLayoutEffect, useContext} from 're
 import TracksContainer from './TracksContainer'
 import Loading from './Loading'
 import AlbumContainer from './AlbumContainer'
+import ArtistHeader from './ArtistHeader'
 import Slider from './Slider'
 import useApiCall from '../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
@@ -94,9 +95,7 @@ const Artist = ({ genreSeeds, location }) => {
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
-    const [ elementHeight, setElementHeight ] = useState(null)
     const { artist , top_tracks, all_albums, related_artists } = { ...state }
-
 
     useEffect(() => {
         let id = activeItem && activeItem.id ? activeItem.id : location.pathname.substr( routes.artist.length - 2 )
@@ -119,15 +118,19 @@ const Artist = ({ genreSeeds, location }) => {
         if(artist.id && !activeHeader){
             setActiveHeader({ artist })
         }
-    }, [ state ])
+    }, [ artist ])
 
     useEffect(() => {
-        if( headerMounted ) setTimeout(() => setLoaded(true), 250)
-    },[ headerMounted ])
+        if( activeHeader ) setTimeout(() => setLoaded(true), 250)
+    }, [activeHeader])
 
 
     return(
         <div className={ `page page--artist artist ${ overlay ? 'page--blurred' : ''}` }>
+            {
+                artist.id &&
+                <ArtistHeader data={{ artist, }} setLoaded={ setLoaded } />
+            }
             {
                 !loaded ?
                 <Loading />:
