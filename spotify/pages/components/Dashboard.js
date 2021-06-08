@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
-import { Switch, Route, useLocation, useHistory, NavLink, Link } from 'react-router-dom'
+import { Switch, Route, useLocation, useHistory, NavLink } from 'react-router-dom'
 import { capital } from '../../utils/capital'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { calcScroll } from '../../utils/calcScroll'
@@ -14,10 +14,8 @@ import Manage from './Manage'
 import Search from './Search'
 import Artist from './Artist'
 import Collection from './Collection'
-import Playlist from './Playlist'
 import Showcase from './Showcase'
 import Overlay from './Overlay'
-import Loading from './Loading'
 
 const initialState = {
     user_info: {},
@@ -57,124 +55,112 @@ const routes = {
 }
 
 const reducer = (state, action) => {
-        let route
-        let method
-        if(action){
-            route = action.route
-            method = action.method
-        }
-        switch(route) {
-            case routes.user_info:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        user_info: action
-                    }
+    let route
+    let method
+    if(action){
+        route = action.route
+        method = action.method
+    }
+    switch(route) {
+        case routes.user_info:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    user_info: action
                 }
-            case routes.currently_playing:
-                if(method==='get'){
-                    return{
-                        ...state,
-                        player_info: action
-                    }
+            }
+        case routes.currently_playing:
+            if(method==='get'){
+                return{
+                    ...state,
+                    player_info: action
                 }
-            case routes.my_playlists:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        my_playlists: action.items
-                    }
+            }
+        case routes.my_playlists:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    my_playlists: action.items
                 }
-
-            case routes.my_albums:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        my_albums: action.items
-                    }
+            }
+        case routes.my_albums:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    my_albums: action.items
                 }
-                
-            case routes.recently_played:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        recently_played: action.items
-                    }
+            }
+        case routes.recently_played:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    recently_played: action.items
                 }
-                
-            case routes.all_categories:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        all_categories: [ ...state.all_categories, ...action.categories.items ]
-                    }
+            }
+        case routes.all_categories:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    all_categories: [ ...state.all_categories, ...action.categories.items ]
                 }
-                    
-            case routes.new_releases:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        new_releases: action.albums.items
-                    }
+            }               
+        case routes.new_releases:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    new_releases: action.albums.items
                 }
-
-            case routes.featured_playlists:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        featured_playlists: action.playlists.items
-                    }  
+            }
+        case routes.featured_playlists:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    featured_playlists: action.playlists.items
                 }  
-
-            case routes.recommendations:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        recommendations: action.items
-                    }
-                }
-
-            case routes.available_genre_seeds:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        available_genre_seeds: action.genres
-                    }
-                }
-
-            case routes.my_top_tracks:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        my_top_tracks: action.items
-                    }
-                }
-
-            case routes.my_top_artists:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        my_top_artists: action.items
-                    }
-                } 
-            case routes.followed_artists:
+            }  
+        case routes.recommendations:
+            if(method === 'get'){
                 return{
                     ...state,
-                    followed_artists: action.artists.items
+                    recommendations: action.items
                 }
-
-            case routes.my_top_genres:
-                // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
+            }
+        case routes.available_genre_seeds:
+            if(method === 'get'){
                 return{
                     ...state,
-                    my_top_genres: action.items
+                    available_genre_seeds: action.genres
                 }
-
-            default:
-                console.log(action)
-                break
-                
-        }
+            }
+        case routes.my_top_tracks:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    my_top_tracks: action.items
+                }
+            }
+        case routes.my_top_artists:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    my_top_artists: action.items
+                }
+            } 
+        case routes.followed_artists:
+            return{
+                ...state,
+                followed_artists: action.artists.items
+            }
+        case routes.my_top_genres:
+            // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
+            return{
+                ...state,
+                my_top_genres: action.items
+            }
+        default:
+            console.log(action)
+            break         
+    }
 }
 
 export const DbHookContext = createContext()
@@ -236,8 +222,7 @@ const Dashboard = ({ setAuth }) => {
         }
     },[state.my_top_artists])
 
-// HANDLE SCROLL PERCENTAGE  
-
+// HANDLE SCROLL PERCENTAGE 
     useEffect(() => {
         handleScroll()
         window.addEventListener('scroll', handleScroll)
@@ -275,13 +260,12 @@ const Dashboard = ({ setAuth }) => {
 
 //  NAVIGATION TRANSITIONS
     const pageTransition = useTransition(location, {
-        initial: { transform: 'translateX(100%)' },
+        initial: { transform: 'translateX(100%)', },
         from: { transform: 'translateX(100%)', position: 'absolute', width: '100%'},
         update: {  position: 'relative'},
         enter: { transform: 'translateX(0%)' },
         leave: { transform: 'translateX(-20%)', position: 'absolute'},
     })
-
 
     const trackHistory = () => {
         if(locationRef.current.length < 5 ){
@@ -332,7 +316,6 @@ const Dashboard = ({ setAuth }) => {
     useEffect(() => {
         if(location.pathname === '/' || location.pathname === 'search' || location.pathname === '/manage'){
             setActiveItem( null )
-            
         }
     }, [ location.pathname ] )
 
@@ -355,13 +338,12 @@ const Dashboard = ({ setAuth }) => {
         scrollRef.current = scrollPosition
     }, [ scrollPosition ])
 
-
     return(
         <DbHookContext.Provider value={ dbHookState }>
             <section className='dashboard'>  
 {/* Headers are kept seperate from their respective pages because these are fixed positiong, 
 and if I put them inside the page, they will be fixed to the container and not the page. */}
-
+                <Overlay />
                 <Switch >
                     <Route exact path='/'>
                         <HomeHeader 
@@ -391,49 +373,47 @@ and if I put them inside the page, they will be fixed to the container and not t
                     </Route> 
                 </Switch>
 
-                <Overlay />
-                
             {
-                pageTransition((props, item) => (
-                    <animated.div style={ props }>
-                        <Switch location={ item }>
-                            <Route exact path='/'>
-                                <Home
-                                state={ state }/>
-                            </Route> 
-                            <Route path='/search'>
-                                <Search
-                                scrollPosition={ scrollPosition } 
-                                state={ state } 
-                                apiIsPending={ apiIsPending }/>
-                            </Route> 
-                            <Route path='/manage'>
-                                <Manage />
-                            </Route> 
-                            <Route path='/artist/:id'>
-                                <Artist 
-                                genreSeeds={ state.available_genre_seeds}
-                                location={ location }/>
-                            </Route> 
-                            <Route path='/album/:id'>
-                                <Collection
-                                type='album'
-                                genreSeeds={ state.available_genre_seeds}
-                                location={ location } />
-                            </Route>
-                            <Route path='/playlist/:id'>
-                                <Collection
-                                type='playlist'
-                                genreSeeds={ state.available_genre_seeds}
-                                location={ location } />
-                            </Route> 
-                            <Route path='/showcase/:id'>
-                                <Showcase 
-                                location={ location } />
-                            </Route> 
-                            
-                        </Switch>
-                    </animated.div>
+            pageTransition((props, item) => (
+                <animated.div style={ props }>
+                    <Switch location={ item }>
+                        <Route exact path='/'>
+                            <Home
+                            state={ state }/>
+                        </Route> 
+                        <Route path='/search'>
+                            <Search
+                            scrollPosition={ scrollPosition } 
+                            state={ state } 
+                            apiIsPending={ apiIsPending }/>
+                        </Route> 
+                        <Route path='/manage'>
+                            <Manage />
+                        </Route> 
+                        <Route path='/artist/:id'>
+                            <Artist 
+                            genreSeeds={ state.available_genre_seeds}
+                            location={ location }/>
+                        </Route> 
+                        <Route path='/album/:id'>
+                            <Collection
+                            type='album'
+                            genreSeeds={ state.available_genre_seeds}
+                            location={ location } />
+                        </Route>
+                        <Route path='/playlist/:id'>
+                            <Collection
+                            type='playlist'
+                            genreSeeds={ state.available_genre_seeds}
+                            location={ location } />
+                        </Route> 
+                        <Route path='/showcase/:id'>
+                            <Showcase 
+                            location={ location } />
+                        </Route> 
+                        
+                    </Switch>
+                </animated.div>
                 ))
                 }
                 {

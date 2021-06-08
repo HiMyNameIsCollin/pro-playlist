@@ -195,22 +195,21 @@ const Collection = ({ type, genreSeeds, location }) => {
             <CollectionHeader data={{collection, tracks, artists,}}/>
         }
         {
-        !loaded ?
-        <Loading/> :
-        <>
-            <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
-            
+            !loaded ?
+            <Loading/> :
+            <>
+                <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             {
             type === 'album' && 
-            <>
+                <>
                 <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
                 <section className='collection__copyright'>
                         <p>{ collection.copyrights[0].text } </p>
                 </section>
-            </>
+                </>
             }
-        </>
+            </>
         }
         </div>
     )

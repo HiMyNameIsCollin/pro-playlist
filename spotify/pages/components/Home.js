@@ -1,5 +1,6 @@
 import Slider from './Slider'
 import TabsContainer from './TabsContainer'
+import Loading from './Loading'
 
 import { useState, useEffect, useContext } from 'react'
 import { DbHookContext } from './Dashboard'

@@ -21,6 +21,7 @@ const CollectionHeader = ({ data  }) => {
         return () => {
             document.documentElement.style.setProperty('--headerBackground', `initial`)
         }
+        
     }, [])
 
     useEffect(() => {

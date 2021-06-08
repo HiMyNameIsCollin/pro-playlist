@@ -141,7 +141,6 @@ const Artist = ({ genreSeeds, location }) => {
                     message='Fans also enjoy'
                     items={ related_artists }
                     setActiveItem={ setActiveItem } />
-
                 </>
             }
         </div>
