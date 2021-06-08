@@ -10,12 +10,15 @@ const TracksContainer = ({ type, data , setOverlay }) => {
     },[])
 
     const handleTrackMenu = ( selectedTrack ) => {
+        const calledFrom = type
         const popupData = {
+            calledFrom,
             collection, 
             tracks,
             selectedTrack,
         }
-        setOverlay( {type: 'trackMenu', data: popupData, func: null} )
+        
+        setOverlay( {type: 'trackMenu', data: popupData,  func: null} )
     }
 
     return(
@@ -52,7 +55,14 @@ const TracksContainer = ({ type, data , setOverlay }) => {
                         track.artists.map((artist , j) => j !== track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`)  
                         }
                     </span>
-                    <i onClick={ () => handleTrackMenu( type!=='artist' ? collection.type === 'playlist' ? track.track : track : track) } className="fas fa-ellipsis-h"></i>
+                    <i className="fas fa-ellipsis-h"
+                        onClick={ () => {
+                        handleTrackMenu( 
+                            type!=='artist' ? 
+                            collection.type === 'playlist' ? 
+                            track.track : 
+                            track : 
+                            track) }}></i>
 
                 </div>
                 ) 
