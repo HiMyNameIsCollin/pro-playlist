@@ -37,18 +37,18 @@ const Overlay = () => {
             onClick={ closeOverlay } 
             className='overlay'>
             {
-            overlay &&
-                menuTransition((props, item) => (
-                    item && item.type === 'trackMenu' ?
-                    <animated.div className='popup' style={props}>
-                        <TrackMenu overlay={ overlay } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
-                    </animated.div> :
-                    item && item.type === 'listMenu' &&
-                    <animated.div className='popup'  style={props}>
-                        <ListMenu data={overlay.data} func={overlay.func}/>
-                    </animated.div> 
-                    )
+           
+            menuTransition((props, item) => (
+                item.type === 'trackMenu' ?
+                <animated.div className='popup' style={props}>
+                    <TrackMenu overlay={ overlay } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                </animated.div> :
+                item.type === 'listMenu' &&
+                <animated.div className='popup'  style={props}>
+                    <ListMenu data={overlay.data} func={overlay.func}/>
+                </animated.div> 
                 )
+            )
 
             }
         </animated.div>

@@ -1,13 +1,14 @@
 import Image from 'next/image'
 import { whichPicture } from '../../../utils/whichPicture'
-
 import { handleViewArtist } from '../../../utils/handleViewArtist'
+import { useState, useEffect } from 'react'
 
 const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
-
     const { type, data, func } = { ...overlay}
     const { selectedTrack, calledFrom, collection } = {...data}
-    const copyToClip = (track) => {
+    const [ track, setTrack ] = useState( track => track = selectedTrack )
+    const copyToClip = () => {
+        console.log(track)
         // ILL BE BACK FOR THIS ONCE I FIGURE IF I WANNA SHARE ON SPOTIFY OR MY APP
     }
 
@@ -16,38 +17,46 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
         window.open( url )
     }
 
+    const viewArtist = ( e, artists ) => {
+        e.stopPropagation()
+        let overlayMod = { ...overlay}
+        overlayMod.type = ''
+        setOverlay(overlayMod)
+        setTimeout(() => {setOverlay(null), handleViewArtist( e , artists, setOverlay, setActiveItem)}, 250)
+    }
+
+    const viewAlbum = ( e, album ) => {
+        e.stopPropagation()
+        let overlayMod = { ...overlay}
+        overlayMod.type = ''
+        setOverlay(overlayMod)
+        setTimeout(() => {setOverlay(null), setActiveItem( album )}, 250)
+    }
+
     return(
         <div className='popup__trackMenu'>
             <header className='popup__header'>
                 <div className='popup__imgContainer'>
                     <img
+                    src={ whichPicture( track.images, 'med' )}
                     alt='Track art' 
-                    src={ whichPicture( 
-                        selectedTrack.album  ?
-                        selectedTrack.album.images :
-                        collection.images , 'med' )} />
+                    />
                 </div>
                 <h3> 
-                    { selectedTrack.name }
+                    { track.name }
                 </h3>
                 <p>
                 { 
-                    selectedTrack.album ?
-                    selectedTrack.album.artists.map((artist, i) =>  (
-                            i !== selectedTrack.album.artists.length - 1 ? 
+                    track.artists.map((artist, i) =>  (
+                            i !== track.artists.length - 1 ? 
                             `${ artist.name ? artist.name : artist.display_name }, ` : 
                             `${ artist.name ? artist.name : artist.display_name }` 
-                        )) :
-                    collection.artists.map((artist, i) => (
-                            i !== collection.artists.length - 1 ? 
-                            `${ artist.name ? artist.name : artist.display_name }, ` : 
-                            `${ artist.name ? artist.name : artist.display_name }` 
-                        ))
+                    ))
                 }
                 </p>
             </header>
             
-            <button onClick={ (e) => openSpotify(e, selectedTrack.external_urls.spotify )} >
+            <button onClick={ (e) => openSpotify(e, track.external_urls.spotify )} >
                 <Image 
                 src='/Spotify_Icon_RGB_Green.png'
                 alt='View via Spotify' 
@@ -55,13 +64,13 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
                 width='32px'/>
                 <span> View via Spotify </span>
             </button>
-            <button onClick={ () => copyToClip( selectedTrack ) }>
+            <button onClick={ () => copyToClip( track ) }>
                 <i className="fas fa-share-alt"></i> 
                 <span> Share </span>
             </button>
             {
                calledFrom !== 'artist' &&
-               <button onClick={ (e) => handleViewArtist( e , selectedTrack.artists, setOverlay, setActiveItem)} >
+               <button onClick={ (e) => viewArtist( e, track.artists ) } >
                     <i className="far fa-eye"></i>
                     <span> View artist </span> 
                 </button>
@@ -70,7 +79,7 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
                 calledFrom === 'collection' && 
                 collection.album_type === 'playlist' ||
                 calledFrom !== 'collection' &&
-                <button onClick={ () => setActiveItem( selectedTrack.album )}>
+                <button onClick={ (e) => viewAlbum( e, track.album )}>
                     <i className="far fa-eye"></i>
                     <span> View album </span>
                 </button>

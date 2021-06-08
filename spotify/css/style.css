@@ -992,14 +992,22 @@ i {
 }
 
 .popup {
-  align-self: flex-end;
   color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  justify-content: flex-end;
   overflow-y: auto;
   width: 100%;
 }
+.popup__imgContainer {
+  padding: 0 1rem;
+}
+.popup__imgContainer img {
+  max-width: 100%;
+}
 .popup__header {
-  margin: 1rem auto;
+  margin: 0 auto;
   text-align: center;
 }
 .popup__header h3 {
@@ -1011,6 +1019,7 @@ i {
 }
 .popup__listMenu, .popup__trackMenu {
   padding: 1rem;
+  width: 100%;
 }
 .popup__listMenu button, .popup__trackMenu button {
   align-items: center;

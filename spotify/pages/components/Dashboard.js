@@ -341,9 +341,15 @@ const Dashboard = ({ setAuth }) => {
     return(
         <DbHookContext.Provider value={ dbHookState }>
             <section className='dashboard'>  
-{/* Headers are kept seperate from their respective pages because these are fixed positiong, 
-and if I put them inside the page, they will be fixed to the container and not the page. */}
-                <Overlay />
+
+        {
+            overlay &&
+            <Overlay />
+        }
+
+
+{/* These are fixed headers. The animated divs containing their respective pages will not allow for these
+to remain fixed to the top of the viewport */}
                 <Switch >
                     <Route exact path='/'>
                         <HomeHeader 

@@ -716,13 +716,19 @@ i
         opacity: 0.75
 
 .popup
-    align-self: flex-end
     color: $white
+    display: flex
+    flex-direction: column
     height: 100%
+    justify-content: flex-end
     overflow-y: auto
     width: 100%
+    &__imgContainer
+        padding: 0 1rem
+        img
+            max-width: 100%
     &__header
-        margin: 1rem auto
+        margin: 0 auto
         text-align: center
         h3
             color: $white
@@ -731,6 +737,7 @@ i
             color: $lightGrey
     &__listMenu, &__trackMenu
         padding: 1rem
+        width: 100%
         button
             align-items: center
             display: flex

@@ -1,4 +1,4 @@
-import Track from './Track'
+
 import { whichPicture } from '../../utils/whichPicture'
 import { useState , useEffect } from 'react'
 const TracksContainer = ({ type, data , setOverlay }) => {
@@ -12,6 +12,13 @@ const TracksContainer = ({ type, data , setOverlay }) => {
 
     const handleTrackMenu = ( selectedTrack ) => {
         const calledFrom = type
+        if(!selectedTrack.images){
+            if(!selectedTrack.album){
+                selectedTrack.images = collection.images
+            } else{
+                selectedTrack.images = selectedTrack.album.images
+            }
+        }
         const popupData = {
             calledFrom,
             collection, 
@@ -59,10 +66,8 @@ const TracksContainer = ({ type, data , setOverlay }) => {
                         <i className="fas fa-ellipsis-h"
                             onClick={ () => {
                             handleTrackMenu( 
-                                type!=='artist' ? 
-                                collection.type === 'playlist' ? 
-                                track.track : 
-                                track : 
+                                track && track.track ?
+                                track.track:
                                 track) }}></i>
 
                 </div>
