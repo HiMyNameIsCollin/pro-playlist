@@ -500,7 +500,7 @@ i
     padding: 1rem
     text-align: center
     width: 100%
-    z-index: 999
+    z-index: 998
     h1
         font-size: 1rem
     &::before
@@ -702,21 +702,33 @@ i
 .overlay
     @include overlay
     display: flex
+    flex-direction: column
     min-height: 100vh
+    overflow: auto
     position: fixed
     width: 100%
-    z-index: 3
+    z-index: 999
     &::before
-        @include scrimGradient( $grey, '135deg')
-        opacity: 0.9
+        @include scrimGradient($black, 'to top')
+        opacity: 1
     &::after
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.8 ), rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.5 ))
+        background: linear-gradient(to bottom, var(--headerColor1) 0% , var(--headerColor0)), linear-gradient(to right, var(--headerColor1) , var(--headerColor0))
+        opacity: 0.75
 
 .popup
     align-self: flex-end
     color: $white
+    height: 100%
     overflow-y: auto
     width: 100%
+    &__header
+        margin: 1rem auto
+        text-align: center
+        h3
+            color: $white
+            padding: 1rem 0
+        p
+            color: $lightGrey
     &__listMenu, &__trackMenu
         padding: 1rem
         button
@@ -730,6 +742,7 @@ i
             i
                 font-size: 2rem
     &__trackMenu
+        overflow-y: auto
         button
             justify-content: flex-start
             span

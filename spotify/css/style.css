@@ -644,7 +644,7 @@ i {
   padding: 1rem;
   text-align: center;
   width: 100%;
-  z-index: 999;
+  z-index: 998;
 }
 .fixedHeader::before {
   content: "";
@@ -957,10 +957,12 @@ i {
   overflow: hidden;
   z-index: 1;
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  overflow: auto;
   position: fixed;
   width: 100%;
-  z-index: 3;
+  z-index: 999;
 }
 .overlay::before {
   content: "";
@@ -981,18 +983,31 @@ i {
   z-index: -2;
 }
 .overlay::before {
-  background: linear-gradient(135deg, #535353 0%, rgba(83, 83, 83, 0.738) 19%, rgba(83, 83, 83, 0.541) 34%, rgba(83, 83, 83, 0.382) 47%, rgba(83, 83, 83, 0.278) 56.5%, rgba(83, 83, 83, 0.194) 65%, rgba(83, 83, 83, 0.126) 73%, rgba(83, 83, 83, 0.075) 80.2%, rgba(83, 83, 83, 0.042) 86.1%, rgba(83, 83, 83, 0.021) 91%, rgba(83, 83, 83, 0.008) 95.2%, rgba(83, 83, 83, 0.002) 98.2%, rgba(83, 83, 83, 0) 100%);
-  opacity: 0.9;
+  background: linear-gradient(to top, #191414 0%, rgba(25, 20, 20, 0.738) 19%, rgba(25, 20, 20, 0.541) 34%, rgba(25, 20, 20, 0.382) 47%, rgba(25, 20, 20, 0.278) 56.5%, rgba(25, 20, 20, 0.194) 65%, rgba(25, 20, 20, 0.126) 73%, rgba(25, 20, 20, 0.075) 80.2%, rgba(25, 20, 20, 0.042) 86.1%, rgba(25, 20, 20, 0.021) 91%, rgba(25, 20, 20, 0.008) 95.2%, rgba(25, 20, 20, 0.002) 98.2%, rgba(25, 20, 20, 0) 100%);
+  opacity: 1;
 }
 .overlay::after {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.5));
+  background: linear-gradient(to bottom, var(--headerColor1) 0%, var(--headerColor0)), linear-gradient(to right, var(--headerColor1), var(--headerColor0));
+  opacity: 0.75;
 }
 
 .popup {
   align-self: flex-end;
   color: #FFFFFF;
+  height: 100%;
   overflow-y: auto;
   width: 100%;
+}
+.popup__header {
+  margin: 1rem auto;
+  text-align: center;
+}
+.popup__header h3 {
+  color: #FFFFFF;
+  padding: 1rem 0;
+}
+.popup__header p {
+  color: #b3b3b3;
 }
 .popup__listMenu, .popup__trackMenu {
   padding: 1rem;
@@ -1009,6 +1024,9 @@ i {
 }
 .popup__listMenu button i, .popup__trackMenu button i {
   font-size: 2rem;
+}
+.popup__trackMenu {
+  overflow-y: auto;
 }
 .popup__trackMenu button {
   justify-content: flex-start;

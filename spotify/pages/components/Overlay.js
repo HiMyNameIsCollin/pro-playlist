@@ -3,9 +3,13 @@ import { useSpring, useTransition, animated } from 'react-spring'
 import ListMenu from './overlay/ListMenu'
 import TrackMenu from './overlay/TrackMenu'
 import { DbHookContext } from './Dashboard'
+import { whichPicture } from '../../utils/whichPicture'
 const Overlay = () => {
 
     const { overlay, setOverlay, setActiveItem } = useContext( DbHookContext )
+
+    const { data } = { ...overlay }
+    const { selectedTrack, artists, calledFrom, collection } = { ...data }
 
     const fadeIn = useSpring({
         opacity: overlay ? 1 : 0,
@@ -20,11 +24,11 @@ const Overlay = () => {
     }
 
     const menuTransition = useTransition(overlay ,{
-        initial: { transform: 'translateY(100%)'},
-        from: { transform: 'translateY(100%)' , position: 'absolute', width: '100%', pointerEvents: 'none'},
+        initial: { transform: 'translateY(100%)', position: 'absolute'},
+        from: { transform: 'translateY(100%)' , pointerEvents: 'none', height: '100%', position: 'absolute'},
         update: { position: 'relative' },
-        enter: { transform: 'translateY(0%)', pointerEvents: 'auto' },
-        leave: { transform: 'translateY(100%)' , position: 'absolute'}
+        enter: { transform: 'translateY(0%)', pointerEvents: 'auto', position: 'absolute' },
+        leave: { transform: 'translateY(100%)' }
     })
 
     return (
@@ -34,11 +38,10 @@ const Overlay = () => {
             className='overlay'>
             {
             overlay &&
-            
                 menuTransition((props, item) => (
                     item && item.type === 'trackMenu' ?
                     <animated.div className='popup' style={props}>
-                        <TrackMenu data={overlay.data} overlay={ overlay } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                        <TrackMenu overlay={ overlay } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                     </animated.div> :
                     item && item.type === 'listMenu' &&
                     <animated.div className='popup'  style={props}>
