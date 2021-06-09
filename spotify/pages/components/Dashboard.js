@@ -9,17 +9,18 @@ import HomeHeader from './HomeHeader'
 import SearchHeader from './SearchHeader'
 import FixedHeader from './FixedHeader'
 import Home from './Home'
-import Nav from './Nav'
 import Manage from './Manage'
 import Search from './Search'
 import Artist from './Artist'
 import Collection from './Collection'
 import Showcase from './Showcase'
 import Overlay from './Overlay'
+import BottomUI from './BottomUI'
 
 const initialState = {
     user_info: {},
-    currently_playing: {},
+    queued_track: {},
+    player_info: {},
     my_top_genres: [],
     my_playlists: [],
     featured_playlists: [],
@@ -34,7 +35,8 @@ const initialState = {
 
 const routes = {   
     user_info: 'v1/me',
-    currently_playing: 'v1/me/player',
+    queued_track: 'v1/tracks',
+    player_info: 'v1/me/player',
     recently_played: 'v1/me/player/recently-played',
     my_playlists: 'v1/me/playlists',
     featured_playlists: 'v1/browse/featured-playlists',
@@ -69,7 +71,15 @@ const reducer = (state, action) => {
                     user_info: action
                 }
             }
-        case routes.currently_playing:
+        case routes.queued_track:
+            if(method === 'get'){
+                return{
+                    ...state,
+                    queued_track: action
+                }
+            }
+        case routes.player_info:
+            console.log(action)
             if(method==='get'){
                 return{
                     ...state,
@@ -173,15 +183,34 @@ const Dashboard = ({ setAuth }) => {
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state, dispatch ] = useReducer(reducer, initialState)
     const [ scrollPosition, setScrollPosition ] = useState()
+    const [ headerScrolled, setHeaderScrolled] = useState(null)
     const [ overlay, setOverlay ] = useState(null)
     const [ hiddenUI, setHiddenUI ] = useState(false)
-    const [ activeItem, setActiveItem ] = useState(null)
 // activeHeader contains the data from the active page required for certain headers to function
     const [ activeHeader , setActiveHeader ] = useState(null)
-    const [ headerScrolled, setHeaderScrolled] = useState(null)
+    const [ activeItem, setActiveItem ] = useState(null)
+    const [ queue, setQueue ] = useState([])
+
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([{ pathname: location.pathname, activeItem: activeItem, scrollPosition: scrollPosition }])
-    const dbHookState = {activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, scrollPosition, headerScrolled, setHeaderScrolled }
+    
+    const { user_info, queued_track, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
+
+// Context set up
+
+    const dbHookState = {
+        activeItem, 
+        setActiveItem, 
+        overlay, 
+        setOverlay, 
+        activeHeader, 
+        setActiveHeader, 
+        scrollPosition, 
+        headerScrolled, 
+        setHeaderScrolled,
+        queue,
+        setQueue,
+     }
 
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
@@ -220,7 +249,7 @@ const Dashboard = ({ setAuth }) => {
             }
             dispatch(payload)
         }
-    },[state.my_top_artists])
+    },[my_top_artists])
 
 // HANDLE SCROLL PERCENTAGE 
     useEffect(() => {
@@ -233,6 +262,34 @@ const Dashboard = ({ setAuth }) => {
         setScrollPosition( percent ? percent : 0)
     }
 
+    useEffect(() => {
+        if( recently_played[0] || queue[0] || player_info.item ){
+            if( queue[0] && queue[0].id !== queued_track.id &&
+                !queue[0].album  ||
+                !queued_track.album ) {
+                let id 
+                if(queue[0]){
+                    id = queue[0].id
+                }else if (player_info.item){
+                    id = player_info.item.id
+                }else if(recently_played[0]) {
+                    id = recently_played[0].track.id
+                }
+                
+                if(id) finalizeRoute('get', `${ routes.queued_track }/${id}`, fetchApi, id)     
+            } 
+        }
+        
+    }, [ recently_played, player_info , queue ])
+
+    useEffect(() => {
+        if( queued_track && queued_track.id ) {
+            
+            setQueue( queue => queue = [queued_track, ...queue.slice(1, queue.length-1)] )
+
+        }
+    }, [ queued_track ])
+
 // API CALLS 
     useEffect(() => {
         // First four arguments in 'finalizeRoute' are 
@@ -242,7 +299,7 @@ const Dashboard = ({ setAuth }) => {
         // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
         // 5th and onwards arguments will add query params to final url (Limit, offset, etc)
         finalizeRoute('get', routes.user_info, fetchApi, null)
-        finalizeRoute( 'get', routes.currently_playing, fetchApi, null)
+        finalizeRoute( 'get', routes.player_info, fetchApi, null)
         finalizeRoute( 'get', routes.featured_playlists, fetchApi, null )
         finalizeRoute( 'get', routes.new_releases, fetchApi, null )
         finalizeRoute( 'get', routes.recently_played, fetchApi, null, 'limit=6' ) 
@@ -417,10 +474,8 @@ to remain fixed to the top of the viewport */}
                 </animated.div>
                 ))
                 }
-                {
-                    !overlay &&
-                    <Nav location={ location } hiddenUI={ hiddenUI } NavLink={ NavLink } /> 
-                }
+                           
+                <BottomUI hiddenUI={ hiddenUI } NavLink={ NavLink } />
             </section>  
         </DbHookContext.Provider>  
     )

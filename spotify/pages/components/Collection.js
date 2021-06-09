@@ -205,7 +205,7 @@ const Collection = ({ type, genreSeeds, location }) => {
                 <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
                 <section className='collection__copyright'>
-                        <p>{ collection.copyrights[0].text } </p>
+                        <p>{ collection.copyrights && collection.copyrights[0].text } </p>
                 </section>
                 </>
             }
