@@ -341,12 +341,7 @@ const Dashboard = ({ setAuth }) => {
     return(
         <DbHookContext.Provider value={ dbHookState }>
             <section className='dashboard'>  
-
-        {
-            overlay &&
-            <Overlay />
-        }
-
+                <Overlay />
 
 {/* These are fixed headers. The animated divs containing their respective pages will not allow for these
 to remain fixed to the top of the viewport */}

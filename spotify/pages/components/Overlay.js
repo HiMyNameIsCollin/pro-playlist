@@ -17,17 +17,14 @@ const Overlay = () => {
     })
 
     const closeOverlay = () => {
-        let overlayMod = { ...overlay}
-        overlayMod.type = ''
-        setOverlay(overlayMod)
-        setTimeout(() => setOverlay(null) , 250)
+        setOverlay(null)
     }
 
     const menuTransition = useTransition(overlay ,{
         initial: { transform: 'translateY(100%)', position: 'absolute'},
-        from: { transform: 'translateY(100%)' , pointerEvents: 'none', height: '100%', position: 'absolute'},
+        from: { transform: 'translateY(100%)' , pointerEvents: 'none', height: '100%',  position: 'absolute'},
         update: { position: 'relative' },
-        enter: { transform: 'translateY(0%)', pointerEvents: 'auto', position: 'absolute' },
+        enter: { transform: 'translateY(0%)', pointerEvents: 'auto', overflow: 'auto', position: 'absolute' },
         leave: { transform: 'translateY(100%)' }
     })
 
@@ -39,13 +36,15 @@ const Overlay = () => {
             {
            
             menuTransition((props, item) => (
+                item &&
                 item.type === 'trackMenu' ?
                 <animated.div className='popup' style={props}>
-                    <TrackMenu overlay={ overlay } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                    <TrackMenu overlay={ item } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 </animated.div> :
+                item &&
                 item.type === 'listMenu' &&
                 <animated.div className='popup'  style={props}>
-                    <ListMenu data={overlay.data} func={overlay.func}/>
+                    <ListMenu data={item.data} func={item.func}/>
                 </animated.div> 
                 )
             )

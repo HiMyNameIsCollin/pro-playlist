@@ -19,18 +19,14 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
 
     const viewArtist = ( e, artists ) => {
         e.stopPropagation()
-        let overlayMod = { ...overlay}
-        overlayMod.type = ''
-        setOverlay(overlayMod)
-        setTimeout(() => {setOverlay(null), handleViewArtist( e , artists, setOverlay, setActiveItem)}, 250)
+        setOverlay(null)
+        handleViewArtist( e , artists, setOverlay, setActiveItem)
     }
 
     const viewAlbum = ( e, album ) => {
         e.stopPropagation()
-        let overlayMod = { ...overlay}
-        overlayMod.type = ''
-        setOverlay(overlayMod)
-        setTimeout(() => {setOverlay(null), setActiveItem( album )}, 250)
+        setOverlay(null)
+        setActiveItem( album )
     }
 
     return(

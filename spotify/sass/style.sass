@@ -85,15 +85,6 @@ $bg__1--lg: url('../public/bglg.jpg')
     scroll-behavior: smooth
     -webkit-scroll-behavior: smooth
 
-::-webkit-scrollbar 
-    width: .5rem
-::-webkit-scrollbar-track 
-::-webkit-scrollbar-thumb 
-    @include scrimGradient($white, 'to top')
-    border-bottom-right-radius: 25%
-    border-bottom-left-radius: 25%
-
-
 button, input[type="submit"], input[type="reset"]
     background: none
     color: inherit
@@ -640,7 +631,7 @@ i
     &__carousel
         display: flex
         overflow-y: hidden
-        overflow-x: scroll
+        overflow-x: auto
         position: relative
         width: auto
     &__card
@@ -713,7 +704,8 @@ i
     display: flex
     flex-direction: column
     min-height: 100vh
-    overflow: auto
+    justify-content: flex-end
+    max-height: 100%
     position: fixed
     width: 100%
     z-index: 999
@@ -728,9 +720,8 @@ i
     color: $white
     display: flex
     flex-direction: column
-    height: 100%
-    justify-content: flex-end
-    overflow-y: auto
+    min-height: 100%
+    overflow-y: hidden
     width: 100%
     &__imgContainer
         padding: 0 1rem
@@ -757,6 +748,8 @@ i
                 font-weight: 700
             i
                 font-size: 2rem
+    &__listMenu
+        margin-top: auto
     &__trackMenu
         overflow-y: auto
         button

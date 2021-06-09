@@ -12,16 +12,6 @@
   -webkit-scroll-behavior: smooth;
 }
 
-::-webkit-scrollbar {
-  width: 0.5rem;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(to top, white 0%, rgba(255, 255, 255, 0.738) 19%, rgba(255, 255, 255, 0.541) 34%, rgba(255, 255, 255, 0.382) 47%, rgba(255, 255, 255, 0.278) 56.5%, rgba(255, 255, 255, 0.194) 65%, rgba(255, 255, 255, 0.126) 73%, rgba(255, 255, 255, 0.075) 80.2%, rgba(255, 255, 255, 0.042) 86.1%, rgba(255, 255, 255, 0.021) 91%, rgba(255, 255, 255, 0.008) 95.2%, rgba(255, 255, 255, 0.002) 98.2%, rgba(255, 255, 255, 0) 100%);
-  border-bottom-right-radius: 25%;
-  border-bottom-left-radius: 25%;
-}
-
 button, input[type=submit], input[type=reset] {
   background: none;
   color: inherit;
@@ -873,7 +863,7 @@ i {
 .slider__carousel {
   display: flex;
   overflow-y: hidden;
-  overflow-x: scroll;
+  overflow-x: auto;
   position: relative;
   width: auto;
 }
@@ -969,7 +959,8 @@ i {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow: auto;
+  justify-content: flex-end;
+  max-height: 100%;
   position: fixed;
   width: 100%;
   z-index: 999;
@@ -1005,9 +996,8 @@ i {
   color: #FFFFFF;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: flex-end;
-  overflow-y: auto;
+  min-height: 100%;
+  overflow-y: hidden;
   width: 100%;
 }
 .popup__imgContainer {
@@ -1043,6 +1033,9 @@ i {
 }
 .popup__listMenu button i, .popup__trackMenu button i {
   font-size: 2rem;
+}
+.popup__listMenu {
+  margin-top: auto;
 }
 .popup__trackMenu {
   overflow-y: auto;
