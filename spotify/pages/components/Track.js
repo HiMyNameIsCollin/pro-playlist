@@ -1,9 +1,9 @@
-import { useState, useLayoutEffect, useContext, } from 'react'
+import { useState, useLayoutEffect, useEffect, useContext, } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 
 
-const Track = ({ type, i , track, handleTrackMenu, setTrackMounted }) => {
+const Track = ({ type, i , track, handleTrackMenu, setTrackMounted, setIsPlaying, audioRef }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
 
     const { queue, setQueue } = useContext( DbHookContext )
@@ -21,6 +21,24 @@ const Track = ({ type, i , track, handleTrackMenu, setTrackMounted }) => {
             func( arr => arr = [track, ...arr.slice(1, arr.length-1)] )
         }
     }
+
+    useEffect(() => {
+
+        if(type === 'player--collapsed'){
+            audioRef.current = new Audio( track.preview_url )
+            if( track.noPlay ){
+                console.log(track)
+            }else {
+                console.log(track, false)
+                setIsPlaying( true )
+            }
+            return () => {
+                setIsPlaying( false )
+                audioRef.current.pause()
+                audioRef.current = undefined
+            }
+        }
+    }, [ track ])
 
     const trackLoaded = () => {
         if(type === 'player--collapsed'){

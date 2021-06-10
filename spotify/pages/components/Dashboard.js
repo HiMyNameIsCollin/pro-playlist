@@ -211,6 +211,7 @@ useEffect(() => {
         if( player_info.item ) firstTrack = player_info.item
         if( recently_played[0] ) firstTrack = recently_played[0].track 
         if (firstTrack){
+            // Set noPlay so last played song doesnt auto start in app.
             firstTrack['noPlay'] = true
             setQueue( [firstTrack] )
         }
