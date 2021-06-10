@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react'
 import { useSpring, animated } from 'react-spring'
 import Nav from './Nav'
-import PlayerCollapsed from './PlayerCollapsed'
+import Player from './Player'
 import { DbHookContext } from './Dashboard'
 
 
@@ -16,11 +16,8 @@ const BottomUI = ({ location, hiddenUI, NavLink}) => {
 
     return(
         <animated.div style={ hideNav } className='bottomUI'>
-            {
-                playerState === 'default' ? 
-                <PlayerCollapsed /> :
-                null
-            }
+            <Player />
+            
             <Nav location={ location } NavLink={ NavLink } /> 
         </animated.div>
 
