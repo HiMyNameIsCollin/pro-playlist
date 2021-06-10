@@ -5,8 +5,7 @@ import Player from './Player'
 import { DbHookContext } from './Dashboard'
 
 
-const BottomUI = ({ location, hiddenUI, NavLink}) => {
-    const { queue } = useContext(DbHookContext)
+const Footer = ({ location, hiddenUI, NavLink}) => {
 
     const [ playerState, setPlayerState ] = useState( 'default' )
 
@@ -24,4 +23,4 @@ const BottomUI = ({ location, hiddenUI, NavLink}) => {
     )
 }
 
-export default BottomUI
+export default Footer

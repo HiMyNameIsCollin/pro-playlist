@@ -624,6 +624,7 @@ i {
 .collectionHeader--active {
   opacity: 1;
 }
+
 .headerBacking {
   position: relative;
   overflow: hidden;

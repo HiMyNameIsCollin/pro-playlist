@@ -1,9 +1,9 @@
-import { useState, useLayoutEffect, useContext } from 'react'
+import { useState, useLayoutEffect, useContext, } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 
 
-const Track = ({ type, i , track, handleTrackMenu }) => {
+const Track = ({ type, i , track, handleTrackMenu, setTrackMounted }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
 
     const { queue, setQueue } = useContext( DbHookContext )
@@ -20,7 +20,12 @@ const Track = ({ type, i , track, handleTrackMenu }) => {
         if(arr[0] && arr[0].id !== track.id) {
             func( arr => arr = [track, ...arr.slice(1, arr.length-1)] )
         }
-        
+    }
+
+    const trackLoaded = () => {
+        if(type === 'player--collapsed'){
+            setTrackMounted( true )
+        }
     }
 
     return(
@@ -40,6 +45,7 @@ const Track = ({ type, i , track, handleTrackMenu }) => {
             type!=='collection' &&
                 <div className='track__imgContainer'>
                     <img
+                    onLoad={ trackLoaded }
                     alt='Album' 
                     src={ whichPicture( track.album.images, 'sm') }/>
                 </div>

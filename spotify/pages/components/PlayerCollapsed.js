@@ -1,18 +1,26 @@
 import Track from './Track'
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import { DbHookContext } from './Dashboard'
-const PlayerCollapsed = () => {
+import { useSpring, animated } from 'react-spring'
+const PlayerCollapsed = ({ playing }) => {
 
-    const { queue } = useContext( DbHookContext)
+    const [ trackMounted, setTrackMounted ] = useState(false)
+
+    const slideIn = useSpring({
+        height: trackMounted ? '3rem': '0rem',
+        opacity: trackMounted ? 1 : 0
+    })
 
     return (
-        <div className='player player--collapsed'>
+        <animated.div style={slideIn} className='player player--collapsed'>
             {
-                queue[0] && queue[0].album &&
-                <Track type='player--collapsed' track={ queue[0] } />
+                playing.album &&
+                <>
+                <Track type='player--collapsed' track={ playing } setTrackMounted={setTrackMounted}/>
+                <i className="fas fa-play player--collapsed--playBtn"></i>
+                </>
             }
-            <i className="fas fa-play player--collapsed--playBtn"></i>
-        </div>
+        </animated.div>
     )
 }
 

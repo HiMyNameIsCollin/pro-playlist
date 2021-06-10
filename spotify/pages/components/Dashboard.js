@@ -15,11 +15,10 @@ import Artist from './Artist'
 import Collection from './Collection'
 import Showcase from './Showcase'
 import Overlay from './Overlay'
-import BottomUI from './BottomUI'
+import Footer from './Footer'
 
 const initialState = {
     user_info: {},
-    queued_track: {},
     player_info: {},
     my_top_genres: [],
     my_playlists: [],
@@ -35,7 +34,6 @@ const initialState = {
 
 const routes = {   
     user_info: 'v1/me',
-    queued_track: 'v1/tracks',
     player_info: 'v1/me/player',
     recently_played: 'v1/me/player/recently-played',
     my_playlists: 'v1/me/playlists',
@@ -69,13 +67,6 @@ const reducer = (state, action) => {
                 return{
                     ...state,
                     user_info: action
-                }
-            }
-        case routes.queued_track:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    queued_track: action
                 }
             }
         case routes.player_info:
@@ -185,16 +176,16 @@ const Dashboard = ({ setAuth }) => {
     const [ scrollPosition, setScrollPosition ] = useState()
     const [ headerScrolled, setHeaderScrolled] = useState(null)
     const [ overlay, setOverlay ] = useState(null)
-    const [ hiddenUI, setHiddenUI ] = useState(false)
+    const [ hiddenUI, setHiddenUI ] = useState(true)
 // activeHeader contains the data from the active page required for certain headers to function
     const [ activeHeader , setActiveHeader ] = useState(null)
     const [ activeItem, setActiveItem ] = useState(null)
     const [ queue, setQueue ] = useState([])
-
+    const [ mounted, setMounted ] = useState(false)
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([{ pathname: location.pathname, activeItem: activeItem, scrollPosition: scrollPosition }])
-    
-    const { user_info, queued_track, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
+    const mountedRef = useRef()
+    const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
 
 // Context set up
 
@@ -211,6 +202,20 @@ const Dashboard = ({ setAuth }) => {
         queue,
         setQueue,
      }
+
+// Set last played track on account as active track
+
+useEffect(() => {
+    if( queue.length < 1 ){
+        let firstTrack 
+        if( player_info.item ) firstTrack = player_info.item
+        if( recently_played[0] ) firstTrack = recently_played[0].track 
+        if (firstTrack){
+            firstTrack['noPlay'] = true
+            setQueue( [firstTrack] )
+        }
+    }
+}, [ recently_played, player_info  ])
 
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
@@ -262,34 +267,6 @@ const Dashboard = ({ setAuth }) => {
         setScrollPosition( percent ? percent : 0)
     }
 
-    useEffect(() => {
-        if( recently_played[0] || queue[0] || player_info.item ){
-            if( queue[0] && queue[0].id !== queued_track.id &&
-                !queue[0].album  ||
-                !queued_track.album ) {
-                let id 
-                if(queue[0]){
-                    id = queue[0].id
-                }else if (player_info.item){
-                    id = player_info.item.id
-                }else if(recently_played[0]) {
-                    id = recently_played[0].track.id
-                }
-                
-                if(id) finalizeRoute('get', `${ routes.queued_track }/${id}`, fetchApi, id)     
-            } 
-        }
-        
-    }, [ recently_played, player_info , queue ])
-
-    useEffect(() => {
-        if( queued_track && queued_track.id ) {
-            
-            setQueue( queue => queue = [queued_track, ...queue.slice(1, queue.length-1)] )
-
-        }
-    }, [ queued_track ])
-
 // API CALLS 
     useEffect(() => {
         // First four arguments in 'finalizeRoute' are 
@@ -335,7 +312,7 @@ const Dashboard = ({ setAuth }) => {
 
     useEffect(() => {
         setActiveHeader( null )
-        setHiddenUI( true )
+        setHiddenUI(true)
         if(activeItem && activeItem.type){
             switch(activeItem.type){
                 case 'artist':
@@ -387,13 +364,20 @@ const Dashboard = ({ setAuth }) => {
 
 // HANDLE UI 
     useEffect(() => {
-        if(scrollPosition < scrollRef.current || scrollPosition > 97 || scrollPosition < 5){
-            setHiddenUI(false)   
+        let hideMe
+        if(scrollPosition < scrollRef.current) {
+            hideMe = false
         } else {
-            setHiddenUI(true)
+            hideMe = true
         }
+        if( scrollPosition > 99 || scrollPosition <= 1){
+            hideMe = false   
+        }
+        setHiddenUI( hideMe )
         scrollRef.current = scrollPosition
+    
     }, [ scrollPosition ])
+
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -475,7 +459,7 @@ to remain fixed to the top of the viewport */}
                 ))
                 }
                            
-                <BottomUI hiddenUI={ hiddenUI } NavLink={ NavLink } />
+                <Footer hiddenUI={ hiddenUI } NavLink={ NavLink } />
             </section>  
         </DbHookContext.Provider>  
     )
