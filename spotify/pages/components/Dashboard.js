@@ -166,7 +166,7 @@ const reducer = (state, action) => {
 
 export const DbHookContext = createContext()
 
-const Dashboard = ({ setAuth }) => {
+const Dashboard = ({ setAuth, audioRef }) => {
     // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
     const location = useLocation()
@@ -175,7 +175,7 @@ const Dashboard = ({ setAuth }) => {
     const [ state, dispatch ] = useReducer(reducer, initialState)
     const [ scrollPosition, setScrollPosition ] = useState()
     const [ headerScrolled, setHeaderScrolled] = useState(null)
-    const [ overlay, setOverlay ] = useState({ type: 'touchStart'})
+    const [ overlay, setOverlay ] = useState()
     const [ hiddenUI, setHiddenUI ] = useState(true)
 // activeHeader contains the data from the active page required for certain headers to function
     const [ activeHeader , setActiveHeader ] = useState(null)
@@ -188,6 +188,7 @@ const Dashboard = ({ setAuth }) => {
 // Context set up //////////////////////////////////////////////////
 
     const dbHookState = {
+        audioRef,
         activeItem, 
         setActiveItem, 
         overlay, 

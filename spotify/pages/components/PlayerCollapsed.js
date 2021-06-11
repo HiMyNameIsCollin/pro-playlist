@@ -6,12 +6,12 @@ const PlayerCollapsed = () => {
 
     const trackMountedRef = useRef(false)
 
-    const  { isPlaying, currPlaying, setIsPlaying, audioRef } = useContext( PlayerHookContext )
+    const  { isPlaying, currPlaying, setIsPlaying } = useContext( PlayerHookContext )
     const [ trackMounted, setTrackMounted ] = useState( trackMountedRef.current )
 
     useEffect(() => {
         if( trackMounted ){
-            trackMountedRef.current === true
+            trackMountedRef.current = true
         }
     },[ trackMounted ])
 

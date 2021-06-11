@@ -1,16 +1,38 @@
 import Login from './Login'
 import Dashboard from './Dashboard'
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import { checkToken, refreshToken } from '../../utils/tokenTools'
 import useFetchToken from '../hooks/useFetchToken'
 
 const Container = () => {
     const host = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://spotify-himynameiscollin.vercel.app/'
     const { tokenError, tokenIsPending, tokenFetchComplete, setTokenBody } = useFetchToken(host)
-
+    const audioRef = useRef()
     const [ auth, setAuth ] = useState(false)
 
     useEffect(() => {
+      const sound = new Audio('../../silence.mp3')
+      audioRef.current = sound
+      const promise = new Promise(( res, rej ) => {
+        const checkReady = () => {
+            if(sound.readyState === 4){
+                resolvePromise()
+            }
+        }
+        const interval = setInterval(checkReady, 500)
+        const resolvePromise = () => {
+            clearInterval(interval)
+            res('success')
+        }
+      })
+      promise
+      .then( value => {
+        if(value === 'success'){
+          audioRef.current.play()
+          console.log(audioRef.current)
+          
+        }
+      }) 
       const sessionFinished = () => {
         const access_token = localStorage.removeItem('access_token')
         const refresh_token = localStorage.removeItem('refresh_token')
@@ -34,7 +56,7 @@ const Container = () => {
 
       {
         auth ?
-        <Dashboard setAuth={ setAuth } /> :
+        <Dashboard setAuth={ setAuth } audioRef={ audioRef } /> :
         <Login setTokenBody={ setTokenBody } />
       }
     </main>    

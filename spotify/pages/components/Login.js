@@ -11,12 +11,12 @@ const Login = ({ setTokenBody }) => {
     const authorize = 'https://accounts.spotify.com/authorize'
     const redirect_uri = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://spotify-himynameiscollin.vercel.app/'
 
-    const signIn = () => {
-      const access_token = localStorage.removeItem('access_token')
-      const refresh_token = localStorage.removeItem('refresh_token')
-      const token_expiry = localStorage.removeItem( 'token_expiry' )
+    const signIn = (e) => {
+      const access_token = localStorage.getItem('access_token')
+      const refresh_token = localStorage.getItem('refresh_token')
+      const token_expiry = localStorage.getItem( 'token_expiry' )
       if( access_token && refresh_token ){
-        refreshToken(e, refresh_token)
+        refreshToken(refresh_token, setTokenBody)
       } else {
         initAuth()
       }

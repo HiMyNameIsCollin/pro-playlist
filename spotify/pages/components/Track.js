@@ -6,11 +6,10 @@ import { PlayerHookContext } from './Player'
 const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted}) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
     
-    const { queue, setQueue } = useContext( DbHookContext )
+    const { queue, setQueue, audioRef } = useContext( DbHookContext )
     const playerContext = useContext( type === 'player--collapsed' ? PlayerHookContext : '' )
     
     const isPlaying = playerContext ?  playerContext.isPlaying : null
-    const audioRef = playerContext ? playerContext.audioRef : null
     const setIsPlaying = playerContext ? playerContext.setIsPlaying: null
     
     useLayoutEffect(() => {
@@ -36,14 +35,9 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
 
     useEffect(() => {
         if(type === 'player--collapsed'){
-            if( audioRef.current ){
-                audioRef.current.src = track.preview_url 
-            }else {
-                audioRef.current = new Audio( track.preview_url )
-                audioRef.current.play()
-                audioRef.current.pause()
-            }
-            audioRef.current.load()
+            audioRef.current.pause()
+            audioRef.current.src = track.preview_url 
+            
             if( trackMounted ) {
                 const promise = new Promise(( res, rej ) => {
                     const checkReady = () => {
@@ -59,9 +53,7 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
                 })
                 promise
                 .then( value => value === 'success' && setIsPlaying( true ))               
-            }
-
-                        
+            }    
             return () => {
                 setIsPlaying( false )
                 audioRef.current.pause()

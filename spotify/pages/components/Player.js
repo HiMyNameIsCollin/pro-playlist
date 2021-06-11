@@ -9,12 +9,12 @@ export const PlayerHookContext = createContext()
 const Player = () => {
     const API = 'https://api.spotify.com/'
     const track_route = ''
-    const { queue } = useContext( DbHookContext )
+    const { queue , audioRef } = useContext( DbHookContext )
     const [ playerSize, setPlayerSize ] = useState('small')
     const [ currPlaying, setCurrPlaying ] = useState({})
     const [trackProgress, setTrackProgress] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false)
-    const audioRef = useRef()
+    
 
     const playerHookState ={
         currPlaying,
@@ -23,11 +23,11 @@ const Player = () => {
         setTrackProgress,
         isPlaying,
         setIsPlaying,
-        audioRef,
     }
 
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const getTrack_route = 'v1/tracks'
+    
 
     useEffect(() => {
         if( queue[0] ) getTrack( queue[0] )
@@ -51,13 +51,13 @@ const Player = () => {
 
 
     useEffect(() => {
-        if( audioRef.current ){
+
             if( isPlaying ){
                 audioRef.current.play()
             } else {
                 audioRef.current.pause()
             }
-        }
+    
         
     }, [ isPlaying ])
 
@@ -70,6 +70,7 @@ const Player = () => {
                 null
             }
             </PlayerHookContext.Provider>
+            
         </div>
         
     )
