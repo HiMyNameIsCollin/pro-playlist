@@ -371,7 +371,7 @@ useEffect(() => {
         } else {
             hideMe = true
         }
-        if( scrollPosition > 99 || scrollPosition <= 1){
+        if( scrollPosition > 99 || scrollPosition < 1){
             hideMe = false   
         }
         setHiddenUI( hideMe )
