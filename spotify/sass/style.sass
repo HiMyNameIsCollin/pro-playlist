@@ -758,13 +758,22 @@ i
         opacity: 1
     &::after
         background: linear-gradient(to bottom, var(--headerColor1) 0% , var(--headerColor0)), linear-gradient(to right, var(--headerColor1) , var(--headerColor0))
-        opacity: 0.75
+
+.touchStart
+    background: $green
+    position: relative
+    position: fixed
+    left: 0
+    top: 0
+    min-height: 100vh
+    min-width: 100vw
+
 
 .popup
     color: $white
     display: flex
     flex-direction: column
-    min-height: 100%
+    min-height: 100vh
     overflow-y: hidden
     width: 100%
     &__imgContainer
@@ -779,6 +788,7 @@ i
             padding: 1rem 0
         p
             color: $lightGrey
+    
     &__listMenu, &__trackMenu
         padding: 1rem
         width: 100%

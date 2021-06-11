@@ -3,6 +3,7 @@ import {useState, useEffect} from 'react'
 
 // USING NEXT ROUTER TO CLEAR URL INSTEAD OF REACT ROUTER BECAUSE ITS EZPZ.
 import { useRouter } from 'next/router'
+import { refreshToken } from '../../utils/tokenTools'
 
 
 const Login = ({ setTokenBody }) => {
@@ -10,6 +11,17 @@ const Login = ({ setTokenBody }) => {
     const authorize = 'https://accounts.spotify.com/authorize'
     const redirect_uri = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://spotify-himynameiscollin.vercel.app/'
 
+    const signIn = () => {
+      const access_token = localStorage.removeItem('access_token')
+      const refresh_token = localStorage.removeItem('refresh_token')
+      const token_expiry = localStorage.removeItem( 'token_expiry' )
+      if( access_token && refresh_token ){
+        refreshToken(e, refresh_token)
+      } else {
+        initAuth()
+      }
+    }
+    
     const initAuth = () => {
       let url = authorize
       url += "?client_id=" + process.env.NEXT_PUBLIC_CLIENT_ID
@@ -90,7 +102,7 @@ const Login = ({ setTokenBody }) => {
               <h1 className='login__brand'>
                   Pro Playlist
               </h1>
-              <button className='login__btn' onClick={initAuth}>
+              <button className='login__btn' onClick={signIn}>
                   Login with Spotify
               </button>
               <p>

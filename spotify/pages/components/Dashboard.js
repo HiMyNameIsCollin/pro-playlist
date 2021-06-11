@@ -175,19 +175,17 @@ const Dashboard = ({ setAuth }) => {
     const [ state, dispatch ] = useReducer(reducer, initialState)
     const [ scrollPosition, setScrollPosition ] = useState()
     const [ headerScrolled, setHeaderScrolled] = useState(null)
-    const [ overlay, setOverlay ] = useState(null)
+    const [ overlay, setOverlay ] = useState({ type: 'touchStart'})
     const [ hiddenUI, setHiddenUI ] = useState(true)
 // activeHeader contains the data from the active page required for certain headers to function
     const [ activeHeader , setActiveHeader ] = useState(null)
     const [ activeItem, setActiveItem ] = useState(null)
     const [ queue, setQueue ] = useState([])
-    const [ mounted, setMounted ] = useState(false)
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([{ pathname: location.pathname, activeItem: activeItem, scrollPosition: scrollPosition }])
-    const mountedRef = useRef()
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
 
-// Context set up
+// Context set up //////////////////////////////////////////////////
 
     const dbHookState = {
         activeItem, 
@@ -259,7 +257,6 @@ useEffect(() => {
 
 // HANDLE SCROLL PERCENTAGE 
     useEffect(() => {
-        handleScroll()
         window.addEventListener('scroll', handleScroll)
     },[])
 
@@ -314,6 +311,7 @@ useEffect(() => {
     useEffect(() => {
         setActiveHeader( null )
         setHiddenUI(true)
+       
         if(activeItem && activeItem.type){
             switch(activeItem.type){
                 case 'artist':
@@ -349,6 +347,7 @@ useEffect(() => {
 
 // Reset activeItem to null, otherwise you cant access same page twice in a row.
     useEffect(() => {
+        handleScroll()
         if(location.pathname === '/' || location.pathname === 'search' || location.pathname === '/manage'){
             setActiveItem( null )
         }
@@ -442,7 +441,8 @@ to remain fixed to the top of the viewport */}
                             <Collection
                             type='album'
                             genreSeeds={ state.available_genre_seeds}
-                            location={ location } />
+                            location={ location }
+                             />
                         </Route>
                         <Route path='/playlist/:id'>
                             <Collection
@@ -452,7 +452,7 @@ to remain fixed to the top of the viewport */}
                         </Route> 
                         <Route path='/showcase/:id'>
                             <Showcase 
-                            location={ location } />
+                             />
                         </Route> 
                         
                     </Switch>

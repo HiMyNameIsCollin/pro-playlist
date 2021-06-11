@@ -1,13 +1,18 @@
-import { useState, useLayoutEffect, useEffect, useContext, } from 'react'
+import { useState, useLayoutEffect, useEffect, useContext, useRef } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
+import { PlayerHookContext } from './Player'
 
-
-const Track = ({ type, i , track, handleTrackMenu, setTrackMounted, setIsPlaying, audioRef }) => {
+const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted}) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
-
+    
     const { queue, setQueue } = useContext( DbHookContext )
-
+    const playerContext = useContext( type === 'player--collapsed' ? PlayerHookContext : '' )
+    
+    const isPlaying = playerContext ?  playerContext.isPlaying : null
+    const audioRef = playerContext ? playerContext.audioRef : null
+    const setIsPlaying = playerContext ? playerContext.setIsPlaying: null
+    
     useLayoutEffect(() => {
         if( queue[0] && queue[0].id === track.id && type !=='player--collapsed' ){
             setActiveTrack( true )
@@ -16,26 +21,51 @@ const Track = ({ type, i , track, handleTrackMenu, setTrackMounted, setIsPlaying
         }
     },[ queue ])
 
-    const playTrack = ( track, arr, func ) =>{
+    const playTrack = (e, track, arr, func ) =>{
+        e.stopPropagation()
+        // Adds track to Queue. Callback func is 'setQueue'
         if(arr[0] && arr[0].id !== track.id) {
-            func( arr => arr = [track, ...arr.slice(1, arr.length-1)] )
+            if( type === 'search' ){
+
+            }else(
+                func( arr => arr = [track, ...arr.slice(1, arr.length-1)] )
+    
+            )
         }
     }
 
     useEffect(() => {
-
         if(type === 'player--collapsed'){
-            audioRef.current = new Audio( track.preview_url )
-            if( track.noPlay ){
-                console.log(track)
+            if( audioRef.current ){
+                audioRef.current.src = track.preview_url 
             }else {
-                console.log(track, false)
-                setIsPlaying( true )
+                audioRef.current = new Audio( track.preview_url )
+                audioRef.current.play()
+                audioRef.current.pause()
             }
+            audioRef.current.load()
+            if( trackMounted ) {
+                const promise = new Promise(( res, rej ) => {
+                    const checkReady = () => {
+                        if(audioRef.current.readyState === 4){
+                            resolvePromise()
+                        }
+                    }
+                    const interval = setInterval(checkReady, 500)
+                    const resolvePromise = () => {
+                        clearInterval(interval)
+                        res('success')
+                    }
+                })
+                promise
+                .then( value => value === 'success' && setIsPlaying( true ))               
+            }
+
+                        
             return () => {
                 setIsPlaying( false )
                 audioRef.current.pause()
-                audioRef.current = undefined
+                audioRef.current.src = ''
             }
         }
     }, [ track ])
@@ -48,7 +78,8 @@ const Track = ({ type, i , track, handleTrackMenu, setTrackMounted, setIsPlaying
 
     return(
         <div 
-        onClick={ () => type !== 'player--collapsed' ? playTrack(track, queue, setQueue) : console.log(track) }
+        onClick={ (e) => type !== 'player--collapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
+        // onTouchStart={ (e) => type !== 'player--collapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
         className={
             `track ${ activeTrack && 'track--active' }`
         }>
@@ -79,7 +110,7 @@ const Track = ({ type, i , track, handleTrackMenu, setTrackMounted, setIsPlaying
             {
                 type !== 'player--collapsed' &&
                 <i className="fas fa-ellipsis-h"
-                onClick={ () => handleTrackMenu( track ) }></i> 
+                onClick={ (e) => handleTrackMenu(e, track ) }></i> 
             }
 
         </div>

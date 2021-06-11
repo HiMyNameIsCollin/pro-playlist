@@ -13,7 +13,7 @@ const TabsContainer = ({ items }) => {
             </div>
             {
                 items.map(( item, i ) => {
-                   return <Tab item={ item } key={ i }/>
+                   return <Tab item={ item.track } key={ i }/>
                 })
             }
         </section>

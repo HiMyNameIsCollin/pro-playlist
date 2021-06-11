@@ -1,10 +1,27 @@
 import Track from './Track'
 import { useState, useEffect, useRef, useContext } from 'react'
-import { DbHookContext } from './Dashboard'
+import { PlayerHookContext } from './Player'
 import { useSpring, animated } from 'react-spring'
-const PlayerCollapsed = ({ currPlaying, audioRef, setIsPlaying }) => {
+const PlayerCollapsed = () => {
 
-    const [ trackMounted, setTrackMounted ] = useState(false)
+    const trackMountedRef = useRef(false)
+
+    const  { isPlaying, currPlaying, setIsPlaying, audioRef } = useContext( PlayerHookContext )
+    const [ trackMounted, setTrackMounted ] = useState( trackMountedRef.current )
+
+    useEffect(() => {
+        if( trackMounted ){
+            trackMountedRef.current === true
+        }
+    },[ trackMounted ])
+
+    const pressPlay = () => {
+        setIsPlaying( true )
+    }
+
+    const pressPause = () => {
+        setIsPlaying( false )
+    }
 
     const slideIn = useSpring({
         height: trackMounted ? '3rem': '0rem',
@@ -19,11 +36,15 @@ const PlayerCollapsed = ({ currPlaying, audioRef, setIsPlaying }) => {
                 <Track 
                     type='player--collapsed' 
                     track={ currPlaying } 
+                    trackMounted={ trackMounted }
                     setTrackMounted={ setTrackMounted }
-                    setIsPlaying={ setIsPlaying }
-                    audioRef={ audioRef }
                     />
-                <i className="fas fa-play player--collapsed--playBtn"></i>
+                {
+                    isPlaying ?
+                    <i onClick={ pressPause } className="fas fa-pause player--collapsed--playBtn"></i>:
+                    <i onClick={ pressPlay } className="fas fa-play player--collapsed--playBtn"></i>
+
+                }
                 </>
             }
         </animated.div>

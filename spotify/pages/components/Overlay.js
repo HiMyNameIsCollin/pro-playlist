@@ -42,10 +42,12 @@ const Overlay = () => {
                     <TrackMenu overlay={ item } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 </animated.div> :
                 item &&
-                item.type === 'listMenu' &&
+                item.type === 'listMenu' ?
                 <animated.div className='popup'  style={props}>
                     <ListMenu data={item.data} func={item.func}/>
-                </animated.div> 
+                </animated.div>  :
+                
+                null
                 )
             )
 

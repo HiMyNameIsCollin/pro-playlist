@@ -11,19 +11,23 @@ const Container = () => {
     const [ auth, setAuth ] = useState(false)
 
     useEffect(() => {
+      const sessionFinished = () => {
+        const access_token = localStorage.removeItem('access_token')
+        const refresh_token = localStorage.removeItem('refresh_token')
+        const token_expiry = localStorage.removeItem( 'token_expiry' )
+      }
+      // window.onbeforeunload = sessionFinished
+    },[])
+
+    useEffect(() => {
       const access_token = localStorage.getItem('access_token')
       if( access_token  ) {
         const token_expiry = localStorage.getItem( 'token_expiry' )
         const expired = checkToken( token_expiry )
-        if( expired ){
-          const refresh_token = localStorage.getItem('refresh_token')
-          refreshToken(refresh_token, setTokenBody)
-        }else {
-          setAuth(true)
-
-        }
+        if( !expired ) setAuth(true)
       } 
     },[ tokenFetchComplete ])
+
 
     return(
     <main className='container'>

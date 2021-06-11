@@ -10,7 +10,8 @@ const TracksContainer = ({ type, data , setOverlay }) => {
         setMounted(true)
     },[])
 
-    const handleTrackMenu = ( selectedTrack ) => {
+    const handleTrackMenu = (e, selectedTrack ) => {
+        e.stopPropagation()
         const calledFrom = type
         if(!selectedTrack.images){
             if(!selectedTrack.album){
