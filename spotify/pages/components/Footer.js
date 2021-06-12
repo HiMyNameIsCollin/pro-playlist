@@ -7,10 +7,8 @@ import { DbHookContext } from './Dashboard'
 
 const Footer = ({ location, hiddenUI, NavLink}) => {
 
-    const [ playerState, setPlayerState ] = useState( 'default' )
-
     const hideNav = useSpring({
-        transform: hiddenUI ? 'translatey(3.1rem)' : 'translatey(0rem)'
+        transform: hiddenUI ? 'translatey(3.5rem)' : 'translatey(0rem)'
     })
 
     return(

@@ -17,6 +17,8 @@ import Showcase from './Showcase'
 import Overlay from './Overlay'
 import Footer from './Footer'
 
+export const DbHookContext = createContext()
+
 const initialState = {
     user_info: {},
     player_info: {},
@@ -164,7 +166,6 @@ const reducer = (state, action) => {
     }
 }
 
-export const DbHookContext = createContext()
 
 const Dashboard = ({ setAuth, audioRef }) => {
     // ENV VARIABLE FOR API?
@@ -203,17 +204,12 @@ const Dashboard = ({ setAuth, audioRef }) => {
      }
 
 // Set last played track on account as active track
-
 useEffect(() => {
     if( queue.length < 1 ){
         let firstTrack 
         if( player_info.item ) firstTrack = player_info.item
         if( recently_played[0] ) firstTrack = recently_played[0].track 
-        if (firstTrack){
-            // Set noPlay so last played song doesnt auto start in app.
-            firstTrack['noPlay'] = true
-            setQueue( [firstTrack] )
-        }
+        if (firstTrack) setQueue( [firstTrack] )
     }
 }, [ recently_played, player_info  ])
 
@@ -291,15 +287,6 @@ useEffect(() => {
     },[apiPayload])
 //  END OF API CALLS 
 
-//  NAVIGATION TRANSITIONS
-    const pageTransition = useTransition(location, {
-        initial: { transform: 'translateX(100%)', },
-        from: { transform: 'translateX(100%)', position: 'absolute', width: '100%'},
-        update: {  position: 'relative'},
-        enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-20%)', position: 'absolute'},
-    })
-
     const trackHistory = () => {
         if(locationRef.current.length < 5 ){
             locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem, scrollPosition : scrollPosition } )
@@ -309,10 +296,13 @@ useEffect(() => {
         }
     }
 
+// Navigation through the dynamic parts of the website are handled here.
+// When a dynamic page is selected(Playlist, Album, Artist), it will be set as the activeItem state, which fires this.
+// Also clears the activeHeader state (Holds the data corresponding with the currently opened page.)
+
     useEffect(() => {
         setActiveHeader( null )
         setHiddenUI(true)
-       
         if(activeItem && activeItem.type){
             switch(activeItem.type){
                 case 'artist':
@@ -354,6 +344,7 @@ useEffect(() => {
         }
     }, [ location.pathname ] )
 
+//  When overlay is open, makes the rest of the APP no clicky
     useLayoutEffect(() => {
         const body = document.querySelector('body')
         if( overlay ) {
@@ -363,7 +354,7 @@ useEffect(() => {
         }
     }, [overlay])
 
-// HANDLE UI 
+// HANDLE THE POSITION OF THE HEADER / NAV WHEN SCROLLING
     useEffect(() => {
         let hideMe
         if(scrollPosition < scrollRef.current) {
@@ -376,9 +367,17 @@ useEffect(() => {
         }
         setHiddenUI( hideMe )
         scrollRef.current = scrollPosition
-    
     }, [ scrollPosition ])
 
+
+//  NAVIGATION TRANSITIONS
+    const pageTransition = useTransition(location, {
+        initial: { transform: 'translateX(100%)', },
+        from: { transform: 'translateX(100%)', position: 'absolute', width: '100%'},
+        update: {  position: 'relative'},
+        enter: { transform: 'translateX(0%)' },
+        leave: { transform: 'translateX(-20%)', position: 'absolute'},
+    })
 
     return(
         <DbHookContext.Provider value={ dbHookState }>

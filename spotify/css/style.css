@@ -423,6 +423,45 @@ i {
 .player--collapsed {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
+}
+.player--collapsed__progress {
+  background: #535353;
+  display: flex;
+  padding: 0.1rem 0;
+  position: relative;
+  width: 100%;
+}
+.player--collapsed__progress__thumb {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  background: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+.player--collapsed__progress__thumb::before {
+  content: "";
+  top: 0;
+  left: 0;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+}
+.player--collapsed__progress__thumb::after {
+  content: "";
+  top: 0;
+  left: 0;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: -2;
+}
+.player--collapsed__progress__thumb::before {
+  background: linear-gradient(to right, #535353 0%, rgba(83, 83, 83, 0.738) 19%, rgba(83, 83, 83, 0.541) 34%, rgba(83, 83, 83, 0.382) 47%, rgba(83, 83, 83, 0.278) 56.5%, rgba(83, 83, 83, 0.194) 65%, rgba(83, 83, 83, 0.126) 73%, rgba(83, 83, 83, 0.075) 80.2%, rgba(83, 83, 83, 0.042) 86.1%, rgba(83, 83, 83, 0.021) 91%, rgba(83, 83, 83, 0.008) 95.2%, rgba(83, 83, 83, 0.002) 98.2%, rgba(83, 83, 83, 0) 100%);
 }
 .player--collapsed--playBtn {
   color: #FFFFFF;
@@ -433,7 +472,8 @@ i {
   grid-template-columns: auto auto minmax(0, 1fr) auto;
   grid-template-rows: 1fr 1fr;
   padding: 0;
-  width: fill-available;
+  width: auto;
+  max-width: calc(100% - 4rem);
 }
 .player--collapsed .track__imgContainer {
   height: 3.5rem;
@@ -819,6 +859,7 @@ i {
 .nav {
   display: flex;
   justify-content: center;
+  margin-top: 0.5rem;
 }
 .nav__list {
   display: flex;

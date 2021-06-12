@@ -1,19 +1,15 @@
 import Track from './Track'
 import { useState, useEffect, useRef, useContext } from 'react'
 import { PlayerHookContext } from './Player'
+import { DbHookContext } from './Dashboard'
 import { useSpring, animated } from 'react-spring'
 const PlayerCollapsed = () => {
 
     const trackMountedRef = useRef(false)
 
-    const  { isPlaying, currPlaying, setIsPlaying } = useContext( PlayerHookContext )
+    const { audioRef } = useContext( DbHookContext )
+    const  { isPlaying, trackProgress, currPlaying, setIsPlaying } = useContext( PlayerHookContext )
     const [ trackMounted, setTrackMounted ] = useState( trackMountedRef.current )
-
-    useEffect(() => {
-        if( trackMounted ){
-            trackMountedRef.current = true
-        }
-    },[ trackMounted ])
 
     const pressPlay = () => {
         setIsPlaying( true )
@@ -23,13 +19,27 @@ const PlayerCollapsed = () => {
         setIsPlaying( false )
     }
 
+
+// First song set will trigger the player entry animation.
+    useEffect(() => {
+        if( trackMounted ){
+            trackMountedRef.current = true
+        }
+    },[ trackMounted ])
+
     const slideIn = useSpring({
-        height: trackMounted ? '3rem': '0rem',
+        height: trackMounted ? '3.5rem': '0rem',
         opacity: trackMounted ? 1 : 0
     })
 
     return (
         <animated.div style={slideIn} className='player player--collapsed'>
+            <div className='player--collapsed__progress'>
+                <div style={{ width: ( trackProgress / audioRef.current.duration ) * 100 + '%'}} 
+                className='player--collapsed__progress__thumb'>
+                    
+                </div>
+            </div>
             {
                 currPlaying.album &&
                 <>

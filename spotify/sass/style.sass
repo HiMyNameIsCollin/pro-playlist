@@ -370,9 +370,26 @@ i
 
                 
 .player
+   
     &--collapsed
         align-items: center
         display: flex
+        flex-wrap: wrap
+        &__progress
+            background: $grey
+            display: flex
+            padding: .1rem 0
+            position: relative
+            width: 100%
+            &__thumb
+                @include overlay
+                background: white
+                position: absolute
+                top: 0
+                left: 0
+                height: 100%
+                &::before
+                    @include scrimGradient($grey, 'to right')
         &--playBtn
             color: $white
             margin-left: auto
@@ -381,7 +398,8 @@ i
             grid-template-columns: auto auto minmax(0, 1fr) auto
             grid-template-rows: 1fr 1fr
             padding: 0
-            width: fill-available
+            width: auto
+            max-width: calc(100% - 4rem)
             &__imgContainer
                 height: 3.5rem
                 width: 3.5rem
@@ -609,7 +627,7 @@ i
 .nav
     display: flex
     justify-content: center
-    
+    margin-top: .5rem
     &__list
         display: flex
         justify-content: center

@@ -4,7 +4,7 @@ import { useContext } from 'react'
 
 const Tab = ({ item }) => {
 
-    const { queue, setQueue } = useContext( DbHookContext )
+    const { queue, setQueue, setActiveItem } = useContext( DbHookContext )
 
     const playTrack = ( track, arr, func ) =>{
         // Adds track to Queue. Callback func is 'setQueue'
@@ -13,10 +13,18 @@ const Tab = ({ item }) => {
         }
     }
 
+    const handleTab = () => {
+        if( item.type === 'track'){
+            playTrack( item, queue, setQueue )
+        } else {
+            setActiveItem( item )
+        }
+    }
+
     return(
-        <div onClick={ () => playTrack( item, queue, setQueue ) } className='tab'>
+        <div onClick={ handleTab } className='tab'>
             <div className='tab__image'>
-                <img src={ whichPicture(item.album.images, 'sm') } alt=""/>
+                <img src={ whichPicture(item.images ? item.images : item.album.images , 'sm') } alt=""/>
             </div>
             <h5 className='tab__title'>
                 { item.name }

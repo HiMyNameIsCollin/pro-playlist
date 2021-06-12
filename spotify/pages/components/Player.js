@@ -30,7 +30,8 @@ const Player = () => {
     const getTrack_route = 'v1/tracks'
     
 
-// TRACK CURRENTLY PLAYING TRACKS POSITION, WHEN TRACK UN-MOUNTS CLEARS INTERVAL.
+// Tracks the progress of the currently playing track. 
+// Interval is cleared in the track component when un-mounting, or in this component at track end. 
     const startTimer = () => {
         if( trackProgressIntervalRef.current ) clearInterval( trackProgressIntervalRef.current )
         trackProgressIntervalRef.current = setInterval(() => {
@@ -43,6 +44,7 @@ const Player = () => {
         },1000)
     }
 
+// If first track in Queue changes, grabs the full track info of the new first element in Queue array.
     useEffect(() => {
         if( queue[0] ) getTrack( queue[0] )
     },[ queue ])
@@ -56,24 +58,23 @@ const Player = () => {
         }
     }
 
+// Tosses received track from the fetch into the player.
+
     useEffect(() => {
         if(apiPayload){
             setCurrPlaying( apiPayload )
         }
     }, [ apiPayload ])
 
-
+// Simple play/pause control via state.
     useEffect(() => {
-
-            if( isPlaying ){
-                audioRef.current.play()
-                startTimer()
-            } else {
-                audioRef.current.pause()
-                clearInterval(trackProgressIntervalRef.current)
-            }
-    
-        
+        if( isPlaying ){
+            audioRef.current.play()
+            startTimer()
+        } else {
+            audioRef.current.pause()
+            clearInterval(trackProgressIntervalRef.current)
+        }
     }, [ isPlaying ])
 
     return(

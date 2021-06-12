@@ -12,7 +12,7 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
     const isPlaying = playerContext ?  playerContext.isPlaying : null
     const setIsPlaying = playerContext ? playerContext.setIsPlaying: null
     const trackProgressIntervalRef = playerContext ? playerContext.trackProgressIntervalRef : null
-
+    const setTrackProgress = playerContext ? playerContext.setTrackProgress : null
     useLayoutEffect(() => {
         if( queue[0] && queue[0].id === track.id && type !=='player--collapsed' ){
             setActiveTrack( true )
@@ -38,25 +38,14 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
         if(type === 'player--collapsed'){
             audioRef.current.pause()
             audioRef.current.src = track.preview_url 
+            audioRef.current.load()
             if( trackMounted ) {
-                const promise = new Promise(( res, rej ) => {
-                    const checkReady = () => {
-                        if(audioRef.current.readyState === 4){
-                            resolvePromise()
-                        }
-                    }
-                    const interval = setInterval(checkReady, 500)
-                    const resolvePromise = () => {
-                        clearInterval(interval)
-                        res('success')
-                    }
-                })
-                promise
-                .then( value => value === 'success' && setIsPlaying( true ))               
+                audioRef.current.oncanplaythrough = () => setIsPlaying( true )         
             }    
             return () => {
                 setIsPlaying( false )
                 clearInterval(trackProgressIntervalRef.current)
+                setTrackProgress(0)
             }
         }
     }, [ track ])
