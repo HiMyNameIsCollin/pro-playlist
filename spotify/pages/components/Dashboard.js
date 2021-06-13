@@ -274,7 +274,7 @@ useEffect(() => {
         finalizeRoute( 'get', routes.player_info, fetchApi, null)
         finalizeRoute( 'get', routes.featured_playlists, fetchApi, null )
         finalizeRoute( 'get', routes.new_releases, fetchApi, null )
-        finalizeRoute( 'get', routes.recently_played, fetchApi, null, 'limit=6' ) 
+        finalizeRoute( 'get', routes.recently_played, fetchApi, null ) 
         finalizeRoute( 'get', routes.all_categories, fetchApi, null, 'limit=10' ) 
         finalizeRoute( 'get', routes.new_releases, fetchApi, null )
         finalizeRoute( 'get', routes.available_genre_seeds, fetchApi, null )

@@ -38,7 +38,7 @@ const TabsContainer = ({ items }) => {
                 </span>
             </div>
             {
-                data.map(( item, i ) => {
+                data.slice(0, 6).map(( item, i ) => {
                    return <Tab item={ item } key={ i }/>
                 })
             }
