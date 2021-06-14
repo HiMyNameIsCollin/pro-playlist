@@ -62,7 +62,8 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
         // onTouchStart={ (e) => type !== 'player--collapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
         className={
             `track ${ activeTrack && 'track--active' }`
-        }>
+        }
+        data-trackId={ track.id }>
         {/* Ternary operators determine if this is a playlist or an album. */}
 
         {

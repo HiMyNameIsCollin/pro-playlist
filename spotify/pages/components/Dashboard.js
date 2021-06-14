@@ -216,32 +216,6 @@ useEffect(() => {
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
         if(state.my_top_artists.length > 0) {
-            const calcTopGenre = (arr) => {
-                let genres = {}
-                arr.map((ele, i) => {
-                    ele.genres.map((genre, j) => {
-                        if( state.available_genre_seeds.includes( genre ) ){
-                            if(genres[genre]){
-                                genres[genre].total += 1
-                            }else {
-                                genres[genre] = {total: 1, images: ele.images}
-                            }
-                        }
-                    })
-                })
-                let sortable = []
-                for(const genre in genres){
-                    sortable.push([genre, genres[genre].images, genres[genre].total])
-                }
-                sortable.sort((a,b) => {
-                    return b[2] - a[2]
-                })
-                let newArr = []
-                sortable.map((item, i) => {
-                    newArr.push({ name: capital( item[0] ), id: item[0] , type: 'genre' ,  images: item[1]})
-                })
-                return newArr
-            }
             let topArtists = [...state.my_top_artists]
             const topGenres = calcTopGenre(topArtists)
             const payload = {
@@ -251,6 +225,33 @@ useEffect(() => {
             dispatch(payload)
         }
     },[my_top_artists])
+
+    const calcTopGenre = (arr) => {
+        let genres = {}
+        arr.map((ele, i) => {
+            ele.genres.map((genre, j) => {
+                if( state.available_genre_seeds.includes( genre ) ){
+                    if(genres[genre]){
+                        genres[genre].total += 1
+                    }else {
+                        genres[genre] = {total: 1, images: ele.images}
+                    }
+                }
+            })
+        })
+        let sortable = []
+        for(const genre in genres){
+            sortable.push([genre, genres[genre].images, genres[genre].total])
+        }
+        sortable.sort((a,b) => {
+            return b[2] - a[2]
+        })
+        let newArr = []
+        sortable.map((item, i) => {
+            newArr.push({ name: capital( item[0] ), id: item[0] , type: 'genre' ,  images: item[1]})
+        })
+        return newArr
+    }
 
 // HANDLE SCROLL PERCENTAGE 
     useEffect(() => {
@@ -274,7 +275,7 @@ useEffect(() => {
         finalizeRoute( 'get', routes.player_info, fetchApi, null)
         finalizeRoute( 'get', routes.featured_playlists, fetchApi, null )
         finalizeRoute( 'get', routes.new_releases, fetchApi, null )
-        finalizeRoute( 'get', routes.recently_played, fetchApi, null ) 
+        finalizeRoute( 'get', routes.recently_played, fetchApi, null, 'limit=50' ) 
         finalizeRoute( 'get', routes.all_categories, fetchApi, null, 'limit=10' ) 
         finalizeRoute( 'get', routes.new_releases, fetchApi, null )
         finalizeRoute( 'get', routes.available_genre_seeds, fetchApi, null )

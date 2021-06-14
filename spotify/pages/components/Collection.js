@@ -90,7 +90,7 @@ const Collection = ({ type, genreSeeds, location }) => {
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
-    const { activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, headerMounted } = useContext( DbHookContext )
+    const { activeItem, setActiveItem, overlay, setOverlay, activeHeader, queue, setQueue } = useContext( DbHookContext )
     const { collection, artists, tracks, recommendations } = {...state}
 
     useEffect(() => {
@@ -186,6 +186,17 @@ const Collection = ({ type, genreSeeds, location }) => {
     useEffect(() => {
         if( activeHeader ) setTimeout(() => setLoaded(true), 250)
     }, [ activeHeader ])
+
+    useEffect(() => {
+        if( loaded && activeItem.selectedTrack ){
+            const ele = document.querySelector(`[data-trackId='${activeItem.selectedTrack}']`)
+            const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
+            console.log(thisFar)
+            window.scrollTo({ top: thisFar, behavior: 'smooth' } )
+            const track = tracks.find( x => x.id === activeItem.selectedTrack )
+            setQueue( queue => queue = [ track, ...queue ] )
+        }
+    }, [ loaded ])
 
 
     return(

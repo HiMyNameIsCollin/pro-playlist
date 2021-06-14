@@ -15,7 +15,8 @@ const Tab = ({ item }) => {
 
     const handleTab = () => {
         if( item.type === 'track'){
-            playTrack( item, queue, setQueue )
+            item.album['selectedTrack'] = item.id
+            setActiveItem( item.album )
         } else {
             setActiveItem( item )
         }
@@ -24,10 +25,10 @@ const Tab = ({ item }) => {
     return(
         <div onClick={ handleTab } className='tab'>
             <div className='tab__image'>
-                <img src={ whichPicture(item.images ? item.images : item.album.images , 'sm') } alt=""/>
+                <img src={ item.images ? whichPicture(item.images, 'sm') : whichPicture(item.album.images, 'sm')} alt=""/>
             </div>
             <h5 className='tab__title'>
-                { item.name }
+                { item.album.name ? item.album.name : item.name }
             </h5>
         </div>
     )
