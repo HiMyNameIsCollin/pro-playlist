@@ -1,12 +1,15 @@
+import { useSpring, animated } from 'react-spring'
 
 
-const Nav = ({ NavLink, location}) => {
+const Nav = ({ hiddenUI, NavLink }) => {
 
-
+    const hideNav = useSpring({
+        transform: hiddenUI ? 'translatey(3.06rem)' : 'translatey(0rem)'
+    })
 
 
     return(
-        <nav className='nav'>
+        <animated.nav style={hideNav} className='nav'>
             <ul className='nav__list'>
                 <li >
                     <NavLink exact to='/'
@@ -34,7 +37,7 @@ const Nav = ({ NavLink, location}) => {
                 </li>
 
             </ul>
-        </nav>
+        </animated.nav>
     )
 }
 

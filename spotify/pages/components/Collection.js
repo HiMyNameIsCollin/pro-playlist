@@ -194,7 +194,6 @@ const Collection = ({ type, genreSeeds, location }) => {
             const ele = document.querySelector(`[data-trackId='${activeItem.selectedTrack}']`)
             const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
             window.scroll(0, thisFar)
-            
         }
     },[ loaded ])
 

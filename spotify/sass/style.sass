@@ -137,7 +137,7 @@ i
         opacity: 0.9
 
 
-.homeHeader, .bottomUI, .tab 
+.homeHeader, .nav, .tab 
     @include overlay
     &::before
         @include scrimGradient($grey, '135deg')
@@ -369,60 +369,83 @@ i
     &--active
         h5
             color: $lightGreen
-
+    
+.playerLarge
+    @include overlay
+    display: flex
+    flex-direction: column
+    min-height: 100vh
+    justify-content: flex-end
+    max-height: 100%
+    position: fixed
+    width: 100%
+    z-index: 999
+    &::before
+        @include scrimGradient($black, 'to top')
+        opacity: 1
+    &::after
+        background: linear-gradient(to bottom, var(--currentTrackColor1) 0%, var(--currentTrackColor0)), linear-gradient(to right, var(--currentTrackColor1), var(--currentTrackColor0)) 
+    
                 
-.player
-   
-    &--collapsed
-        align-items: center
+.playerCollapsed
+    @include overlay
+    align-items: center
+    background: $darkGrey
+    bottom: 0
+    display: flex
+    flex-wrap: wrap
+    left: 0
+    position: fixed
+    width: 100%
+    &__progress
+        background: $grey
         display: flex
-        flex-wrap: wrap
-        &__progress
-            background: $grey
-            display: flex
-            padding: .1rem 0
-            position: relative
-            width: 100%
-            &__thumb
-                @include overlay
-                background: white
-                position: absolute
-                top: 0
-                left: 0
-                height: 100%
-                &::before
-                    @include scrimGradient($grey, 'to right')
-        &--playBtn
-            color: $white
-            margin-left: auto
-            padding: .75rem 1rem
-        .track
-            grid-template-columns: auto auto minmax(0, 1fr) auto
-            grid-template-rows: 1fr 1fr
-            padding: 0
-            width: auto
-            max-width: calc(100% - 4rem)
-            &__imgContainer
-                height: 3.5rem
-                width: 3.5rem
-            
-            h5
-                align-self: flex-end
-                font-size: .8rem
-                font-weight: 400
-                grid-column: 3/4
-            span
-                align-self: flex-start
-                grid-column: 3/4
-            i
-                grid-column: 4/5
-            p
-                align-self: center
-                font-size: .8rem
-                grid-column: 1/2
-                grid-row: 1/3
-                padding-right: 1rem
+        padding: .1rem 0
+        position: relative
+        width: 100%
+        &__thumb
+            @include overlay
+            background: white
+            position: absolute
+            top: 0
+            left: 0
+            height: 100%
+            &::before
+                @include scrimGradient($grey, 'to right')
+    &::before
+        @include scrimGradient( $grey, '135deg')
+        opacity: .7
+    &--playBtn
+        color: $white
+        margin-left: auto
+        padding: .75rem 1rem
+    .track
+        grid-template-columns: auto auto minmax(0, 1fr) auto
+        grid-template-rows: 1fr 1fr
+        padding: 0
+        width: calc(100% - 4rem)
+        max-width: calc(100% - 4rem)
+        &__imgContainer
+            height: 3.5rem
+            width: 3.5rem
         
+        h5
+            align-self: flex-end
+            font-size: .8rem
+            font-weight: 400
+            grid-column: 3/4
+        span
+            align-self: flex-start
+            grid-column: 3/4
+        i
+            grid-column: 4/5
+        p
+            align-self: center
+            font-size: .8rem
+            grid-column: 1/2
+            grid-row: 1/3
+            padding-right: 1rem
+    
 
 .artistHeader
     position: relative
@@ -619,17 +642,14 @@ i
             &::placeholder
                 color: $black
             
-.bottomUI
+.nav
+    display: flex
+    justify-content: center
     position: fixed
     bottom: 0
     left: 0
     width: 100%
     z-index: 2
-
-.nav
-    display: flex
-    justify-content: center
-    margin-top: .5rem
     &__list
         display: flex
         justify-content: center

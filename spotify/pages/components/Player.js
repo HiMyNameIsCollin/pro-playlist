@@ -1,12 +1,13 @@
 import PlayerCollapsed from './PlayerCollapsed'
+import PlayerLarge from './PlayerLarge'
 import { finalizeRoute } from '../../utils/finalizeRoute'
-import { useState, useEffect, useLayoutEffect, useContext, useRef, createContext} from 'react'
+import { useState, useEffect, useContext, useRef, createContext} from 'react'
 import { DbHookContext } from './Dashboard'
 import  useApiCall  from '../hooks/useApiCall'
 
 export const PlayerHookContext = createContext()
 
-const Player = () => {
+const Player = ({ hiddenUI }) => {
     const API = 'https://api.spotify.com/'
     const track_route = ''
     const { queue , audioRef } = useContext( DbHookContext )
@@ -23,7 +24,9 @@ const Player = () => {
         setTrackProgress,
         isPlaying,
         setIsPlaying,
-        trackProgressIntervalRef
+        trackProgressIntervalRef,
+        playerSize,
+        setPlayerSize
     }
 
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
@@ -77,16 +80,14 @@ const Player = () => {
     }, [ isPlaying ])
 
     return(
-        <div className='player'>
+        <>
             <PlayerHookContext.Provider value={ playerHookState }>
-            {
-                playerSize === 'small' ? 
-                <PlayerCollapsed  /> :
-                null
-            }
+                <PlayerLarge />
+
+                <PlayerCollapsed hiddenUI={ hiddenUI } />
             </PlayerHookContext.Provider>
             
-        </div>
+        </>
         
     )
 }

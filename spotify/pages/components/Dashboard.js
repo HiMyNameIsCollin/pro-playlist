@@ -15,7 +15,8 @@ import Artist from './Artist'
 import Collection from './Collection'
 import Showcase from './Showcase'
 import Overlay from './Overlay'
-import Footer from './Footer'
+import Nav from './Nav'
+import Player from './Player'
 
 export const DbHookContext = createContext()
 
@@ -460,8 +461,9 @@ to remain fixed to the top of the viewport */}
                 </animated.div>
                 ))
                 }
-                           
-                <Footer hiddenUI={ hiddenUI } NavLink={ NavLink } />
+            
+                <Player hiddenUI={ hiddenUI }/>
+                <Nav hiddenUI={ hiddenUI } NavLink={ NavLink } />
             </section>  
         </DbHookContext.Provider>  
     )

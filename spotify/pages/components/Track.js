@@ -2,19 +2,22 @@ import { useState, useLayoutEffect, useEffect, useContext, useRef } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 import { PlayerHookContext } from './Player'
+import { handleColorThief } from '../../utils/handleColorThief'
 
 const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
     
     const { queue, setQueue, activeItem, audioRef } = useContext( DbHookContext )
-    const playerContext = useContext( type === 'player--collapsed' ? PlayerHookContext : '' )
+    const playerContext = useContext( type === 'playerCollapsed' ? PlayerHookContext : '' )
     
     const isPlaying = playerContext ?  playerContext.isPlaying : null
     const setIsPlaying = playerContext ? playerContext.setIsPlaying: null
     const trackProgressIntervalRef = playerContext ? playerContext.trackProgressIntervalRef : null
     const setTrackProgress = playerContext ? playerContext.setTrackProgress : null
+    const setPlayerSize = playerContext ? playerContext.setPlayerSize : null
+
     useLayoutEffect(() => {
-        if( queue[0] && queue[0].id === track.id && type !=='player--collapsed' ){
+        if( queue[0] && queue[0].id === track.id && type !=='playerCollapsed' ){
             setActiveTrack( true )
         }else {
             setActiveTrack( false )
@@ -33,9 +36,13 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
             }
         }
     }
+    
+    const togglePlayer = () => {
+        setPlayerSize('large')
+    }
 
     useEffect(() => {
-        if(type === 'player--collapsed'){
+        if(type === 'playerCollapsed'){
             audioRef.current.pause()
             setIsPlaying( false )
             audioRef.current.src = track.preview_url 
@@ -53,16 +60,19 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
         }
     }, [ track ])
 
-    const trackLoaded = () => {
-        if(type === 'player--collapsed'){
+    const trackLoaded = (e, amount) => {
+        if(type === 'playerCollapsed'){
+            const colors = handleColorThief(e.target, amount)
+            console.log(colors)
+            colors.map((clr, i) => document.documentElement.style.setProperty(`--currentTrackColor${i}`, clr))
             setTrackMounted( true )
         }
     }
 
     return(
         <div 
-        onClick={ (e) => type !== 'player--collapsed' ? playTrack(e, track ) : console.log(track) }
-        // onTouchStart={ (e) => type !== 'player--collapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
+        onClick={ (e) => type !== 'playerCollapsed' ? playTrack(e, track ) : togglePlayer() }
+        // onTouchStart={ (e) => type !== 'playerCollapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
         className={
             `track 
             ${ activeTrack && 'track--active' }`
@@ -79,7 +89,8 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
             type!=='collection' &&
                 <div className='track__imgContainer'>
                     <img
-                    onLoad={ trackLoaded }
+                    crossorigin='anonymous'
+                    onLoad={ (e) => trackLoaded(e, 2) }
                     alt='Album' 
                     src={ whichPicture( track.album.images, 'sm') }/>
                 </div>
@@ -93,7 +104,7 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
                 }
             </span>
             {
-                type !== 'player--collapsed' &&
+                type !== 'playerCollapsed' &&
                 <i className="fas fa-ellipsis-h"
                 onClick={ (e) => handleTrackMenu(e, track ) }></i> 
             }

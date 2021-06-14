@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import { PlayerHookContext } from './Player'
 import { DbHookContext } from './Dashboard'
 import { useSpring, animated } from 'react-spring'
-const PlayerCollapsed = () => {
+const PlayerCollapsed = ({ hiddenUI }) => {
 
     const trackMountedRef = useRef(false)
 
@@ -29,14 +29,15 @@ const PlayerCollapsed = () => {
 
     const slideIn = useSpring({
         height: trackMounted ? '3.5rem': '0rem',
-        opacity: trackMounted ? 1 : 0
+        opacity: trackMounted ? 1 : 0,
+        transform: hiddenUI ? 'translateY(0rem)' : 'translateY(-3.06rem)',
     })
 
     return (
-        <animated.div style={slideIn} className='player player--collapsed'>
-            <div className='player--collapsed__progress'>
+        <animated.div style={slideIn} className='playerCollapsed'>
+            <div className='playerCollapsed__progress'>
                 <div style={{ width: ( trackProgress / audioRef.current.duration ) * 100 + '%'}} 
-                className='player--collapsed__progress__thumb'>
+                className='playerCollapsed__progress__thumb'>
                     
                 </div>
             </div>
@@ -44,15 +45,15 @@ const PlayerCollapsed = () => {
                 currPlaying.album &&
                 <>
                 <Track 
-                    type='player--collapsed' 
+                    type='playerCollapsed' 
                     track={ currPlaying } 
                     trackMounted={ trackMounted }
                     setTrackMounted={ setTrackMounted }
                     />
                 {
                     isPlaying ?
-                    <i onClick={ pressPause } className="fas fa-pause player--collapsed--playBtn"></i>:
-                    <i onClick={ pressPlay } className="fas fa-play player--collapsed--playBtn"></i>
+                    <i onClick={ pressPause } className="fas fa-pause playerCollapsed--playBtn"></i>:
+                    <i onClick={ pressPlay } className="fas fa-play playerCollapsed--playBtn"></i>
 
                 }
                 </>
