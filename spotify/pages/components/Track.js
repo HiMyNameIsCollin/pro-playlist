@@ -3,10 +3,10 @@ import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 import { PlayerHookContext } from './Player'
 
-const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted}) => {
+const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
     
-    const { queue, setQueue, audioRef } = useContext( DbHookContext )
+    const { queue, setQueue, activeItem, audioRef } = useContext( DbHookContext )
     const playerContext = useContext( type === 'player--collapsed' ? PlayerHookContext : '' )
     
     const isPlaying = playerContext ?  playerContext.isPlaying : null
@@ -21,26 +21,29 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
         }
     },[ queue ])
 
-    const playTrack = (e, track, arr, func ) =>{
+    const playTrack = (e, track ) =>{
         e.stopPropagation()
         // Adds track to Queue. Callback func is 'setQueue'
-        if(arr[0] && arr[0].id !== track.id) {
+        if(queue[0] && queue[0].id !== track.id) {
             if( type === 'search' ){
 
-            }else(
-                func( arr => arr = [track, ...arr.slice(1, arr.length-1)] )
-    
-            )
+            }else{
+            const index = data.tracks.findIndex( x => x.id === track.id )
+            setQueue( [ ...data.tracks.slice(index) ] )
+            }
         }
     }
 
     useEffect(() => {
         if(type === 'player--collapsed'){
             audioRef.current.pause()
+            setIsPlaying( false )
             audioRef.current.src = track.preview_url 
             audioRef.current.load()
             if( trackMounted ) {
-                audioRef.current.oncanplaythrough = () => setIsPlaying( true )         
+                if( !queue[0].noPlay ){
+                    audioRef.current.oncanplaythrough = () => setIsPlaying( true )
+                }
             }    
             return () => {
                 setIsPlaying( false )
@@ -58,10 +61,11 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
 
     return(
         <div 
-        onClick={ (e) => type !== 'player--collapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
+        onClick={ (e) => type !== 'player--collapsed' ? playTrack(e, track ) : console.log(track) }
         // onTouchStart={ (e) => type !== 'player--collapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
         className={
-            `track ${ activeTrack && 'track--active' }`
+            `track 
+            ${ activeTrack && 'track--active' }`
         }
         data-trackId={ track.id }>
         {/* Ternary operators determine if this is a playlist or an album. */}

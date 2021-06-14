@@ -225,21 +225,20 @@ i {
 }
 .page--home {
   background: #212121;
-  padding: 8rem 0 0 0;
+  padding: 8rem 0 8rem 0;
 }
 .page--collection {
   background: #191414;
   color: #FFFFFF;
+  padding: 0 0 8rem 0;
 }
 .page--artist {
   background: #191414;
   color: #FFFFFF;
+  padding: 0 0 8rem 0;
 }
 .page--blurred {
   filter: blur(5px);
-}
-.page section:nth-last-of-type(1) {
-  padding-bottom: 6rem;
 }
 
 .collection > * {
@@ -275,7 +274,7 @@ i {
 }
 .collection__copyright {
   font-size: 0.8rem;
-  padding: 1rem;
+  padding: 0 1rem;
 }
 
 .trackContainer {

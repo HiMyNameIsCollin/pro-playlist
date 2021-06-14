@@ -38,7 +38,6 @@ const Player = () => {
             if(audioRef.current.ended){
                 setTrackProgress(0)
             }else {
-                console.log(audioRef.current.currentTime)
                 setTrackProgress(audioRef.current.currentTime)
             }
         },1000)

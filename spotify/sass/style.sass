@@ -216,17 +216,19 @@ i
     min-width: 100vw
     &--home
         background: $darkGrey
-        padding: 8rem 0 0 0 
+        padding: 8rem 0 8rem 0 
     &--collection
         background: $black
         color: $white
+        padding: 0 0 8rem 0
     &--artist
         background: $black
         color: $white
+        padding: 0 0 8rem 0
+
     &--blurred
         filter: blur(5px)
-    section:nth-last-of-type(1)
-        padding-bottom: 6rem
+
 
 .collection
     > *
@@ -246,7 +248,7 @@ i
             padding: 1rem 0 0 0 
     &__copyright
         font-size: .8rem
-        padding: 1rem
+        padding: 0 1rem
 
 .trackContainer
     opacity: 0

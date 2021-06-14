@@ -184,20 +184,19 @@ const Collection = ({ type, genreSeeds, location }) => {
     }, [collection])
 
     useEffect(() => {
-        if( activeHeader ) setTimeout(() => setLoaded(true), 250)
+        if( activeHeader ) {
+            setTimeout(() => setLoaded(true), 250)
+        }
     }, [ activeHeader ])
 
     useEffect(() => {
         if( loaded && activeItem.selectedTrack ){
             const ele = document.querySelector(`[data-trackId='${activeItem.selectedTrack}']`)
             const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
-            console.log(thisFar)
-            window.scrollTo({ top: thisFar, behavior: 'smooth' } )
-            const track = tracks.find( x => x.id === activeItem.selectedTrack )
-            setQueue( queue => queue = [ track, ...queue ] )
+            window.scroll(0, thisFar)
+            
         }
-    }, [ loaded ])
-
+    },[ loaded ])
 
     return(
         <div className={ `page page--collection collection ${ overlay ? 'page--blurred' : ''}` }>
