@@ -21,7 +21,7 @@ $bg__1--lg: url('../public/bglg.jpg')
         opacity: 1
 @mixin shadowA
     box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px
-@mixin overlay
+@mixin pseudo
     position: relative
     overflow: hidden
     z-index: 1
@@ -120,13 +120,13 @@ i
     align-items: center
 
     &--overlay
-        @include overlay
+        @include pseudo
         &::before
             background: $lightGrey
             opacity: 0.8
 
 .dashboard
-    @include overlay
+    @include pseudo
     display: flex
     min-height: 100vh
     flex-direction: column
@@ -138,7 +138,7 @@ i
 
 
 .homeHeader, .nav, .tab 
-    @include overlay
+    @include pseudo
     &::before
         @include scrimGradient($grey, '135deg')
         opacity: .7
@@ -370,25 +370,141 @@ i
         h5
             color: $lightGreen
     
-.playerLarge
-    @include overlay
+.playerLargeContainer
+    @include pseudo
     display: flex
     flex-direction: column
+    justify-content: center
     min-height: 100vh
-    justify-content: flex-end
     max-height: 100%
     position: fixed
     width: 100%
-    z-index: 999
+    z-index: 998
+    i
+        font-size: 1.5rem
+    &__header
+        @include pseudo
+        align-items: center
+        color: $white
+        display: flex
+        font-weight: 700
+        justify-content: space-between
+        padding: 2rem 2rem
+        top: 0
+        left: 0
+        position: relative
+        text-align: center
+        width: 100%
+        h3
+            white-space: nowrap
+            overflow: hidden
+            text-overflow: ellipsis
+        i
+            color: $white
+        &::before
+            @include scrimGradient( $black, 'to bottom')
+        &::after
+            @include scrimGradient( $black, 'to bottom')
+            top: 5%
+
     &::before
         @include scrimGradient($black, 'to top')
         opacity: 1
     &::after
         background: linear-gradient(to bottom, var(--currentTrackColor1) 0%, var(--currentTrackColor0)), linear-gradient(to right, var(--currentTrackColor1), var(--currentTrackColor0)) 
-    
+
+
+.playerLarge
+    color: $white
+    display: flex
+    flex-direction: column
+    margin:  auto auto
+    padding:  0 2rem
+    height: 100%
+    max-width: 100%
+    @media only screen and ( min-width: 540px )
+        padding: 0 4rem
+    &__track
+        width: 100%
+        h3
+            margin: 1rem 0 0 0 
+            white-space: nowrap
+            overflow: hidden
+            text-overflow: ellipsis
+        p
+            color: $lightGrey
+    &__progress        
+    &__time
+        display: flex
+        justify-content: space-between
+        font-size: .8rem
+    &__bar
+        background: $grey
+        border-radius: 5px
+        display: flex
+        padding: .125rem 0
+        position: relative
+        height: auto
+        margin: .5rem 0
+        width: 100%
+    &__elapsed
+        @include pseudo
+        background: white
+        position: absolute
+        top: 0
+        left: 0
+        height: 100%
+        &::before
+            @include scrimGradient($grey, 'to right')
+    &__thumb
+        background: white
+        border-radius: 50%
+        left: 0
+        position: absolute
+        padding: .4rem
+        top: -.25rem
+    &__imgContainer
+        max-width: 100%
+        img
+            display: block
+            max-height: auto
+            max-width: 100%
+            margin: auto 
+    &__controls
+        display: flex
+        justify-content: space-between
+        width: 100%
+    &__trackBtn
+        margin: auto 0
+        position: relative
+        i
+            color: $white
+        &--active
+            i
+                color: $green
+            span
+                color: $green
+                left: .5rem
+                position: absolute
+    &__playBtn
+        background: $white
+        border-radius: 50%
+        padding: 1rem
+        i
+            color: $black
+            font-size: 2rem
+            transform: translateX(.2rem)
+    &__moreBtns
+        display: flex
+        justify-content: space-around
+        margin: 1rem 0
+    &__spotifyBtn
+        i
+            color: $green
+            font-size: 2rem
                 
 .playerCollapsed
-    @include overlay
+    @include pseudo
     align-items: center
     background: $darkGrey
     bottom: 0
@@ -397,21 +513,21 @@ i
     left: 0
     position: fixed
     width: 100%
-    &__progress
+    &__bar
         background: $grey
         display: flex
         padding: .1rem 0
         position: relative
         width: 100%
-        &__thumb
-            @include overlay
-            background: white
-            position: absolute
-            top: 0
-            left: 0
-            height: 100%
-            &::before
-                @include scrimGradient($grey, 'to right')
+    &__elapsed
+        @include pseudo
+        background: white
+        position: absolute
+        top: 0
+        left: 0
+        height: 100%
+        &::before
+            @include scrimGradient($grey, 'to right')
     &::before
         @include scrimGradient( $grey, '135deg')
         opacity: .7
@@ -453,8 +569,7 @@ i
     width: 100%
     z-index: 2
     &__imgContainer
-        @include overlay
-        height: 100%
+        @include pseudo
         position: relative
         top: 0
         padding-top: 20rem
@@ -481,7 +596,7 @@ i
         line-height: 40px
         z-index: 1
     &__info
-        @include overlay
+        @include pseudo
         align-items: center
         color: $lightGrey
         display: flex
@@ -513,10 +628,6 @@ i
     > *
         margin-bottom: 1rem
     &__imgContainer
-        align-items: center
-        display: flex
-        justify-content: center
-        position: relative
         padding: 2rem 1rem 1rem 1rem
         div
             img
@@ -545,7 +656,7 @@ i
         
 
 .headerBacking
-    @include overlay
+    @include pseudo
     background-image: var(--headerBackground)
     background-size: cover
     background-position: 50% 50%
@@ -568,7 +679,7 @@ i
         z-index: -2
 
 .fixedHeader
-    @include overlay
+    @include pseudo
     @include shadowA
     background: linear-gradient(to bottom, var(--headerColor1) 0% , var(--headerColor0)), linear-gradient(to right, var(--headerColor1) , var(--headerColor0))
     color: $white
@@ -605,7 +716,7 @@ i
       
         
 .searchHeader
-    @include overlay
+    @include pseudo
     background: $black
     display: flex
     flex-wrap: wrap
@@ -784,11 +895,10 @@ i
     z-index: 999
 
 .overlay
-    @include overlay
+    @include pseudo
     display: flex
     flex-direction: column
     min-height: 100vh
-    justify-content: flex-end
     max-height: 100%
     position: fixed
     width: 100%
@@ -817,20 +927,19 @@ i
     overflow-y: hidden
     width: 100%
     &__imgContainer
-        padding: 0 1rem
+        padding: 2rem 1rem 1rem 1rem
         img
+            height: 200px
             max-width: 100%
     &__header
-        margin: 0 auto
         text-align: center
         h3
             color: $white
-            padding: 1rem 0
         p
             color: $lightGrey
     
     &__listMenu, &__trackMenu
-        padding: 1rem
+        padding: 0 1rem
         width: 100%
         button
             align-items: center

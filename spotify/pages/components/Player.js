@@ -10,11 +10,13 @@ export const PlayerHookContext = createContext()
 const Player = ({ hiddenUI }) => {
     const API = 'https://api.spotify.com/'
     const track_route = ''
-    const { queue , audioRef } = useContext( DbHookContext )
-    const [ playerSize, setPlayerSize ] = useState('small')
-    const [ currPlaying, setCurrPlaying ] = useState({})
-    const [trackProgress, setTrackProgress] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false)
+    const { queue , setQueue, audioRef } = useContext( DbHookContext )
+    const [ playerSize, setPlayerSize ] = useState( 'small' )
+    const [ currPlaying, setCurrPlaying ] = useState( {} )
+    const [ trackProgress, setTrackProgress ] = useState( 0 );
+    const [ isPlaying, setIsPlaying ] = useState( false )
+    const [ repeat, setRepeat ] = useState( 'none' )
+    const [ shuffle, setShuffle ] = useState( false )
     const trackProgressIntervalRef = useRef()
 
     const playerHookState ={
@@ -26,7 +28,9 @@ const Player = ({ hiddenUI }) => {
         setIsPlaying,
         trackProgressIntervalRef,
         playerSize,
-        setPlayerSize
+        setPlayerSize,
+        repeat,
+        setRepeat
     }
 
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
@@ -41,7 +45,7 @@ const Player = ({ hiddenUI }) => {
             if(audioRef.current.ended){
                 setTrackProgress(0)
             }else {
-                setTrackProgress(audioRef.current.currentTime)
+                setTrackProgress( Math.round( audioRef.current.currentTime ) )
             }
         },1000)
     }
@@ -79,11 +83,49 @@ const Player = ({ hiddenUI }) => {
         }
     }, [ isPlaying ])
 
+    const playTrack = () => {
+        setIsPlaying( true )
+    }
+
+    const pauseTrack = () => {
+        setIsPlaying( false )
+    }
+
+    const nextTrack = () => {
+        let queueClone = [ ...queue]
+        let first = queueClone.shift()
+        first['played'] = true
+        setQueue( queue => queue = [ ...queue, first] )
+    }
+
+    const prevTrack = () => {
+        let queueClone = [ ...queue]
+        let last = queueClone.pop()
+        if( last.played ) delete last['played']
+        setQueue( queue => queue = [ last, ...queue] )
+    }
+
+    const handleRepeat = () => {
+        const repeatTypes = [ 'none', 'one', 'all' ]
+        if( repeat === repeatTypes[0] ) setRepeat( repeatTypes[1] )
+        if( repeat === repeatTypes[1] ) setRepeat( repeatTypes[2] )
+        if( repeat === repeatTypes[2] ) setRepeat( repeatTypes[0] )
+    }
+
+    const controls = {
+        playTrack,
+        pauseTrack,
+        nextTrack,
+        prevTrack,
+        handleRepeat
+    }
+
     return(
         <>
             <PlayerHookContext.Provider value={ playerHookState }>
-                <PlayerLarge />
-
+                {
+                currPlaying.id && <PlayerLarge controls={ controls }/>
+                }
                 <PlayerCollapsed hiddenUI={ hiddenUI } />
             </PlayerHookContext.Provider>
             

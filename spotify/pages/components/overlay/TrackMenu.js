@@ -41,15 +41,7 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
                 <h3> 
                     { track.name }
                 </h3>
-                <p>
-                { 
-                    track.artists.map((artist, i) =>  (
-                            i !== track.artists.length - 1 ? 
-                            `${ artist.name ? artist.name : artist.display_name }, ` : 
-                            `${ artist.name ? artist.name : artist.display_name }` 
-                    ))
-                }
-                </p>
+                <p> { track.artists[0].name } </p>
             </header>
             
             <button onClick={ (e) => openSpotify(e, track.external_urls.spotify )} >

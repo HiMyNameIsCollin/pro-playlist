@@ -35,9 +35,9 @@ const PlayerCollapsed = ({ hiddenUI }) => {
 
     return (
         <animated.div style={slideIn} className='playerCollapsed'>
-            <div className='playerCollapsed__progress'>
+            <div className='playerCollapsed__bar'>
                 <div style={{ width: ( trackProgress / audioRef.current.duration ) * 100 + '%'}} 
-                className='playerCollapsed__progress__thumb'>
+                className='playerCollapsed__elapsed'>
                     
                 </div>
             </div>
