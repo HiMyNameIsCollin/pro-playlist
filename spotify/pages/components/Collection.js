@@ -69,9 +69,16 @@ const Collection = ({ type, genreSeeds, location }) => {
                     artists: [action]
                 }
             case routes.tracks :
+                const songs = action.items.map((item) => {
+                    if( item.track ) {
+                        return item.track
+                    } else {
+                        return item
+                    }
+                })
                 return{
                     ...state,
-                    tracks: action.items
+                    tracks: songs
                 }
             case routes.recommendations :
                 const recommendations = action.tracks.map(track => track.album)

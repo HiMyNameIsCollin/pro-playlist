@@ -28,7 +28,7 @@ const PlayerCollapsed = ({ hiddenUI }) => {
     },[ trackMounted ])
 
     const slideIn = useSpring({
-        height: trackMounted ? '3.5rem': '0rem',
+        height: trackMounted ? '3.6rem': '0rem',
         opacity: trackMounted ? 1 : 0,
         transform: hiddenUI ? 'translateY(0rem)' : 'translateY(-3.06rem)',
     })

@@ -1,4 +1,6 @@
-import { useContext } from 'react'
+import { useContext, useState, useEffect } from 'react'
+import useApiCall from '../hooks/useApiCall'
+import { finalizeRoute } from '../../utils/finalizeRoute'
 import { PlayerHookContext } from './Player'
 import { DbHookContext } from './Dashboard'
 import { useSpring, animated } from 'react-spring'
@@ -7,10 +9,26 @@ import { whichPicture } from '../../utils/whichPicture'
 
 const PlayerLarge = ({ controls }) => {
 
-    const  { currPlaying, playerSize, trackProgress, setPlayerSize, isPlaying, repeat } = useContext( PlayerHookContext )
-    const { audioRef, queue, setQueue, overlay, setOverlay } = useContext( DbHookContext )
+    const  { currPlaying, isPlaying, repeat, playerSize, setPlayerSize, trackProgress } = useContext( PlayerHookContext )
+    const { audioRef, queue, setQueue, overlay, setActiveItem, setOverlay } = useContext( DbHookContext )
     const { playTrack, pauseTrack, nextTrack, prevTrack, handleRepeat } = controls
-    
+    const [ currPlayingContext, setCurrPlayingContext ] = useState( {} )
+    const API = 'https://api.spotify.com/'
+    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+
+    useEffect(() => {
+        if( apiPayload ) setCurrPlayingContext( apiPayload )
+    },[ apiPayload])
+
+    useEffect(() => {
+        if( currPlaying.context.href ){
+            finalizeRoute( 'get', currPlaying.context.href.slice(API.length), fetchApi, currPlaying.context.href.slice(-22) )
+        } else {
+            // For search 
+            setCurrPlayingContext({ name: currPlaying.context.name })
+        }
+    }, [ currPlaying ])
+
     
     const largePlayerAnimation = useSpring({
         transform: playerSize === 'large' ? 'translateY(0%)' : 'translateY(100%)'
@@ -36,6 +54,30 @@ const PlayerLarge = ({ controls }) => {
         return timeString
     }
 
+    const handleTrackMenu = ( e ) => {
+        e.stopPropagation()
+        let selectedTrack = { ...currPlaying }
+        if(!selectedTrack.images){
+            if(!selectedTrack.album){
+                selectedTrack.images = collection.images
+            } else{
+                selectedTrack.images = selectedTrack.album.images
+            }
+        }
+        const popupData = {
+            collection: currPlayingContext, 
+            tracks: null,
+            selectedTrack: selectedTrack,
+        }
+        
+        setOverlay( {type: 'trackMenu', data: popupData,  func: null} )
+    }
+
+    const handleViewCollection = () => {
+        togglePlayer()
+        setActiveItem( currPlayingContext )
+    }
+
     return(
         <animated.div
         style={ largePlayerAnimation }
@@ -45,8 +87,13 @@ const PlayerLarge = ({ controls }) => {
                 <i
                 onClick={ togglePlayer }  
                 className="fas fa-chevron-down"></i>
-                <h3> { currPlaying.name } </h3>
-                <i className="fas fa-ellipsis-h"></i>
+                <h3 
+                onClick={ handleViewCollection }> 
+                { currPlayingContext.name } 
+                </h3>
+                <i
+                onClick={ handleTrackMenu } 
+                className="fas fa-ellipsis-h"></i>
             </div>
 
             <div className='playerLarge'>

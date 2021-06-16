@@ -45,7 +45,7 @@ const TracksContainer = ({ type, data , setOverlay }) => {
                     i={ i }
                     handleTrackMenu={ handleTrackMenu } 
                     key={ i } 
-                    track={ track.track ? track.track : track } 
+                    track={ track } 
                     data={ data }/>
                 ) 
             })

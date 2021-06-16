@@ -384,12 +384,14 @@ i
         font-size: 1.5rem
     &__header
         @include pseudo
+        @include scrimGradient( $black, 'to bottom')
+
         align-items: center
         color: $white
         display: flex
         font-weight: 700
         justify-content: space-between
-        padding: 2rem 2rem
+        padding: 1rem 2rem
         top: 0
         left: 0
         position: relative
@@ -399,13 +401,17 @@ i
             white-space: nowrap
             overflow: hidden
             text-overflow: ellipsis
+            font-size: 1rem
+            padding: 0 1rem
         i
             color: $white
+            font-size: 1rem
         &::before
-            @include scrimGradient( $black, 'to bottom')
+            @include scrimGradient( $black, 'to right')
+            top: 0%
         &::after
-            @include scrimGradient( $black, 'to bottom')
-            top: 5%
+            @include scrimGradient( $black, 'to left')
+            top: 0%
 
     &::before
         @include scrimGradient($black, 'to top')
@@ -418,7 +424,7 @@ i
     color: $white
     display: flex
     flex-direction: column
-    margin:  auto auto
+    margin:  auto 
     padding:  0 2rem
     height: 100%
     max-width: 100%
@@ -471,6 +477,7 @@ i
             max-width: 100%
             margin: auto 
     &__controls
+        align-items: center
         display: flex
         justify-content: space-between
         width: 100%
@@ -487,16 +494,17 @@ i
                 left: .5rem
                 position: absolute
     &__playBtn
-        background: $white
-        border-radius: 50%
-        padding: 1rem
         i
+            background: $white
+            border-radius: 50%
+            padding: 1rem
             color: $black
             font-size: 2rem
-            transform: translateX(.2rem)
+            &::before
+                left: 10%
     &__moreBtns
         display: flex
-        justify-content: space-around
+        justify-content: space-between
         margin: 1rem 0
     &__spotifyBtn
         i
@@ -692,7 +700,7 @@ i
     text-align: center
     width: 100%
     z-index: 998
-    h1
+    h3
         font-size: 1rem
     &::before
         @include scrimGradient($black, 'to top')

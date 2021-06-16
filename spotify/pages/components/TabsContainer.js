@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import  useApiCall  from '../hooks/useApiCall'
 
-const TabsContainer = ({ items }) => {
+const TabsContainer = ({ items, setTabsMounted }) => {
 
     const API = 'https://api.spotify.com/'
     const { fetchApi, apiPayload } = useApiCall(API)
@@ -32,6 +32,7 @@ const TabsContainer = ({ items }) => {
         }
         if( messyDataRef.current.length === items.length) {
             organizeData( messyDataRef.current )
+            setTabsMounted( true )
         }
     },[ apiPayload ])
 
@@ -49,6 +50,7 @@ const TabsContainer = ({ items }) => {
             }
             return acc
         },[])
+        
        setData( finalArr )
     }
 

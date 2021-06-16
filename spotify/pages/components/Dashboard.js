@@ -208,8 +208,21 @@ const Dashboard = ({ setAuth, audioRef }) => {
 useEffect(() => {
     if( queue.length < 1 ){
         let firstTrack 
-        if( player_info.item ) firstTrack = player_info.item
-        if( recently_played[0] ) firstTrack = recently_played[0].track 
+        if( player_info.item ){
+            firstTrack = player_info.item
+            firstTrack['context'] = {
+                href: player_info.context.href,
+                type: player_info.context.type
+            }
+        }
+        if( recently_played[0] ){
+            firstTrack = recently_played[0].track
+            firstTrack['context'] = {
+                type: recently_played[0].context.type,
+                href: recently_played[0].context.href
+            }
+        } 
+        
         if (firstTrack) setQueue( [firstTrack] )
     }
 }, [ recently_played, player_info  ])

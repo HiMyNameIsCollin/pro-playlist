@@ -18,6 +18,7 @@ const Player = ({ hiddenUI }) => {
     const [ repeat, setRepeat ] = useState( 'none' )
     const [ shuffle, setShuffle ] = useState( false )
     const trackProgressIntervalRef = useRef()
+    const queuedTrackContextRef = useRef([])
 
     const playerHookState ={
         currPlaying,
@@ -56,9 +57,13 @@ const Player = ({ hiddenUI }) => {
     },[ queue ])
 
     const getTrack = ( track ) => {
+        console.log(track)
         if( track.album ) {
+            console.log('album')
             setCurrPlaying( track )
         } else {
+            console.log('no album')
+            queuedTrackContextRef.current.push(track.context)
             const id = track.id
             finalizeRoute('get', `${ getTrack_route }/${id}`, fetchApi, id)
         }
@@ -68,6 +73,7 @@ const Player = ({ hiddenUI }) => {
 
     useEffect(() => {
         if(apiPayload){
+            apiPayload['context'] = queuedTrackContextRef.current.shift()
             setCurrPlaying( apiPayload )
         }
     }, [ apiPayload ])

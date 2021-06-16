@@ -29,10 +29,30 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
         // Adds track to Queue. Callback func is 'setQueue'
         if(queue[0] && queue[0].id !== track.id) {
             if( type === 'search' ){
-
-            }else{
-            const index = data.tracks.findIndex( x => x.id === track.id )
-            setQueue( [ ...data.tracks.slice(index) ] )
+                
+            }else if ( type === 'artist' ){
+                const index = data.tracks.findIndex( x => x.id === track.id )
+                let nextTracks = data.tracks.slice( index ).map( (t) => {
+                    t['context'] = {
+                        href: data.artist.href,
+                        name: data.artist.name,
+                        type: 'artist'
+                    }
+                    return t
+                })
+                setQueue( nextTracks )
+            } else if ( type === 'collection' ){
+                const index = data.tracks.findIndex( x => x.id === track.id )
+                let nextTracks = data.tracks.slice( index ).map( (t) => {
+                    t['context'] = {
+                        href: data.collection.href,
+                        name: data.collection.name,
+                        type : data.collection.type
+                    }
+                    return t
+                })
+                console.log(nextTracks)
+                setQueue( nextTracks )
             }
         }
     }

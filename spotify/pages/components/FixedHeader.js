@@ -27,10 +27,10 @@ const FixedHeader = ({ activeHeader, headerScrolled}) => {
         style={ showFixedHeader } 
         className='fixedHeader'>
             
-            <animated.h1 style={{
+            <animated.h3 style={{
                 opacity: fadeIn.to( o => o),
                 transform: textScroll.to( y => `translateY(${ y }%)`)
-            }}> { activeHeader.data } </animated.h1>
+            }}> { activeHeader.data } </animated.h3>
         </animated.div>
     )
 }

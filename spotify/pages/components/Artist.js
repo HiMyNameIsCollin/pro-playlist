@@ -135,7 +135,7 @@ const Artist = ({ genreSeeds, location }) => {
                 !loaded ?
                 <Loading />:
                 <>
-                    <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks} } setOverlay={ setOverlay }/>
+                    <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks, artist: artist} } setOverlay={ setOverlay }/>
                     <AlbumContainer type='artist--page' albums={ all_albums } />
                     <Slider 
                     message='Fans also enjoy'

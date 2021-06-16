@@ -8,9 +8,19 @@ import { DbHookContext } from './Dashboard'
 const Home = ({  state  }) => {
 
     const { setActiveItem } = useContext(DbHookContext)
+    const [ tabsMounted, setTabsMounted ] = useState( false )
+    const [ loaded, setLoaded ] = useState( false )
+    useEffect(() => {
+        if( tabsMounted ) setLoaded( true )
+    }, [ tabsMounted ])
+
     return(
         <div className='page page--home'>
-            <TabsContainer items={ state.recently_played } />
+            {
+                !loaded &&
+                <Loading loaded={ loaded }/> 
+            }    
+            <TabsContainer items={ state.recently_played } setTabsMounted={ setTabsMounted } />
             <Slider 
             message='New Releases' 
             items={ state.new_releases }
@@ -18,7 +28,7 @@ const Home = ({  state  }) => {
             <Slider 
             message='Featured playlists' 
             items={ state.featured_playlists }
-            setActiveItem={ setActiveItem } />
+            setActiveItem={ setActiveItem } /> 
         </div>
     )
 }
