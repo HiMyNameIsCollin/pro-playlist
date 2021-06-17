@@ -9,7 +9,7 @@ import { whichPicture } from '../../utils/whichPicture'
 
 const PlayerLarge = ({ controls }) => {
 
-    const  { currPlaying, isPlaying, repeat, playerSize, setPlayerSize, trackProgress } = useContext( PlayerHookContext )
+    const  { currPlaying, isPlaying, repeat, playerSize, setPlayerSize, trackProgress, shuffle, setShuffle } = useContext( PlayerHookContext )
     const { audioRef, queue, setQueue, overlay, setActiveItem, setOverlay } = useContext( DbHookContext )
     const { playTrack, pauseTrack, nextTrack, prevTrack, handleRepeat } = controls
     const [ currPlayingContext, setCurrPlayingContext ] = useState( {} )
@@ -69,8 +69,8 @@ const PlayerLarge = ({ controls }) => {
             tracks: null,
             selectedTrack: selectedTrack,
         }
-        
-        setOverlay( {type: 'trackMenu', data: popupData,  func: null} )
+        togglePlayer()
+        setOverlay( {type: 'trackMenu', data: popupData,  func: null, func2: togglePlayer} )
     }
 
     const handleViewCollection = () => {
@@ -167,8 +167,10 @@ const PlayerLarge = ({ controls }) => {
                         className='playerLarge__trackBtn'>
                         <i className="fas fa-fast-forward"></i>
                     </button>
-                    <button className={
-                            `playerLarge__trackBtn`
+                    <button
+                        onClick={ () => setShuffle( !shuffle )} 
+                        className={
+                            `playerLarge__trackBtn ${ shuffle && 'playerLarge__trackBtn--active'}`
                         }>
                         <i className="fas fa-american-sign-language-interpreting"></i>
                     </button>

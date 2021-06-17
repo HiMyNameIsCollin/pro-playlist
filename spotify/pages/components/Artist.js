@@ -14,7 +14,7 @@ const Artist = ({ genreSeeds, location }) => {
     const { activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, headerMounted } = useContext( DbHookContext )
 
     const initialState = {
-        artist: [],
+        artist: {},
         top_tracks: [],
         artistAlbums: [],
         all_albums: [],

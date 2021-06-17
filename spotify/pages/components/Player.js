@@ -10,7 +10,7 @@ export const PlayerHookContext = createContext()
 const Player = ({ hiddenUI }) => {
     const API = 'https://api.spotify.com/'
     const track_route = ''
-    const { queue , setQueue, audioRef } = useContext( DbHookContext )
+    const { queue , setQueue, audioRef, prevTracksRef, qIndex, setQIndex } = useContext( DbHookContext )
     const [ playerSize, setPlayerSize ] = useState( 'small' )
     const [ currPlaying, setCurrPlaying ] = useState( {} )
     const [ trackProgress, setTrackProgress ] = useState( 0 );
@@ -19,7 +19,7 @@ const Player = ({ hiddenUI }) => {
     const [ shuffle, setShuffle ] = useState( false )
     const trackProgressIntervalRef = useRef()
     const queuedTrackContextRef = useRef([])
-
+    const unShuffledQueueRef = useRef([])
     const playerHookState ={
         currPlaying,
         setCurrPlaying,
@@ -31,7 +31,10 @@ const Player = ({ hiddenUI }) => {
         playerSize,
         setPlayerSize,
         repeat,
-        setRepeat
+        setRepeat,
+        shuffle,
+        setShuffle,
+        
     }
 
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
@@ -45,6 +48,8 @@ const Player = ({ hiddenUI }) => {
         trackProgressIntervalRef.current = setInterval(() => {
             if(audioRef.current.ended){
                 setTrackProgress(0)
+                setIsPlaying( false )
+                handleQueue()
             }else {
                 setTrackProgress( Math.round( audioRef.current.currentTime ) )
             }
@@ -53,16 +58,18 @@ const Player = ({ hiddenUI }) => {
 
 // If first track in Queue changes, grabs the full track info of the new first element in Queue array.
     useEffect(() => {
-        if( queue[0] ) getTrack( queue[0] )
-    },[ queue ])
+
+        if( queue[ qIndex ] && queue[ qIndex ].id !== currPlaying.id ){
+            // const index = unShuffledQueueRef.current.findIndex( t => t.id === queue[ qIndex ].id)
+            // unShuffledQueueRef.current.splice(index, 1)
+            getTrack( queue[ qIndex ] )
+        } 
+    },[ qIndex ])
 
     const getTrack = ( track ) => {
-        console.log(track)
         if( track.album ) {
-            console.log('album')
             setCurrPlaying( track )
         } else {
-            console.log('no album')
             queuedTrackContextRef.current.push(track.context)
             const id = track.id
             finalizeRoute('get', `${ getTrack_route }/${id}`, fetchApi, id)
@@ -89,6 +96,42 @@ const Player = ({ hiddenUI }) => {
         }
     }, [ isPlaying ])
 
+    useEffect(() => {
+        if( shuffle ){
+            let queueClone = [ ...queue ]
+            const first = queueClone.filter( item => item.id === queueClone[ qIndex ].id )
+            queueClone = [ ...queue.slice().sort( () => Math.random() - 0.5 ) ]
+            unShuffledQueueRef.current = queue
+            setQIndex( 0 )
+            setQueue( queue => queue = [ first[0], ...queueClone ] )
+        } else {
+            setQueue( unShuffledQueueRef.current )
+            const index = unShuffledQueueRef.current.findIndex( x => x.id === currPlaying.id )
+            setQIndex( index )
+            unShuffledQueueRef.current = []
+        }
+    }, [ shuffle ])
+
+    const handleQueue = () => {
+        if( repeat === 'none' ){
+            if( qIndex < queue.length){
+                setQIndex( qIndex => qIndex = qIndex + 1 )
+            } else {
+                setTrackProgress( 0 )
+                setQIndex( 0 )
+            }
+        } else if ( repeat === 'one'){
+            let clone = { ...currPlaying }
+            setCurrPlaying( clone )
+        } else if ( repeat === 'all' ){
+            if( qIndex === queue.length - 1 ){
+                setQIndex( 0 )
+            } else {
+                setQIndex( qIndex => qIndex = qIndex + 1 )
+            }
+        }
+    }
+
     const playTrack = () => {
         setIsPlaying( true )
     }
@@ -98,17 +141,19 @@ const Player = ({ hiddenUI }) => {
     }
 
     const nextTrack = () => {
-        let queueClone = [ ...queue]
-        let first = queueClone.shift()
-        first['played'] = true
-        setQueue( queue => queue = [ ...queue, first] )
+        if( isPlaying ) setIsPlaying( false )
+        handleQueue()
+        
     }
 
     const prevTrack = () => {
-        let queueClone = [ ...queue]
-        let last = queueClone.pop()
-        if( last.played ) delete last['played']
-        setQueue( queue => queue = [ last, ...queue] )
+        if( isPlaying ) setIsPlaying( false )
+        if( qIndex > 0 ){
+            setQIndex( qIndex => qIndex = qIndex - 1)
+        }else {
+            setQIndex( 0 )
+        }
+        
     }
 
     const handleRepeat = () => {

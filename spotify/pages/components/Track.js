@@ -7,7 +7,7 @@ import { handleColorThief } from '../../utils/handleColorThief'
 const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
     
-    const { queue, setQueue, activeItem, audioRef } = useContext( DbHookContext )
+    const { queue, setQueue, activeItem, audioRef, prevTracksRef, qIndex, setQIndex } = useContext( DbHookContext )
     const playerContext = useContext( type === 'playerCollapsed' ? PlayerHookContext : '' )
     
     const isPlaying = playerContext ?  playerContext.isPlaying : null
@@ -16,45 +16,48 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
     const setTrackProgress = playerContext ? playerContext.setTrackProgress : null
     const setPlayerSize = playerContext ? playerContext.setPlayerSize : null
 
-    useLayoutEffect(() => {
-        if( queue[0] && queue[0].id === track.id && type !=='playerCollapsed' ){
+    useEffect(() => {
+        if( queue[ qIndex ] && queue[ qIndex ].id === track.id && type !=='playerCollapsed' ){
             setActiveTrack( true )
         }else {
             setActiveTrack( false )
         }
-    },[ queue ])
+    },[ qIndex ])
 
     const playTrack = (e, track ) =>{
         e.stopPropagation()
+
         // Adds track to Queue. Callback func is 'setQueue'
-        if(queue[0] && queue[0].id !== track.id) {
-            if( type === 'search' ){
-                
-            }else if ( type === 'artist' ){
-                const index = data.tracks.findIndex( x => x.id === track.id )
-                let nextTracks = data.tracks.slice( index ).map( (t) => {
-                    t['context'] = {
-                        href: data.artist.href,
-                        name: data.artist.name,
-                        type: 'artist'
-                    }
-                    return t
-                })
-                setQueue( nextTracks )
-            } else if ( type === 'collection' ){
-                const index = data.tracks.findIndex( x => x.id === track.id )
-                let nextTracks = data.tracks.slice( index ).map( (t) => {
-                    t['context'] = {
-                        href: data.collection.href,
-                        name: data.collection.name,
-                        type : data.collection.type
-                    }
-                    return t
-                })
-                console.log(nextTracks)
-                setQueue( nextTracks )
-            }
+        if( type === 'search' ){
+            
+        }else if ( type === 'artist' ){
+            
+            let nextTracks = data.tracks.map( (t) => {
+                t['context'] = {
+                    href: data.artist.href,
+                    name: data.artist.name,
+                    type: 'artist'
+                }
+                return t
+            })         
+            const index = data.tracks.findIndex( x => x.id === track.id )
+            setQueue( nextTracks )
+            setQIndex( index )            
+        } else if ( type === 'collection' ){
+            let nextTracks = data.tracks.slice( index ).map( (t) => {
+                t['context'] = {
+                    href: data.collection.href,
+                    name: data.collection.name,
+                    type : data.collection.type
+                }
+                return t
+            })
+            const index = data.tracks.findIndex( x => x.id === track.id )
+            setQueue( nextTracks )
+            setQIndex( index )
+
         }
+        prevTracksRef.current = []
     }
     
     const togglePlayer = () => {
@@ -68,9 +71,8 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
             audioRef.current.src = track.preview_url 
             audioRef.current.load()
             if( trackMounted ) {
-                if( !queue[0].noPlay ){
-                    audioRef.current.oncanplaythrough = () => setIsPlaying( true )
-                }
+                audioRef.current.oncanplaythrough = () => setIsPlaying( true )
+                
             }    
             return () => {
                 setIsPlaying( false )

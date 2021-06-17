@@ -183,6 +183,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ activeHeader , setActiveHeader ] = useState(null)
     const [ activeItem, setActiveItem ] = useState(null)
     const [ queue, setQueue ] = useState([])
+    const [ qIndex, setQIndex ] = useState()
+    const prevTracksRef = useRef([])
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([{ pathname: location.pathname, activeItem: activeItem, scrollPosition: scrollPosition }])
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
@@ -202,29 +204,39 @@ const Dashboard = ({ setAuth, audioRef }) => {
         setHeaderScrolled,
         queue,
         setQueue,
+        qIndex,
+        setQIndex,
+        prevTracksRef,
      }
 
 // Set last played track on account as active track
 useEffect(() => {
-    if( queue.length < 1 ){
-        let firstTrack 
-        if( player_info.item ){
-            firstTrack = player_info.item
-            firstTrack['context'] = {
-                href: player_info.context.href,
-                type: player_info.context.type
-            }
-        }
+        let firstTracks = null
+        // if( player_info.item ){
+        //     firstTrack = player_info.item
+        //     firstTrack['context'] = {
+        //         href: player_info.context.href,
+        //         type: player_info.context.type
+        //     }
+        // }
         if( recently_played[0] ){
-            firstTrack = recently_played[0].track
-            firstTrack['context'] = {
-                type: recently_played[0].context.type,
-                href: recently_played[0].context.href
-            }
+            firstTracks = [ ...recently_played ]
+            firstTracks = firstTracks.map(( t ) => {
+                t.track['context'] = {
+                    name: 'Recently played',
+                    type: t.context ? t.context.type : null,
+                    href: t.context ? t.context.href : null
+                }
+                
+                return t.track
+            })
+
         } 
         
-        if (firstTrack) setQueue( [firstTrack] )
-    }
+        if (firstTracks) {
+            setQIndex(0)
+            setQueue( queue => queue = [ ...firstTracks ])
+        }
 }, [ recently_played, player_info  ])
 
 // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
