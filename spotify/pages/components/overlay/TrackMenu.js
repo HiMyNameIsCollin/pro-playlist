@@ -1,10 +1,11 @@
 import Image from 'next/image'
 import { whichPicture } from '../../../utils/whichPicture'
-import { handleViewArtist } from '../../../utils/handleViewArtist'
 import { useState, useEffect } from 'react'
 
 const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
-    const { type, data, func } = { ...overlay}
+
+    // FUNC 1 IS A CALLBACK SENT FROM TRACK 
+    const { type, data, func, func2 } = { ...overlay}
     const { selectedTrack, calledFrom, collection } = {...data}
     const [ track, setTrack ] = useState( track => track = selectedTrack )
     const copyToClip = () => {
@@ -17,16 +18,35 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
         window.open( url )
     }
 
+
+    const handleViewArtist = ( e, artistArray, overlayFunc, activeItemFunc ) => {
+        e.stopPropagation()
+    
+        if( artistArray.length === 1 ){
+            activeItemFunc( artistArray[0] )
+            overlayFunc( null )
+    
+        } else {
+            const popupData = {
+                title: 'Choose artist',
+                array: artistArray
+            }
+            overlayFunc({ type: 'listMenu' , data: popupData, func: activeItemFunc })
+        }
+    }
+
     const viewArtist = ( e, artists ) => {
         e.stopPropagation()
         setOverlay(null)
         handleViewArtist( e , artists, setOverlay, setActiveItem)
+        if( func2 ) func2()
     }
 
     const viewAlbum = ( e, album ) => {
         e.stopPropagation()
         setOverlay(null)
         setActiveItem( album )
+        if( func2 ) func2()
     }
 
     return(

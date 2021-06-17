@@ -13,7 +13,7 @@ const Overlay = () => {
 
     const fadeIn = useSpring({
         opacity: overlay ? 1 : 0,
-        pointerEvents: overlay ? 'auto' : 'none'
+        pointerEvents: overlay ? 'auto' : 'none',
     })
 
     const closeOverlay = () => {
@@ -30,14 +30,15 @@ const Overlay = () => {
 
     return (
         <animated.div 
-            style={fadeIn}
+            style={ fadeIn }
             onClick={ closeOverlay } 
-            className='overlay'>
+            className={ `overlay ${ overlay && overlay.type === 'trackMenuPlayer' && ' overlay--player '} ` }>
             {
            
             menuTransition((props, item) => (
                 item &&
-                item.type === 'trackMenu' ?
+                item.type === 'trackMenu' ||
+                item && item.type === 'trackMenuPlayer' ?
                 <animated.div className='popup' style={props}>
                     <TrackMenu overlay={ item } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 </animated.div> :

@@ -1,17 +1,16 @@
 import PlayerCollapsed from './PlayerCollapsed'
 import PlayerLarge from './PlayerLarge'
-import { finalizeRoute } from '../../utils/finalizeRoute'
-import { useState, useEffect, useContext, useRef, createContext} from 'react'
-import { DbHookContext } from './Dashboard'
-import  useApiCall  from '../hooks/useApiCall'
+import { finalizeRoute } from '../../../utils/finalizeRoute'
+import { useState, useEffect,  useLayoutEffect, useContext, useRef, createContext} from 'react'
+import { DbHookContext } from '../Dashboard'
+import  useApiCall  from '../../hooks/useApiCall'
 
 export const PlayerHookContext = createContext()
 
 const Player = ({ hiddenUI }) => {
     const API = 'https://api.spotify.com/'
-    const track_route = ''
     const { queue , setQueue, audioRef, prevTracksRef, qIndex, setQIndex } = useContext( DbHookContext )
-    const [ playerSize, setPlayerSize ] = useState( 'small' )
+    const [ playerSize, setPlayerSize ] = useState( 'large' )
     const [ currPlaying, setCurrPlaying ] = useState( {} )
     const [ trackProgress, setTrackProgress ] = useState( 0 );
     const [ isPlaying, setIsPlaying ] = useState( false )
@@ -39,8 +38,16 @@ const Player = ({ hiddenUI }) => {
 
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const getTrack_route = 'v1/tracks'
-    
 
+    useLayoutEffect(() => {
+        const body = document.querySelector('body')
+        if( playerSize === 'large' ) {
+            body.classList.add('noScroll')
+        } else{
+            body.classList.remove('noScroll')
+        }
+    }, [ playerSize ])
+    
 // Tracks the progress of the currently playing track. 
 // Interval is cleared in the track component when un-mounting, or in this component at track end. 
     const startTimer = () => {
@@ -60,11 +67,9 @@ const Player = ({ hiddenUI }) => {
     useEffect(() => {
 
         if( queue[ qIndex ] && queue[ qIndex ].id !== currPlaying.id ){
-            // const index = unShuffledQueueRef.current.findIndex( t => t.id === queue[ qIndex ].id)
-            // unShuffledQueueRef.current.splice(index, 1)
             getTrack( queue[ qIndex ] )
         } 
-    },[ qIndex ])
+    },[ qIndex, queue ])
 
     const getTrack = ( track ) => {
         if( track.album ) {
@@ -77,7 +82,6 @@ const Player = ({ hiddenUI }) => {
     }
 
 // Tosses received track from the fetch into the player.
-
     useEffect(() => {
         if(apiPayload){
             apiPayload['context'] = queuedTrackContextRef.current.shift()
@@ -114,7 +118,7 @@ const Player = ({ hiddenUI }) => {
 
     const handleQueue = () => {
         if( repeat === 'none' ){
-            if( qIndex < queue.length){
+            if( qIndex !== queue.length){
                 setQIndex( qIndex => qIndex = qIndex + 1 )
             } else {
                 setTrackProgress( 0 )
@@ -126,6 +130,8 @@ const Player = ({ hiddenUI }) => {
         } else if ( repeat === 'all' ){
             if( qIndex === queue.length - 1 ){
                 setQIndex( 0 )
+                setTrackProgress( 0 )
+
             } else {
                 setQIndex( qIndex => qIndex = qIndex + 1 )
             }
@@ -143,17 +149,18 @@ const Player = ({ hiddenUI }) => {
     const nextTrack = () => {
         if( isPlaying ) setIsPlaying( false )
         handleQueue()
-        
     }
 
     const prevTrack = () => {
         if( isPlaying ) setIsPlaying( false )
         if( qIndex > 0 ){
-            setQIndex( qIndex => qIndex = qIndex - 1)
+            setQIndex( qIndex => qIndex = qIndex - 1 )
         }else {
-            setQIndex( 0 )
+            audioRef.current.currentTime = 0
+            audioRef.current.pause()
+            setTrackProgress( 0 )
+            
         }
-        
     }
 
     const handleRepeat = () => {

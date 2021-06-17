@@ -1,5 +1,5 @@
 
-const ListMenu = ({ data ,func }) => {
+const ListMenu = ({ data ,func, func2 }) => {
     return(
         <div className='popup__listMenu'>
             <h2> { data.text } </h2>

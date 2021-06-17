@@ -192,7 +192,7 @@ const Collection = ({ type, genreSeeds, location }) => {
 
     useEffect(() => {
         if( activeHeader ) {
-            setTimeout(() => setLoaded(true), 250)
+            setTimeout(() => setLoaded( true ), 500)
         }
     }, [ activeHeader ])
 

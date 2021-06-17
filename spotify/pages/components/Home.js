@@ -11,7 +11,7 @@ const Home = ({  state  }) => {
     const [ tabsMounted, setTabsMounted ] = useState( false )
     const [ loaded, setLoaded ] = useState( false )
     useEffect(() => {
-        if( tabsMounted ) setLoaded( true )
+        if( tabsMounted ) setTimeout(() => setLoaded( true ), 500)
     }, [ tabsMounted ])
 
     return(

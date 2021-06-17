@@ -1,7 +1,7 @@
 import { useState, useLayoutEffect, useEffect, useContext, useRef } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
-import { PlayerHookContext } from './Player'
+import { PlayerHookContext } from './player/Player'
 import { handleColorThief } from '../../utils/handleColorThief'
 
 const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
@@ -17,12 +17,12 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
     const setPlayerSize = playerContext ? playerContext.setPlayerSize : null
 
     useEffect(() => {
-        if( queue[ qIndex ] && queue[ qIndex ].id === track.id && type !=='playerCollapsed' ){
+        if( queue[ qIndex ] && queue[ qIndex ].id === track.id && type !=='playerCollapsed' && type !== 'queueView'){
             setActiveTrack( true )
         }else {
             setActiveTrack( false )
         }
-    },[ qIndex ])
+    },[ qIndex, queue ])
 
     const playTrack = (e, track ) =>{
         e.stopPropagation()
@@ -93,10 +93,14 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
 
     return(
         <div 
-        onClick={ (e) => type !== 'playerCollapsed' ? playTrack(e, track ) : togglePlayer() }
+        onClick={ (e) => type == 'playerCollapsed' ? togglePlayer() : 
+        type === 'queueView' ?
+        null :
+        playTrack(e, track )  }
         // onTouchStart={ (e) => type !== 'playerCollapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
         className={
             `track 
+            track--${ type }
             ${ activeTrack && 'track--active' }`
         }
         data-trackId={ track.id }>

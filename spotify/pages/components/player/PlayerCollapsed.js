@@ -1,7 +1,7 @@
-import Track from './Track'
+import Track from '../Track'
 import { useState, useEffect, useRef, useContext } from 'react'
 import { PlayerHookContext } from './Player'
-import { DbHookContext } from './Dashboard'
+import { DbHookContext } from '../Dashboard'
 import { useSpring, animated } from 'react-spring'
 const PlayerCollapsed = ({ hiddenUI }) => {
 

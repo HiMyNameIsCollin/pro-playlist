@@ -16,7 +16,7 @@ import Collection from './Collection'
 import Showcase from './Showcase'
 import Overlay from './Overlay'
 import Nav from './Nav'
-import Player from './Player'
+import Player from './player/Player'
 
 export const DbHookContext = createContext()
 
