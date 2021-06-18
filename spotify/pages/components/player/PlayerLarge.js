@@ -12,7 +12,7 @@ const PlayerLarge = ({ controls }) => {
     const  { currPlaying, playerSize, setPlayerSize, } = useContext( PlayerHookContext )
     const  { setActiveItem, setOverlay } = useContext( DbHookContext )
     const [ currPlayingContext, setCurrPlayingContext ] = useState( {} )
-    const [ queueView, setQueueView ] = useState(true)
+    const [ queueView, setQueueView ] = useState( false )
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
