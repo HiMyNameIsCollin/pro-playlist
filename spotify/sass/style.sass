@@ -517,10 +517,10 @@ i
 
 .PlQueueView
     background: $black
-
     padding: 1rem 0
     min-height: 100%
     .controls
+        background: $black
         bottom: 0
         left: 0
         position: fixed
@@ -528,8 +528,16 @@ i
 
 .queueContainer
     color: $white
-    h3
+    &__title
+        align-items: center
+        display: flex
+        justify-content: space-between
         padding: 1rem
+        span
+            border: solid $white 1px
+            border-radius: 10px
+            font-size: .8rem
+            padding: 0 .5rem
     
 .queueTrack
     align-items: center
@@ -555,15 +563,36 @@ i
         grid-row: 2/3
         padding: 0 1rem
         font-size: 0.8rem
+    i
+        grid-row: 1/3
     &__radio
+        display: flex
         grid-column: 1/2       
         grid-row: 1/3
         input
-            background: blue
             height: 0
             width: 0
             opacity: 0
         &__control
+            border: solid $white 1px
+            border-radius: 50%
+            padding: .5rem
+            &--selected
+                background: $green
+                border: solid $lightGrey 1px
+
+.queueControls
+    bottom: 0
+    background: $darkGrey
+    display: flex
+    justify-content: space-between
+    left: 0
+    padding: 1rem
+    position: fixed
+    width: 100%
+    span
+        color: $lightGrey
+                
 .controls
     align-items: center
     display: flex

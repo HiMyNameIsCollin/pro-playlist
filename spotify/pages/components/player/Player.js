@@ -10,6 +10,7 @@ export const PlayerHookContext = createContext()
 const Player = ({ hiddenUI }) => {
     const API = 'https://api.spotify.com/'
     const { queue , setQueue, audioRef, prevTracksRef, qIndex, setQIndex } = useContext( DbHookContext )
+    const [ playNextQueue, setPlayNextQueue ] = useState([])
     const [ playerSize, setPlayerSize ] = useState( 'small' )
     const [ currPlaying, setCurrPlaying ] = useState( {} )
     const [ trackProgress, setTrackProgress ] = useState( 0 );
@@ -33,6 +34,8 @@ const Player = ({ hiddenUI }) => {
         setRepeat,
         shuffle,
         setShuffle,
+        playNextQueue,
+        setPlayNextQueue
         
     }
 

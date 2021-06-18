@@ -655,6 +655,7 @@ i {
   min-height: 100%;
 }
 .PlQueueView .controls {
+  background: #191414;
   bottom: 0;
   left: 0;
   position: fixed;
@@ -664,8 +665,17 @@ i {
 .queueContainer {
   color: #FFFFFF;
 }
-.queueContainer h3 {
+.queueContainer__title {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
   padding: 1rem;
+}
+.queueContainer__title span {
+  border: solid #FFFFFF 1px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  padding: 0 0.5rem;
 }
 
 .queueTrack {
@@ -694,16 +704,43 @@ i {
   padding: 0 1rem;
   font-size: 0.8rem;
 }
+.queueTrack i {
+  grid-row: 1/3;
+}
 .queueTrack__radio {
+  display: flex;
   grid-column: 1/2;
   grid-row: 1/3;
 }
 .queueTrack__radio input {
-  background: blue;
   height: 0;
   width: 0;
   opacity: 0;
 }
+.queueTrack__radio__control {
+  border: solid #FFFFFF 1px;
+  border-radius: 50%;
+  padding: 0.5rem;
+}
+.queueTrack__radio__control--selected {
+  background: #1DB954;
+  border: solid #b3b3b3 1px;
+}
+
+.queueControls {
+  bottom: 0;
+  background: #212121;
+  display: flex;
+  justify-content: space-between;
+  left: 0;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+}
+.queueControls span {
+  color: #b3b3b3;
+}
+
 .controls {
   align-items: center;
   display: flex;
