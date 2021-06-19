@@ -42,14 +42,7 @@ const Player = ({ hiddenUI }) => {
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const getTrack_route = 'v1/tracks'
 
-    useLayoutEffect(() => {
-        const body = document.querySelector('body')
-        if( playerSize === 'large' ) {
-            body.classList.add('noScroll')
-        } else{
-            body.classList.remove('noScroll')
-        }
-    }, [ playerSize ])
+    
     
 // Tracks the progress of the currently playing track. 
 // Interval is cleared in the track component when un-mounting, or in this component at track end. 

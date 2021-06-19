@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useLayoutEffect, useEffect } from 'react'
 import QueueView from './QueueView'
 import PlayingView from './PlayingView'
 import useApiCall from '../../hooks/useApiCall'
@@ -61,6 +61,14 @@ const PlayerLarge = ({ controls }) => {
         setOverlay( {type: 'trackMenuPlayer', data: popupData,  func: null , func2: togglePlayer} )
     }
 
+    useLayoutEffect(() => {
+        const body = document.querySelector('body')
+        if( playerSize === 'large' ) {
+            body.classList.add('noScroll')
+        } else{
+            body.classList.remove('noScroll')
+        }
+    }, [ playerSize ])
     
 
 
@@ -68,32 +76,38 @@ const PlayerLarge = ({ controls }) => {
         <animated.div
         style={ largePlayerAnimation }
         className='playerLargeContainer'>
+            <div className='playerLargeContainer__wrapper' style={{ overflow: 'scroll'}}>
+                <div className={`playerLargeContainer__header ${queueView && 'playerLargeContainer__header--qv'} ` }>
+                    {
+                        queueView ?
+                        <i
+                        onClick={ () => setQueueView( false )} 
+                        className="fas fa-chevron-left"></i> :
+                        <i
+                        onClick={ togglePlayer }  
+                        className="fas fa-chevron-down"></i>
+                    }
+                    <h3 
+                    onClick={ handleViewCollection }> 
+                    { currPlayingContext.name } 
+                    </h3>
+                    {
+                        !queueView &&
+                        <i
+                        onClick={ handleTrackMenu } 
+                        className="fas fa-ellipsis-h"></i>
+                    }
+                    
+                </div>
 
-            <div className='playerLargeContainer__header'>
                 {
-                    queueView ?
-                    <i
-                    onClick={ () => setQueueView( false )} 
-                    className="fas fa-chevron-left"></i> :
-                    <i
-                    onClick={ togglePlayer }  
-                    className="fas fa-chevron-down"></i>
+                    !queueView ?
+                    <PlayingView controls={ controls } queueView={ queueView } setQueueView={ setQueueView } />
+                    :
+                    <QueueView handleTrackMenu={ handleTrackMenu } controls={ controls } queueView={ queueView } setQueueView={ setQueueView }/>
                 }
-                <h3 
-                onClick={ handleViewCollection }> 
-                { currPlayingContext.name } 
-                </h3>
-                <i
-                onClick={ handleTrackMenu } 
-                className="fas fa-ellipsis-h"></i>
             </div>
 
-            {
-                !queueView ?
-                <PlayingView controls={ controls } queueView={ queueView } setQueueView={ setQueueView } />
-                :
-                <QueueView handleTrackMenu={ handleTrackMenu } controls={ controls } queueView={ queueView } setQueueView={ setQueueView }/>
-            }
             
         </animated.div>
     )

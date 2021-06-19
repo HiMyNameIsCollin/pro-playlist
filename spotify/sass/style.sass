@@ -411,19 +411,21 @@ i
     z-index: 998
     i
         font-size: 1.5rem
+    &__wrapper
+        background: $black
+        min-height: 100vh
+        overflow: auto
     &__header
         @include pseudo
         @include scrimGradient( $black, 'to bottom')
-
         align-items: center
         color: $white
         display: flex
         font-weight: 700
+        position: sticky
+        top: 0
         justify-content: space-between
         padding: 1rem 2rem
-        top: 0
-        left: 0
-        position: relative
         text-align: center
         width: 100%
         h3
@@ -441,6 +443,8 @@ i
         &::after
             @include scrimGradient( $black, 'to left')
             top: 0%
+        &--qv
+            background: $black
 
     &::before
         @include scrimGradient($black, 'to top')
@@ -454,7 +458,7 @@ i
     display: flex
     flex-direction: column
     margin:  auto 
-    padding:  0 2rem
+    padding:  1rem 2rem 0 2rem
     height: 100%
     max-width: 100%
     @media only screen and ( min-width: 540px )
@@ -519,9 +523,7 @@ i
     background: $black
     display: flex
     flex-direction: column
-    padding-bottom: 1rem
-    overflow: auto
-    min-height: stretch
+    padding-bottom: 5.5rem
     &__nowPlaying
         color: $white
         padding: 1rem
@@ -534,8 +536,6 @@ i
 
 .queueContainer
     color: $white
-    padding-bottom: 4rem
-    height: 100%
     &__title
         align-items: center
         display: flex
@@ -795,6 +795,9 @@ i
     z-index: 998
     h3
         font-size: 1rem
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
     &::before
         @include scrimGradient($black, 'to top')
         z-index: -1
