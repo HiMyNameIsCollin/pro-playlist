@@ -1,28 +1,30 @@
-import { useState, useEffect } from 'react'
-
-const QueueTrack = ({ track, queueViewSelected, setQueueViewSelected }) => {
+import { useState, useEffect, useContext } from 'react'
+import { PlayerHookContext } from './Player'
+const QueueTrack = ({ track, trackSelected, setTrackSelected }) => {
 
     const [ selected, setSelected ] = useState( false )
+    const { playNextQueue } = useContext( PlayerHookContext )
+
 
     const handleTrackSelect = () => {
-        const thisTrack = queueViewSelected.find(( x ) => x.id === track.id)
+        const thisTrack = trackSelected.find(( x ) => x.id === track.id)
         if(thisTrack){
-            setQueueViewSelected( queueViewSelected => queueViewSelected = queueViewSelected.filter(( x ) => {
+            setTrackSelected( trackSelected => trackSelected = trackSelected.filter(( x ) => {
                 return x.id !== track.id 
             }))
         } else {
-            setQueueViewSelected( queueViewSelected => queueViewSelected = [ track, ...queueViewSelected ] )
+            setTrackSelected( trackSelected => trackSelected = [ track, ...trackSelected ] )
         }
     }
 
     useEffect(() => {
-        const thisTrack = queueViewSelected.find(( x ) => x.id === track.id)
+        const thisTrack = trackSelected.find(( x ) => x.id === track.id)
         if (thisTrack) {
             setSelected( true )
         } else {
             setSelected( false )
         }
-    },[ queueViewSelected ])
+    },[ trackSelected ])
 
     return(
         <div className={ `queueTrack`}>

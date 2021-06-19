@@ -92,7 +92,7 @@ const PlayerLarge = ({ controls }) => {
                 !queueView ?
                 <PlayingView controls={ controls } queueView={ queueView } setQueueView={ setQueueView } />
                 :
-                <QueueView controls={ controls } queueView={ queueView } setQueueView={ setQueueView }/>
+                <QueueView handleTrackMenu={ handleTrackMenu } controls={ controls } queueView={ queueView } setQueueView={ setQueueView }/>
             }
             
         </animated.div>
