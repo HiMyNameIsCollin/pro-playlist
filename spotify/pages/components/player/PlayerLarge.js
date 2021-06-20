@@ -76,7 +76,7 @@ const PlayerLarge = ({ controls }) => {
         <animated.div
         style={ largePlayerAnimation }
         className='playerLargeContainer'>
-            <div className='playerLargeContainer__wrapper' style={{ overflow: 'scroll'}}>
+            <div className={ `playerLargeContainer__wrapper ${ queueView && 'playerLargeContainer__wrapper--qv'}` }>
                 <div className={`playerLargeContainer__header ${queueView && 'playerLargeContainer__header--qv'} ` }>
                     {
                         queueView ?
@@ -91,13 +91,10 @@ const PlayerLarge = ({ controls }) => {
                     onClick={ handleViewCollection }> 
                     { currPlayingContext.name } 
                     </h3>
-                    {
-                        !queueView &&
-                        <i
-                        onClick={ handleTrackMenu } 
-                        className="fas fa-ellipsis-h"></i>
-                    }
                     
+                    <i
+                    onClick={ handleTrackMenu } 
+                    className={ `fas fa-ellipsis-h ${queueView && 'noShow'}` }></i>
                 </div>
 
                 {

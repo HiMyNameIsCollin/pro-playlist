@@ -184,6 +184,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ activeItem, setActiveItem ] = useState(null)
     const [ queue, setQueue ] = useState([])
     const [ qIndex, setQIndex ] = useState()
+    const [ playNextQueue, setPlayNextQueue ] = useState([])
     const prevTracksRef = useRef([])
     const scrollRef = useRef(scrollPosition)
     const locationRef = useRef([{ pathname: location.pathname, activeItem: activeItem, scrollPosition: scrollPosition }])
@@ -207,6 +208,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
         qIndex,
         setQIndex,
         prevTracksRef,
+        playNextQueue,
+        setPlayNextQueue
      }
 
 // Set last played track on account as active track

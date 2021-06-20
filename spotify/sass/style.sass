@@ -114,6 +114,10 @@ i
 .noScroll
     overflow: hidden
 
+.noShow
+    opacity: 0
+    pointer-events: none
+
 .container
     display: flex
     justify-content: center
@@ -412,9 +416,11 @@ i
     i
         font-size: 1.5rem
     &__wrapper
-        background: $black
         min-height: 100vh
         overflow: auto
+        &--qv
+            background: $black
+
     &__header
         @include pseudo
         @include scrimGradient( $black, 'to bottom')

@@ -48,6 +48,11 @@ i {
   overflow: hidden;
 }
 
+.noShow {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .container {
   display: flex;
   justify-content: center;
@@ -489,9 +494,11 @@ i {
   font-size: 1.5rem;
 }
 .playerLargeContainer__wrapper {
-  background: #191414;
   min-height: 100vh;
   overflow: auto;
+}
+.playerLargeContainer__wrapper--qv {
+  background: #191414;
 }
 .playerLargeContainer__header {
   position: relative;

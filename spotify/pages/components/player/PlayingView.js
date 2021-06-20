@@ -35,6 +35,7 @@ const PlayingView = ({ controls, queueView, setQueueView }) => {
 
     return(
         <div className='playingView'>
+            
             <div className='playingView__track'>
                 <div className='playingView__imgContainer'>
                     <img

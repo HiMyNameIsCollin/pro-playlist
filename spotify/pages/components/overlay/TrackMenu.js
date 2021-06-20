@@ -1,8 +1,13 @@
 import Image from 'next/image'
 import { whichPicture } from '../../../utils/whichPicture'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { DbHookContext } from '../Dashboard'
 
 const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
+
+    const { playNextQueue, setPlayNextQueue, queue, setQueue, qIndex } = useContext( DbHookContext )
+
+
 
     // FUNC 1 IS A CALLBACK SENT FROM TRACK 
     const { type, data, func, func2 } = { ...overlay}
@@ -47,6 +52,11 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
         setOverlay(null)
         setActiveItem( album )
         if( func2 ) func2()
+    }
+
+    const handleAddToQueue = () => {
+        setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, track ])
+        setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), track, ...queue.slice(qIndex + 1) ]) 
     }
 
     return(
@@ -94,9 +104,9 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
             }
                
             
-            <button>
+            <button onClick={ handleAddToQueue }>
                 <i className="far fa-plus-square"></i>
-                <span>Add song to Standby playlist</span>
+                <span> Add to queue </span>
             </button>
             <button>
                 <i className="far fa-plus-square"></i>

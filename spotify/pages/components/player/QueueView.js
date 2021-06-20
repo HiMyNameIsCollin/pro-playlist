@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState, useRef } from 'react'
 import { PlayerHookContext } from './Player'
 import { DbHookContext } from '../Dashboard'
 import Controls from './Controls'
@@ -10,43 +10,54 @@ const QueueView = ({ handleTrackMenu, controls }) => {
     const [ queueViewSelected, setQueueViewSelected ] = useState([])
     const [ playNextQueueSelected, setPlayNextQueueSelected ] = useState([])
     const { playTrack, pauseTrack, nextTrack, prevTrack, handleRepeat } = controls
-    const { queue, setQueue, queueIndex } = useContext( DbHookContext)
-    const { currPlaying, playNextQueue, setPlayNextQueue } = useContext( PlayerHookContext )
+    const { queue, setQueue, qIndex, setQIndex, playNextQueue, setPlayNextQueue } = useContext( DbHookContext)
+    const playNextSyncedRef = useRef( false)
+    const { currPlaying } = useContext( PlayerHookContext )
     
+    const handleAddToPlayNext = () => {
+        setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, ...queueViewSelected ])
+        setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...queueViewSelected, ...queue.slice(qIndex + 1) ]) 
+        setQueueViewSelected( [] ) 
+    }
+    
+
+
+    useEffect(() => {
+        if( playNextQueue[0] && currPlaying.id === playNextQueue[0].id){
+            setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
+           
+        }
+    }, [ currPlaying, qIndex ])
+
+
+
     const handleRemove = () => {
-        if(playNextQueueSelected.length > 0){
-            let arr = []
+        if( playNextQueueSelected.length > 0){
+            let arr = [] 
+            let arr2 = []
             playNextQueue.forEach(( t, i ) => {
-                const thisTrack = playNextQueueSelected.find( x => x.id === t.id)
+                const thisTrack = playNextQueueSelected.find( x => x.id === t.id )
                 if( !thisTrack ){
                     arr.push( t )
+                } else {
+                    arr2.push( t )
                 }
             })
             setPlayNextQueue( arr )
             setPlayNextQueueSelected( [] )
+            setQueue( queue => queue = [ queue[0], ...queue.slice( arr2.length ) ])
         }
-        if( queueViewSelected.length > 0 ){
-            let arr = []
-            queue.slice(1).forEach(( t, i ) => {
-                const thisTrack = queueViewSelected.find( x => x.id === t.id )
-                if( !thisTrack ){
-                    arr.push( t )
-                }
-            })
-            setQueue( queue => queue = [ queue[0], ...arr ] )
-            setQueueViewSelected( [] )
-        }
-    }
 
-    const handleAddToPlayNext = () => {
-        setPlayNextQueue( playNextQueue => playNextQueue = [...playNextQueue, ...queueViewSelected ])
-        setQueueViewSelected( [] )
+        if( queueViewSelected.length > 0 ) {
+
+        }
     }
 
     const removePlayNext = () => {
-        setPlayNextQueue([])
+        setPlayNextQueue( [] )
     }
-    
+
+
     return(
         <div className='PlQueueView'>
             <h3 className='PlQueueView__nowPlaying'>Now playing: </h3> 
@@ -83,7 +94,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
                         <h3> Up next: </h3>
                     </div>
             {
-                queue.slice(1).map( ( track, i )  => {
+                queue.slice( qIndex + 1 + playNextQueue.length  ).map( ( track, i )  => {
                     return(
                         <QueueTrack 
                         type='queue'
