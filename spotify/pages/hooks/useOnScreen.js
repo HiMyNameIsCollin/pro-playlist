@@ -10,6 +10,11 @@ const useOnScreen = ({root = null, rootMargin, threshold = 0  }) => {
     useEffect(() => {
     observerRef.current = new IntersectionObserver(([entry]) =>
         setIsOnScreen(entry.isIntersecting),
+        {
+            root,
+            rootMargin: `-57px 0px -${ window.innerHeight - 113 + 'px'} 0px`,
+            threshold: .9
+        }
     )
     }, [])
 

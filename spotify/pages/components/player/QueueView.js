@@ -37,7 +37,10 @@ const QueueView = ({ handleTrackMenu, controls }) => {
 
     useEffect(() => {
         if( queueHeaderSticky ){
-            console.log( 123 )
+            queueHeaderRef.current.style.position = 'fixed'
+            queueHeaderRef.current.style.top = '57px'
+        } else {
+            queueHeaderRef.current.style.position = 'static'
         }
         if ( playNextSticky ){
             console.log( 321 )
