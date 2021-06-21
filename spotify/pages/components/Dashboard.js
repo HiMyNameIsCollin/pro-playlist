@@ -213,7 +213,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
      }
 
 // Set last played track on account as active track
-useEffect(() => {
+    useEffect(() => {
         let firstTracks = null
         // if( player_info.item ){
         //     firstTrack = player_info.item

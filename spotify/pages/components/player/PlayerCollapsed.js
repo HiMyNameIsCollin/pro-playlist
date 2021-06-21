@@ -25,6 +25,8 @@ const PlayerCollapsed = ({ hiddenUI }) => {
         if( trackMounted ){
             trackMountedRef.current = true
         }
+
+        return () => trackMountedRef.current = false
     },[ trackMounted ])
 
     const slideIn = useSpring({

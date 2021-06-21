@@ -15,6 +15,7 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
     const trackProgressIntervalRef = playerContext ? playerContext.trackProgressIntervalRef : null
     const setTrackProgress = playerContext ? playerContext.setTrackProgress : null
     const setPlayerSize = playerContext ? playerContext.setPlayerSize : null
+    const currPlaying = playerContext ? playerContext.currPlaying : null
 
     useEffect(() => {
         if( queue[ qIndex ] && queue[ qIndex ].id === track.id && type !=='playerCollapsed' && type !== 'queueView'){
@@ -80,7 +81,7 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
                 setTrackProgress(0)
             }
         }
-    }, [ track ])
+    }, [ currPlaying ])
 
     const trackLoaded = (e, amount) => {
         if(type === 'playerCollapsed'){

@@ -19,7 +19,7 @@ const Player = ({ hiddenUI }) => {
     const [ shuffle, setShuffle ] = useState( false )
     const trackProgressIntervalRef = useRef()
     const queuedTrackContextRef = useRef([])
-    const unShuffledQueueRef = useRef([])
+    const unShuffledQueueRef = useRef({ index: '', arr: [] })
     const playerHookState ={
         currPlaying,
         setCurrPlaying,
@@ -62,10 +62,11 @@ const Player = ({ hiddenUI }) => {
 
         if( queue[ qIndex ] && queue[ qIndex ].id !== currPlaying.id ){
             getTrack( queue[ qIndex ] )
-        } else if ( queue[ qIndex ].id === currPlaying.id ){
-            setCurrPlaying( queue[ qIndex ] )
+        } else if ( queue[ qIndex ] && queue[ qIndex ].id === currPlaying.id ){
+            const obj = { ...currPlaying}
+            setCurrPlaying( obj )
         }
-    },[ qIndex, queue ])
+    },[ qIndex ])
 
     const getTrack = ( track ) => {
         if( track.album ) {
@@ -85,6 +86,7 @@ const Player = ({ hiddenUI }) => {
         }
     }, [ apiPayload ])
 
+
 // Simple play/pause control via state.
     useEffect(() => {
         if( isPlaying ){
@@ -97,18 +99,20 @@ const Player = ({ hiddenUI }) => {
     }, [ isPlaying ])
 
     useEffect(() => {
+        
         if( shuffle ){
-            let queueClone = [ ...queue ]
-            const first = queueClone.filter( item => item.id === queueClone[ qIndex ].id )
-            queueClone = [ ...queue.slice().sort( () => Math.random() - 0.5 ) ]
-            unShuffledQueueRef.current = queue
-            setQIndex( 0 )
-            setQueue( queue => queue = [ first[0], ...queueClone ] )
+            const OGQ = queue.slice( qIndex + 1 )
+            unShuffledQueueRef.current = { index: qIndex, arr: [ ...OGQ ]}
+            const shuffled = OGQ.sort( () => Math.random() - 0.5 )
+            setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...shuffled ] )
+
         } else {
-            setQueue( unShuffledQueueRef.current )
-            const index = unShuffledQueueRef.current.findIndex( x => x.id === currPlaying.id )
-            setQIndex( index )
-            unShuffledQueueRef.current = []
+            if( unShuffledQueueRef.current.arr.length > 0 ){
+                const { index, arr } = unShuffledQueueRef.current
+                setQueue( queue => queue = [ ...queue.slice( 0, qIndex  ), queue[ qIndex ], ...arr  ] )
+                unShuffledQueueRef.current = { index: '', arr: [] }
+            }
+
         }
     }, [ shuffle ])
 

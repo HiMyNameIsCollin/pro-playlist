@@ -5,31 +5,58 @@ import Controls from './Controls'
 import Track from '../Track'
 import QueueTrack from './QueueTrack'
 
+import useOnScreen from '../../hooks/useOnScreen'
+
 const QueueView = ({ handleTrackMenu, controls }) => {
 
     const [ queueViewSelected, setQueueViewSelected ] = useState([])
     const [ playNextQueueSelected, setPlayNextQueueSelected ] = useState([])
-    const { playTrack, pauseTrack, nextTrack, prevTrack, handleRepeat } = controls
-    const { queue, setQueue, qIndex, setQIndex, playNextQueue, setPlayNextQueue } = useContext( DbHookContext)
-    const playNextSyncedRef = useRef( false)
-    const { currPlaying } = useContext( PlayerHookContext )
     
+    const { currPlaying } = useContext( PlayerHookContext )
+    const { queue, setQueue, qIndex, setQIndex, playNextQueue, setPlayNextQueue } = useContext( DbHookContext)
+    const { playTrack, pauseTrack, nextTrack, prevTrack, handleRepeat } = controls
+
+    const playNextSyncedRef = useRef( false )
+    const playNextHeaderRef= useRef()
+    const queueHeaderRef = useRef()
+
+    const [ playNextSticky, setPlayNext ] = useOnScreen({ rootMargin: `57px, 0, ${ 100% - 57 }px`, threshold: 1 })
+    const [ queueHeaderSticky, setQueueHeader ] = useOnScreen({ threshold: 1 })
+
+    useEffect(() => {
+        setQueueHeader(queueHeaderRef.current)
+    }, [])
+    
+    useEffect(() => {
+        if(playNextQueue.length > 0){
+            setPlayNext(playNextHeaderRef.current)
+        } else {
+            setPlayNext(null)
+        }
+    }, [ playNextQueue ])
+
+    useEffect(() => {
+        if( queueHeaderSticky ){
+            console.log( 123 )
+        }
+        if ( playNextSticky ){
+            console.log( 321 )
+        }
+    },[ playNextSticky, queueHeaderSticky ])
+
+    
+    useEffect(() => {
+        if( playNextQueue[0] && queue[ qIndex ].id === playNextQueue[0].id){
+            setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
+            setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...queue.slice( qIndex + 1 ) ])
+        }
+    }, [ qIndex ])
+
     const handleAddToPlayNext = () => {
         setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, ...queueViewSelected ])
         setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...queueViewSelected, ...queue.slice(qIndex + 1) ]) 
         setQueueViewSelected( [] ) 
     }
-    
-
-
-    useEffect(() => {
-        if( playNextQueue[0] && currPlaying.id === playNextQueue[0].id){
-            setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
-           
-        }
-    }, [ currPlaying, qIndex ])
-
-
 
     const handleRemove = () => {
         if( playNextQueueSelected.length > 0){
@@ -49,7 +76,13 @@ const QueueView = ({ handleTrackMenu, controls }) => {
         }
 
         if( queueViewSelected.length > 0 ) {
-
+            let arr = []
+            queue.slice( qIndex + 1).forEach(( t, i ) => {
+                const thisTrack = queueViewSelected.find( x => x.id === t.id )
+                if( !thisTrack ) arr.push(t)
+            })
+            setQueue( queue => queue = [ ...queue.slice(0, qIndex + 1), ...arr ])
+            setQueueViewSelected( [] )
         }
     }
 
@@ -68,7 +101,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
             {
             playNextQueue.length > 0 &&
             <div className=' queueContainer'>
-                <div className='queueContainer__title'>
+                <div ref={ playNextHeaderRef } className='queueContainer__title'>
                     <h3> Next In Queue </h3>
                     <span onClick={ removePlayNext }> Clear queue </span> 
                 </div>
@@ -90,7 +123,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
             {
                 queue.length > 1 &&
                 <div className='queueContainer'>
-                    <div className='queueContainer__title'>
+                    <div ref={ queueHeaderRef } className='queueContainer__title'>
                         <h3> Up next: </h3>
                     </div>
             {
