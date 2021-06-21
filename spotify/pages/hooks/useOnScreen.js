@@ -12,8 +12,8 @@ const useOnScreen = ({root = null, rootMargin, threshold = 0  }) => {
         setIsOnScreen(entry.isIntersecting),
         {
             root,
-            rootMargin: `-57px 0px -${ window.innerHeight - 113 + 'px'} 0px`,
-            threshold: .9
+            rootMargin: `-${ (document.querySelector('.playerLargeContainer__header').offsetHeight / (window.innerHeight - 55) ) * 100 + '%' } 0px 0px 0px`,
+            threshold: 1
         }
     )
     }, [])
