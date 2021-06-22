@@ -4,7 +4,7 @@ import { DbHookContext } from './Dashboard'
 import { PlayerHookContext } from './player/Player'
 import { handleColorThief } from '../../utils/handleColorThief'
 
-const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
+const Track = ({ type, collectionType, i , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
     
     const { queue, setQueue, activeItem, audioRef, prevTracksRef, qIndex, setQIndex } = useContext( DbHookContext )
@@ -101,7 +101,7 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
         // onTouchStart={ (e) => type !== 'playerCollapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
         className={
             `track 
-            track--${ type }
+            track--${ collectionType ? collectionType : type }
             ${ activeTrack && 'track--active' }`
         }
         data-trackId={ track.id }>
@@ -113,15 +113,26 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
         }
 
         {
-            type!=='collection' &&
-                <div className='track__imgContainer'>
-                    <img
-                    crossorigin='anonymous'
-                    onLoad={ (e) => trackLoaded(e, 2) }
-                    alt='Album' 
-                    src={ whichPicture( track.album.images, 'sm') }/>
-                </div>
+            type === 'collection' && collectionType === 'playlist' &&
+            <div className='track__imgContainer'>
+                <img
+                crossorigin='anonymous'
+                onLoad={ (e) => trackLoaded(e, 2) }
+                alt='Album' 
+                src={ whichPicture( track.album.images, 'sm') }/>
+            </div>
         }
+        {
+            type !== 'collection' && !collectionType &&
+            <div className='track__imgContainer'>
+                <img
+                crossorigin='anonymous'
+                onLoad={ (e) => trackLoaded(e, 2) }
+                alt='Album' 
+                src={ whichPicture( track.album.images, 'sm') }/>
+            </div>
+        }
+        
             <h5>
                 { track.name }
             </h5>
@@ -131,8 +142,14 @@ const Track = ({ type, i , track, handleTrackMenu, trackMounted, setTrackMounted
                 }
             </span>
             {
+                type !== 'playerCollapsed' && type !== 'queueView' &&
+                <i className="fas fa-heart track__likeBtn"></i>
+
+            }
+            
+            {
                 type !== 'playerCollapsed' &&
-                <i className="fas fa-ellipsis-h"
+                <i className="fas fa-ellipsis-h track__menuBtn"
                 onClick={ (e) => handleTrackMenu(e, track ) }></i> 
             }
 

@@ -42,6 +42,7 @@ const TracksContainer = ({ type, data , setOverlay }) => {
                 return (
                     <Track 
                     type={ type }
+                    collectionType={ collection ? collection.type : null }
                     i={ i }
                     handleTrackMenu={ handleTrackMenu } 
                     key={ i } 

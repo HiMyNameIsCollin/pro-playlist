@@ -356,107 +356,65 @@ i {
 .track {
   align-items: center;
   color: #FFFFFF;
+  justify-content: flex-start;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
   grid-template-rows: 1fr 1fr;
+  grid-template-columns: auto auto minmax(0, 100%) auto auto;
   padding: 0.5rem 1rem;
 }
-.track h5 {
-  grid-column: 1/4;
-  grid-row: 1/2;
-  font-weight: 700;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-}
-.track span {
-  color: #b3b3b3;
-  grid-column: 1/4;
-  grid-row: 2/3;
-  font-size: 0.8rem;
-  padding-right: 1rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.track i {
-  align-self: center;
-  font-size: 2rem;
-  grid-column: 2/3;
-  grid-row: 1/3;
-}
 .track__imgContainer {
-  align-self: center;
-  display: flex;
   grid-column: 2/3;
   grid-row: 1/3;
   height: 3rem;
-  margin-right: 1rem;
   width: 3rem;
 }
 .track__imgContainer img {
   height: 100%;
   width: 100%;
 }
+.track h5, .track span {
+  grid-column: 3/4;
+  overflow: hidden;
+  padding: 0 0.5rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 100%;
+}
+.track h5 {
+  align-self: flex-end;
+  grid-row: 1/2;
+}
+.track span {
+  align-self: flex-start;
+  color: #b3b3b3;
+  grid-row: 2/3;
+  font-size: 0.8rem;
+}
+.track p {
+  grid-column: 1/2;
+  grid-row: 1/3;
+  padding-right: 1rem;
+}
+.track__likeBtn {
+  color: #1DB954;
+  font-size: 1.5rem;
+  grid-column: 4/5;
+  grid-row: 1/3;
+}
+.track__menuBtn {
+  grid-column: 5/6;
+  grid-row: 1/3;
+  padding-left: 1rem;
+}
 .track--active h5 {
   color: #1ed764;
 }
-.track--playerCollapsed, .track--queueView {
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
-  grid-template-rows: 1fr 1fr;
+.track--playerCollapsed {
   padding: 0;
-  width: calc(100% - 4rem);
-  max-width: calc(100% - 4rem);
 }
-.track--playerCollapsed .track__imgContainer, .track--queueView .track__imgContainer {
+.track--playerCollapsed .track__imgContainer {
   height: 3.5rem;
   width: 3.5rem;
-}
-.track--playerCollapsed h5, .track--queueView h5 {
-  align-self: flex-end;
-  font-size: 0.8rem;
-  font-weight: 400;
-  grid-column: 3/4;
-}
-.track--playerCollapsed span, .track--queueView span {
-  align-self: flex-start;
-  grid-column: 3/4;
-}
-.track--playerCollapsed i, .track--queueView i {
-  grid-column: 4/5;
-}
-.track--playerCollapsed p, .track--queueView p {
-  align-self: center;
-  font-size: 0.8rem;
-  grid-column: 1/2;
-  grid-row: 1/3;
-  padding-right: 1rem;
-}
-.track--queueView {
-  padding: 0 1rem;
-  max-width: 100%;
-  width: 100%;
-}
-.track--artist {
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
-  grid-template-rows: 1fr 1fr;
-}
-.track--artist h5 {
-  grid-column: 3/4;
-}
-.track--artist span {
-  grid-column: 3/4;
-}
-.track--artist i {
-  grid-column: 4/5;
-}
-.track--artist p {
-  align-self: center;
-  font-size: 0.8rem;
-  grid-column: 1/2;
-  grid-row: 1/3;
-  padding-right: 1rem;
 }
 
 .playerLargeContainer {
@@ -706,9 +664,6 @@ i {
   border-radius: 10px;
   font-size: 0.8rem;
   padding: 0 0.5rem;
-}
-.queueContainer:nth-of-type(2) {
-  z-index: 2;
 }
 
 .queueTrack {
