@@ -1,11 +1,9 @@
-import { useContext, useEffect, useState, useRef } from 'react'
+import { useContext, useEffect, useLayoutEffect, useState, useRef } from 'react'
 import { PlayerHookContext } from './Player'
 import { DbHookContext } from '../Dashboard'
 import Controls from './Controls'
 import Track from '../Track'
 import QueueTrack from './QueueTrack'
-
-import useOnScreen from '../../hooks/useOnScreen'
 
 const QueueView = ({ handleTrackMenu, controls }) => {
 
@@ -16,37 +14,18 @@ const QueueView = ({ handleTrackMenu, controls }) => {
     const { queue, setQueue, qIndex, setQIndex, playNextQueue, setPlayNextQueue } = useContext( DbHookContext)
     const { playTrack, pauseTrack, nextTrack, prevTrack, handleRepeat } = controls
 
-    const playNextSyncedRef = useRef( false )
     const playNextHeaderRef= useRef()
     const queueHeaderRef = useRef()
+    const nowPlayingHeaderRef = useRef()
 
-    const [ playNextSticky, setPlayNext ] = useOnScreen({ rootMargin: `57px, 0, ${ 100% - 57 }px`, threshold: 1 })
-    const [ queueHeaderSticky, setQueueHeader ] = useOnScreen({ threshold: 1 })
-
-    useEffect(() => {
-        setQueueHeader(queueHeaderRef.current)
-    }, [])
-    
-    useEffect(() => {
-        if(playNextQueue.length > 0){
-            setPlayNext(playNextHeaderRef.current)
-        } else {
-            setPlayNext(null)
-        }
+    useLayoutEffect(() => {
+        const playerHeaderHeight = document.querySelector('.playerLargeContainer__header').getBoundingClientRect().height
+        document.querySelector('.PlQueueView').style.paddingTop = playerHeaderHeight + 'px'
+        nowPlayingHeaderRef.current.style.top = playerHeaderHeight + 'px'
+        queueHeaderRef.current.style.top = playerHeaderHeight + 'px'
+        if( playNextHeaderRef.current) playNextHeaderRef.current.style.top = playerHeaderHeight + 'px'
+        
     }, [ playNextQueue ])
-
-    useEffect(() => {
-        if( queueHeaderSticky ){
-            queueHeaderRef.current.style.position = 'fixed'
-            console.log('fixed')
-        } else {
-            queueHeaderRef.current.style.position = 'static'
-            console.log('static')
-        }
-        if ( playNextSticky ){
-            console.log( 321 )
-        }
-    },[ playNextSticky, queueHeaderSticky ])
 
     
     useEffect(() => {
@@ -97,7 +76,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
 
     return(
         <div className='PlQueueView'>
-            <h3 className='PlQueueView__nowPlaying'>Now playing: </h3> 
+            <h3 ref={nowPlayingHeaderRef} className='PlQueueView__nowPlaying'>Now playing: </h3> 
             <Track
             type='queueView'
             handleTrackMenu={ handleTrackMenu }

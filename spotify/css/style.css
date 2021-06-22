@@ -357,12 +357,12 @@ i {
   align-items: center;
   color: #FFFFFF;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   grid-template-rows: 1fr 1fr;
   padding: 0.5rem 1rem;
 }
 .track h5 {
-  grid-column: 1/2;
+  grid-column: 1/4;
   grid-row: 1/2;
   font-weight: 700;
   overflow: hidden;
@@ -372,7 +372,7 @@ i {
 }
 .track span {
   color: #b3b3b3;
-  grid-column: 1/2;
+  grid-column: 1/4;
   grid-row: 2/3;
   font-size: 0.8rem;
   padding-right: 1rem;
@@ -514,6 +514,7 @@ i {
   justify-content: space-between;
   padding: 1rem 2rem;
   text-align: center;
+  webkit-transform: translate3d(0, 0, 0);
   width: 100%;
 }
 .playerLargeContainer__header::before {
@@ -673,7 +674,9 @@ i {
   padding-bottom: 5.5rem;
 }
 .PlQueueView__nowPlaying {
+  background: #191414;
   color: #FFFFFF;
+  position: sticky;
   padding: 1rem;
 }
 .PlQueueView .controls {
@@ -686,13 +689,17 @@ i {
 
 .queueContainer {
   color: #FFFFFF;
+  webkit-transform: translate3d(0, 0, 0);
 }
 .queueContainer__title {
   align-items: center;
+  background: #191414;
   display: flex;
-  justify-content: space-between;
   font-size: 0.8rem;
+  justify-content: space-between;
+  left: 0;
   padding: 1rem;
+  position: sticky;
 }
 .queueContainer__title span {
   border: solid #FFFFFF 1px;
@@ -700,8 +707,8 @@ i {
   font-size: 0.8rem;
   padding: 0 0.5rem;
 }
-.queueContainer__title--fixed {
-  position: fixed;
+.queueContainer:nth-of-type(2) {
+  z-index: 2;
 }
 
 .queueTrack {
