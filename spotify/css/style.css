@@ -242,6 +242,10 @@ i {
   color: #FFFFFF;
   padding: 0 0 8rem 0;
 }
+.page--search {
+  background: #212121;
+  padding: 10rem 0;
+}
 .page--blurred {
   filter: blur(5px);
 }
@@ -350,7 +354,7 @@ i {
 }
 
 .artist__trackContainer h4 {
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
 }
 
 .track {
@@ -1292,49 +1296,17 @@ i {
   position: relative;
   width: auto;
 }
-.slider__card {
-  flex: 0 0 auto;
-  margin: 0 0.5rem;
-  width: min(60vw, 10rem);
-}
-.slider__card:nth-of-type(1) {
-  margin-left: 1rem;
-}
-.slider__card:nth-last-of-type(1) {
-  margin-right: 1rem;
-}
 
 .browseContainer {
-  display: grid;
-  grid-template-columns: repeat(2, min(320px, calc(50vw - 1rem)));
-  grid-gap: 1rem;
   justify-content: space-between;
-}
-.browseContainer__title {
-  grid-column: 1/-1;
-  align-items: flex-end;
-  color: #FFFFFF;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, min(calc(50vw - 2rem), 10rem));
   padding: 1rem;
 }
-.browseContainer__title span {
-  font-weight: 700;
-  font-size: 0.8rem;
-  margin-left: auto;
-}
-.browseContainer__card {
-  margin: auto;
+.browseContainer__title {
+  color: #FFFFFF;
+  grid-column: 1/-1;
   width: 100%;
-}
-.browseContainer__card__title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-@media only screen and (min-width: 768px) {
-  .browseContainer {
-    grid-template-columns: repeat(auto-fill, 10rem);
-  }
 }
 
 .card {
@@ -1345,13 +1317,12 @@ i {
 .card__title {
   padding: 0.5rem 0;
 }
-.card__image {
+.card__imgContainer {
   display: flex;
-  height: 10rem;
   position: relative;
   width: 100%;
 }
-.card__image img {
+.card__imgContainer img {
   display: block;
   height: auto;
   max-width: 100%;
@@ -1361,7 +1332,17 @@ i {
 .card--artist img {
   border-radius: 50%;
 }
-
+.card--slider {
+  flex: 0 0 auto;
+  margin: 0 0.5rem;
+  width: min(60vw, 10rem);
+}
+.card--slider:nth-of-type(1) {
+  margin-left: 1rem;
+}
+.card--slider:nth-last-of-type(1) {
+  margin-right: 1rem;
+}
 .loading {
   align-items: center;
   background: #191414;

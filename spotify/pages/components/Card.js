@@ -1,20 +1,26 @@
 import { useContext } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
+import { SearchHookContext } from './Search'
 
 const Card = ({ item, cardType }) => {
 
-    const { setActiveItem } = useContext( DbHookContext )
-
-    const setCurrentSelection = () => {
-        setActiveItem( item )
+    const { setActiveItem, activeSearchItem, setActiveSearchItem } = useContext( DbHookContext )
+    const setCurrentSelection = (e) => {
+        e.stopPropagation()
+        if(cardType === 'browseContainer'){
+            setActiveSearchItem( item )
+        }else {
+            setActiveItem( item )
+        }
     }
+    
 
     return(
         <div 
         onClick={ setCurrentSelection } 
-        className={`card ${cardType}__card ${item.type==='artist' && 'card--artist'}` }>
-            <div className='card__image'>
+        className={`card card--${cardType} ${item.type==='artist' && 'card--artist'}` }>
+            <div className='card__imgContainer'>
                 <img 
                 loading='lazy'
                 src={ 

@@ -66,7 +66,7 @@ const Player = ({ hiddenUI }) => {
             const obj = { ...currPlaying}
             setCurrPlaying( obj )
         }
-    },[ qIndex ])
+    },[ qIndex, queue ])
 
     const getTrack = ( track ) => {
         if( track.album ) {

@@ -229,6 +229,9 @@ i
         background: $black
         color: $white
         padding: 0 0 8rem 0
+    &--search
+        background: $darkGrey
+        padding: 10rem 0 
 
     &--blurred
         filter: blur(5px)
@@ -311,9 +314,8 @@ i
 .artist
     &__trackContainer
         h4
-            padding: .5rem
+            padding: .5rem 1rem 
         
-
 .track
     align-items: center
     color: $white
@@ -911,34 +913,18 @@ i
         overflow-x: auto
         position: relative
         width: auto
-    &__card
-        flex: 0 0 auto
-        margin: 0 .5rem
-        width: min(60vw, 10rem)
-        &:nth-of-type(1)
-            margin-left: 1rem
-        &:nth-last-of-type(1)
-            margin-right: 1rem
         
 
 .browseContainer
-    display: grid
-    grid-template-columns: repeat( 2, Min( 320px, calc(50vw - 1rem)) )
-    grid-gap: 1rem
     justify-content: space-between
-    &__title
-        grid-column: 1/-1
-        @include sectionTitle
-    &__card
-        margin: auto
-        width: 100%
-        &__title
-            white-space: nowrap
-            overflow: hidden
-            text-overflow: ellipsis
-    @media only screen and (min-width: 768px)
-        grid-template-columns: repeat(auto-fill, 10rem)
+    display: grid
+    grid-template-columns: repeat( auto-fill, Min( calc(50vw - 2rem), 10rem))
 
+    padding: 1rem
+    &__title
+        color: $white
+        grid-column: 1/-1
+        width: 100%
 
 .card
     color: $white
@@ -946,9 +932,9 @@ i
     position: relative
     &__title
         padding: .5rem 0
-    &__image
+    &__imgContainer
         display: flex
-        height: 10rem
+        
         position: relative
         width: 100%
         img
@@ -960,7 +946,18 @@ i
     &--artist
         img
             border-radius: 50%
-    
+    &--slider
+        flex: 0 0 auto
+        margin: 0 .5rem
+        width: min(60vw, 10rem)
+        &:nth-of-type(1)
+            margin-left: 1rem
+        &:nth-last-of-type(1)
+            margin-right: 1rem
+    &--browseContainer
+       
+        .card__imgContainer
+
 
 .loading
     align-items: center

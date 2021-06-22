@@ -48,13 +48,8 @@ const routes = {
     my_top_artists: 'v1/me/top/artists',
     featured_playlists: 'v1/browse/featured-playlists',
     new_releases: 'v1/browse/new-releases',
-    search: 'v1/search',
     available_genre_seeds: 'v1/recommendations/available-genre-seeds',
     followed_artists: 'v1/me/following',
-    // My reducer is based off a set 'Route' string attached during the fetch process,
-    // I set the top genre state with a makeshift 'my_top_genres' "route". 
-    // Hopefully Spotify adds a top genres route eventually :(
-    my_top_genres: 'genres',
 }
 
 const reducer = (state, action) => {
@@ -100,14 +95,7 @@ const reducer = (state, action) => {
                     ...state,
                     recently_played: action.items
                 }
-            }
-        case routes.all_categories:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    all_categories: [ ...state.all_categories, ...action.categories.items ]
-                }
-            }               
+            }             
         case routes.new_releases:
             if(method === 'get'){
                 return{
@@ -155,19 +143,12 @@ const reducer = (state, action) => {
                 ...state,
                 followed_artists: action.artists.items
             }
-        case routes.my_top_genres:
-            // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
-            return{
-                ...state,
-                my_top_genres: action.items
-            }
+
         default:
             console.log(action)
             break         
     }
 }
-
-
 const Dashboard = ({ setAuth, audioRef }) => {
     // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
@@ -182,6 +163,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 // activeHeader contains the data from the active page required for certain headers to function
     const [ activeHeader , setActiveHeader ] = useState(null)
     const [ activeItem, setActiveItem ] = useState(null)
+    const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
     const [ queue, setQueue ] = useState([])
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
@@ -196,6 +178,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
         audioRef,
         activeItem, 
         setActiveItem, 
+        activeSearchItem,
+        setActiveSearchItem,
         overlay, 
         setOverlay, 
         activeHeader, 
@@ -229,58 +213,16 @@ const Dashboard = ({ setAuth, audioRef }) => {
                     name: 'Recently played',
                     type: t.context ? t.context.type : null,
                     href: t.context ? t.context.href : null
-                }
-                
+                }  
                 return t.track
             })
-
         } 
-        
         if (firstTracks) {
             setQIndex(0)
             setQueue( queue => queue = [ ...firstTracks ])
         }
 }, [ recently_played, player_info  ])
 
-// CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
-    useEffect(() => {
-        if(state.my_top_artists.length > 0) {
-            let topArtists = [...state.my_top_artists]
-            const topGenres = calcTopGenre(topArtists)
-            const payload = {
-                route: 'genres',
-                items: topGenres
-            }
-            dispatch(payload)
-        }
-    },[my_top_artists])
-
-    const calcTopGenre = (arr) => {
-        let genres = {}
-        arr.map((ele, i) => {
-            ele.genres.map((genre, j) => {
-                if( state.available_genre_seeds.includes( genre ) ){
-                    if(genres[genre]){
-                        genres[genre].total += 1
-                    }else {
-                        genres[genre] = {total: 1, images: ele.images}
-                    }
-                }
-            })
-        })
-        let sortable = []
-        for(const genre in genres){
-            sortable.push([genre, genres[genre].images, genres[genre].total])
-        }
-        sortable.sort((a,b) => {
-            return b[2] - a[2]
-        })
-        let newArr = []
-        sortable.map((item, i) => {
-            newArr.push({ name: capital( item[0] ), id: item[0] , type: 'genre' ,  images: item[1]})
-        })
-        return newArr
-    }
 
 // HANDLE SCROLL PERCENTAGE 
     useEffect(() => {
@@ -305,7 +247,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
         finalizeRoute( 'get', routes.featured_playlists, fetchApi, null )
         finalizeRoute( 'get', routes.new_releases, fetchApi, null )
         finalizeRoute( 'get', routes.recently_played, fetchApi, null, 'limit=50' ) 
-        finalizeRoute( 'get', routes.all_categories, fetchApi, null, 'limit=10' ) 
         finalizeRoute( 'get', routes.new_releases, fetchApi, null )
         finalizeRoute( 'get', routes.available_genre_seeds, fetchApi, null )
         finalizeRoute( 'get', routes.my_top_tracks, fetchApi, null )
@@ -326,7 +267,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
         }
     }
 
-// Navigation through the dynamic parts of the website are handled here.
+// Navigation through the pages is handled here.
 // When a dynamic page is selected(Playlist, Album, Artist), it will be set as the activeItem state, which fires this.
 // Also clears the activeHeader state (Holds the data corresponding with the currently opened page.)
 
@@ -358,9 +299,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
                     }
                     break
                 default:
-                    if(location.pathname !== `/showcase/${activeItem.id}`){
-                        history.push(`/showcase/${activeItem.id}`)
-                    }
+                    console.log( activeItem )
+                    setActiveItem( null )
                     break
             }
         }
@@ -456,7 +396,8 @@ to remain fixed to the top of the viewport */}
                         <Route path='/search'>
                             <Search
                             scrollPosition={ scrollPosition } 
-                            state={ state } 
+                            my_top_artists={ state.my_top_artists } 
+                            available_genre_seeds={ state.available_genre_seeds }
                             apiIsPending={ apiIsPending }/>
                         </Route> 
                         <Route path='/manage'>
@@ -480,10 +421,7 @@ to remain fixed to the top of the viewport */}
                             genreSeeds={ state.available_genre_seeds}
                             location={ location } />
                         </Route> 
-                        <Route path='/showcase/:id'>
-                            <Showcase 
-                             />
-                        </Route> 
+                        
                         
                     </Switch>
                 </animated.div>

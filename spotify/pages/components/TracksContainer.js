@@ -43,7 +43,7 @@ const TracksContainer = ({ type, data , setOverlay }) => {
                     <Track 
                     type={ type }
                     collectionType={ collection ? collection.type : null }
-                    i={ i }
+                    trackIndex={ i }
                     handleTrackMenu={ handleTrackMenu } 
                     key={ i } 
                     track={ track } 

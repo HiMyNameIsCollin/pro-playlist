@@ -2,7 +2,7 @@ import { useEffect, useContext } from 'react'
 import Card from './Card'
 import { DbHookContext } from './Dashboard'
 
-const BrowseContainer = ({ message, data}) => {
+const BrowseContainer = ({ type, message, data, }) => {
     
     const { scrollPosition } = useContext( DbHookContext )
 
@@ -18,9 +18,9 @@ const BrowseContainer = ({ message, data}) => {
     return(
             <section className='browseContainer'> 
                 <div className='browseContainer__title'>
-                    <h2>
+                    <h3>
                         { message }
-                    </h2>
+                    </h3>
                     
                 </div> 
                {
@@ -30,7 +30,7 @@ const BrowseContainer = ({ message, data}) => {
                         key={ i } 
                         item={ item } 
                         cardType='browseContainer'
-                        setActive={ setActive } />
+                        />
                     )
                    })
                }

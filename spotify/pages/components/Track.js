@@ -4,7 +4,7 @@ import { DbHookContext } from './Dashboard'
 import { PlayerHookContext } from './player/Player'
 import { handleColorThief } from '../../utils/handleColorThief'
 
-const Track = ({ type, collectionType, i , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
+const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
     
     const { queue, setQueue, activeItem, audioRef, prevTracksRef, qIndex, setQIndex } = useContext( DbHookContext )
@@ -86,7 +86,6 @@ const Track = ({ type, collectionType, i , track, handleTrackMenu, trackMounted,
     const trackLoaded = (e, amount) => {
         if(type === 'playerCollapsed'){
             const colors = handleColorThief(e.target, amount)
-            console.log(colors)
             colors.map((clr, i) => document.documentElement.style.setProperty(`--currentTrackColor${i}`, clr))
             setTrackMounted( true )
         }
@@ -109,7 +108,7 @@ const Track = ({ type, collectionType, i , track, handleTrackMenu, trackMounted,
 
         {
             type === 'artist' &&
-            <p> { i + 1 } </p> 
+            <p> { trackIndex + 1 } </p> 
         }
 
         {
