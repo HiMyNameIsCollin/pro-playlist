@@ -415,6 +415,8 @@ i {
 }
 .track--playerCollapsed {
   padding: 0;
+  min-width: calc(100% - 4rem);
+  max-width: calc(100% - 4rem);
 }
 .track--playerCollapsed .track__imgContainer {
   height: 3.5rem;
@@ -524,7 +526,7 @@ i {
   display: flex;
   flex-direction: column;
   margin: auto;
-  padding: 2rem;
+  padding: 3rem 2rem;
   height: 100%;
   margin: auto;
   max-width: 100%;
@@ -540,6 +542,7 @@ i {
   }
 }
 .playingView__track {
+  margin-top: 0.5rem;
   width: 100%;
 }
 .playingView__track h3 {
@@ -1312,6 +1315,7 @@ i {
 .card {
   color: #FFFFFF;
   min-height: 12rem;
+  max-height: 12rem;
   position: relative;
 }
 .card__title {

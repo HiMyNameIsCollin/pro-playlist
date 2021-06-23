@@ -366,6 +366,9 @@ i
             color: $lightGreen
     &--playerCollapsed
         padding: 0
+        min-width: calc(100% - 4rem)
+        max-width: calc(100% - 4rem)
+
         .track__imgContainer
             height: 3.5rem
             width: 3.5rem
@@ -426,7 +429,7 @@ i
     display: flex
     flex-direction: column
     margin:  auto 
-    padding:  2rem
+    padding:  3rem 2rem
     height: 100%
     margin: auto
     max-width: 100%
@@ -435,6 +438,7 @@ i
     @media only screen and ( min-width: 640px )
         max-width: 640px
     &__track
+        margin-top: .5rem
         width: 100%
         h3
             margin: .5rem 0 0 0 
@@ -929,6 +933,7 @@ i
 .card
     color: $white
     min-height: 12rem
+    max-height: 12rem
     position: relative
     &__title
         padding: .5rem 0
@@ -949,7 +954,7 @@ i
     &--slider
         flex: 0 0 auto
         margin: 0 .5rem
-        width: min(60vw, 10rem)
+        width: Min(60vw, 10rem)
         &:nth-of-type(1)
             margin-left: 1rem
         &:nth-last-of-type(1)

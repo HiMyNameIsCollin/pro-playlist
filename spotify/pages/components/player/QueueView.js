@@ -18,7 +18,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
     const queueHeaderRef = useRef()
     const nowPlayingHeaderRef = useRef()
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         const playerHeaderHeight = document.querySelector('.playerLargeContainer__header').getBoundingClientRect().height
         document.querySelector('.PlQueueView').style.paddingTop = playerHeaderHeight + 'px'
         nowPlayingHeaderRef.current.style.top = playerHeaderHeight + 'px'
@@ -27,6 +27,17 @@ const QueueView = ({ handleTrackMenu, controls }) => {
         
     }, [ playNextQueue ])
 
+    useEffect(() => {
+        if(playNextQueue[0]){
+            if( queue[ qIndex + 1] && queue[ qIndex + 1 ].id !== playNextQueue[0].id){
+                setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...playNextQueue, ...queue.slice(qIndex + 1) ]) 
+            } else if ( !queue[ qIndex + 1 ] ){
+                setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...playNextQueue ]) 
+
+            }
+
+        }
+    },[ queue ])
     
     useEffect(() => {
         if( playNextQueue[0] && queue[ qIndex ].id === playNextQueue[0].id){
@@ -103,8 +114,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
                 
             </div>
             }
-            {
-                queue.length > 1 &&
+           
                 <div className='queueContainer'>
                     <div ref={ queueHeaderRef } className='queueContainer__title'>
                         <h3> Up next: </h3>
@@ -121,7 +131,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
                 })
             }
                 </div>                
-            }
+             
 
             {
                 queueViewSelected.length > 0 || playNextQueueSelected.length > 0?
