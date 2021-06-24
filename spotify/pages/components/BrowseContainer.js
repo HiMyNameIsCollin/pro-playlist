@@ -29,7 +29,7 @@ const BrowseContainer = ({ type, message, data, }) => {
                         <Card
                         key={ i } 
                         item={ item } 
-                        cardType='browseContainer'
+                        type={ type }
                         />
                     )
                    })

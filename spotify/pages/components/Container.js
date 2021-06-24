@@ -29,7 +29,7 @@ const Container = () => {
       .then( value => {
         if(value === 'success'){
           audioRef.current.play()
-          console.log(audioRef.current)
+          audioRef.current.pause()
           
         }
       }) 

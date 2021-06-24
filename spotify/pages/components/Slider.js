@@ -12,7 +12,7 @@ const Slider = ({ message, items, setActiveItem }) => {
                 {   items.length > 0 ?
                     items.map(( item, i ) => (
                     <Card 
-                    cardType='slider'
+                    type='HomeSlider'
                     key={ i } 
                     item={ item }
                     setActiveItem={ setActiveItem } />)) :

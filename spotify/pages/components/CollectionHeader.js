@@ -7,11 +7,11 @@ import { handleColorThief } from '../../utils/handleColorThief'
 import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
 
-const CollectionHeader = ({ data  }) => {
+const CollectionHeader = ({ data , headerScrolled , setHeaderScrolled }) => {
     const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
 
-    const { setOverlay, setActiveItem, scrollPosition, setActiveHeader, headerScrolled, setHeaderScrolled } = useContext( DbHookContext )
+    const { setOverlay, setActiveItem, scrollPosition, setActiveHeader } = useContext( DbHookContext )
     useLayoutEffect(() => {
         const thisHeader = document.querySelector('.collectionHeader')
         document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
@@ -41,7 +41,7 @@ const CollectionHeader = ({ data  }) => {
             
             scaleDown: `${ 1.00 - ( headerScrolled * 0.005 )  }`,
             fadeOut: `${ 1 - ( headerScrolled * 0.02 )}`,
-            moveDown: `${ (headerScrolled * 2 )  }`
+            moveDown: `${ ( headerScrolled * 2 )  }`
         },
         config: {
             precision: 1,

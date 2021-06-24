@@ -32,7 +32,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
             if( queue[ qIndex + 1] && queue[ qIndex + 1 ].id !== playNextQueue[0].id){
                 setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...playNextQueue, ...queue.slice(qIndex + 1) ]) 
             } else if ( !queue[ qIndex + 1 ] ){
-                setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...playNextQueue ]) 
+                setQueue( queue => queue = [ ...queue, ...playNextQueue ]) 
 
             }
 
@@ -117,7 +117,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
            
                 <div className='queueContainer'>
                     <div ref={ queueHeaderRef } className='queueContainer__title'>
-                        <h3> Up next: </h3>
+                        <h3> Up next in: { queue[ qIndex ].context.name }</h3>
                     </div>
             {
                 queue.slice( qIndex + 1 + playNextQueue.length  ).map( ( track, i )  => {

@@ -12,7 +12,7 @@ import Loading from './Loading'
 import { DbHookContext } from './Dashboard'
 
 
-const Collection = ({ type, genreSeeds, location }) => {
+const Collection = ({ type, activeItem, setActiveItem, genreSeeds, headerScrolled, setHeaderScrolled }) => {
     
 
     const initialState = {
@@ -97,18 +97,24 @@ const Collection = ({ type, genreSeeds, location }) => {
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState(false)
-    const { activeItem, setActiveItem, overlay, setOverlay, activeHeader, queue, setQueue } = useContext( DbHookContext )
+    const {  overlay, setOverlay, activeHeader, location } = useContext( DbHookContext )
     const { collection, artists, tracks, recommendations } = {...state}
 
     useEffect(() => {
-        let id
-        id = activeItem && activeItem.id ? 
-        activeItem.id :
-        type ==='album' ?
-        location.pathname.substr( routes.album.length - 2 ) :
-        location.pathname.substr( routes.playlist.length - 2 )
-        finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, fetchApi, id)
+        if( location.pathname !== '/search' ){
+            let id
+            id = activeItem && activeItem.id ? 
+            activeItem.id :
+            type ==='album' ?
+            location.pathname.substr( routes.album.length - 2 ) :
+            location.pathname.substr( routes.playlist.length - 2 )
+            finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, fetchApi, id)
     
+        } else {
+            let id = activeItem.id
+            finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, fetchApi, id)
+    
+        }    
     }, [])
 
     useEffect(() => {
@@ -208,7 +214,10 @@ const Collection = ({ type, genreSeeds, location }) => {
         <div className={ `page page--collection collection ${ overlay ? 'page--blurred' : ''}` }>
         {
             collection.id&&
-            <CollectionHeader data={{collection, tracks, artists,}}/>
+            <CollectionHeader
+            headerScrolled={ headerScrolled }
+            setHeaderScrolled={ setHeaderScrolled } 
+            data={{collection, tracks, artists,}}/>
         }
         {
             !loaded ?

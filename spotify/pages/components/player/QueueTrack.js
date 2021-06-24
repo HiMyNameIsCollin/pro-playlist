@@ -1,10 +1,11 @@
 import { useState, useEffect, useContext } from 'react'
 import { PlayerHookContext } from './Player'
+import { DbHookContext } from '../Dashboard'
 const QueueTrack = ({ track, trackSelected, setTrackSelected }) => {
 
     const [ selected, setSelected ] = useState( false )
     const { playNextQueue } = useContext( PlayerHookContext )
-
+    const { queue, setQIndex } = useContext( DbHookContext )
 
     const handleTrackSelect = () => {
         const thisTrack = trackSelected.find(( x ) => x.id === track.id)
@@ -26,8 +27,14 @@ const QueueTrack = ({ track, trackSelected, setTrackSelected }) => {
         }
     },[ trackSelected ])
 
+    const playTrack = (e) => {
+        e.stopPropagation()
+        const index = queue.findIndex( x => x.id === track.id )
+        setQIndex( index )
+    }
+
     return(
-        <div className={ `queueTrack`}>
+        <div onClick={ playTrack } className={ `queueTrack`}>
             <span onClick={ handleTrackSelect } className='queueTrack__radio'>
                 <input type='radio' />
                 <span className={` queueTrack__radio__control ${ selected && 'queueTrack__radio__control--selected'}`}></span>

@@ -31,7 +31,7 @@ const TracksContainer = ({ type, data , setOverlay }) => {
     }
 
     return(
-        <section className={ `${type}__trackContainer trackContainer ${mounted && 'trackContainer--active'}`}>
+        <section className={ `trackContainer trackContainer--${type} ${mounted && 'trackContainer--active'}`}>
         {
             type === 'artist' &&
             <h4> Popular </h4> 

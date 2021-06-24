@@ -290,6 +290,9 @@ i {
   opacity: 0;
   transition: opacity 0.75s ease-in-out;
 }
+.trackContainer--artist h4 {
+  padding: 0.5rem 1rem;
+}
 .trackContainer--active {
   opacity: 1;
 }
@@ -353,10 +356,6 @@ i {
   font-size: 0.8rem;
 }
 
-.artist__trackContainer h4 {
-  padding: 0.5rem 1rem;
-}
-
 .track {
   align-items: center;
   color: #FFFFFF;
@@ -412,6 +411,9 @@ i {
 }
 .track--active h5 {
   color: #1ed764;
+}
+.track--album h5, .track--album span {
+  padding: 0;
 }
 .track--playerCollapsed {
   padding: 0;
@@ -643,6 +645,7 @@ i {
   color: #FFFFFF;
   position: sticky;
   padding: 1rem;
+  font-size: 0.8rem;
 }
 .PlQueueView .controls {
   background: #191414;
@@ -660,11 +663,13 @@ i {
   align-items: center;
   background: #191414;
   display: flex;
-  font-size: 0.8rem;
   justify-content: space-between;
   left: 0;
   padding: 1rem;
   position: sticky;
+}
+.queueContainer__title h3 {
+  font-size: 0.8rem;
 }
 .queueContainer__title span {
   border: solid #FFFFFF 1px;
@@ -1236,7 +1241,6 @@ i {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  min-height: 12rem;
   padding: 0 1rem;
   width: auto;
 }
@@ -1294,6 +1298,7 @@ i {
 }
 .slider__carousel {
   display: flex;
+  min-height: 12rem;
   overflow-y: hidden;
   overflow-x: auto;
   position: relative;
@@ -1303,7 +1308,8 @@ i {
 .browseContainer {
   justify-content: space-between;
   display: grid;
-  grid-template-columns: repeat(auto-fill, min(calc(50vw - 2rem), 10rem));
+  grid-template-columns: repeat(auto-fill, min(calc(50vw - 1.5rem), 12rem));
+  grid-gap: 1rem;
   padding: 1rem;
 }
 .browseContainer__title {
@@ -1314,12 +1320,12 @@ i {
 
 .card {
   color: #FFFFFF;
-  min-height: 12rem;
+  height: 100%;
   max-height: 12rem;
   position: relative;
 }
 .card__title {
-  padding: 0.5rem 0;
+  margin-top: 0.5rem;
 }
 .card__imgContainer {
   display: flex;
@@ -1333,20 +1339,31 @@ i {
   width: 100%;
   object-fit: fill;
 }
+.card__meta {
+  font-size: 0.8rem;
+}
 .card--artist img {
   border-radius: 50%;
 }
-.card--slider {
+.card--HomeSlider {
   flex: 0 0 auto;
   margin: 0 0.5rem;
   width: min(60vw, 10rem);
 }
-.card--slider:nth-of-type(1) {
+.card--HomeSlider:nth-of-type(1) {
   margin-left: 1rem;
 }
-.card--slider:nth-last-of-type(1) {
+.card--HomeSlider:nth-last-of-type(1) {
   margin-right: 1rem;
 }
+.card--BcSearch, .card--BcShowcase {
+  min-height: auto;
+  max-height: 100%;
+}
+.card--BcSearch .card__imgContainer, .card--BcShowcase .card__imgContainer {
+  max-height: 10rem;
+}
+
 .loading {
   align-items: center;
   background: #191414;

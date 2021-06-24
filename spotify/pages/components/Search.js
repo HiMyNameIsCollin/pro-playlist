@@ -60,15 +60,15 @@ const reducer = ( state, action ) => {
 
 export const SearchHookContext = createContext()
 
-const Search = ({ my_top_artists, available_genre_seeds  }) => {
+const Search = ({ headerScrolled, setHeaderScrolled, my_top_artists, available_genre_seeds  }) => {
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
     const [ state, dispatch ] = useReducer( reducer , initialState )
     const [ searchState, setSearchState ] = useState('default')
     const [ currentPage, setCurrentPage ] = useState('default')
-
-    const { activeSearchItem, setActiveSearchItem } = useContext( DbHookContext )
+    
+    const { scrollPosition, activeSearchItem, setActiveSearchItem } = useContext( DbHookContext )
 
     const searchHookState ={
         searchState, 
@@ -86,11 +86,6 @@ const Search = ({ my_top_artists, available_genre_seeds  }) => {
         if( apiPayload ) dispatch(apiPayload)
     }, [ apiPayload ])
 
-    useEffect(() => {
-        if( activeSearchItem ){
-            console.log(activeSearchItem)
-        }
-    },[ activeSearchItem ])
 
     // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
@@ -135,19 +130,24 @@ const Search = ({ my_top_artists, available_genre_seeds  }) => {
     useEffect(() => {
         // setActiveHeader( null )
         // setHiddenUI(true)
-        if( activeSearchItem.type ){
+        if( activeSearchItem ){
             switch( activeSearchItem.type ){
                 case 'genre':
-                    setCurrentPage('showCase')
+                    setCurrentPage( 'showCase' )
                     break
                 case 'category':
-                    setCurrentPage('showcase')
+                    setCurrentPage( 'showcase' )
+                    break
+                case 'playlist':
+                    setCurrentPage( 'playlist' )
                     break
                 default:
-                    console.log(activeItem)
+                    setCurrentPage( 'default')
                     break
             }
-        } 
+        } else {
+            setCurrentPage( 'default' )
+        }
     },[ activeSearchItem ])
 
     const pageTransition = useTransition(currentPage, {
@@ -160,6 +160,8 @@ const Search = ({ my_top_artists, available_genre_seeds  }) => {
 
     return(
         <SearchHookContext.Provider value={ searchHookState }>
+
+        
         
         {
             pageTransition((props, item) => (
@@ -168,15 +170,38 @@ const Search = ({ my_top_artists, available_genre_seeds  }) => {
                     item === 'default' ?
                     <div className='page page--search'>
                         <BrowseContainer 
-                        type='genres'
+                        type='BcSearch'
                         message='My top genres' 
                         data={ state.my_top_genres.slice(0, 4) }/>
                         <BrowseContainer
                         message='Browse all' 
+                        type='BcSearch'
                         data={ state.all_categories }/> 
-                    </div> 
-                    :
-                    <Showcase data={ activeSearchItem } />
+                    </div> :
+                    item === 'showcase' ?
+                        <Showcase data={ activeSearchItem } /> :
+                    item === 'playlist' ?
+                        <Collection 
+                        type='playlist'
+                        available_genre_seeds={ available_genre_seeds }
+                        activeItem={ activeSearchItem }
+                        headerScrolled={ headerScrolled }
+                        setHeaderScrolled={ setHeaderScrolled }/> :
+                    item === 'album' ?
+                        <Collection 
+                        type='playlist'
+                        available_genre_seeds={ available_genre_seeds }
+                        activeItem={ activeSearchItem }
+                        headerScrolled={ headerScrolled }
+                        setHeaderScrolled={ setHeaderScrolled }/> :
+                    item === 'artist' ?
+                        <Artist 
+                        type='playlist'
+                        available_genre_seeds={ available_genre_seeds }
+                        activeItem={ activeSearchItem }
+                        headerScrolled={ headerScrolled }
+                        setHeaderScrolled={ setHeaderScrolled }/> :
+                    null
                     }
                         
                 </animated.div>

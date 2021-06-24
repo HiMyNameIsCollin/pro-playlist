@@ -3,12 +3,12 @@ import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './Search'
 
-const Card = ({ item, cardType }) => {
+const Card = ({ type, item }) => {
 
     const { setActiveItem, activeSearchItem, setActiveSearchItem } = useContext( DbHookContext )
     const setCurrentSelection = (e) => {
         e.stopPropagation()
-        if(cardType === 'browseContainer'){
+        if( type === 'BcSearch' || type === 'BcShowcase' ){
             setActiveSearchItem( item )
         }else {
             setActiveItem( item )
@@ -19,7 +19,7 @@ const Card = ({ item, cardType }) => {
     return(
         <div 
         onClick={ setCurrentSelection } 
-        className={`card card--${cardType} ${item.type==='artist' && 'card--artist'}` }>
+        className={`card card--${type} ${item.type==='artist' && 'card--artist'}` }>
             <div className='card__imgContainer'>
                 <img 
                 loading='lazy'
@@ -36,7 +36,7 @@ const Card = ({ item, cardType }) => {
             </div>
             {
                 item.name &&
-                <h5 className={`card__title ${cardType}__card__title `}>
+                <h5 className={`card__title `}>
                   { item.name }               
                 </h5>
             }

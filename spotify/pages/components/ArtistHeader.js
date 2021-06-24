@@ -6,11 +6,11 @@ import { handleColorThief } from '../../utils/handleColorThief'
 import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
 
-const ArtistHeader = ({ data  }) => {
+const ArtistHeader = ({ data, headerScrolled, setHeaderScrolled,  }) => {
 
     const { collection, artist, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
-    const { activeHeader, setActiveHeader, scrollPosition, headerScrolled, setHeaderScrolled } = useContext( DbHookContext )
+    const { activeHeader, setActiveHeader, scrollPosition } = useContext( DbHookContext )
     
     useLayoutEffect(() => {
         const thisHeader = document.querySelector('.artistHeader')

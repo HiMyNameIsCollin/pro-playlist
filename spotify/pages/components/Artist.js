@@ -9,9 +9,9 @@ import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 
-const Artist = ({ genreSeeds, location }) => {
+const Artist = ({ activeItem, setActiveItem, headerScrolled, setHeaderScrolled, genreSeeds }) => {
 
-    const { activeItem, setActiveItem, overlay, setOverlay, activeHeader, setActiveHeader, headerMounted } = useContext( DbHookContext )
+    const {  overlay, setOverlay, activeHeader, setActiveHeader, headerMounted, location } = useContext( DbHookContext )
 
     const initialState = {
         artist: {},
@@ -129,7 +129,11 @@ const Artist = ({ genreSeeds, location }) => {
         <div className={ `page page--artist artist ${ overlay ? 'page--blurred' : ''}` }>
             {
                 artist.id &&
-                <ArtistHeader data={{ artist, }} setLoaded={ setLoaded } />
+                <ArtistHeader 
+                headerScrolled={ headerScrolled }
+                setHeaderScrolled={ setHeaderScrolled }
+                data={{ artist, }} 
+                setLoaded={ setLoaded } />
             }
             {
                 !loaded ?

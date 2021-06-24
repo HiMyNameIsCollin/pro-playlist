@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
-import { Switch, Route, useLocation, useHistory, NavLink } from 'react-router-dom'
+import { Switch, Route, useLocation, useHistory } from 'react-router-dom'
 import { capital } from '../../utils/capital'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { calcScroll } from '../../utils/calcScroll'
@@ -156,7 +156,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state, dispatch ] = useReducer(reducer, initialState)
     const [ scrollPosition, setScrollPosition ] = useState()
-    const [ headerScrolled, setHeaderScrolled] = useState(null)
+    const [ dbHeaderScrolled, setDbHeaderScrolled] = useState(0)
+    const [ spHeaderScrolled, setSpHeaderScrolled ] = useState(0)
     const [ overlay, setOverlay ] = useState()
     const [ hiddenUI, setHiddenUI ] = useState(true)
 // activeHeader contains the data from the active page required for certain headers to function
@@ -184,42 +185,46 @@ const Dashboard = ({ setAuth, audioRef }) => {
         activeHeader, 
         setActiveHeader, 
         scrollPosition, 
-        headerScrolled, 
-        setHeaderScrolled,
+        dbHeaderScrolled,
+        setDbHeaderScrolled,
         queue,
         setQueue,
         qIndex,
         setQIndex,
         prevTracksRef,
         playNextQueue,
-        setPlayNextQueue
+        setPlayNextQueue,
+        location
      }
 
 // Set last played track on account as active track
     useEffect(() => {
-        let firstTracks = null
-        // if( player_info.item ){
-        //     firstTrack = player_info.item
-        //     firstTrack['context'] = {
-        //         href: player_info.context.href,
-        //         type: player_info.context.type
-        //     }
-        // }
-        if( recently_played[0] ){
-            firstTracks = [ ...recently_played ]
-            firstTracks = firstTracks.map(( t ) => {
-                t.track['context'] = {
-                    name: 'Recently played',
-                    type: t.context ? t.context.type : null,
-                    href: t.context ? t.context.href : null
-                }  
-                return t.track
-            })
-        } 
-        if (firstTracks) {
-            setQIndex(0)
-            setQueue( queue => queue = [ ...firstTracks ])
+        if( !queue[0] ){
+            let firstTracks = null
+            // if( player_info.item ){
+            //     firstTrack = player_info.item
+            //     firstTrack['context'] = {
+            //         href: player_info.context.href,
+            //         type: player_info.context.type
+            //     }
+            // }
+            if( recently_played[0] ){
+                firstTracks = [ ...recently_played ]
+                firstTracks = firstTracks.map(( t ) => {
+                    t.track['context'] = {
+                        name: 'Recently played',
+                        type: t.context ? t.context.type : null,
+                        href: t.context ? t.context.href : null
+                    }  
+                    return t.track
+                })
+            } 
+            if (firstTracks) {
+                setQIndex(0)
+                setQueue( queue => queue = [ ...firstTracks ])
+            }
         }
+        
 }, [ recently_played, player_info  ])
 
 
@@ -290,12 +295,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
                     if(location.pathname !== `/playlist/${activeItem.id}`){
                         history.push(`/playlist/${activeItem.id}`)
                     }
-                    
-                    break
-                case 'genre':
-                    if(location.pathname !== `/search/${activeItem.id}`){
-                        history.push(`/search/${activeItem.id}`)
-                    }
                     break
                 default:
                     console.log( activeItem )
@@ -362,24 +361,34 @@ to remain fixed to the top of the viewport */}
                         hiddenUI={ hiddenUI } /> 
                     </Route> 
                     <Route path='/search'>
-                        <SearchHeader hiddenUI={ hiddenUI }/>
+                        {
+                            activeSearchItem.type &&
+                            activeSearchItem.type !== 'playlist' &&
+                            activeSearchItem.type !== 'album' &&
+                            activeSearchItem.type !== 'artist' ?
+                            <SearchHeader hiddenUI={ hiddenUI }/>  :
+                            activeSearchItem.type &&
+                            <FixedHeader activeHeader={{ data: activeSearchItem.name }}  headerScrolled={ spHeaderScrolled }/>
+
+                        }
+                        
                     </Route> 
                     <Route path='/artist/:id'>
                         {
                             activeHeader &&
-                            <FixedHeader activeHeader={ activeHeader }  headerScrolled={ headerScrolled }/>
+                            <FixedHeader activeHeader={ activeHeader }  headerScrolled={ dbHeaderScrolled }/>
                         }
                     </Route> 
                     <Route path='/album/:id'>
                         {
                             activeHeader &&
-                            <FixedHeader activeHeader={ activeHeader } headerScrolled={ headerScrolled } />
+                            <FixedHeader activeHeader={ activeHeader } headerScrolled={ dbHeaderScrolled } />
                         }
                     </Route>
                     <Route path='/playlist/:id'>
                         {
                             activeHeader &&
-                            <FixedHeader activeHeader={ activeHeader }  headerScrolled={ headerScrolled }/>
+                            <FixedHeader activeHeader={ activeHeader }  headerScrolled={ dbHeaderScrolled }/>
                         }
                     </Route> 
                 </Switch>
@@ -394,31 +403,40 @@ to remain fixed to the top of the viewport */}
                         </Route> 
                         <Route path='/search'>
                             <Search
-                            scrollPosition={ scrollPosition } 
                             my_top_artists={ state.my_top_artists } 
                             available_genre_seeds={ state.available_genre_seeds }
-                            apiIsPending={ apiIsPending }/>
+                            headerScrolled={ spHeaderScrolled }
+                            setHeaderScrolled={ setSpHeaderScrolled }/>
                         </Route> 
                         <Route path='/manage'>
                             <Manage />
                         </Route> 
                         <Route path='/artist/:id'>
                             <Artist 
+                            activeItem={ activeItem }
+                            setActiveItem={ setActiveItem }
+                            headerScrolled={ dbHeaderScrolled }
+                            setHeaderScrolled={ setDbHeaderScrolled }
                             genreSeeds={ state.available_genre_seeds}
                             location={ location }/>
                         </Route> 
                         <Route path='/album/:id'>
                             <Collection
+                            activeItem={ activeItem }
+                            setActiveItem={ setActiveItem }
+                            headerScrolled={ dbHeaderScrolled }
+                            setHeaderScrolled={ setDbHeaderScrolled }
                             type='album'
-                            genreSeeds={ state.available_genre_seeds}
-                            location={ location }
-                             />
+                            genreSeeds={ state.available_genre_seeds } />
                         </Route>
                         <Route path='/playlist/:id'>
                             <Collection
+                            activeItem={ activeItem }
+                            setActiveItem={ setActiveItem }
+                            headerScrolled={ dbHeaderScrolled }
+                            setHeaderScrolled={ setDbHeaderScrolled }
                             type='playlist'
-                            genreSeeds={ state.available_genre_seeds}
-                            location={ location } />
+                            genreSeeds={ state.available_genre_seeds } />
                         </Route> 
                         
                         
@@ -428,7 +446,7 @@ to remain fixed to the top of the viewport */}
                 }
             
                 <Player hiddenUI={ hiddenUI }/>
-                <Nav hiddenUI={ hiddenUI } NavLink={ NavLink } />
+                <Nav hiddenUI={ hiddenUI }/>
             </section>  
         </DbHookContext.Provider>  
     )
