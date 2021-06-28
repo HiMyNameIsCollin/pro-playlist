@@ -6,21 +6,23 @@ import { whichPicture } from '../../utils/whichPicture'
 import { handleColorThief } from '../../utils/handleColorThief'
 import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
+import { SearchHookContext } from './Search'
 
-const CollectionHeader = ({ data , headerScrolled , setHeaderScrolled }) => {
+const CollectionHeader = ({ data, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader }) => {
     const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
+    const [ backgroundImage, setBackgroundImage ] = useState(null)
 
-    const { setOverlay, setActiveItem, scrollPosition, setActiveHeader } = useContext( DbHookContext )
+    const { setOverlay, scrollPosition, } = useContext( DbHookContext )
+
+
     useLayoutEffect(() => {
         const thisHeader = document.querySelector('.collectionHeader')
         document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
         setElementHeight(thisHeader.offsetHeight)
         const img = whichPicture(collection.images, 'lrg')
-        document.documentElement.style.setProperty('--headerBackground', `url(${img})`)
-        return () => {
-            document.documentElement.style.setProperty('--headerBackground', `initial`)
-        }
+        setBackgroundImage( img )
+        return () => setBackgroundImage(null)
         
     }, [])
 
@@ -51,7 +53,8 @@ const CollectionHeader = ({ data , headerScrolled , setHeaderScrolled }) => {
     return(
             <header 
             className={`collectionHeader`}>
-                <div className='headerBacking'></div>
+                <div className='headerBacking' style={{backgroundImage: `url(${backgroundImage})`}}></div>
+                
                 <animated.div
                     style={{
                         transform: scaleDown.to( scaleDown => `scale(${scaleDown}) `),

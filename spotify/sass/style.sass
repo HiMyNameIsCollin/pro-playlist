@@ -134,11 +134,13 @@ i
     display: flex
     min-height: 100vh
     flex-direction: column
+    overflow: auto
     width: 100%
-
     &::before
         background: $darkGrey
         opacity: 0.9
+    &--blurred
+        filter: blur(5px)
 
 
 .homeHeader, .nav, .tab 
@@ -218,6 +220,7 @@ i
 .page
     min-height: 100vh
     min-width: 100vw
+    z-index: 2 !important
     &--home
         background: $darkGrey
         padding: 8rem 0 8rem 0 
@@ -233,8 +236,7 @@ i
         background: $darkGrey
         padding: 10rem 0 
 
-    &--blurred
-        filter: blur(5px)
+    
 
 
 .collection
@@ -650,7 +652,11 @@ i
         margin-left: auto
         padding: .75rem 1rem
     
-    
+.backButton
+    left: 1rem
+    position: absolute
+    top: 1rem
+
 
 .artistHeader
     position: relative
@@ -737,16 +743,12 @@ i
             padding: 0 .5rem
     &__artists
         @include artistDisplay
-        @media only screen and (min-width: 920px)
-        &::after
-            background-size: cover
     &--active
         opacity: 1
         
 
 .headerBacking
     @include pseudo
-    background-image: var(--headerBackground)
     background-size: cover
     background-position: 50% 50%
     height: 100%
@@ -861,18 +863,22 @@ i
         width: 100%
         li
             width: 33.3%
+        
     &__item
-        align-items: center
-        border-right: 2px solid $lightGrey
         display: flex
-        flex-direction: column
-        font-size: .7rem
         justify-content: center
-        i
-            font-size: 1.5rem
-            margin: .25rem 0
-        &--active
-            pointer-events: none
+        button
+            align-items: center
+            display: flex
+            flex-direction: column
+            font-size: .7rem
+            justify-content: center
+            width: 100%
+            i
+
+                font-size: 1.5rem
+                margin: .25rem 0
+        
         &:nth-last-of-type(1)
             border: none
 
@@ -973,6 +979,7 @@ i
             max-height: 10rem
 
 .loading
+
     align-items: center
     background: $black
     display: flex

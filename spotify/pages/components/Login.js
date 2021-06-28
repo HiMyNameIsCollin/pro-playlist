@@ -63,7 +63,7 @@ const Login = ({ setTokenBody }) => {
     }
   
     const clearUrl = () => {
-      router.push('/')
+      router.push('/login')
     }
     
     const getCode = () => {

@@ -1,8 +1,10 @@
 import Login from './Login'
 import Dashboard from './Dashboard'
-import {useState, useEffect, useRef} from 'react'
+import {useState, useEffect, useRef } from 'react'
 import { checkToken, refreshToken } from '../../utils/tokenTools'
 import useFetchToken from '../hooks/useFetchToken'
+
+
 
 const Container = () => {
     const host = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://spotify-himynameiscollin.vercel.app/'
@@ -54,11 +56,17 @@ const Container = () => {
     return(
     <main className='container'>
 
-      {
-        auth ?
-        <Dashboard setAuth={ setAuth } audioRef={ audioRef } /> :
+
+
+        { auth ? 
+        <Dashboard 
+        audioRef={ audioRef } 
+        setAuth={ setAuth }/>  : 
         <Login setTokenBody={ setTokenBody } />
-      }
+        }
+       
+
+    
     </main>    
     )
 }

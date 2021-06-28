@@ -2,23 +2,23 @@
 import { useState, useEffect } from 'react'
 import { useSpring, animated } from 'react-spring'
 
-const SearchHeader = ({ hiddenUI }) => {
+const SearchHeader = ({ hiddenUI, headerHeightRef }) => {
 
-    const [ showMe, setShowMe ] = useState(false)
+    const [ mounted, setMounted ] = useState (false)
 
+    
     useEffect(() => {
-        if(hiddenUI){
-            setShowMe(false)
-        } else {
-            setShowMe(true)
-        }
-    },[ hiddenUI ])
+        setMounted( true )
+    },[])
+
+
 
     const hideHeader = useSpring({
-        top: showMe ? '0rem' : '-5rem'
+        top: !hiddenUI ? '0rem' : '-5rem',
+        transform: mounted ? 'translateY( 0% )' : 'translateY( -100% )'
     })
     return(
-        <animated.header style={hideHeader} className='searchHeader'>
+        <animated.header ref={ headerHeightRef } style={hideHeader} className='searchHeader'>
             <h1 className='searchHeader__title'>
                 Search
             </h1>

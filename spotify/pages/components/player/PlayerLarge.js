@@ -70,8 +70,6 @@ const PlayerLarge = ({ controls }) => {
         }
     }, [ playerSize ])
     
-
-
     return(
         <animated.div
         style={ largePlayerAnimation }

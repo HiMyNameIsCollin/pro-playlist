@@ -5,14 +5,15 @@ import { SearchHookContext } from './Search'
 
 const Card = ({ type, item }) => {
 
-    const { setActiveItem, activeSearchItem, setActiveSearchItem } = useContext( DbHookContext )
+    const { setActiveHomeItem, setHiddenUI } = useContext( DbHookContext )
+    const searchContext = useContext( SearchHookContext )
+    const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
+    const setActiveItem = setActiveSearchItem ? setActiveSearchItem : setActiveHomeItem
+
+
     const setCurrentSelection = (e) => {
         e.stopPropagation()
-        if( type === 'BcSearch' || type === 'BcShowcase' ){
-            setActiveSearchItem( item )
-        }else {
-            setActiveItem( item )
-        }
+        setActiveItem( item ) 
     }
     
 

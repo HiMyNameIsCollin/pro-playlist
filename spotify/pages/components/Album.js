@@ -2,13 +2,21 @@ import { useContext } from 'react'
 import { whichPicture } from "../../utils/whichPicture"
 import { capital } from '../../utils/capital'
 import { DbHookContext } from './Dashboard'
-
+import { SearchHookContext } from './Search'
 const Album = ({ item }) => {
 
-    const { setActiveItem } = useContext( DbHookContext )
+    const { setActiveHomeItem, setHiddenUI, location } = useContext( DbHookContext )
+    const searchContext = useContext( SearchHookContext )
+    const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
+    const setActiveItem = setActiveSearchItem ? setActiveSearchItem : setActiveHomeItem
+
+
+    const handleActiveItem = () => {
+        setActiveItem( item )
+    }
 
     return(
-        <div className='album' onClick={() => setActiveItem(item)}>
+        <div className='album' onClick={ handleActiveItem }>
             <div className='album__imgContainer'>
                 <img
                 height='64px'

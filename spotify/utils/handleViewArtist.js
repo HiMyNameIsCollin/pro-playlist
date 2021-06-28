@@ -4,7 +4,7 @@ export const handleViewArtist = ( e, artistArray, overlayFunc, activeItemFunc ) 
 
     if( artistArray.length === 1 ){
         activeItemFunc( artistArray[0] )
-        overlayFunc( null )
+        overlayFunc( {} )
 
     } else {
         const popupData = {

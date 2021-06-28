@@ -1,13 +1,15 @@
-import { useState, useEffect, useReducer, useRef, useLayoutEffect, useContext, createContext } from 'react'
+import { useState, useEffect, useReducer, useRef, useContext, createContext } from 'react'
 import { capital } from '../../utils/capital'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { useTransition, animated } from 'react-spring'
 import  useApiCall  from '../hooks/useApiCall'
 
+import SearchHeader from './SearchHeader'
 import FixedHeader from './FixedHeader'
 import Artist from './Artist'
 import Collection from './Collection'
 import Showcase from './Showcase'
+import Loading from './Loading'
 
 import BrowseContainer from './BrowseContainer'
 import { DbHookContext } from './Dashboard'
@@ -60,27 +62,40 @@ const reducer = ( state, action ) => {
 
 export const SearchHookContext = createContext()
 
-const Search = ({ headerScrolled, setHeaderScrolled, my_top_artists, available_genre_seeds  }) => {
+const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: pageHistoryRef  }) => {
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
     const [ state, dispatch ] = useReducer( reducer , initialState )
+    const [ activeSearchItem, setActiveSearchItem ] = useState( pageHistoryRef.current.length > 0 ? pageHistoryRef.current[ pageHistoryRef.current.length - 1].activeSearchItem : {} )
+    const [ activeHeader, setActiveHeader ] = useState( {} )
+    const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ searchState, setSearchState ] = useState('default')
     const [ currentPage, setCurrentPage ] = useState('default')
+    const [ loaded, setLoaded ] = useState( false )
     
-    const { scrollPosition, activeSearchItem, setActiveSearchItem } = useContext( DbHookContext )
+    const { overlay, scrollPosition } = useContext( DbHookContext )
 
     const searchHookState ={
         searchState, 
         setSearchState,
         currentPage,
-        setCurrentPage
+        setCurrentPage,
+        activeSearchItem,
+        setActiveSearchItem,
+
     }
 
     useEffect(() => {
         finalizeRoute( 'get', routes.all_categories, fetchApi, null, 'limit=10' ) 
-        
     },[])
+
+    useEffect(() => {
+        if(currentPage === 'default' || currentPage === 'showcase') {
+            // setHiddenUI( false )
+        }
+    },[ currentPage ])
+    
 
     useEffect(() => {
         if( apiPayload ) dispatch(apiPayload)
@@ -131,15 +146,22 @@ const Search = ({ headerScrolled, setHeaderScrolled, my_top_artists, available_g
         // setActiveHeader( null )
         // setHiddenUI(true)
         if( activeSearchItem ){
+            
             switch( activeSearchItem.type ){
                 case 'genre':
-                    setCurrentPage( 'showCase' )
+                    setCurrentPage( 'showcase' )
                     break
                 case 'category':
                     setCurrentPage( 'showcase' )
                     break
                 case 'playlist':
                     setCurrentPage( 'playlist' )
+                    break
+                case 'album':
+                    setCurrentPage( 'album' )
+                    break
+                case 'artist':
+                    setCurrentPage( 'artist' )
                     break
                 default:
                     setCurrentPage( 'default')
@@ -150,25 +172,62 @@ const Search = ({ headerScrolled, setHeaderScrolled, my_top_artists, available_g
         }
     },[ activeSearchItem ])
 
+    useEffect(() => {
+        if(currentPage === 'default'){
+            pageHistoryRef.current = []
+        } else {
+            pageHistoryRef.current.push({ currentPage, activeSearchItem})
+
+        }
+    }, [ currentPage ])
+
     const pageTransition = useTransition(currentPage, {
         initial: { transform: 'translateX(100%)', },
-        from: { transform: 'translateX(100%)', position: 'absolute', width: '100%'},
+        from: { transform: 'translateX(100%)', position: 'absolute', width: '100%' , zIndex: '2' },
+        update: {  position: 'relative'},
+        enter: { transform: 'translateX(0%)'},
+        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: '1'},
+    })
+
+    const headerTransition = useTransition(currentPage, {
+        from: { transform: 'translateX(100%)', position: 'fixed', width: '100%' , zIndex: 3 },
+        update: {  position: 'fixed'},
+        enter: { transform: 'translateX(0%)'},
+        leave: { transform: 'translateX(-100%)', position: 'fixed'},
+    })
+
+    const mainTransition = useTransition(currentPage, {
+        from: { transform: 'translateX(0%)', position: 'absolute', width: '100%' , zIndex: '2'},
         update: {  position: 'relative'},
         enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-20%)', position: 'absolute'},
+        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: '1'},
     })
 
     return(
         <SearchHookContext.Provider value={ searchHookState }>
 
-        
-        
         {
-            pageTransition((props, item) => (
+            headerTransition(( props, item )=> (
                 <animated.div style={ props }>
-                    {
-                    item === 'default' ?
-                    <div className='page page--search'>
+                {
+                item === 'default' || item === 'showcase' ?
+                <SearchHeader /> :
+                item === 'artist' ||
+                item === 'playlist' ||
+                item === 'album' ?
+                <FixedHeader activeHeader={ activeHeader } headerScrolled={ headerScrolled }/>:
+                null
+                }
+                </animated.div>
+            ))
+        }
+        {
+            mainTransition((props, item) => (
+                
+                    item === 'default' &&
+                    <animated.div 
+                    style={props}
+                    className={ `page page--search ${ overlay.type && 'page--blurred' }` }>
                         <BrowseContainer 
                         type='BcSearch'
                         message='My top genres' 
@@ -177,31 +236,47 @@ const Search = ({ headerScrolled, setHeaderScrolled, my_top_artists, available_g
                         message='Browse all' 
                         type='BcSearch'
                         data={ state.all_categories }/> 
-                    </div> :
-                    item === 'showcase' ?
-                        <Showcase data={ activeSearchItem } /> :
-                    item === 'playlist' ?
+                    </animated.div> 
+            
+            ))
+        }
+        {
+            pageTransition((props, item) => (
+                <animated.div style={ props }>
+                    {
+                    item === 'showcase' &&
+                        <Showcase data={ activeSearchItem } /> 
+                    }
+                    {
+                    item === 'playlist' &&
                         <Collection 
-                        type='playlist'
-                        available_genre_seeds={ available_genre_seeds }
-                        activeItem={ activeSearchItem }
+                        activeHeader={ activeHeader }
+                        setActiveHeader={ setActiveHeader }
                         headerScrolled={ headerScrolled }
-                        setHeaderScrolled={ setHeaderScrolled }/> :
-                    item === 'album' ?
+                        setHeaderScrolled={ setHeaderScrolled}
+                        type='playlist'
+                        genreSeeds={ state.available_genre_seeds }/>
+                    }
+                    {
+                    item === 'album' &&
                         <Collection 
-                        type='playlist'
-                        available_genre_seeds={ available_genre_seeds }
-                        activeItem={ activeSearchItem }
+                        activeHeader={ activeHeader }
+                        setActiveHeader={ setActiveHeader }
                         headerScrolled={ headerScrolled }
-                        setHeaderScrolled={ setHeaderScrolled }/> :
-                    item === 'artist' ?
+                        setHeaderScrolled={ setHeaderScrolled}
+                        type='album'
+                        genreSeeds={ state.available_genre_seeds }/> 
+                    }
+                    {
+                    item === 'artist' &&
                         <Artist 
-                        type='playlist'
-                        available_genre_seeds={ available_genre_seeds }
-                        activeItem={ activeSearchItem }
+                        type='artist'
+                        activeHeader={ activeHeader }
+                        setActiveHeader={ setActiveHeader }
                         headerScrolled={ headerScrolled }
-                        setHeaderScrolled={ setHeaderScrolled }/> :
-                    null
+                        setHeaderScrolled={ setHeaderScrolled}
+                        genreSeeds={ state.available_genre_seeds}
+                        location={ location }/> 
                     }
                         
                 </animated.div>

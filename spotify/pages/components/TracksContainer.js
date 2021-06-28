@@ -1,7 +1,15 @@
 import Track from './Track'
 import { whichPicture } from '../../utils/whichPicture'
-import { useState , useEffect } from 'react'
+import { useState , useEffect, useContext } from 'react'
+import { DbHookContext } from './Dashboard'
+import { SearchHookContext } from './Search'
+
 const TracksContainer = ({ type, data , setOverlay }) => {
+
+    const { activeHomeItem, setActiveHomeItem } = useContext( DbHookContext )
+    const searchContext = useContext( SearchHookContext )
+    const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
+    const setActiveItem = setActiveSearchItem ? setActiveSearchItem : setActiveHomeItem 
 
     const { collection, tracks } = { ...data }
     const [ mounted, setMounted ] = useState(false)
@@ -27,7 +35,7 @@ const TracksContainer = ({ type, data , setOverlay }) => {
             selectedTrack,
         }
         
-        setOverlay( {type: 'trackMenu', data: popupData,  func: null} )
+        setOverlay( {type: 'trackMenu', data: popupData,  func: setActiveItem} )
     }
 
     return(

@@ -6,12 +6,16 @@ import ArtistHeader from './ArtistHeader'
 import Slider from './Slider'
 import useApiCall from '../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
-import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
+import { SearchHookContext } from './Search'
+const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, setActiveHeader }) => {
 
-const Artist = ({ activeItem, setActiveItem, headerScrolled, setHeaderScrolled, genreSeeds }) => {
 
-    const {  overlay, setOverlay, activeHeader, setActiveHeader, headerMounted, location } = useContext( DbHookContext )
+    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem, location } = useContext( DbHookContext )
+    const searchContext = useContext( SearchHookContext )
+    const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
+    const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
+
 
     const initialState = {
         artist: {},
@@ -94,7 +98,7 @@ const Artist = ({ activeItem, setActiveItem, headerScrolled, setHeaderScrolled, 
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
-    const [ loaded, setLoaded ] = useState(false)
+
     const { artist , top_tracks, all_albums, related_artists } = { ...state }
 
     useEffect(() => {
@@ -120,33 +124,27 @@ const Artist = ({ activeItem, setActiveItem, headerScrolled, setHeaderScrolled, 
         }
     }, [ artist ])
 
-    useEffect(() => {
-        if( activeHeader ) setTimeout(() => setLoaded( true ), 500)
-    }, [activeHeader])
-
 
     return(
-        <div className={ `page page--artist artist ${ overlay ? 'page--blurred' : ''}` }>
+        <div className={ `page page--artist artist ${ overlay.type && 'page--blurred' } ` }>
             {
                 artist.id &&
                 <ArtistHeader 
                 headerScrolled={ headerScrolled }
                 setHeaderScrolled={ setHeaderScrolled }
-                data={{ artist, }} 
-                setLoaded={ setLoaded } />
+                activeHeader={ activeHeader }
+                setActiveHeader={ setActiveHeader }
+                data={{ artist, }} />
             }
-            {
-                !loaded ?
-                <Loading />:
-                <>
-                    <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks, artist: artist} } setOverlay={ setOverlay }/>
-                    <AlbumContainer type='artist--page' albums={ all_albums } />
-                    <Slider 
-                    message='Fans also enjoy'
-                    items={ related_artists }
-                    setActiveItem={ setActiveItem } />
-                </>
-            }
+
+                
+                <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks, artist: artist} } setOverlay={ setOverlay }/>
+                <AlbumContainer type='artist--page' albums={ all_albums } />
+                <Slider 
+                message='Fans also enjoy'
+                items={ related_artists }
+                setActiveItem={ setActiveItem } />
+        
         </div>
     )
 }

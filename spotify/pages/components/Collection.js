@@ -10,9 +10,10 @@ import TracksContainer from './TracksContainer'
 import Slider from './Slider'
 import Loading from './Loading'
 import { DbHookContext } from './Dashboard'
+import { SearchHookContext } from './Search'
 
 
-const Collection = ({ type, activeItem, setActiveItem, genreSeeds, headerScrolled, setHeaderScrolled }) => {
+const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader, }) => {
     
 
     const initialState = {
@@ -96,12 +97,15 @@ const Collection = ({ type, activeItem, setActiveItem, genreSeeds, headerScrolle
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
-    const [ loaded, setLoaded ] = useState(false)
-    const {  overlay, setOverlay, activeHeader, location } = useContext( DbHookContext )
+    const {  overlay, setOverlay, location, activeHomeItem, setActiveHomeItem  } = useContext( DbHookContext )
+    const searchContext = useContext( SearchHookContext )
     const { collection, artists, tracks, recommendations } = {...state}
 
+    const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
+    const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
+
     useEffect(() => {
-        if( location.pathname !== '/search' ){
+        if( !searchContext ){
             let id
             id = activeItem && activeItem.id ? 
             activeItem.id :
@@ -196,34 +200,29 @@ const Collection = ({ type, activeItem, setActiveItem, genreSeeds, headerScrolle
         if( !activeItem && collection.id ) setActiveItem( collection )
     }, [collection])
 
-    useEffect(() => {
-        if( activeHeader ) {
-            setTimeout(() => setLoaded( true ), 500)
-        }
-    }, [ activeHeader ])
 
     useEffect(() => {
-        if( loaded && activeItem.selectedTrack ){
+        if( activeItem.selectedTrack ){
             const ele = document.querySelector(`[data-trackId='${activeItem.selectedTrack}']`)
-            const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
-            window.scroll(0, thisFar)
+            if(ele){
+                const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
+                window.scroll(0, thisFar)
+            }
         }
-    },[ loaded ])
+    },[ tracks ])
 
     return(
-        <div className={ `page page--collection collection ${ overlay ? 'page--blurred' : ''}` }>
+        <div className={ `page page--collection collection ${ overlay.type && 'page--blurred' }` }>
         {
             collection.id&&
+            <>
             <CollectionHeader
             headerScrolled={ headerScrolled }
-            setHeaderScrolled={ setHeaderScrolled } 
+            setHeaderScrolled={ setHeaderScrolled }
+            setActiveItem={ setActiveItem }
+            setActiveHeader={ setActiveHeader }
             data={{collection, tracks, artists,}}/>
-        }
-        {
-            !loaded ?
-            <Loading/> :
-            <>
-                <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
+            <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             {
             type === 'album' && 
                 <>

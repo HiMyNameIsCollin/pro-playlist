@@ -1,6 +1,5 @@
 import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
-import { Switch, Route, useLocation, useHistory } from 'react-router-dom'
-import { capital } from '../../utils/capital'
+import { Switch, Route, useLocation, useHistory, NavLink } from 'react-router-dom'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { calcScroll } from '../../utils/calcScroll'
 import { useTransition, animated } from 'react-spring'
@@ -11,8 +10,7 @@ import FixedHeader from './FixedHeader'
 import Home from './Home'
 import Manage from './Manage'
 import Search from './Search'
-import Artist from './Artist'
-import Collection from './Collection'
+
 import Overlay from './Overlay'
 import Nav from './Nav'
 import Player from './player/Player'
@@ -153,48 +151,45 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const API = 'https://api.spotify.com/'
     const location = useLocation()
     const history = useHistory()
-    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const [ state, dispatch ] = useReducer(reducer, initialState)
-    const [ scrollPosition, setScrollPosition ] = useState()
-    const [ dbHeaderScrolled, setDbHeaderScrolled] = useState(0)
-    const [ spHeaderScrolled, setSpHeaderScrolled ] = useState(0)
-    const [ overlay, setOverlay ] = useState()
-    const [ hiddenUI, setHiddenUI ] = useState(true)
+    const [ loaded, setLoaded ] = useState( false )
+    const [ scrollPosition, setScrollPosition ] = useState(0)
+    const [ overlay, setOverlay ] = useState({})
+    const [ hiddenUI, setHiddenUI ] = useState( false )
 // activeHeader contains the data from the active page required for certain headers to function
-    const [ activeHeader , setActiveHeader ] = useState(null)
-    const [ activeItem, setActiveItem ] = useState(null)
-    const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
-    const [ queue, setQueue ] = useState([])
+    const [ activeHomeItem, setActiveHomeItem ] = useState( {}) 
+    const [ queue, setQueue ] = useState( [] )
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
-    const prevTracksRef = useRef([])
-    const scrollRef = useRef(scrollPosition)
-    const locationRef = useRef([{ pathname: location.pathname, activeItem: activeItem, scrollPosition: scrollPosition }])
+    const [ dashboardState, setDashboardState ] = useState('home')
+    const searchPageHistoryRef = useRef( [] )
+
+    const scrollRef = useRef( scrollPosition )
+
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
 
 // Context set up //////////////////////////////////////////////////
 
     const dbHookState = {
         audioRef,
-        activeItem, 
-        setActiveItem, 
-        activeSearchItem,
-        setActiveSearchItem,
+        activeHomeItem, 
+        setActiveHomeItem, 
         overlay, 
-        setOverlay, 
-        activeHeader, 
-        setActiveHeader, 
+        setOverlay,  
         scrollPosition, 
-        dbHeaderScrolled,
-        setDbHeaderScrolled,
         queue,
         setQueue,
         qIndex,
         setQIndex,
-        prevTracksRef,
         playNextQueue,
         setPlayNextQueue,
-        location
+        location,
+        hiddenUI,
+        setHiddenUI,
+        loaded, 
+        setLoaded,
+        setAuth
      }
 
 // Set last played track on account as active track
@@ -261,77 +256,64 @@ const Dashboard = ({ setAuth, audioRef }) => {
         if(apiPayload) dispatch(apiPayload)
     },[apiPayload])
 //  END OF API CALLS 
-
-    const trackHistory = () => {
-        if(locationRef.current.length < 5 ){
-            locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem, scrollPosition : scrollPosition } )
-        } else {
-            locationRef.current.pop()
-            locationRef.current.unshift( {pathname: location.pathname, activeItem: activeItem , scrollPosition : scrollPosition} )
-        }
-    }
+ 
 
 // Navigation through the pages is handled here.
 // When a dynamic page is selected(Playlist, Album, Artist), it will be set as the activeItem state, which fires this.
 // Also clears the activeHeader state (Holds the data corresponding with the currently opened page.)
 
     useEffect(() => {
-        setActiveHeader( null )
-        setHiddenUI(true)
-        if(activeItem && activeItem.type){
-            switch(activeItem.type){
+        if(activeHomeItem.type){
+            switch(activeHomeItem.type){
                 case 'artist':
-                    if(location.pathname !== `/artist/${activeItem.id}`){
-                        history.push(`/artist/${activeItem.id}`)
+                    if(location.pathname !== `/artist/${activeHomeItem.id}`){
+                        history.push(`/artist/${activeHomeItem.id}`)
                     }
                     break
                 case 'album':
-                    if(location.pathname !== `/album/${activeItem.id}`){
-                        history.push(`/album/${activeItem.id}`)
+                    if(location.pathname !== `/album/${activeHomeItem.id}`){
+                        history.push(`/album/${activeHomeItem.id}`)
                     }
                     
                     break
                 case 'playlist':
-                    if(location.pathname !== `/playlist/${activeItem.id}`){
-                        history.push(`/playlist/${activeItem.id}`)
+                    if(location.pathname !== `/playlist/${activeHomeItem.id}`){
+                        history.push(`/playlist/${activeHomeItem.id}`)
                     }
                     break
                 default:
-                    console.log( activeItem )
-                    setActiveItem( null )
+                    
                     break
             }
         }
-    },[ activeItem ])
+    },[ activeHomeItem ])
 
 // Reset activeItem to null, otherwise you cant access same page twice in a row.
     useEffect(() => {
         handleScroll()
-        if(location.pathname === '/' || location.pathname === 'search' || location.pathname === '/manage'){
-            setActiveItem( null )
-        }
+        // setActiveHomeItem({})
     }, [ location.pathname ] )
 
 //  When overlay is open, makes the rest of the APP no clicky
     useLayoutEffect(() => {
         const body = document.querySelector('body')
-        if( overlay ) {
+        if( overlay.type ) {
             body.classList.add('noScroll')
         } else{
             body.classList.remove('noScroll')
         }
     }, [overlay])
 
-// HANDLE THE POSITION OF THE HEADER / NAV WHEN SCROLLING
     useEffect(() => {
         let hideMe
-        if(scrollPosition < scrollRef.current) {
+        console.log( scrollPosition < scrollRef.current )
+        if(scrollPosition <= scrollRef.current) {
             hideMe = false
         } else {
             hideMe = true
         }
-        if( scrollPosition > 99 || scrollPosition < 1){
-            hideMe = false   
+        if (scrollPosition === 100 ){
+            hideMe = false
         }
         setHiddenUI( hideMe )
         scrollRef.current = scrollPosition
@@ -345,108 +327,40 @@ const Dashboard = ({ setAuth, audioRef }) => {
         update: {  position: 'relative'},
         enter: { transform: 'translateX(0%)' },
         leave: { transform: 'translateX(-20%)', position: 'absolute'},
+
+    })
+
+    const headerTransition = useTransition(location, {
+        initial: { transform: 'translateX(100%)', height: 'auto', opacity: 0, position: 'fixed', width: '100%', zIndex: 2},
+        from: { height: 'auto', opacity: 0, position: 'fixed', transform: 'translateX(100%)', width: '100%', zIndex: 2},
+        update: {  position: 'fixed'},
+        enter: { opacity: 1, transform: 'translateX(0%)' },
+        leave: { position: 'fixed', transform: 'translateX(-100%)', zIndex: -1 },
     })
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
             <section className='dashboard'>  
                 <Overlay />
-
-{/* These are fixed headers. The animated divs containing their respective pages will not allow for these
-to remain fixed to the top of the viewport */}
-                <Switch >
-                    <Route exact path='/'>
-                        <HomeHeader 
-                        setAuth={ setAuth } 
-                        hiddenUI={ hiddenUI } /> 
-                    </Route> 
-                    <Route path='/search'>
-                        {
-                            activeSearchItem.type &&
-                            activeSearchItem.type !== 'playlist' &&
-                            activeSearchItem.type !== 'album' &&
-                            activeSearchItem.type !== 'artist' ?
-                            <SearchHeader hiddenUI={ hiddenUI }/>  :
-                            activeSearchItem.type &&
-                            <FixedHeader activeHeader={{ data: activeSearchItem.name }}  headerScrolled={ spHeaderScrolled }/>
-
-                        }
-                        
-                    </Route> 
-                    <Route path='/artist/:id'>
-                        {
-                            activeHeader &&
-                            <FixedHeader activeHeader={ activeHeader }  headerScrolled={ dbHeaderScrolled }/>
-                        }
-                    </Route> 
-                    <Route path='/album/:id'>
-                        {
-                            activeHeader &&
-                            <FixedHeader activeHeader={ activeHeader } headerScrolled={ dbHeaderScrolled } />
-                        }
-                    </Route>
-                    <Route path='/playlist/:id'>
-                        {
-                            activeHeader &&
-                            <FixedHeader activeHeader={ activeHeader }  headerScrolled={ dbHeaderScrolled }/>
-                        }
-                    </Route> 
-                </Switch>
-
             {
-            pageTransition((props, item) => (
-                <animated.div style={ props }>
-                    <Switch location={ item }>
-                        <Route exact path='/'>
-                            <Home
-                            state={ state }/>
-                        </Route> 
-                        <Route path='/search'>
-                            <Search
-                            my_top_artists={ state.my_top_artists } 
-                            available_genre_seeds={ state.available_genre_seeds }
-                            headerScrolled={ spHeaderScrolled }
-                            setHeaderScrolled={ setSpHeaderScrolled }/>
-                        </Route> 
-                        <Route path='/manage'>
-                            <Manage />
-                        </Route> 
-                        <Route path='/artist/:id'>
-                            <Artist 
-                            activeItem={ activeItem }
-                            setActiveItem={ setActiveItem }
-                            headerScrolled={ dbHeaderScrolled }
-                            setHeaderScrolled={ setDbHeaderScrolled }
-                            genreSeeds={ state.available_genre_seeds}
-                            location={ location }/>
-                        </Route> 
-                        <Route path='/album/:id'>
-                            <Collection
-                            activeItem={ activeItem }
-                            setActiveItem={ setActiveItem }
-                            headerScrolled={ dbHeaderScrolled }
-                            setHeaderScrolled={ setDbHeaderScrolled }
-                            type='album'
-                            genreSeeds={ state.available_genre_seeds } />
-                        </Route>
-                        <Route path='/playlist/:id'>
-                            <Collection
-                            activeItem={ activeItem }
-                            setActiveItem={ setActiveItem }
-                            headerScrolled={ dbHeaderScrolled }
-                            setHeaderScrolled={ setDbHeaderScrolled }
-                            type='playlist'
-                            genreSeeds={ state.available_genre_seeds } />
-                        </Route> 
-                        
-                        
-                    </Switch>
-                </animated.div>
-                ))
-                }
+                dashboardState === 'home' &&
+                <Home state={ state } /> 
+            }
+            {
+                dashboardState === 'search' &&
+                <Search
+                my_top_artists={ state.my_top_artists } 
+                available_genre_seeds={ state.available_genre_seeds }
+                searchPageHistoryRef={ searchPageHistoryRef }/>
+            }
+            {
+                dashboardState === 'manage' &&
+                <Manage /> 
+            }
+                
             
                 <Player hiddenUI={ hiddenUI }/>
-                <Nav hiddenUI={ hiddenUI }/>
+                <Nav hiddenUI={ hiddenUI } setDashboardState={ setDashboardState } />
             </section>  
         </DbHookContext.Provider>  
     )

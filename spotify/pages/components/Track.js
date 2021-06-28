@@ -7,7 +7,7 @@ import { handleColorThief } from '../../utils/handleColorThief'
 const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
     
-    const { queue, setQueue, activeItem, audioRef, prevTracksRef, qIndex, setQIndex } = useContext( DbHookContext )
+    const { queue, setQueue, activeItem, audioRef, qIndex, setQIndex } = useContext( DbHookContext )
     const playerContext = useContext( type === 'playerCollapsed' ? PlayerHookContext : '' )
     
     const isPlaying = playerContext ?  playerContext.isPlaying : null
@@ -55,10 +55,10 @@ const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trac
             })
             const index = data.tracks.findIndex( x => x.id === track.id )
             setQueue( nextTracks )
-            setQIndex( index )
+            setQIndex( qIndex => qIndex = index )
 
         }
-        prevTracksRef.current = []
+        
     }
     
     const togglePlayer = () => {

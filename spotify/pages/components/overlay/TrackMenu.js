@@ -29,7 +29,7 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
     
         if( artistArray.length === 1 ){
             activeItemFunc( artistArray[0] )
-            overlayFunc( null )
+            overlayFunc( {} )
     
         } else {
             const popupData = {
@@ -42,14 +42,14 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
 
     const viewArtist = ( e, artists ) => {
         e.stopPropagation()
-        setOverlay(null)
+        setOverlay( {} )
         handleViewArtist( e , artists, setOverlay, setActiveItem)
         if( func2 ) func2()
     }
 
     const viewAlbum = ( e, album ) => {
         e.stopPropagation()
-        setOverlay(null)
+        setOverlay({})
         setActiveItem( album )
         if( func2 ) func2()
     }

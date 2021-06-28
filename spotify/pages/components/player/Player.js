@@ -59,14 +59,15 @@ const Player = ({ hiddenUI }) => {
 
 // If first track in Queue changes, grabs the full track info of the new first element in Queue array.
     useEffect(() => {
-
+        console.log( queue[qIndex])
         if( queue[ qIndex ] && queue[ qIndex ].id !== currPlaying.id ){
             getTrack( queue[ qIndex ] )
-        } else if ( queue[ qIndex ] && queue[ qIndex ].id === currPlaying.id ){
-            const obj = { ...currPlaying}
-            setCurrPlaying( obj )
-        }
-    },[ qIndex ])
+        } 
+        // else if ( queue[ qIndex ] && queue[ qIndex ].id === currPlaying.id && playNextQueue){
+        //     const obj = { ...currPlaying}
+        //     setCurrPlaying( obj )
+        // }
+    },[ qIndex , queue])
 
     const getTrack = ( track ) => {
         if( track.album ) {

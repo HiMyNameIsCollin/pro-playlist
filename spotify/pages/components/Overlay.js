@@ -6,18 +6,18 @@ import { DbHookContext } from './Dashboard'
 import { whichPicture } from '../../utils/whichPicture'
 const Overlay = () => {
 
-    const { overlay, setOverlay, setActiveItem } = useContext( DbHookContext )
+    const { overlay, setOverlay } = useContext( DbHookContext )
 
-    const { data } = { ...overlay }
+    const { data, type,func, func2 } = { ...overlay }
     const { selectedTrack, artists, calledFrom, collection } = { ...data }
 
     const fadeIn = useSpring({
-        opacity: overlay ? 1 : 0,
-        pointerEvents: overlay ? 'auto' : 'none',
+        opacity: type ? 1 : 0,
+        pointerEvents: type ? 'auto' : 'none',
     })
 
     const closeOverlay = () => {
-        setOverlay(null)
+        setOverlay( {} )
     }
 
     const menuTransition = useTransition(overlay ,{
@@ -32,7 +32,7 @@ const Overlay = () => {
         <animated.div 
             style={ fadeIn }
             onClick={ closeOverlay } 
-            className={ `overlay ${ overlay && overlay.type === 'trackMenuPlayer' && ' overlay--player '} ` }>
+            className={ `overlay ${ overlay.type && overlay.type === 'trackMenuPlayer' && ' overlay--player '} ` }>
             {
            
             menuTransition((props, item) => (
@@ -40,7 +40,7 @@ const Overlay = () => {
                 item.type === 'trackMenu' ||
                 item && item.type === 'trackMenuPlayer' ?
                 <animated.div className='popup' style={props}>
-                    <TrackMenu overlay={ item } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                    <TrackMenu overlay={ item } setOverlay={ setOverlay } setActiveItem={ item.func } />
                 </animated.div> :
                 item &&
                 item.type === 'listMenu' ?
