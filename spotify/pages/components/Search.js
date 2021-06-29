@@ -62,7 +62,7 @@ const reducer = ( state, action ) => {
 
 export const SearchHookContext = createContext()
 
-const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: pageHistoryRef  }) => {
+const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: pageHistoryRef, currentSearchPage, setCurrentSearchPage }) => {
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
@@ -71,7 +71,6 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ searchState, setSearchState ] = useState('default')
-    const [ currentPage, setCurrentPage ] = useState('default')
     const [ loaded, setLoaded ] = useState( false )
     
     const { overlay, scrollPosition } = useContext( DbHookContext )
@@ -79,8 +78,8 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
     const searchHookState ={
         searchState, 
         setSearchState,
-        currentPage,
-        setCurrentPage,
+        currentSearchPage,
+        setCurrentSearchPage,
         activeSearchItem,
         setActiveSearchItem,
 
@@ -91,10 +90,10 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
     },[])
 
     useEffect(() => {
-        if(currentPage === 'default' || currentPage === 'showcase') {
+        if(currentSearchPage === 'default' || currentSearchPage === 'showcase') {
             // setHiddenUI( false )
         }
-    },[ currentPage ])
+    },[ currentSearchPage ])
     
 
     useEffect(() => {
@@ -149,139 +148,158 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
             
             switch( activeSearchItem.type ){
                 case 'genre':
-                    setCurrentPage( 'showcase' )
+                    setCurrentSearchPage( 'showcase' )
                     break
                 case 'category':
-                    setCurrentPage( 'showcase' )
+                    setCurrentSearchPage( 'showcase' )
                     break
                 case 'playlist':
-                    setCurrentPage( 'playlist' )
+                    setCurrentSearchPage( 'playlist' )
                     break
                 case 'album':
-                    setCurrentPage( 'album' )
+                    setCurrentSearchPage( 'album' )
                     break
                 case 'artist':
-                    setCurrentPage( 'artist' )
+                    setCurrentSearchPage( 'artist' )
                     break
                 default:
-                    setCurrentPage( 'default')
+                    setCurrentSearchPage( 'default')
                     break
             }
-        } else {
-            setCurrentPage( 'default' )
-        }
+        } 
     },[ activeSearchItem ])
 
     useEffect(() => {
-        if(currentPage === 'default'){
+        if(currentSearchPage === 'default'){
             pageHistoryRef.current = []
         } else {
-            pageHistoryRef.current.push({ currentPage, activeSearchItem})
+            pageHistoryRef.current.push({ currentSearchPage, activeSearchItem})
 
         }
-    }, [ currentPage ])
+    }, [ currentSearchPage ])
 
-    const pageTransition = useTransition(currentPage, {
+    const pageTransition = useTransition(currentSearchPage, {
         initial: { transform: 'translateX(100%)', },
-        from: { transform: 'translateX(100%)', position: 'absolute', width: '100%' , zIndex: '2' },
+        from: { transform: 'translateX(100%)', position: 'absolute', width: '100%' , zIndex: 2 },
         update: {  position: 'relative'},
-        enter: { transform: 'translateX(0%)'},
-        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: '1'},
+        enter: { transform: 'translateX(0%)', zIndex: 2},
+        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: 1},
     })
 
-    const headerTransition = useTransition(currentPage, {
+    const headerTransition = useTransition(currentSearchPage, {
         from: { transform: 'translateX(100%)', position: 'fixed', width: '100%' , zIndex: 3 },
         update: {  position: 'fixed'},
-        enter: { transform: 'translateX(0%)'},
-        leave: { transform: 'translateX(-100%)', position: 'fixed'},
+        enter: { transform: 'translateX(0%)' },
+        leave: { transform: 'translateX(-20%)', position: 'fixed', zIndex: 1},
     })
 
-    const mainTransition = useTransition(currentPage, {
-        from: { transform: 'translateX(0%)', position: 'absolute', width: '100%' , zIndex: '2'},
+    const headerTransition2 = useTransition(currentSearchPage, {
+        from: { transform: 'translateX(0%)', position: 'fixed', width: '100%', zIndex: 3},
+        update: { position: 'fixed' },
+        enter: { transform: 'translateX(0%)' },
+        leave: { transform: 'translateX(-100%)',  position: 'fixed', zIndex: 1},
+    })
+    
+
+    const mainTransition = useTransition(currentSearchPage, {
+        from: { transform: 'translateX(0%)', position: 'absolute', width: '100%' , zIndex: 2},
         update: {  position: 'relative'},
         enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: '1'},
+        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: 1},
     })
 
     return(
-        <SearchHookContext.Provider value={ searchHookState }>
-
+        <SearchHookContext.Provider value={ searchHookState }>   
+        <div id='searchPage' >
         {
-            headerTransition(( props, item )=> (
+            headerTransition2(( props, item ) => (
                 <animated.div style={ props }>
-                {
-                item === 'default' || item === 'showcase' ?
-                <SearchHeader /> :
-                item === 'artist' ||
-                item === 'playlist' ||
-                item === 'album' ?
-                <FixedHeader activeHeader={ activeHeader } headerScrolled={ headerScrolled }/>:
-                null
-                }
+                    {
+                        item === 'default' &&
+                        <SearchHeader /> 
+                    }
+                    {
+                        item === 'showcase' &&
+                        <SearchHeader /> 
+                    }
                 </animated.div>
             ))
+        } 
+        {
+        headerTransition(( props, item )=> (
+            <animated.div style={ props }>
+            {
+            item === 'artist' ||
+            item === 'playlist' ||
+            item === 'album' ?
+            <FixedHeader type={'Search'} activeHeader={ activeHeader } headerScrolled={ headerScrolled }/>:
+            null
+            }
+            </animated.div>
+        ))
         }
         {
-            mainTransition((props, item) => (
-                
-                    item === 'default' &&
-                    <animated.div 
-                    style={props}
-                    className={ `page page--search ${ overlay.type && 'page--blurred' }` }>
-                        <BrowseContainer 
-                        type='BcSearch'
-                        message='My top genres' 
-                        data={ state.my_top_genres.slice(0, 4) }/>
-                        <BrowseContainer
-                        message='Browse all' 
-                        type='BcSearch'
-                        data={ state.all_categories }/> 
-                    </animated.div> 
+        mainTransition((props, item) => (
             
-            ))
+                item === 'default' &&
+                <animated.div 
+                style={props}
+                className={ `page page--search ${ overlay.type && 'page--blurred' }` }>
+                    <BrowseContainer 
+                    type='BcSearch'
+                    message='My top genres' 
+                    data={ state.my_top_genres.slice(0, 4) }/>
+                    <BrowseContainer
+                    message='Browse all' 
+                    type='BcSearch'
+                    data={ state.all_categories }/> 
+                </animated.div> 
+        
+        ))
         }
         {
-            pageTransition((props, item) => (
-                <animated.div style={ props }>
-                    {
-                    item === 'showcase' &&
-                        <Showcase data={ activeSearchItem } /> 
-                    }
-                    {
-                    item === 'playlist' &&
-                        <Collection 
-                        activeHeader={ activeHeader }
-                        setActiveHeader={ setActiveHeader }
-                        headerScrolled={ headerScrolled }
-                        setHeaderScrolled={ setHeaderScrolled}
-                        type='playlist'
-                        genreSeeds={ state.available_genre_seeds }/>
-                    }
-                    {
-                    item === 'album' &&
-                        <Collection 
-                        activeHeader={ activeHeader }
-                        setActiveHeader={ setActiveHeader }
-                        headerScrolled={ headerScrolled }
-                        setHeaderScrolled={ setHeaderScrolled}
-                        type='album'
-                        genreSeeds={ state.available_genre_seeds }/> 
-                    }
-                    {
-                    item === 'artist' &&
-                        <Artist 
-                        type='artist'
-                        activeHeader={ activeHeader }
-                        setActiveHeader={ setActiveHeader }
-                        headerScrolled={ headerScrolled }
-                        setHeaderScrolled={ setHeaderScrolled}
-                        genreSeeds={ state.available_genre_seeds}
-                        location={ location }/> 
-                    }
-                        
-                </animated.div>
-            ))
+        pageTransition((props, item) => (
+            <animated.div style={ props }>
+                {
+                item === 'showcase' &&
+                    <Showcase data={ activeSearchItem } /> 
+                }
+                {
+                item === 'playlist' &&
+                    <Collection 
+                    activeHeader={ activeHeader }
+                    setActiveHeader={ setActiveHeader }
+                    headerScrolled={ headerScrolled }
+                    setHeaderScrolled={ setHeaderScrolled}
+                    type='playlist'
+                    genreSeeds={ available_genre_seeds }/>
+                }
+                {
+                item === 'album' &&
+                    <Collection 
+                    activeHeader={ activeHeader }
+                    setActiveHeader={ setActiveHeader }
+                    headerScrolled={ headerScrolled }
+                    setHeaderScrolled={ setHeaderScrolled}
+                    type='album'
+                    genreSeeds={ available_genre_seeds }/> 
+                }
+                {
+                item === 'artist' &&
+                    <Artist 
+                    type='artist'
+                    activeHeader={ activeHeader }
+                    setActiveHeader={ setActiveHeader }
+                    headerScrolled={ headerScrolled }
+                    setHeaderScrolled={ setHeaderScrolled}
+                    genreSeeds={ available_genre_seeds}/> 
+                }
+                    
+            </animated.div>
+        ))
         }
+        </div>    
+
         
         </SearchHookContext.Provider>
     )

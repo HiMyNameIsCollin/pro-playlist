@@ -82,8 +82,8 @@ $bg__1--lg: url('../public/bglg.jpg')
     padding: 0
     box-sizing: border-box
     line-height: 1.6
-    scroll-behavior: smooth
-    -webkit-scroll-behavior: smooth
+    // scroll-behavior: smooth
+    // -webkit-scroll-behavior: smooth
 
 button, input[type="submit"], input[type="reset"]
     background: none
@@ -221,7 +221,7 @@ i
     min-height: 100vh
     min-width: 100vw
     z-index: 2 !important
-    &--home
+    &--welcome
         background: $darkGrey
         padding: 8rem 0 8rem 0 
     &--collection
@@ -234,8 +234,10 @@ i
         padding: 0 0 8rem 0
     &--search
         background: $darkGrey
-        padding: 10rem 0 
+        padding: 9rem 0 
 
+#homePage, #searchPage, #managePage
+    display: none
     
 
 
@@ -629,6 +631,7 @@ i
     left: 0
     position: fixed
     width: 100%
+    z-index: 2
     &__bar
         background: $grey
         display: flex
@@ -765,14 +768,18 @@ i
         @include scrimGradient($black, 'to top')
         z-index: -1
     &::after
-        background: linear-gradient(to bottom, var(--headerColor1) 0% , var(--headerColor0)), linear-gradient(to right, var(--headerColor1) , var(--headerColor0))
         opacity: .75
         z-index: -2
+    &--Search
+        &::after
+            background: linear-gradient(to bottom, var(--headerColorSearch1) 0% , var(--headerColorSearch0)), linear-gradient(to right, var(--headerColorSearch1) , var(--headerColorSearch0))
+    &--Home
+        &::after
+            background: linear-gradient(to bottom, var(--headerColorHome1) 0% , var(--headerColorHome0)), linear-gradient(to right, var(--headerColorHome1) , var(--headerColorHome0))
 
 .fixedHeader
     @include pseudo
     @include shadowA
-    background: linear-gradient(to bottom, var(--headerColor1) 0% , var(--headerColor0)), linear-gradient(to right, var(--headerColor1) , var(--headerColor0))
     color: $white
     font-size: 1rem
     position: fixed 
@@ -791,12 +798,16 @@ i
     &::before
         @include scrimGradient($black, 'to top')
         z-index: -1
-        
+    &--Home
+        background: linear-gradient(to bottom, var(--headerColorHome1) 0% , var(--headerColorHome0)), linear-gradient(to right, var(--headerColorHome1) , var(--headerColorHome0))
+    &--Search
+        background: linear-gradient(to bottom, var(--headerColorSearch1) 0% , var(--headerColorSearch0)), linear-gradient(to right, var(--headerColorSearch1) , var(--headerColorSearch0))
+
 .homeHeader
     align-items: center
     display: flex
     top: 1rem
-    right: 0
+    left: 0
     padding: 2rem 1rem
     position: fixed
     width: calc(100% - 1rem)
@@ -820,13 +831,14 @@ i
     position: fixed
     width: 100%
     will-change: transform
-    z-index: 2
+    z-index: 3
     &::before
         @include scrimGradient($grey, '135deg')
         opacity: .7
     &__title
         @include sectionTitle
-        font-size: 2rem
+        padding: 1rem 0
+        font-size: 1.5rem
         width: 100%
     &__search
         align-items: center
@@ -836,6 +848,7 @@ i
         padding: .5rem
         width: 100%
         i
+            font-size: 1rem
             padding: 0 .5rem
         input
             background: inherit
@@ -947,7 +960,9 @@ i
     position: relative
     &__title
         margin-top: .5rem
-
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
     &__imgContainer
         display: flex
         
@@ -1005,8 +1020,13 @@ i
     &::before
         @include scrimGradient($black, 'to top')
         opacity: 1
-    &::after
-        background: linear-gradient(to bottom, var(--headerColor1) 0% , var(--headerColor0)), linear-gradient(to right, var(--headerColor1) , var(--headerColor0))
+    &--Home
+        &::after
+            background: linear-gradient(to bottom, var(--headerColorHome1) 0% , var(--headerColorHome0)), linear-gradient(to right, var(--headerColorHome1) , var(--headerColorHome0))
+    &--Search
+        &::after
+            background: linear-gradient(to bottom, var(--headerColorSearch1) 0% , var(--headerColorSearch0)), linear-gradient(to right, var(--headerColorSearch1) , var(--headerColorSearch0))
+
     &--player
         &::before
             @include scrimGradient($black, 'to top')

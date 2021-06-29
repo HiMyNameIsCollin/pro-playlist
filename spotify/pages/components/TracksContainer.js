@@ -34,8 +34,9 @@ const TracksContainer = ({ type, data , setOverlay }) => {
             tracks,
             selectedTrack,
         }
+        const pageType = searchContext ? 'Search' : 'Home'
         
-        setOverlay( {type: 'trackMenu', data: popupData,  func: setActiveItem} )
+        setOverlay( {type: 'trackMenu', pageType: pageType, data: popupData,  func: setActiveItem} )
     }
 
     return(

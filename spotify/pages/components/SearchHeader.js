@@ -1,21 +1,14 @@
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useSpring, animated } from 'react-spring'
+import { DbHookContext } from './Dashboard'
 
-const SearchHeader = ({ hiddenUI, headerHeightRef }) => {
+const SearchHeader = ({  headerHeightRef }) => {
 
-    const [ mounted, setMounted ] = useState (false)
-
-    
-    useEffect(() => {
-        setMounted( true )
-    },[])
-
-
-
+    const { hiddenUI } = useContext( DbHookContext )
     const hideHeader = useSpring({
-        top: !hiddenUI ? '0rem' : '-5rem',
-        transform: mounted ? 'translateY( 0% )' : 'translateY( -100% )'
+        top: !hiddenUI ? '0rem' : '-4rem',
+        
     })
     return(
         <animated.header ref={ headerHeightRef } style={hideHeader} className='searchHeader'>

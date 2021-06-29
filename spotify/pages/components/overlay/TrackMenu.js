@@ -3,7 +3,7 @@ import { whichPicture } from '../../../utils/whichPicture'
 import { useState, useEffect, useContext } from 'react'
 import { DbHookContext } from '../Dashboard'
 
-const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
+const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
 
     const { playNextQueue, setPlayNextQueue, queue, setQueue, qIndex } = useContext( DbHookContext )
 
@@ -43,14 +43,14 @@ const TrackMenu = ({ overlay, setOverlay, setActiveItem }) => {
     const viewArtist = ( e, artists ) => {
         e.stopPropagation()
         setOverlay( {} )
-        handleViewArtist( e , artists, setOverlay, setActiveItem)
+        handleViewArtist( e , artists, setOverlay, setActiveHomeItem)
         if( func2 ) func2()
     }
 
     const viewAlbum = ( e, album ) => {
         e.stopPropagation()
         setOverlay({})
-        setActiveItem( album )
+        setActiveHomeItem( album )
         if( func2 ) func2()
     }
 

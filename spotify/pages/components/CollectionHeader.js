@@ -1,5 +1,5 @@
 import { useSpring, animated } from 'react-spring'
-import { useLayoutEffect, useEffect, useState, useContext } from 'react'
+import { useLayoutEffect, useEffect, useState, useRef, useContext } from 'react'
 import { handleViewArtist } from '../../utils/handleViewArtist'
 import { capital } from '../../utils/capital'
 import { whichPicture } from '../../utils/whichPicture'
@@ -8,21 +8,23 @@ import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './Search'
 
-const CollectionHeader = ({ data, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader }) => {
+const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader }) => {
     const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ backgroundImage, setBackgroundImage ] = useState(null)
+    const thisHeaderRef = useRef()
 
     const { setOverlay, scrollPosition, } = useContext( DbHookContext )
 
-
     useLayoutEffect(() => {
-        const thisHeader = document.querySelector('.collectionHeader')
-        document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
-        setElementHeight(thisHeader.offsetHeight)
+        const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
+        setElementHeight(headerHeight)
         const img = whichPicture(collection.images, 'lrg')
         setBackgroundImage( img )
-        return () => setBackgroundImage(null)
+        return () => {
+            setBackgroundImage(null)
+            setHeaderScrolled( 0 )
+        }
         
     }, [])
 
@@ -34,7 +36,7 @@ const CollectionHeader = ({ data, headerScrolled, setHeaderScrolled, setActiveIt
 
     const finishMount = (e, amount)=>{
         const colors = handleColorThief(e.target, amount)
-        colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${i}`, clr))
+        colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
         setActiveHeader( {data : collection.name} )
     }
 
@@ -52,8 +54,10 @@ const CollectionHeader = ({ data, headerScrolled, setHeaderScrolled, setActiveIt
 
     return(
             <header 
+            ref={ thisHeaderRef }
             className={`collectionHeader`}>
-                <div className='headerBacking' style={{backgroundImage: `url(${backgroundImage})`}}></div>
+                <div className={`headerBacking headerBacking--${pageType}`} 
+                style={{backgroundImage: `url(${backgroundImage})`}}></div>
                 
                 <animated.div
                     style={{

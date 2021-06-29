@@ -92,9 +92,7 @@ const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, s
                 console.log(action)
                 break
         }
-
     }
-
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
@@ -130,11 +128,12 @@ const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, s
             {
                 artist.id &&
                 <ArtistHeader 
+                pageType={ searchContext ? 'Search' : 'Home'}
                 headerScrolled={ headerScrolled }
                 setHeaderScrolled={ setHeaderScrolled }
                 activeHeader={ activeHeader }
                 setActiveHeader={ setActiveHeader }
-                data={{ artist, }} />
+                data={{ artist }} />
             }
 
                 

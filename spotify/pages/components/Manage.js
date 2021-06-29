@@ -1,7 +1,7 @@
 
 const Manage = () => {
     return(
-        <div className='page'>
+        <div id='managePage' className='page'>
                 <h1>TEST</h1>
                 <h1>TEST</h1>
                 <h1>TEST</h1>

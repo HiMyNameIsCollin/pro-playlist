@@ -146,6 +146,12 @@ const reducer = (state, action) => {
             break         
     }
 }
+
+const initialPageScroll = {
+    home: 0,
+    search: 0,
+    manage: 0
+}
 const Dashboard = ({ setAuth, audioRef }) => {
     // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
@@ -163,8 +169,10 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
     const [ dashboardState, setDashboardState ] = useState('home')
-    const searchPageHistoryRef = useRef( [] )
+    const [ currentSearchPage, setCurrentSearchPage ] = useState('default')
 
+    const pageScrollRef = useRef( initialPageScroll )
+    const searchPageHistoryRef = useRef( [] )
     const scrollRef = useRef( scrollPosition )
 
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
@@ -264,6 +272,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
     useEffect(() => {
         if(activeHomeItem.type){
+            if(dashboardState !== 'home') setDashboardState('home')
             switch(activeHomeItem.type){
                 case 'artist':
                     if(location.pathname !== `/artist/${activeHomeItem.id}`){
@@ -312,55 +321,70 @@ const Dashboard = ({ setAuth, audioRef }) => {
         } else {
             hideMe = true
         }
-        if (scrollPosition === 100 ){
+        if (scrollPosition === 100 || scrollPosition < 1){
             hideMe = false
         }
         setHiddenUI( hideMe )
         scrollRef.current = scrollPosition
     }, [ scrollPosition ])
 
-
-//  NAVIGATION TRANSITIONS
-    const pageTransition = useTransition(location, {
-        initial: { transform: 'translateX(100%)', },
-        from: { transform: 'translateX(100%)', position: 'absolute', width: '100%'},
-        update: {  position: 'relative'},
-        enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-20%)', position: 'absolute'},
-
-    })
-
-    const headerTransition = useTransition(location, {
-        initial: { transform: 'translateX(100%)', height: 'auto', opacity: 0, position: 'fixed', width: '100%', zIndex: 2},
-        from: { height: 'auto', opacity: 0, position: 'fixed', transform: 'translateX(100%)', width: '100%', zIndex: 2},
-        update: {  position: 'fixed'},
-        enter: { opacity: 1, transform: 'translateX(0%)' },
-        leave: { position: 'fixed', transform: 'translateX(-100%)', zIndex: -1 },
-    })
+    useEffect(() => {
+        const homePage = document.getElementById('homePage')
+        const searchPage = document.getElementById('searchPage')
+        const managePage = document.getElementById('managePage')
+        const pages = [ homePage, searchPage, managePage ]
+        if( homePage && searchPage && managePage ) {
+            pages.forEach( page => page.style.display = 'none')
+            if( dashboardState === 'home' ) {
+                homePage.style.display = 'block'
+                window.scroll({ 
+                    top: pageScrollRef.current.home, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
+            if( dashboardState === 'search' ) {
+                searchPage.style.display = 'block'
+                window.scroll({ 
+                    top: pageScrollRef.current.search, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
+            if( dashboardState === 'manage' ) {
+                managePage.style.display = 'block'
+                window.scroll({ 
+                    top: pageScrollRef.current.manage, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
+        }
+        
+    },[ dashboardState ])
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
             <section className='dashboard'>  
                 <Overlay />
-            {
-                dashboardState === 'home' &&
-                <Home state={ state } /> 
-            }
-            {
-                dashboardState === 'search' &&
+
+                <Home
+                state={ state } /> 
                 <Search
                 my_top_artists={ state.my_top_artists } 
                 available_genre_seeds={ state.available_genre_seeds }
-                searchPageHistoryRef={ searchPageHistoryRef }/>
-            }
-            {
-                dashboardState === 'manage' &&
-                <Manage /> 
-            }
+                searchPageHistoryRef={ searchPageHistoryRef }
+                currentSearchPage={ currentSearchPage }
+                setCurrentSearchPage={ setCurrentSearchPage }/>
+                <Manage />
                 
             
                 <Player hiddenUI={ hiddenUI }/>
-                <Nav hiddenUI={ hiddenUI } setDashboardState={ setDashboardState } />
+                <Nav 
+                pageScrollRef= { pageScrollRef }
+                hiddenUI={ hiddenUI } 
+                dashboardState={ dashboardState }
+                setDashboardState={ setDashboardState } />
             </section>  
         </DbHookContext.Provider>  
     )

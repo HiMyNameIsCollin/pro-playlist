@@ -8,7 +8,7 @@ import Collection from './Collection'
 import HomeHeader from './HomeHeader'
 import FixedHeader from './FixedHeader'
 
-const Home = ({  state  }) => {
+const Home = ({  state }) => {
 
     const { activeItem, setActiveItem, homeHeaderScrolled, setHomeHeaderScrolled, hiddenUI, setAuth, location } = useContext(DbHookContext)
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
@@ -26,18 +26,18 @@ const Home = ({  state  }) => {
         from: { transform: 'translateX(100%)', position: 'fixed', width: '100%' , zIndex: 3 },
         update: {  position: 'fixed'},
         enter: { transform: 'translateX(0%)'},
-        leave: { transform: 'translateX(-100%)', position: 'fixed'},
+        leave: { transform: 'translateX(-100%)', position: 'fixed', zIndex: 1},
     })
 
     const mainTransition = useTransition(location, {
-        from: { transform: 'translateX(0%)', position: 'absolute', width: '100%'},
+        from: { transform: 'translateX(0%)', position: 'absolute', width: '100%', zIndex: 2},
         update: {  position: 'relative'},
         enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: 1},
+        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: 2},
     })
 
     return(
-        <div>
+        <div id='homePage'>
         {
         headerTransition(( props, item) => (
             <animated.div style={props}>
@@ -46,13 +46,13 @@ const Home = ({  state  }) => {
                         <HomeHeader hiddenUI={ hiddenUI } setAuth={ setAuth } />
                     </Route>
                     <Route path='/artist/:id'>
-                        <FixedHeader headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                        <FixedHeader type={ 'Home' } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                     </Route>
                     <Route path='/playlist/:id'>
-                        <FixedHeader headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                        <FixedHeader type={ 'Home' } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                     </Route>
                     <Route path='/album/:id'>
-                        <FixedHeader headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                        <FixedHeader type={ 'Home' } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                     </Route>
                 </Switch>
             </animated.div>
@@ -62,7 +62,7 @@ const Home = ({  state  }) => {
         {
         mainTransition(( props, item) => (
             <animated.div style={props}>
-                <Switch>
+                <Switch location={ item }>
                     <Route exact path='/'>
                         <Welcome state={ state } />
                     </Route>
@@ -80,8 +80,7 @@ const Home = ({  state  }) => {
                         setActiveHeader={ setActiveHeader }
                         headerScrolled={ headerScrolled }
                         setHeaderScrolled={ setHeaderScrolled}
-                        genreSeeds={ state.available_genre_seeds}
-                        location={ location }/>
+                        genreSeeds={ state.available_genre_seeds}/>
                     </Route> 
                     <Route path='/album/:id'>
                         <Collection

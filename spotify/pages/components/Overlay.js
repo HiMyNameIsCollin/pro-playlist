@@ -8,7 +8,7 @@ const Overlay = () => {
 
     const { overlay, setOverlay } = useContext( DbHookContext )
 
-    const { data, type,func, func2 } = { ...overlay }
+    const { data, type, pageType, func, func2 } = { ...overlay }
     const { selectedTrack, artists, calledFrom, collection } = { ...data }
 
     const fadeIn = useSpring({
@@ -32,7 +32,11 @@ const Overlay = () => {
         <animated.div 
             style={ fadeIn }
             onClick={ closeOverlay } 
-            className={ `overlay ${ overlay.type && overlay.type === 'trackMenuPlayer' && ' overlay--player '} ` }>
+            className={ 
+                `overlay 
+                ${ overlay.type && overlay.type === 'trackMenuPlayer' && ' overlay--player '} 
+                ${ overlay.pageType === 'Home' ? 'overlay--Home' : 'overlay--Search'}` 
+                }>
             {
            
             menuTransition((props, item) => (
@@ -40,7 +44,7 @@ const Overlay = () => {
                 item.type === 'trackMenu' ||
                 item && item.type === 'trackMenuPlayer' ?
                 <animated.div className='popup' style={props}>
-                    <TrackMenu overlay={ item } setOverlay={ setOverlay } setActiveItem={ item.func } />
+                    <TrackMenu overlay={ item } setOverlay={ setOverlay } setActiveHomeItem={ item.func } />
                 </animated.div> :
                 item &&
                 item.type === 'listMenu' ?

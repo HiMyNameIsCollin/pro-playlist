@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useContext } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useContext } from 'react'
 import { useSpring, animated } from 'react-spring'
 import { capital } from '../../utils/capital'
 import { whichPicture } from '../../utils/whichPicture'
@@ -6,21 +6,25 @@ import { handleColorThief } from '../../utils/handleColorThief'
 import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
 
-const ArtistHeader = ({ data, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader,  }) => {
+const ArtistHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader,  }) => {
 
     const { collection, artist, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
+    const thisHeaderRef = useRef()
     const {  scrollPosition } = useContext( DbHookContext )
     
     useLayoutEffect(() => {
-        const thisHeader = document.querySelector('.artistHeader')
-        document.documentElement.style.setProperty('--headerHeight', thisHeader.offsetHeight + 'px')
-        setElementHeight(thisHeader.offsetHeight)
+        const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
+        setElementHeight( headerHeight )
+
+        return () => {
+            setHeaderScrolled( 0 )
+        }
     },[])
     
     const finishMount = (e, amount)=>{
         const colors = handleColorThief(e.target, amount)
-        colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${i}`, clr))
+        colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
         setActiveHeader({ data: artist.name})
     }
 
@@ -40,8 +44,10 @@ const ArtistHeader = ({ data, headerScrolled, setHeaderScrolled, activeHeader, s
     })
 
     return(
-        <header className={ `artistHeader  }`}>
-            <div className='headerBacking'></div>
+        <header 
+        ref={ thisHeaderRef }
+        className={ `artistHeader  }`}>
+            <div className={`headerBacking headerBacking--${pageType}`}></div>
                 <div className='artistHeader__imgContainer'>
                 <img 
                 crossOrigin='anonymous' 

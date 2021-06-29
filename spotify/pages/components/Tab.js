@@ -18,9 +18,9 @@ const Tab = ({ item }) => {
             // Set selectedTrack param on track. Therefore activeItem will push us to the respective page,
             // but will not play the track immediately. Instead it will scroll to position.
             item.album['selectedTrack'] = item.id
-            setActiveItem( item.album )
+            setActiveHomeItem( item.album )
         } else {
-            setActiveItem( item )
+            setActiveHomeItem( item )
         }
     }
 

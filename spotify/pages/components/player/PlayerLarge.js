@@ -10,7 +10,7 @@ import { useSpring, animated } from 'react-spring'
 const PlayerLarge = ({ controls }) => {
 
     const  { currPlaying, playerSize, setPlayerSize, } = useContext( PlayerHookContext )
-    const  { setActiveItem, setOverlay } = useContext( DbHookContext )
+    const  { setActiveHomeItem, setOverlay } = useContext( DbHookContext )
     const [ currPlayingContext, setCurrPlayingContext ] = useState( {} )
     const [ queueView, setQueueView ] = useState( false )
     const API = 'https://api.spotify.com/'
@@ -40,7 +40,7 @@ const PlayerLarge = ({ controls }) => {
 
     const handleViewCollection = () => {
         togglePlayer()
-        setActiveItem( currPlayingContext )
+        setActiveHomeItem( currPlayingContext )
     }
 
     const handleTrackMenu = ( e ) => {
@@ -58,7 +58,7 @@ const PlayerLarge = ({ controls }) => {
             tracks: null,
             selectedTrack: selectedTrack,
         }
-        setOverlay( {type: 'trackMenuPlayer', data: popupData,  func: null , func2: togglePlayer} )
+        setOverlay( {type: 'trackMenuPlayer', data: popupData,  func: setActiveHomeItem , func2: togglePlayer} )
     }
 
     useLayoutEffect(() => {

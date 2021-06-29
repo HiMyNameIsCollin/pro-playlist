@@ -25,7 +25,7 @@ const HomeHeader = ({ setAuth , hiddenUI, headerHeightRef }) => {
 
 
     const hideHeader = useSpring({
-        transform: showMe ? 'translatex(0%)' : 'translatex(100%)' ,
+        transform: showMe ? 'translatex(0%)' : 'translatex(-100%)' ,
         
     })
 

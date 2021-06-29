@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSpring, animated } from 'react-spring'
 
-const FixedHeader = ({ activeHeader, headerScrolled }) => {
+const FixedHeader = ({type, activeHeader, headerScrolled }) => {
     const [ hidden, setHidden ] = useState(true)
 
     useEffect(() => {
@@ -10,6 +10,7 @@ const FixedHeader = ({ activeHeader, headerScrolled }) => {
         } else{
             setHidden( true )
         }
+        
     },[headerScrolled])
 
     const showFixedHeader = useSpring({
@@ -26,7 +27,7 @@ const FixedHeader = ({ activeHeader, headerScrolled }) => {
         <animated.div
 
         style={ showFixedHeader } 
-        className='fixedHeader'>
+        className={`fixedHeader fixedHeader--${type}`}>
             <button className='backButton'>
                 <i className="fas fa-chevron-left"></i>
             </button>

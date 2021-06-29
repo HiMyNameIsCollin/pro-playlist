@@ -217,6 +217,7 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
             collection.id&&
             <>
             <CollectionHeader
+            pageType={ searchContext ? 'Search' : 'Home'}
             headerScrolled={ headerScrolled }
             setHeaderScrolled={ setHeaderScrolled }
             setActiveItem={ setActiveItem }
