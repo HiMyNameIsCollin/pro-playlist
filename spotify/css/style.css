@@ -1352,6 +1352,7 @@ i {
 }
 .card__imgContainer {
   display: flex;
+  max-height: 10rem;
   position: relative;
   width: 100%;
 }

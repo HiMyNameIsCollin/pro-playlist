@@ -35,7 +35,7 @@ const Overlay = () => {
             className={ 
                 `overlay 
                 ${ overlay.type && overlay.type === 'trackMenuPlayer' && ' overlay--player '} 
-                ${ overlay.pageType === 'Home' ? 'overlay--Home' : 'overlay--Search'}` 
+                overlay--${pageType}`
                 }>
             {
            

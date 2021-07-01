@@ -3,16 +3,32 @@ import { Link } from 'react-router-dom'
 import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 
-const Nav = ({ hiddenUI , dashboardState, setDashboardState , pageScrollRef }) => {
+const Nav = ({ hiddenUI , dashboardState, setDashboardState , pageScrollRef, searchPageHistoryRef, homePageHistoryRef, setActiveHomeItem, setActiveSearchItem }) => {
 
     const hideNav = useSpring({
         transform: hiddenUI ? 'translatey(100%)' : 'translatey(0%)'
     })
 
     const handleDashboardState = ( page ) => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop
-        pageScrollRef.current[`${dashboardState}`] = winScroll
-        setDashboardState(page)
+        if( dashboardState !== page ){
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop
+            pageScrollRef.current[`${dashboardState}`] = winScroll
+            setDashboardState(page)
+        } else {
+            let lastItem
+            if( page === 'home' ){
+                lastItem = homePageHistoryRef.current.length > 0 ?
+                homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem :
+                {}
+                setActiveHomeItem( lastItem )
+            } else if ( page === 'search' ){
+                lastItem = searchPageHistoryRef.current.length > 0 ?
+                searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ] :
+                {}
+                setActiveSearchItem( lastItem )
+            }
+            
+        }
     }
 
 

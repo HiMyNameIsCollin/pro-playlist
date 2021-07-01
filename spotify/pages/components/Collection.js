@@ -227,7 +227,7 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
             {
             type === 'album' && 
                 <>
-                <CollectionMeta data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                <CollectionMeta pageType={searchContext ? 'Search': 'Home' } data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
                 <section className='collection__copyright'>
                         <p>{ collection.copyrights && collection.copyrights[0].text } </p>

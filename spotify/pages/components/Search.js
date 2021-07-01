@@ -62,12 +62,11 @@ const reducer = ( state, action ) => {
 
 export const SearchHookContext = createContext()
 
-const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: pageHistoryRef, currentSearchPage, setCurrentSearchPage }) => {
+const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: pageHistoryRef,  activeSearchItem, setActiveSearchItem }) => {
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
     const [ state, dispatch ] = useReducer( reducer , initialState )
-    const [ activeSearchItem, setActiveSearchItem ] = useState( pageHistoryRef.current.length > 0 ? pageHistoryRef.current[ pageHistoryRef.current.length - 1].activeSearchItem : {} )
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ searchState, setSearchState ] = useState('default')
@@ -78,8 +77,6 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
     const searchHookState ={
         searchState, 
         setSearchState,
-        currentSearchPage,
-        setCurrentSearchPage,
         activeSearchItem,
         setActiveSearchItem,
 
@@ -90,16 +87,8 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
     },[])
 
     useEffect(() => {
-        if(currentSearchPage === 'default' || currentSearchPage === 'showcase') {
-            // setHiddenUI( false )
-        }
-    },[ currentSearchPage ])
-    
-
-    useEffect(() => {
         if( apiPayload ) dispatch(apiPayload)
     }, [ apiPayload ])
-
 
     // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
@@ -141,44 +130,8 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
         return newArr
     }
 
-    useEffect(() => {
-        // setActiveHeader( null )
-        // setHiddenUI(true)
-        if( activeSearchItem ){
-            
-            switch( activeSearchItem.type ){
-                case 'genre':
-                    setCurrentSearchPage( 'showcase' )
-                    break
-                case 'category':
-                    setCurrentSearchPage( 'showcase' )
-                    break
-                case 'playlist':
-                    setCurrentSearchPage( 'playlist' )
-                    break
-                case 'album':
-                    setCurrentSearchPage( 'album' )
-                    break
-                case 'artist':
-                    setCurrentSearchPage( 'artist' )
-                    break
-                default:
-                    setCurrentSearchPage( 'default')
-                    break
-            }
-        } 
-    },[ activeSearchItem ])
 
-    useEffect(() => {
-        if(currentSearchPage === 'default'){
-            pageHistoryRef.current = []
-        } else {
-            pageHistoryRef.current.push({ currentSearchPage, activeSearchItem})
-
-        }
-    }, [ currentSearchPage ])
-
-    const pageTransition = useTransition(currentSearchPage, {
+    const pageTransition = useTransition(activeSearchItem, {
         initial: { transform: 'translateX(100%)', },
         from: { transform: 'translateX(100%)', position: 'absolute', width: '100%' , zIndex: 2 },
         update: {  position: 'relative'},
@@ -186,14 +139,14 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
         leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: 1},
     })
 
-    const headerTransition = useTransition(currentSearchPage, {
+    const headerTransition = useTransition(activeSearchItem, {
         from: { transform: 'translateX(100%)', position: 'fixed', width: '100%' , zIndex: 3 },
         update: {  position: 'fixed'},
         enter: { transform: 'translateX(0%)' },
         leave: { transform: 'translateX(-20%)', position: 'fixed', zIndex: 1},
     })
 
-    const headerTransition2 = useTransition(currentSearchPage, {
+    const headerTransition2 = useTransition(activeSearchItem, {
         from: { transform: 'translateX(0%)', position: 'fixed', width: '100%', zIndex: 3},
         update: { position: 'fixed' },
         enter: { transform: 'translateX(0%)' },
@@ -201,7 +154,7 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
     })
     
 
-    const mainTransition = useTransition(currentSearchPage, {
+    const mainTransition = useTransition(activeSearchItem, {
         from: { transform: 'translateX(0%)', position: 'absolute', width: '100%' , zIndex: 2},
         update: {  position: 'relative'},
         enter: { transform: 'translateX(0%)' },
@@ -215,11 +168,11 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
             headerTransition2(( props, item ) => (
                 <animated.div style={ props }>
                     {
-                        item === 'default' &&
+                        !item.type &&
                         <SearchHeader /> 
                     }
                     {
-                        item === 'showcase' &&
+                        item.type === 'category' &&
                         <SearchHeader /> 
                     }
                 </animated.div>
@@ -229,9 +182,9 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
         headerTransition(( props, item )=> (
             <animated.div style={ props }>
             {
-            item === 'artist' ||
-            item === 'playlist' ||
-            item === 'album' ?
+            item.type === 'artist' ||
+            item.type === 'playlist' ||
+            item.type === 'album' ?
             <FixedHeader type={'Search'} activeHeader={ activeHeader } headerScrolled={ headerScrolled }/>:
             null
             }
@@ -241,7 +194,7 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
         {
         mainTransition((props, item) => (
             
-                item === 'default' &&
+                !item.type  &&
                 <animated.div 
                 style={props}
                 className={ `page page--search ${ overlay.type && 'page--blurred' }` }>
@@ -261,11 +214,11 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
         pageTransition((props, item) => (
             <animated.div style={ props }>
                 {
-                item === 'showcase' &&
+                item.type === 'category' &&
                     <Showcase data={ activeSearchItem } /> 
                 }
                 {
-                item === 'playlist' &&
+                item.type === 'playlist' &&
                     <Collection 
                     activeHeader={ activeHeader }
                     setActiveHeader={ setActiveHeader }
@@ -275,7 +228,7 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
                     genreSeeds={ available_genre_seeds }/>
                 }
                 {
-                item === 'album' &&
+                item.type === 'album' &&
                     <Collection 
                     activeHeader={ activeHeader }
                     setActiveHeader={ setActiveHeader }
@@ -285,7 +238,7 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
                     genreSeeds={ available_genre_seeds }/> 
                 }
                 {
-                item === 'artist' &&
+                item.type === 'artist' &&
                     <Artist 
                     type='artist'
                     activeHeader={ activeHeader }

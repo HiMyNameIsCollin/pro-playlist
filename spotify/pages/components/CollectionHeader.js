@@ -101,7 +101,7 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
                     null
                 }
                     <p onClick={
-                        (e) => handleViewArtist( e, artists, setOverlay, setActiveItem ) }>
+                        (e) => handleViewArtist( e, pageType, artists, setOverlay, setActiveItem ) }>
                         { artists.map((artist, i) =>  (
                             i !== artists.length - 1 ? 
                             `${ artist.name ? artist.name : artist.display_name }, ` : 

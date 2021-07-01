@@ -1,5 +1,5 @@
 
-export const handleViewArtist = ( e, artistArray, overlayFunc, activeItemFunc ) => {
+export const handleViewArtist = ( e, pageType, artistArray, overlayFunc, activeItemFunc ) => {
     e.stopPropagation()
 
     if( artistArray.length === 1 ){
@@ -11,6 +11,6 @@ export const handleViewArtist = ( e, artistArray, overlayFunc, activeItemFunc ) 
             title: 'Choose artist',
             array: artistArray
         }
-        overlayFunc({ type: 'listMenu' , data: popupData, func: activeItemFunc })
+        overlayFunc({ type: 'listMenu' , pageType: pageType, data: popupData, func: activeItemFunc })
     }
 }

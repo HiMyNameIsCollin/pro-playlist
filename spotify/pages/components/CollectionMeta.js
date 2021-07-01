@@ -1,7 +1,7 @@
 import { calculateTotalDuration } from '../../utils/calculateTotalDuration'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleViewArtist } from '../../utils/handleViewArtist' 
-const CollectionMeta = ({ data , setOverlay , setActiveItem }) => {
+const CollectionMeta = ({pageType, data , setOverlay , setActiveItem }) => {
 
     const { collection, artists, tracks } = {...data}
     return(
@@ -28,7 +28,7 @@ const CollectionMeta = ({ data , setOverlay , setActiveItem }) => {
                     alt='Artist' />
                 
                     <p onClick={
-                        (e) => handleViewArtist( e, [artist], setOverlay, setActiveItem ) }>
+                        (e) => handleViewArtist( e, pageType, [artist], setOverlay, setActiveItem ) }>
                         { artist.name }
                     </p>
 

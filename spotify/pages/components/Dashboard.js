@@ -153,6 +153,7 @@ const initialPageScroll = {
     manage: 0
 }
 const Dashboard = ({ setAuth, audioRef }) => {
+
     // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
     const location = useLocation()
@@ -164,15 +165,18 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ overlay, setOverlay ] = useState({})
     const [ hiddenUI, setHiddenUI ] = useState( false )
 // activeHeader contains the data from the active page required for certain headers to function
-    const [ activeHomeItem, setActiveHomeItem ] = useState( {}) 
     const [ queue, setQueue ] = useState( [] )
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
     const [ dashboardState, setDashboardState ] = useState('home')
-    const [ currentSearchPage, setCurrentSearchPage ] = useState('default')
+    const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
+    const [ activeHomeItem, setActiveHomeItem ] = useState( {} ) 
 
     const pageScrollRef = useRef( initialPageScroll )
+    const currActiveHomeRef = useRef( {} )
+    const currActiveSearchRef = useRef( {} )
     const searchPageHistoryRef = useRef( [] )
+    const homePageHistoryRef = useRef( [] )
     const scrollRef = useRef( scrollPosition )
 
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
@@ -181,6 +185,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
     const dbHookState = {
         audioRef,
+        homePageHistoryRef,
+        searchPageHistoryRef,
         activeHomeItem, 
         setActiveHomeItem, 
         overlay, 
@@ -266,14 +272,33 @@ const Dashboard = ({ setAuth, audioRef }) => {
 //  END OF API CALLS 
  
 
+useEffect(() => {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop
+    if( activeHomeItem.id ){
+        if(homePageHistoryRef.current.length > 0){
+            
+            if( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem.id !== activeHomeItem.id ){
+                homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, scroll: winScroll })
+            } else {
+                const lastPage = homePageHistoryRef.current.pop()
+            }
+        } else {
+            homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, scroll: winScroll })
+        }
+        currActiveHomeRef.current = activeHomeItem
+    } 
+},[ activeHomeItem, activeSearchItem])
+
+
+
 // Navigation through the pages is handled here.
 // When a dynamic page is selected(Playlist, Album, Artist), it will be set as the activeItem state, which fires this.
-// Also clears the activeHeader state (Holds the data corresponding with the currently opened page.)
 
     useEffect(() => {
         if(activeHomeItem.type){
             if(dashboardState !== 'home') setDashboardState('home')
             switch(activeHomeItem.type){
+                
                 case 'artist':
                     if(location.pathname !== `/artist/${activeHomeItem.id}`){
                         history.push(`/artist/${activeHomeItem.id}`)
@@ -294,14 +319,17 @@ const Dashboard = ({ setAuth, audioRef }) => {
                     
                     break
             }
+        } else {
+            if(location.pathname !== '/'){
+                history.push('/')
+                homePageHistoryRef.current = []
+                
+            }
         }
     },[ activeHomeItem ])
 
-// Reset activeItem to null, otherwise you cant access same page twice in a row.
-    useEffect(() => {
-        handleScroll()
-        // setActiveHomeItem({})
-    }, [ location.pathname ] )
+
+
 
 //  When overlay is open, makes the rest of the APP no clicky
     useLayoutEffect(() => {
@@ -363,19 +391,22 @@ const Dashboard = ({ setAuth, audioRef }) => {
         
     },[ dashboardState ])
 
+
+
     return(
         <DbHookContext.Provider value={ dbHookState }>
             <section className='dashboard'>  
                 <Overlay />
 
                 <Home
-                state={ state } /> 
+                state={ state } 
+                homePageHistoryRef={ homePageHistoryRef }/> 
                 <Search
+                activeSearchItem={ activeSearchItem }
+                setActiveSearchItem={ setActiveSearchItem }
                 my_top_artists={ state.my_top_artists } 
                 available_genre_seeds={ state.available_genre_seeds }
-                searchPageHistoryRef={ searchPageHistoryRef }
-                currentSearchPage={ currentSearchPage }
-                setCurrentSearchPage={ setCurrentSearchPage }/>
+                searchPageHistoryRef={ searchPageHistoryRef }/>
                 <Manage />
                 
             
@@ -383,6 +414,10 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 <Nav 
                 pageScrollRef= { pageScrollRef }
                 hiddenUI={ hiddenUI } 
+                setActiveHomeItem={ setActiveHomeItem }
+                setActiveSearchItem={ setActiveSearchItem }
+                searchPageHistoryRef={ searchPageHistoryRef}
+                homePageHistoryRef={ homePageHistoryRef }
                 dashboardState={ dashboardState }
                 setDashboardState={ setDashboardState } />
             </section>  

@@ -10,7 +10,7 @@ const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
 
 
     // FUNC 1 IS A CALLBACK SENT FROM TRACK 
-    const { type, data, func, func2 } = { ...overlay}
+    const { type, pageType, data, func, func2 } = { ...overlay}
     const { selectedTrack, calledFrom, collection } = {...data}
     const [ track, setTrack ] = useState( track => track = selectedTrack )
     const copyToClip = () => {
@@ -24,7 +24,7 @@ const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
     }
 
 
-    const handleViewArtist = ( e, artistArray, overlayFunc, activeItemFunc ) => {
+    const handleViewArtist = ( e, pageType, artistArray, overlayFunc, activeItemFunc ) => {
         e.stopPropagation()
     
         if( artistArray.length === 1 ){
@@ -36,14 +36,14 @@ const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
                 title: 'Choose artist',
                 array: artistArray
             }
-            overlayFunc({ type: 'listMenu' , data: popupData, func: activeItemFunc })
+            overlayFunc({ type: 'listMenu' , pageType: pageType, data: popupData, func: func })
         }
     }
 
     const viewArtist = ( e, artists ) => {
         e.stopPropagation()
         setOverlay( {} )
-        handleViewArtist( e , artists, setOverlay, setActiveHomeItem)
+        handleViewArtist( e , pageType, artists, setOverlay, func)
         if( func2 ) func2()
     }
 
