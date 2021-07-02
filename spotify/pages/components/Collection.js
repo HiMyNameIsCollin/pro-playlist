@@ -77,9 +77,10 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
                         return item
                     }
                 })
+                const allSongs = songs.filter( x => x.preview_url)
                 return{
                     ...state,
-                    tracks: songs
+                    tracks: allSongs
                 }
             case routes.recommendations :
                 const recommendations = action.tracks.map(track => track.album)

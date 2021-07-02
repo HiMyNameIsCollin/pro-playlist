@@ -5,10 +5,14 @@ import { DbHookContext } from './Dashboard'
 
 const SearchHeader = ({  headerHeightRef }) => {
 
+    const [ mounted, setMounted ] = useState( false )
+
+    useEffect(() => setMounted(true), [])
+
     const { hiddenUI } = useContext( DbHookContext )
     const hideHeader = useSpring({
-        top: !hiddenUI ? '0rem' : '-4rem',
-        
+        transform: !hiddenUI && mounted ? 'translateY(0rem)' : 'translateY(-4rem)',
+        top: mounted ? '0rem' : '-7rem'
     })
     return(
         <animated.header ref={ headerHeightRef } style={hideHeader} className='searchHeader'>

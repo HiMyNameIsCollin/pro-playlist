@@ -17,6 +17,9 @@ const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trac
     const setPlayerSize = playerContext ? playerContext.setPlayerSize : null
     const currPlaying = playerContext ? playerContext.currPlaying : null
 
+
+
+
     useEffect(() => {
         if( queue[ qIndex ] && queue[ qIndex ].id === track.id && type !=='playerCollapsed' && type !== 'queueView'){
             setActiveTrack( true )
@@ -25,9 +28,9 @@ const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trac
         }
     },[ qIndex, queue ])
 
+
     const playTrack = (e, track ) =>{
         e.stopPropagation()
-
         // Adds track to Queue. Callback func is 'setQueue'
         if( type === 'search' ){
             

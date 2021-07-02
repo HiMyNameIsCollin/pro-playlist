@@ -178,6 +178,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const searchPageHistoryRef = useRef( [] )
     const homePageHistoryRef = useRef( [] )
     const scrollRef = useRef( scrollPosition )
+    const firstMountRef = useRef()
 
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
 
@@ -275,20 +276,17 @@ const Dashboard = ({ setAuth, audioRef }) => {
 useEffect(() => {
     const winScroll = document.body.scrollTop || document.documentElement.scrollTop
     if( activeHomeItem.id ){
-        if(homePageHistoryRef.current.length > 0){
-            
+        if( homePageHistoryRef.current.length > 0 ){
+            if( currActiveHomeRef.current.selectedTrack) currActiveHomeRef.current.selectedTrack = false
             if( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem.id !== activeHomeItem.id ){
                 homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, scroll: winScroll })
-            } else {
-                const lastPage = homePageHistoryRef.current.pop()
-            }
+            } 
         } else {
             homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, scroll: winScroll })
         }
-        currActiveHomeRef.current = activeHomeItem
     } 
-},[ activeHomeItem, activeSearchItem])
-
+    currActiveHomeRef.current = activeHomeItem
+},[ activeHomeItem ])
 
 
 // Navigation through the pages is handled here.
@@ -320,13 +318,15 @@ useEffect(() => {
                     break
             }
         } else {
-            if(location.pathname !== '/'){
+            if(location.pathname !== '/' && firstMountRef.current ){
                 history.push('/')
-                homePageHistoryRef.current = []
-                
             }
         }
     },[ activeHomeItem ])
+
+    useEffect(() => {
+        firstMountRef.current = true
+    },[])
 
 
 
@@ -343,7 +343,6 @@ useEffect(() => {
 
     useEffect(() => {
         let hideMe
-        console.log( scrollPosition < scrollRef.current )
         if(scrollPosition <= scrollRef.current) {
             hideMe = false
         } else {
@@ -406,7 +405,8 @@ useEffect(() => {
                 setActiveSearchItem={ setActiveSearchItem }
                 my_top_artists={ state.my_top_artists } 
                 available_genre_seeds={ state.available_genre_seeds }
-                searchPageHistoryRef={ searchPageHistoryRef }/>
+                searchPageHistoryRef={ searchPageHistoryRef }
+                currActiveSearchRef={ currActiveSearchRef } />
                 <Manage />
                 
             

@@ -62,7 +62,7 @@ const reducer = ( state, action ) => {
 
 export const SearchHookContext = createContext()
 
-const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: pageHistoryRef,  activeSearchItem, setActiveSearchItem }) => {
+const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef, currActiveSearchRef, activeSearchItem, setActiveSearchItem }) => {
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
@@ -130,35 +130,73 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef: 
         return newArr
     }
 
+    
+
+    useEffect(() => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop
+        if( activeSearchItem.id ){
+            if( searchPageHistoryRef.current.length > 0 ){
+                if( currActiveSearchRef.current.selectedTrack) currActiveSearchRef.current.selectedTrack = false
+                if( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem.id !== activeSearchItem.id ){
+                    searchPageHistoryRef.current.push({ activeItem: currActiveSearchRef.current, scroll: winScroll })
+                } 
+            } else {
+                searchPageHistoryRef.current.push({ activeItem: currActiveSearchRef.current, scroll: winScroll })
+            }
+        } 
+        currActiveSearchRef.current = activeSearchItem
+    },[ activeSearchItem ])
+
+    const dir = searchPageHistoryRef.current.length > 0  ?
+    activeSearchItem.id === searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1].activeItem.id || 
+    !activeSearchItem.type ? 
+    -1 
+    :
+    1
+    : 
+    1
+
+    useEffect(() => {
+        if( searchPageHistoryRef.current.length > 0 && activeSearchItem.id === searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1].activeItem.id ){
+            const lastItem = searchPageHistoryRef.current.pop()
+            // window.scroll({
+            //     x: 0,
+            //     y: lastItem.scroll,
+            //     behavior: 'auto'
+            // })
+        }
+    },[ activeSearchItem ])
+    
+
 
     const pageTransition = useTransition(activeSearchItem, {
-        initial: { transform: 'translateX(100%)', },
-        from: { transform: 'translateX(100%)', position: 'absolute', width: '100%' , zIndex: 2 },
+        initial: { transform: `translateX(${100 * dir}%)`},
+        from: { transform: `translateX(${100 * dir}%)`, position: 'absolute', width: '100%' , zIndex: 2 },
         update: {  position: 'relative'},
-        enter: { transform: 'translateX(0%)', zIndex: 2},
-        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: 1},
+        enter: { transform: `translateX(${0 * dir}%)`, zIndex: 2},
+        leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
     })
 
     const headerTransition = useTransition(activeSearchItem, {
-        from: { transform: 'translateX(100%)', position: 'fixed', width: '100%' , zIndex: 3 },
+        from: { transform: `translateX(${100 * dir}%)`, position: 'fixed', width: '100%' , zIndex: 3 },
         update: {  position: 'fixed'},
-        enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-20%)', position: 'fixed', zIndex: 1},
+        enter: { transform: `translateX(${0 * dir}%)`, },
+        leave: { transform: `translateX(${-20 * dir}%)`, position: 'fixed', zIndex: 1},
     })
 
     const headerTransition2 = useTransition(activeSearchItem, {
-        from: { transform: 'translateX(0%)', position: 'fixed', width: '100%', zIndex: 3},
+        from: { transform: `translateX(${0}%)`, position: 'fixed', width: '100%', zIndex: 3},
         update: { position: 'fixed' },
-        enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-100%)',  position: 'fixed', zIndex: 1},
+        enter: { transform: `translateX(${0}%)`, },
+        leave: { transform: `translateX(${-100 * dir }%)`,  position: 'fixed', zIndex: 1},
     })
     
 
     const mainTransition = useTransition(activeSearchItem, {
-        from: { transform: 'translateX(0%)', position: 'absolute', width: '100%' , zIndex: 2},
+        from: { transform: `'translateX(${ 0 * dir }%)'`, position: 'absolute', width: '100%' , zIndex: 2},
         update: {  position: 'relative'},
-        enter: { transform: 'translateX(0%)' },
-        leave: { transform: 'translateX(-20%)', position: 'absolute', zIndex: 1},
+        enter: { transform: `'translateX(${ 0 * dir }%)'`, },
+        leave: { transform: `'translateX(${ -20 * dir }%)'`, position: 'absolute', zIndex: 1},
     })
 
     return(

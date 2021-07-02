@@ -14,16 +14,27 @@ const Home = ({  state }) => {
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ activeHeader, setActiveHeader ] = useState( {} )
 
- 
-
     const dir = homePageHistoryRef.current.length > 0  ?
     activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id || 
     !activeHomeItem.type ? 
-    1 
+    -1 
     :
-    -1
+    1
     : 
     -1
+
+    useEffect(() => {
+        if( homePageHistoryRef.current.length > 0 && activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id ){
+            const lastItem = homePageHistoryRef.current.pop()
+            // window.scroll({
+            //     x: 0,
+            //     y: lastItem.scroll,
+            //     behavior: 'auto'
+            // })
+        }
+    },[ location ])
+
+    
     const pageTransition = useTransition(location, {
         initial: { transform: `translateX(${100 * dir}%)`, },
         from: { transform: `translateX(${100 * dir}%)`, position: 'absolute', width: '100%' , zIndex: 2 },

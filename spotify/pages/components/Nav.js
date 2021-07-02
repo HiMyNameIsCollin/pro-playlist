@@ -32,6 +32,7 @@ const Nav = ({ hiddenUI , dashboardState, setDashboardState , pageScrollRef, sea
     }
 
 
+
     return(
         <animated.nav style={hideNav} className='nav'>
             <ul className='nav__list'>
