@@ -16,6 +16,7 @@ import Nav from './Nav'
 import Player from './player/Player'
 
 export const DbHookContext = createContext()
+export const DbFetchedContext = createContext()
 
 const initialState = {
     user_info: {},
@@ -168,7 +169,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ queue, setQueue ] = useState( [] )
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
-    const [ dashboardState, setDashboardState ] = useState('home')
+    const [ dashboardState, setDashboardState ] = useState('search')
+    const [ searchState, setSearchState ] = useState('search')
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
     const [ activeHomeItem, setActiveHomeItem ] = useState( {} ) 
 
@@ -205,7 +207,22 @@ const Dashboard = ({ setAuth, audioRef }) => {
         loaded, 
         setLoaded,
         setAuth
-     }
+    }
+
+    const dbFetchedState = {
+        user_info,
+        player_info,
+        my_top_genres,
+        my_playlists, 
+        featured_playlists, 
+        new_releases, 
+        my_albums, 
+        recently_played, 
+        my_top_tracks, 
+        my_top_artists, 
+        all_categories, 
+        available_genre_seeds 
+    }
 
 // Set last played track on account as active track
     useEffect(() => {
@@ -394,23 +411,29 @@ useEffect(() => {
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
+        <DbFetchedContext.Provider value={ dbFetchedState }>
             <section className='dashboard'>  
+
                 <Overlay />
 
                 <Home
                 state={ state } 
                 homePageHistoryRef={ homePageHistoryRef }/> 
+
                 <Search
                 activeSearchItem={ activeSearchItem }
                 setActiveSearchItem={ setActiveSearchItem }
+                searchState={ searchState }
+                setSearchState={ setSearchState }
                 my_top_artists={ state.my_top_artists } 
                 available_genre_seeds={ state.available_genre_seeds }
                 searchPageHistoryRef={ searchPageHistoryRef }
                 currActiveSearchRef={ currActiveSearchRef } />
+
                 <Manage />
                 
-            
                 <Player hiddenUI={ hiddenUI }/>
+
                 <Nav 
                 pageScrollRef= { pageScrollRef }
                 hiddenUI={ hiddenUI } 
@@ -420,7 +443,8 @@ useEffect(() => {
                 homePageHistoryRef={ homePageHistoryRef }
                 dashboardState={ dashboardState }
                 setDashboardState={ setDashboardState } />
-            </section>  
+            </section>
+        </DbFetchedContext.Provider>
         </DbHookContext.Provider>  
     )
 }

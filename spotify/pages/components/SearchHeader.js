@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from 'react'
 import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 
-const SearchHeader = ({  headerHeightRef }) => {
+const SearchHeader = ({ setSearchState }) => {
 
     const [ mounted, setMounted ] = useState( false )
 
@@ -15,14 +15,14 @@ const SearchHeader = ({  headerHeightRef }) => {
         top: mounted ? '0rem' : '-7rem'
     })
     return(
-        <animated.header ref={ headerHeightRef } style={hideHeader} className='searchHeader'>
+        <animated.header style={hideHeader} className='searchHeader'>
             <h1 className='searchHeader__title'>
                 Search
             </h1>
-            <form className='searchHeader__search'>
+            <div className='searchHeader__search' onClick={() => setSearchState('search') }>
                 <i className="fas fa-search"></i>
                 <input type='text' placeholder='Search for artists, songs, or podcasts'/>
-            </form>
+            </div>
         </animated.header>
     )
 }

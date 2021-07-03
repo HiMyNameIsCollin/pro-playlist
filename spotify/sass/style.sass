@@ -75,7 +75,7 @@ $bg__1--lg: url('../public/bglg.jpg')
         border-radius: 50%
         margin-right: 1rem 
     p
-        font-weight: 700
+        font-weight: 600
     
 *
     margin: 0
@@ -192,18 +192,20 @@ i
         img
             object-fit: cover
     &__btn
-        border: none
+        border: solid 1px $green
         border-radius: 40px
         background: $green
         color: $white
         cursor: pointer
         display: block
-        font-weight: 700
+        font-weight: 600
         margin: 0 auto 2rem auto
         padding: 1rem 
         width: 100%
         -webkit-appearance: none
         &:focus
+            background: $green
+            border: $lightGreen
             outline: none
     p
         color: $white
@@ -280,7 +282,7 @@ i
         border: solid $white 1px
         border-radius: 25px
         font-size: 0.75rem
-        font-weight: 700
+        font-weight: 600
         margin: 1rem auto
         padding: .25rem 1rem
     &--active
@@ -631,7 +633,7 @@ i
     left: 0
     position: fixed
     width: 100%
-    z-index: 2
+    z-index: 5
     &__bar
         background: $grey
         display: flex
@@ -710,7 +712,7 @@ i
         button
             border: solid $grey 1px
             border-radius: 5px
-            font-weight: 700
+            font-weight: 600
     &--active
         opacity: 1
         
@@ -853,13 +855,94 @@ i
         input
             background: inherit
             border: none
-            font-weight: 700
+            font-weight: 600
+            pointer-events: none
             width: stretch
             &:focus
                 outline: none
             &::placeholder
                 color: $black
             
+.searchOverlay
+    background: $black
+    color: $white
+    height: 100%
+    left: 0
+    position: fixed
+    top: 0
+    width: 100%
+    z-index: 4
+    &__container
+        align-items: center
+        display: flex
+        flex-direction: column
+        justify-content: center
+        height: 100%
+    &__defaultMsg
+        padding: 0 2rem
+        text-align: center
+    &__header
+        background: $darkGrey
+        display: flex
+        flex-wrap: wrap 
+        position: fixed
+        top: 0
+        left: 0
+        width: 100%
+        &__button
+            font-size: .8rem
+            font-weight: 600
+            padding: 0 .5rem
+            
+        form
+            @include pseudo
+            align-items: center
+            background: $black
+            border-radius: 10px
+            color: $white
+            display: flex
+            padding: .5rem
+            margin: .5rem
+            width: auto
+            min-width: calc(100% - 5rem)
+            input
+                background: none
+                border: none
+                color: $white
+                padding: 0 .5rem
+                font-size: 1rem
+                height: 100%
+                width: 100%
+                &:focus
+                    outline: none
+                &::placeholder
+                    color: $white
+            i
+                color: $white
+                font-size: 1rem
+            &::before
+                background: $grey
+                opacity: 0.5
+
+.searchFilters
+    display: flex
+    overflow-x: auto
+    padding: .5rem 0
+    &__btn
+        flex: 0 0 auto
+        border: solid $white 1px
+        border-radius: 25px
+        margin: 0 .5rem
+        padding: 0.25rem 1rem
+        text-align: center
+        white-space: nowrap
+        &:focus
+            background: $green
+            border: $lightGreen
+        &--active
+            background: $green
+            border: $lightGreen
+
 .nav
     display: flex
     justify-content: center
@@ -867,7 +950,7 @@ i
     bottom: 0
     left: 0
     width: 100%
-    z-index: 2
+    z-index: 5
     &__list
         display: flex
         justify-content: center
@@ -1074,7 +1157,7 @@ i
             padding: 1rem 0 
             width: 100%
             span
-                font-weight: 700
+                font-weight: 600
             i
                 font-size: 2rem
     &__listMenu

@@ -15,22 +15,16 @@ const Nav = ({ hiddenUI , dashboardState, setDashboardState , pageScrollRef, sea
             pageScrollRef.current[`${dashboardState}`] = winScroll
             setDashboardState(page)
         } else {
-            let lastItem
             if( page === 'home' ){
-                lastItem = homePageHistoryRef.current.length > 0 ?
-                homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem :
-                {}
-                setActiveHomeItem( lastItem )
+                homePageHistoryRef.current.length > 0 &&
+                setActiveHomeItem( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem  )
             } else if ( page === 'search' ){
-                lastItem = searchPageHistoryRef.current.length > 0 ?
-                searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ] :
-                {}
-                setActiveSearchItem( lastItem )
+                searchPageHistoryRef.current.length > 0 &&
+                setActiveSearchItem( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem )
             }
             
         }
     }
-
 
 
     return(

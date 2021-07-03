@@ -9,6 +9,7 @@ import FixedHeader from './FixedHeader'
 import Artist from './Artist'
 import Collection from './Collection'
 import Showcase from './Showcase'
+import SearchOverlay from './SearchOverlay'
 import Loading from './Loading'
 
 import BrowseContainer from './BrowseContainer'
@@ -62,14 +63,22 @@ const reducer = ( state, action ) => {
 
 export const SearchHookContext = createContext()
 
-const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef, currActiveSearchRef, activeSearchItem, setActiveSearchItem }) => {
+const Search = ({  
+    my_top_artists, 
+    available_genre_seeds, 
+    searchPageHistoryRef, 
+    currActiveSearchRef,
+    searchState,
+    setSearchState, 
+    activeSearchItem, 
+    setActiveSearchItem }) => {
     const API = 'https://api.spotify.com/'
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
     const [ state, dispatch ] = useReducer( reducer , initialState )
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
-    const [ searchState, setSearchState ] = useState('default')
+    
     const [ loaded, setLoaded ] = useState( false )
     
     const { overlay, scrollPosition } = useContext( DbHookContext )
@@ -201,17 +210,19 @@ const Search = ({  my_top_artists, available_genre_seeds, searchPageHistoryRef, 
 
     return(
         <SearchHookContext.Provider value={ searchHookState }>   
+
         <div id='searchPage' >
+            <SearchOverlay searchState={ searchState } setSearchState={ setSearchState }/>
         {
             headerTransition2(( props, item ) => (
                 <animated.div style={ props }>
                     {
                         !item.type &&
-                        <SearchHeader /> 
+                        <SearchHeader setSearchState={ setSearchState } /> 
                     }
                     {
                         item.type === 'category' &&
-                        <SearchHeader /> 
+                        <SearchHeader setSearchState={ setSearchState }/> 
                     }
                 </animated.div>
             ))

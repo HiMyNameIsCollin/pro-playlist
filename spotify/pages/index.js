@@ -12,7 +12,7 @@ const Index = () => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <link rel="icon" href="" /> 
         <link rel="preconnect" href="https://fonts.gstatic.com"/>
-        <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet"/>
         <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/font-awesome-line-awesome/css/all.min.css"/>
         
       </Head>
