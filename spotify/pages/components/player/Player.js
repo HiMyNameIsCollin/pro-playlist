@@ -59,7 +59,6 @@ const Player = ({ hiddenUI }) => {
 
 // If first track in Queue changes, grabs the full track info of the new first element in Queue array.
     useEffect(() => {
-        console.log( queue[qIndex])
         if( queue[ qIndex ] && queue[ qIndex ].id !== currPlaying.id ){
             getTrack( queue[ qIndex ] )
         } 

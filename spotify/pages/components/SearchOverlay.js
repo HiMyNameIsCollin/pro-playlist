@@ -12,6 +12,7 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
     const route = 'v1/search'
     const [ searchInput, setSearchInput ] = useState('')
     const [ activeFilter, setActiveFilter ] = useState( 'top' )
+    const [ personalResult, setPersonalResult ] = useState( {} )
     const [ artistResults, setArtistResults ] = useState([])
     const [ albumResults, setAlbumResults ] = useState([])
     const [ playlistResults, setPlaylistResults ] = useState([])
@@ -53,12 +54,23 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
             if( apiPayload.albums ) setAlbumResults( apiPayload.albums.items )
             if( apiPayload.playlists ) setPlaylistResults( apiPayload.playlists.items )
             if( apiPayload.tracks ) setTrackResults( apiPayload.tracks.items.sort(( a, b ) => b.popularity - a.popularity) )
-
         }
     }, [ apiPayload ])
 
+    useEffect(() => {
+        if(artistResults.length > 0){
+            const featArtist = my_top_artists.find( x => x.name.substr(0, searchInput.length).toLowerCase() === searchInput.toLowerCase())
+            if( featArtist ){
+                setPersonalResult( featArtist )
+            } else {
+                setPersonalResult( {} )
+            }
+        }
+    }, [ artistResults ])
+
     return(
         <animated.div style={ overlayActive } className='searchOverlay'>
+            
             <header className='searchOverlay__header'>
                 <form>
                     <i className="fas fa-search"></i>
@@ -70,23 +82,23 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
                 <SearchFilters activeFilter={ activeFilter } setActiveFilter={ setActiveFilter }/>
                 }
             </header>
-            <div className='searchOverlay__container'>
-                {
-                !artistResults.length &&
-                !albumResults.length &&
-                !playlistResults.length &&
-                !trackResults.length ?
-                <div className='searchOverlay__defaultMsg'>
-                    <h1>
-                        Find what you love
-                    </h1>
-                    <p>
-                        Search for artists, tracks, playlists and albums.
-                    </p>
-                </div> :
-                <SearchResults />
-                }
-            </div>
+
+            {
+            !artistResults.length &&
+            !albumResults.length &&
+            !playlistResults.length &&
+            !trackResults.length ?
+            <div className='searchOverlay__defaultMsg'>
+                <h1>
+                    Find what you love
+                </h1>
+                <p>
+                    Search for artists, tracks, playlists and albums.
+                </p>
+            </div> :
+            <SearchResults />
+            }
+
         </animated.div>
     )
 }

@@ -1223,23 +1223,19 @@ i {
 .searchOverlay {
   background: #191414;
   color: #FFFFFF;
+  display: flex;
   height: 100%;
   left: 0;
+  padding: 6.5rem 0;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 4;
 }
-.searchOverlay__container {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-}
 .searchOverlay__defaultMsg {
   padding: 0 2rem;
   text-align: center;
+  margin: auto;
 }
 .searchOverlay__header {
   background: #212121;
@@ -1332,6 +1328,30 @@ i {
 .searchFilters__btn--active {
   background: #1DB954;
   border: #1ed764;
+}
+
+.searchResults {
+  height: 100%;
+  width: 100%;
+}
+
+.recommendCard {
+  display: flex;
+  flex-direction: column;
+}
+.recommendCard__artist {
+  align-items: center;
+  display: flex;
+}
+.recommendCard__imgContainer {
+  background: #FFFFFF;
+  border-radius: 50%;
+  height: 3rem;
+  width: 3rem;
+}
+.recommendCard__imgContainer img {
+  height: 100%;
+  max-width: 100%;
 }
 
 .nav {

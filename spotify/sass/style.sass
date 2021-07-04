@@ -866,21 +866,18 @@ i
 .searchOverlay
     background: $black
     color: $white
+    display: flex
     height: 100%
     left: 0
+    padding: 6.5rem 0
     position: fixed
     top: 0
     width: 100%
     z-index: 4
-    &__container
-        align-items: center
-        display: flex
-        flex-direction: column
-        justify-content: center
-        height: 100%
     &__defaultMsg
         padding: 0 2rem
         text-align: center
+        margin: auto
     &__header
         background: $darkGrey
         display: flex
@@ -892,8 +889,7 @@ i
         &__button
             font-size: .8rem
             font-weight: 600
-            padding: 0 .5rem
-            
+            padding: 0 .5rem   
         form
             @include pseudo
             align-items: center
@@ -942,6 +938,25 @@ i
         &--active
             background: $green
             border: $lightGreen
+            
+.searchResults
+    height: 100%
+    width: 100%
+.recommendCard
+    
+    display: flex
+    flex-direction: column
+    &__artist
+        align-items: center
+        display: flex
+    &__imgContainer
+        background: $white
+        border-radius: 50%
+        height: 3rem
+        width: 3rem
+        img
+            height: 100%
+            max-width: 100%
 
 .nav
     display: flex
