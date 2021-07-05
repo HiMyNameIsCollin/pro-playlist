@@ -7,7 +7,7 @@ import Slider from './Slider'
 import useApiCall from '../hooks/useApiCall'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { DbHookContext } from './Dashboard'
-import { SearchHookContext } from './Search'
+import { SearchHookContext } from './search/Search'
 const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, setActiveHeader }) => {
 
 

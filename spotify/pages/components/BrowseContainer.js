@@ -18,9 +18,9 @@ const BrowseContainer = ({ type, message, data, }) => {
     return(
             <section className='browseContainer'> 
                 <div className='browseContainer__title'>
-                    <h3>
+                    <h4>
                         { message }
-                    </h3>
+                    </h4>
                     
                 </div> 
                {

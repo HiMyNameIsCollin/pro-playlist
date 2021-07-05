@@ -10,7 +10,7 @@ import TracksContainer from './TracksContainer'
 import Slider from './Slider'
 import Loading from './Loading'
 import { DbHookContext } from './Dashboard'
-import { SearchHookContext } from './Search'
+import { SearchHookContext } from './search/Search'
 
 
 const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader, }) => {

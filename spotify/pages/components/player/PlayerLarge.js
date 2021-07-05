@@ -21,11 +21,18 @@ const PlayerLarge = ({ controls }) => {
     },[ apiPayload])
 
     useEffect(() => {
-        if( currPlaying.context.href ){
+        if( currPlaying.context &&  currPlaying.context.href ){
             finalizeRoute( 'get', currPlaying.context.href.slice(API.length), fetchApi, currPlaying.context.href.slice(-22) )
         } else {
             // For search 
-            setCurrPlayingContext({ name: currPlaying.context.name })
+            const context = {
+                name: 'Search',
+                href: currPlaying.album.href,
+                type: 'search'
+            }
+            const currPlayingClone = { ...currPlaying.album }
+            currPlayingClone['context'] = context
+            setCurrPlayingContext( currPlayingClone )
         }
     }, [ currPlaying ])
 
@@ -61,15 +68,7 @@ const PlayerLarge = ({ controls }) => {
         setOverlay( {type: 'trackMenuPlayer', data: popupData,  func: setActiveHomeItem , func2: togglePlayer} )
     }
 
-    useLayoutEffect(() => {
-        const body = document.querySelector('body')
-        if( playerSize === 'large' ) {
-            body.classList.add('noScroll')
-        } else{
-            body.classList.remove('noScroll')
-        }
-    }, [ playerSize ])
-    
+
     return(
         <animated.div
         style={ largePlayerAnimation }
@@ -85,10 +84,10 @@ const PlayerLarge = ({ controls }) => {
                         onClick={ togglePlayer }  
                         className="fas fa-chevron-down"></i>
                     }
-                    <h3 
+                    <h4
                     onClick={ handleViewCollection }> 
                     { currPlayingContext.name } 
-                    </h3>
+                    </h4>
                     
                     <i
                     onClick={ handleTrackMenu } 

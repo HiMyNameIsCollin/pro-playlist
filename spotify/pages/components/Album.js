@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { whichPicture } from "../../utils/whichPicture"
 import { capital } from '../../utils/capital'
 import { DbHookContext } from './Dashboard'
-import { SearchHookContext } from './Search'
+import { SearchHookContext } from './search/Search'
 const Album = ({ item }) => {
 
     const { setActiveHomeItem, setHiddenUI, location } = useContext( DbHookContext )

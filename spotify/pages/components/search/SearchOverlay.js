@@ -2,9 +2,8 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import { useSpring, animated } from 'react-spring'
 import SearchFilters from './SearchFilters'
 import SearchResults from './SearchResults'
-import useApiCall from '../hooks/useApiCall'
-import { finalizeRoute } from '../../utils/finalizeRoute'
-import { DbFetchedContext } from './Dashboard'
+import useApiCall from '../../hooks/useApiCall'
+import { finalizeRoute } from '../../../utils/finalizeRoute'
 
 const SearchOverlay = ({ searchState, setSearchState }) => {
 
@@ -12,13 +11,12 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
     const route = 'v1/search'
     const [ searchInput, setSearchInput ] = useState('')
     const [ activeFilter, setActiveFilter ] = useState( 'top' )
-    const [ personalResult, setPersonalResult ] = useState( {} )
+
     const [ artistResults, setArtistResults ] = useState([])
     const [ albumResults, setAlbumResults ] = useState([])
     const [ playlistResults, setPlaylistResults ] = useState([])
     const [ trackResults, setTrackResults ] = useState([])
     const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-    const { my_top_artists, my_top_tracks } = useContext( DbFetchedContext )
     const searchBarRef = useRef()
     
     const overlayActive = useSpring({
@@ -26,9 +24,14 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
         pointerEvents: searchState === 'search' ?  'auto ': 'none'
     })
 
-    useEffect(() => {
-        if(searchState === 'search') searchBarRef.current.focus()
 
+
+    useEffect(() => {
+        if( searchState === 'search' ) searchBarRef.current.focus()
+        if( searchState !=='search' && searchInput !== '' ) {
+            setSearchInput('')
+            searchBarRef.current.value = ''
+        }
     }, [ searchState ])
 
     useEffect(() => {
@@ -50,23 +53,13 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
 
     useEffect(() => {
         if( apiPayload ){
-            if( apiPayload.artists ) setArtistResults( apiPayload.albums.items )
+            if( apiPayload.artists ) setArtistResults( apiPayload.artists.items )
             if( apiPayload.albums ) setAlbumResults( apiPayload.albums.items )
             if( apiPayload.playlists ) setPlaylistResults( apiPayload.playlists.items )
             if( apiPayload.tracks ) setTrackResults( apiPayload.tracks.items.sort(( a, b ) => b.popularity - a.popularity) )
         }
     }, [ apiPayload ])
 
-    useEffect(() => {
-        if(artistResults.length > 0){
-            const featArtist = my_top_artists.find( x => x.name.substr(0, searchInput.length).toLowerCase() === searchInput.toLowerCase())
-            if( featArtist ){
-                setPersonalResult( featArtist )
-            } else {
-                setPersonalResult( {} )
-            }
-        }
-    }, [ artistResults ])
 
     return(
         <animated.div style={ overlayActive } className='searchOverlay'>
@@ -96,7 +89,13 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
                     Search for artists, tracks, playlists and albums.
                 </p>
             </div> :
-            <SearchResults />
+            <SearchResults
+            activeFilter={ activeFilter }
+            searchInput={ searchInput }
+            albumResults={ albumResults }
+            artistResults={ artistResults }
+            trackResults={ trackResults }
+            playlistResults={ playlistResults } />
             }
 
         </animated.div>

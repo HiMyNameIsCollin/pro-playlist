@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
-import { SearchHookContext } from './Search'
+import { SearchHookContext } from './search/Search'
 
 const Card = ({ type, item }) => {
 

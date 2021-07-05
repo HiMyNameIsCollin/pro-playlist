@@ -6,7 +6,7 @@ import { whichPicture } from '../../utils/whichPicture'
 import { handleColorThief } from '../../utils/handleColorThief'
 import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
-import { SearchHookContext } from './Search'
+import { SearchHookContext } from './search/Search'
 
 const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader }) => {
     const { collection, artists, tracks } = { ...data }

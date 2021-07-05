@@ -2,14 +2,10 @@ import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext
 import { Switch, Route, useLocation, useHistory, NavLink } from 'react-router-dom'
 import { finalizeRoute } from '../../utils/finalizeRoute'
 import { calcScroll } from '../../utils/calcScroll'
-import { useTransition, animated } from 'react-spring'
 import  useApiCall  from '../hooks/useApiCall'
-import HomeHeader from './HomeHeader'
-import SearchHeader from './SearchHeader'
-import FixedHeader from './FixedHeader'
 import Home from './Home'
 import Manage from './Manage'
-import Search from './Search'
+import Search from './search/Search'
 
 import Overlay from './Overlay'
 import Nav from './Nav'
@@ -171,6 +167,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ playNextQueue, setPlayNextQueue ] = useState([])
     const [ dashboardState, setDashboardState ] = useState('search')
     const [ searchState, setSearchState ] = useState('search')
+    const [ playerSize, setPlayerSize ] = useState( 'small' )
+
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
     const [ activeHomeItem, setActiveHomeItem ] = useState( {} ) 
 
@@ -330,8 +328,12 @@ useEffect(() => {
                         history.push(`/playlist/${activeHomeItem.id}`)
                     }
                     break
+                case 'track':
+                    if(location.pathname !== `/album/${activeHomeItem.album.id}`){
+                        history.push(`/album/${activeHomeItem.album.id}`)
+                    }
                 default:
-                    
+                    console.log('hey', activeHomeItem)
                     break
             }
         } else {
@@ -351,12 +353,24 @@ useEffect(() => {
 //  When overlay is open, makes the rest of the APP no clicky
     useLayoutEffect(() => {
         const body = document.querySelector('body')
-        if( overlay.type ) {
+        if( overlay.type || playerSize === 'large' ) {
             body.classList.add('noScroll')
         } else{
             body.classList.remove('noScroll')
         }
-    }, [overlay])
+        if( searchState === 'search' && dashboardState === 'search' ){
+            body.classList.add( 'noScroll' )
+        } else if (searchState === 'search' && dashboardState !=='search'){
+            body.classList.remove( 'noScroll' )
+        }
+    }, [ overlay, playerSize, searchState, dashboardState ])
+
+    useEffect(() => {
+        if( activeSearchItem.id || activeHomeItem.id ){
+            setSearchState('default')
+        }
+    
+    }, [ activeSearchItem, activeHomeItem ])
 
     useEffect(() => {
         let hideMe
@@ -412,7 +426,7 @@ useEffect(() => {
     return(
         <DbHookContext.Provider value={ dbHookState }>
         <DbFetchedContext.Provider value={ dbFetchedState }>
-            <section className='dashboard'>  
+            <section className={ `dashboard`}>  
 
                 <Overlay />
 
@@ -432,7 +446,10 @@ useEffect(() => {
 
                 <Manage />
                 
-                <Player hiddenUI={ hiddenUI }/>
+                <Player 
+                hiddenUI={ hiddenUI } 
+                playerSize={ playerSize } 
+                setPlayerSize={ setPlayerSize }/>
 
                 <Nav 
                 pageScrollRef= { pageScrollRef }

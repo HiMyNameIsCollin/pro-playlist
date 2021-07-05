@@ -2,7 +2,7 @@ import Track from './Track'
 import { whichPicture } from '../../utils/whichPicture'
 import { useState , useEffect, useContext } from 'react'
 import { DbHookContext } from './Dashboard'
-import { SearchHookContext } from './Search'
+import { SearchHookContext } from './search/Search'
 
 const TracksContainer = ({ type, data , setOverlay }) => {
 

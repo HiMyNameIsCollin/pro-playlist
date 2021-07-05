@@ -1,19 +1,19 @@
 import { useState, useEffect, useReducer, useRef, useContext, createContext } from 'react'
-import { capital } from '../../utils/capital'
-import { finalizeRoute } from '../../utils/finalizeRoute'
+import { capital } from '../../../utils/capital'
+import { finalizeRoute } from '../../../utils/finalizeRoute'
 import { useTransition, animated } from 'react-spring'
-import  useApiCall  from '../hooks/useApiCall'
+import  useApiCall  from '../../hooks/useApiCall'
 
 import SearchHeader from './SearchHeader'
-import FixedHeader from './FixedHeader'
-import Artist from './Artist'
-import Collection from './Collection'
-import Showcase from './Showcase'
+import FixedHeader from '../FixedHeader'
+import Artist from '../Artist'
+import Collection from '../Collection'
+import Showcase from '../Showcase'
 import SearchOverlay from './SearchOverlay'
-import Loading from './Loading'
+import Loading from '../Loading'
 
-import BrowseContainer from './BrowseContainer'
-import { DbHookContext } from './Dashboard'
+import BrowseContainer from '../BrowseContainer'
+import { DbHookContext } from '../Dashboard'
 
 
 const initialState = {

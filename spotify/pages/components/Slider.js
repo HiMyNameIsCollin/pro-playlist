@@ -4,9 +4,9 @@ const Slider = ({ message, items, setActiveItem }) => {
     return(
         <section className='slider'>
             <div className='slider__title'>
-                <h2>
+                <h4>
                 { message }
-                </h2>
+                </h4>
             </div>
             <div className='slider__carousel'>
                 {   items.length > 0 ?

@@ -56,9 +56,9 @@ const TabsContainer = ({ items }) => {
     return(
         <section className='tabsContainer'>
             <div className='tabsContainer__title'>
-                <h2>
+                <h4>
                     Recently played
-                </h2>
+                </h4>
                 <span>
                     More
                 </span>

@@ -31,10 +31,10 @@ const FixedHeader = ({type, activeHeader, headerScrolled }) => {
             <button className='backButton'>
                 <i className="fas fa-chevron-left"></i>
             </button>
-            <animated.h3 style={{
+            <animated.h4 style={{
                 opacity: fadeIn.to( o => o),
                 transform: textScroll.to( y => `translateY(${ y }%)`)
-            }}> { activeHeader.data && activeHeader.data } </animated.h3>
+            }}> { activeHeader.data && activeHeader.data } </animated.h4>
         </animated.div>
     )
 }

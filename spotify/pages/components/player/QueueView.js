@@ -66,7 +66,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
             })
             setPlayNextQueue( arr )
             setPlayNextQueueSelected( [] )
-            setQueue( queue => queue = [ queue[0], ...queue.slice( arr2.length ) ])
+            setQueue( queue => queue = [ queue[0], ...queue.slice( arr2.length + 1 ) ])
         }
 
         if( queueViewSelected.length > 0 ) {
@@ -87,7 +87,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
 
     return(
         <div className='PlQueueView'>
-            <h3 ref={nowPlayingHeaderRef} className='PlQueueView__nowPlaying'>Now playing: </h3> 
+            <h4 ref={nowPlayingHeaderRef} className='PlQueueView__nowPlaying'>Now playing: </h4> 
             <Track
             type='queueView'
             handleTrackMenu={ handleTrackMenu }
@@ -96,7 +96,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
             playNextQueue.length > 0 &&
             <div className=' queueContainer'>
                 <div ref={ playNextHeaderRef } className='queueContainer__title'>
-                    <h3> Next In Queue </h3>
+                    <h4> Next In Queue </h4>
                     <span onClick={ removePlayNext }> Clear queue </span> 
                 </div>
                 {
@@ -117,7 +117,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
            
                 <div className='queueContainer'>
                     <div ref={ queueHeaderRef } className='queueContainer__title'>
-                        <h3> Up next in: { queue[ qIndex ].context.name }</h3>
+                        <h4> Up next in: { queue[ qIndex ].context.name }</h4>
                     </div>
             {
                 queue.slice( qIndex + 1 + playNextQueue.length  ).map( ( track, i )  => {

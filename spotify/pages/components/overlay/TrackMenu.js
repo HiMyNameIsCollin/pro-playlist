@@ -68,9 +68,9 @@ const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
                     alt='Track art' 
                     />
                 </div>
-                <h3> 
+                <h5> 
                     { track.name }
-                </h3>
+                </h5>
                 <p> { track.artists[0].name } </p>
             </header>
             

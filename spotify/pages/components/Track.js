@@ -32,10 +32,8 @@ const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trac
     const playTrack = (e, track ) =>{
         e.stopPropagation()
         // Adds track to Queue. Callback func is 'setQueue'
-        if( type === 'search' ){
-            
-        }else if ( type === 'artist' ){
-            
+        if ( type === 'artist' ){
+        
             let nextTracks = data.tracks.map( (t) => {
                 t['context'] = {
                     href: data.artist.href,
@@ -44,9 +42,9 @@ const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trac
                 }
                 return t
             })         
-            const index = data.tracks.findIndex( x => x.id === track.id )
-            setQueue( nextTracks )
-            setQIndex( index )            
+        const index = data.tracks.findIndex( x => x.id === track.id )
+        setQueue( nextTracks )
+        setQIndex( index )            
         } else if ( type === 'collection' ){
             let nextTracks = data.tracks.slice( index ).map( (t) => {
                 t['context'] = {

@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useContext } from 'react'
 import { useSpring, animated } from 'react-spring'
-import { DbHookContext } from './Dashboard'
+import { DbHookContext } from '../Dashboard'
 
 const SearchHeader = ({ setSearchState }) => {
 
