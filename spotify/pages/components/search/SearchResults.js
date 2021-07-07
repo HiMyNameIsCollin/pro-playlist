@@ -33,7 +33,7 @@ const SearchResults = ({ activeFilter, searchInput, artistResults, albumResults,
     return(
         <div className='searchResultsContainer'>
             {
-            personalResult.images &&
+            personalResult.images && activeFilter === 'top' &&
             <RecommendCard data={ personalResult } />    
             }
             {

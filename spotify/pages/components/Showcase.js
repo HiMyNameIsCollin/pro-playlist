@@ -72,7 +72,8 @@ const Showcase = ({ data }) => {
     },[ apiPayload ])
 
     return(
-        <div className='page page--search'>
+        <div className='page page--search showcase'>
+            <h2 className='showcase__title'> { data.name }</h2>
         {
         categoryResults.map(( cat, i ) => {
             if( cat.playlists.length > 0 ){

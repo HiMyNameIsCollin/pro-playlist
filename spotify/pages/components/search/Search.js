@@ -134,7 +134,7 @@ const Search = ({
         })
         let newArr = []
         sortable.map((item, i) => {
-            newArr.push({ name: capital( item[0] ), id: item[0] , type: 'genre' ,  images: item[1]})
+            newArr.push({ name: capital( item[0] ), id: item[0] , type: 'category' ,  images: item[1]})
         })
         return newArr
     }
@@ -176,7 +176,9 @@ const Search = ({
         }
     },[ activeSearchItem ])
     
-
+    const transitionConfig = {
+        tension: 170
+    }
 
     const pageTransition = useTransition(activeSearchItem, {
         initial: { transform: `translateX(${100 * dir}%)`},
@@ -228,21 +230,21 @@ const Search = ({
             ))
         } 
         {
-        headerTransition(( props, item )=> (
-            <animated.div style={ props }>
-            {
-            item.type === 'artist' ||
-            item.type === 'playlist' ||
-            item.type === 'album' ?
-            <FixedHeader type={'Search'} activeHeader={ activeHeader } headerScrolled={ headerScrolled }/>:
-            null
-            }
-            </animated.div>
-        ))
+            headerTransition(( props, item )=> (
+                <animated.div style={ props }>
+                {
+                item.type === 'artist' ||
+                item.type === 'playlist' ||
+                item.type === 'album' ?
+                <FixedHeader type={'Search'} activeHeader={ activeHeader } headerScrolled={ headerScrolled }/>:
+                null
+                }
+                </animated.div>
+            ))
         }
         {
-        mainTransition((props, item) => (
-            
+            mainTransition((props, item) => (
+                
                 !item.type  &&
                 <animated.div 
                 style={props}
@@ -256,48 +258,48 @@ const Search = ({
                     type='BcSearch'
                     data={ state.all_categories }/> 
                 </animated.div> 
-        
-        ))
+            
+            ))
         }
         {
-        pageTransition((props, item) => (
-            <animated.div style={ props }>
-                {
-                item.type === 'category' &&
-                    <Showcase data={ activeSearchItem } /> 
-                }
-                {
-                item.type === 'playlist' &&
-                    <Collection 
-                    activeHeader={ activeHeader }
-                    setActiveHeader={ setActiveHeader }
-                    headerScrolled={ headerScrolled }
-                    setHeaderScrolled={ setHeaderScrolled}
-                    type='playlist'
-                    genreSeeds={ available_genre_seeds }/>
-                }
-                {
-                item.type === 'album' &&
-                    <Collection 
-                    activeHeader={ activeHeader }
-                    setActiveHeader={ setActiveHeader }
-                    headerScrolled={ headerScrolled }
-                    setHeaderScrolled={ setHeaderScrolled}
-                    type='album'
-                    genreSeeds={ available_genre_seeds }/> 
-                }
-                {
-                item.type === 'artist' &&
-                    <Artist 
-                    type='artist'
-                    activeHeader={ activeHeader }
-                    setActiveHeader={ setActiveHeader }
-                    headerScrolled={ headerScrolled }
-                    setHeaderScrolled={ setHeaderScrolled}
-                    genreSeeds={ available_genre_seeds}/> 
-                }
-                    
-            </animated.div>
+            pageTransition((props, item) => (
+                <animated.div style={ props }>
+                    {
+                    item.type === 'category' &&
+                        <Showcase data={ activeSearchItem } /> 
+                    }
+                    {
+                    item.type === 'playlist' &&
+                        <Collection 
+                        activeHeader={ activeHeader }
+                        setActiveHeader={ setActiveHeader }
+                        headerScrolled={ headerScrolled }
+                        setHeaderScrolled={ setHeaderScrolled}
+                        type='playlist'
+                        genreSeeds={ available_genre_seeds }/>
+                    }
+                    {
+                    item.type === 'album' &&
+                        <Collection 
+                        activeHeader={ activeHeader }
+                        setActiveHeader={ setActiveHeader }
+                        headerScrolled={ headerScrolled }
+                        setHeaderScrolled={ setHeaderScrolled}
+                        type='album'
+                        genreSeeds={ available_genre_seeds }/> 
+                    }
+                    {
+                    item.type === 'artist' &&
+                        <Artist 
+                        type='artist'
+                        activeHeader={ activeHeader }
+                        setActiveHeader={ setActiveHeader }
+                        headerScrolled={ headerScrolled }
+                        setHeaderScrolled={ setHeaderScrolled}
+                        genreSeeds={ available_genre_seeds}/> 
+                    }
+                        
+                </animated.div>
         ))
         }
         </div>    

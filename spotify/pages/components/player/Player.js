@@ -128,9 +128,9 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize }) => {
             setCurrPlaying( clone )
         } else if ( repeat === 'all' ){
             if( qIndex === queue.length - 1 ){
-                console.log(123)
+                
                 setTrackProgress( 0 )
-
+                setQIndex( 0 )
             } else {
                 setQIndex( qIndex => qIndex = qIndex + 1 )
             }

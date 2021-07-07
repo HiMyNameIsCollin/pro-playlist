@@ -235,7 +235,7 @@ i {
 }
 .page--welcome {
   background: #212121;
-  padding: 8rem 0 8rem 0;
+  padding: 8rem 0;
 }
 .page--collection {
   background: #191414;
@@ -254,6 +254,13 @@ i {
 
 #homePage, #searchPage, #managePage {
   display: none;
+}
+
+.showcase {
+  color: #FFFFFF;
+}
+.showcase__title {
+  padding: 0 1rem;
 }
 
 .collection > * {
