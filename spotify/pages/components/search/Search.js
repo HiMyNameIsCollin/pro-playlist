@@ -192,7 +192,7 @@ const Search = ({
         from: { transform: `translateX(${100 * dir}%)`, position: 'fixed', width: '100%' , zIndex: 3 },
         update: {  position: 'fixed'},
         enter: { transform: `translateX(${0 * dir}%)`, },
-        leave: { transform: `translateX(${-20 * dir}%)`, position: 'fixed', zIndex: 1},
+        leave: { transform: `translateX(${-100 * dir}%)`, position: 'fixed', zIndex: 1},
     })
 
     const headerTransition2 = useTransition(activeSearchItem, {

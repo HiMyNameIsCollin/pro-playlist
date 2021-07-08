@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect, useState, useRef } from 'react'
+import { useContext, useEffect, useState, useRef } from 'react'
 import { PlayerHookContext } from './Player'
 import { DbHookContext } from '../Dashboard'
 import Controls from './Controls'

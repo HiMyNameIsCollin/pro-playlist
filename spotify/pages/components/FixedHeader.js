@@ -1,8 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useSpring, animated } from 'react-spring'
+import { DbHookContext } from './Dashboard'
+import { SearchHookContext } from './search/Search'
 
 const FixedHeader = ({type, activeHeader, headerScrolled }) => {
     const [ hidden, setHidden ] = useState(true)
+
+    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef } = useContext( DbHookContext )
+    const searchContext = useContext( SearchHookContext ) 
+    const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
+
 
     useEffect(() => {
         if( headerScrolled > 50 ){
@@ -14,28 +21,48 @@ const FixedHeader = ({type, activeHeader, headerScrolled }) => {
     },[headerScrolled])
 
     const showFixedHeader = useSpring({
-        transform: hidden ? 'translateY(-100%)' : 'translateY(0%)',
         opacity: hidden ? 0 : 1
     })
 
-    const {scaleUp, fadeIn, textScroll} = useSpring({
-        scaleUp: `${ 1.00 + ( headerScrolled * 0.01 ) }`,
+    const { fadeIn, textScroll, btnMove} = useSpring({
         fadeIn: `${ 0 + ( headerScrolled * 0.01 )}`,
         textScroll: `${ 200 - ( headerScrolled * 2 )}`,
+        btnMove: `${ 50 -( headerScrolled / 2 )}`
     })
-    return(
-        <animated.div
 
-        style={ showFixedHeader } 
-        className={`fixedHeader fixedHeader--${type}`}>
-            <button className='backButton'>
-                <i className="fas fa-chevron-left"></i>
-            </button>
+    const handleBackBtn = () => {
+        if( type === 'Home' ){
+            homePageHistoryRef.current.length > 0 &&
+            setActiveHomeItem( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem  )
+        } else if ( type === 'Search' ){
+            searchPageHistoryRef.current.length > 0 &&
+            setActiveSearchItem( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem )
+        }
+    }
+
+    return(
+        <header className={`fixedHeader fixedHeader--${type}`}>
+        <animated.button
+            onClick={ handleBackBtn }
+            style={{
+                transform: btnMove.to( y => `translateX(${ y }%)`)
+            }} 
+            className='fixedHeader__backBtn'>
+            <i className="fas fa-chevron-left"></i>
+        </animated.button>
+        <animated.div
+        className='fixedHeader__main'
+        style={{ 
+            opacity: fadeIn.to( y => y )
+        }} >
+
             <animated.h4 style={{
                 opacity: fadeIn.to( o => o),
                 transform: textScroll.to( y => `translateY(${ y }%)`)
             }}> { activeHeader.data && activeHeader.data } </animated.h4>
         </animated.div>
+        </header>
+
     )
 }
 

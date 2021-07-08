@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 
-const Nav = ({ hiddenUI , dashboardState, setDashboardState , pageScrollRef, searchPageHistoryRef, homePageHistoryRef, setActiveHomeItem, setActiveSearchItem }) => {
+const Nav = ({ hiddenUI , dashboardState, setDashboardState , pageScrollRef, searchPageHistoryRef, homePageHistoryRef, activeSearchItem, setActiveHomeItem, setActiveSearchItem }) => {
 
     const hideNav = useSpring({
         transform: hiddenUI ? 'translatey(100%)' : 'translatey(0%)'
@@ -16,11 +16,9 @@ const Nav = ({ hiddenUI , dashboardState, setDashboardState , pageScrollRef, sea
             setDashboardState(page)
         } else {
             if( page === 'home' ){
-                homePageHistoryRef.current.length > 0 &&
-                setActiveHomeItem( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem  )
-            } else if ( page === 'search' ){
-                searchPageHistoryRef.current.length > 0 &&
-                setActiveSearchItem( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem )
+                setActiveHomeItem( {} )
+            } else if ( page === 'search' && activeSearchItem.type  ){
+                setActiveSearchItem( {} )
             }
             
         }

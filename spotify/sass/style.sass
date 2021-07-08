@@ -389,10 +389,10 @@ i
     @include pseudo
     background: linear-gradient(to bottom, var(--currentTrackColor1) 0%, var(--currentTrackColor0)), linear-gradient(to right, var(--currentTrackColor1), var(--currentTrackColor0)) 
     min-height: 100vh
-    max-height: 100%
+    max-height: 100vh
     position: fixed
     width: 100%
-    z-index: 998
+    z-index: 994
     i
         font-size: 1.5rem
     &__wrapper
@@ -655,11 +655,7 @@ i
         color: $white
         margin-left: auto
         padding: .75rem 1rem
-    
-.backButton
-    left: 1rem
-    position: absolute
-    top: 1rem
+
 
 
 .artistHeader
@@ -779,30 +775,43 @@ i
             background: linear-gradient(to bottom, var(--headerColorHome1) 0% , var(--headerColorHome0)), linear-gradient(to right, var(--headerColorHome1) , var(--headerColorHome0))
 
 .fixedHeader
-    @include pseudo
-    @include shadowA
     color: $white
     font-size: 1rem
     position: fixed 
     top: 0 
     left: 0
-    opacity: 0
-    padding: 1rem
     text-align: center
     width: 100%
-    z-index: 998
-    h4
-        font-size: 1rem
-        overflow: hidden
-        text-overflow: ellipsis
-        white-space: nowrap
-    &::before
-        @include scrimGradient($black, 'to top')
-        z-index: -1
+    z-index: 991
+    &__backBtn
+        top: calc((100% - 1.75rem) /2 )
+        left: .5rem
+        position: absolute
+        z-index: 992
+        i
+            font-size: 1.5rem
+    &__main
+        @include pseudo
+        @include shadowA
+        opacity: 0
+        padding: 1rem
+        width: 100%
+        h4
+            font-size: 1rem
+            margin: auto
+            overflow: hidden
+            text-overflow: ellipsis
+            white-space: nowrap
+            width: 75%
+        &::before
+            @include scrimGradient($black, 'to top')
+            z-index: -1
     &--Home
-        background: linear-gradient(to bottom, var(--headerColorHome1) 0% , var(--headerColorHome0)), linear-gradient(to right, var(--headerColorHome1) , var(--headerColorHome0))
+        .fixedHeader__main
+            background: linear-gradient(to bottom, var(--headerColorHome1) 0% , var(--headerColorHome0)), linear-gradient(to right, var(--headerColorHome1) , var(--headerColorHome0))
     &--Search
-        background: linear-gradient(to bottom, var(--headerColorSearch1) 0% , var(--headerColorSearch0)), linear-gradient(to right, var(--headerColorSearch1) , var(--headerColorSearch0))
+        .fixedHeader__main
+            background: linear-gradient(to bottom, var(--headerColorSearch1) 0% , var(--headerColorSearch0)), linear-gradient(to right, var(--headerColorSearch1) , var(--headerColorSearch0))
 
 .homeHeader
     align-items: center
@@ -1139,10 +1148,13 @@ i
     max-height: 100%
     position: fixed
     width: 100%
-    z-index: 999
+    z-index: 995
     &::before
         @include scrimGradient($black, 'to top')
         opacity: 1
+    &::after
+        background: linear-gradient(to bottom, var(--currentTrackColor1) 0%, var(--currentTrackColor0)), linear-gradient(to right, var(--currentTrackColor1), var(--currentTrackColor0)) 
+
     &--Result
         &::before
             @include scrimGradient($black, 'to bottom right')

@@ -165,8 +165,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ queue, setQueue ] = useState( [] )
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
-    const [ dashboardState, setDashboardState ] = useState('search')
-    const [ searchState, setSearchState ] = useState('search')
+    const [ dashboardState, setDashboardState ] = useState('home')
+    const [ searchState, setSearchState ] = useState('default')
     const [ playerSize, setPlayerSize ] = useState( 'small' )
 
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
@@ -454,10 +454,10 @@ useEffect(() => {
                 <Nav 
                 pageScrollRef= { pageScrollRef }
                 hiddenUI={ hiddenUI } 
+                activeHomeItem={ activeHomeItem }
+                activeSearchItem={ activeSearchItem }
                 setActiveHomeItem={ setActiveHomeItem }
                 setActiveSearchItem={ setActiveSearchItem }
-                searchPageHistoryRef={ searchPageHistoryRef}
-                homePageHistoryRef={ homePageHistoryRef }
                 dashboardState={ dashboardState }
                 setDashboardState={ setDashboardState } />
             </section>
