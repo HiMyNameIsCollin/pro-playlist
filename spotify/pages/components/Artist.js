@@ -5,7 +5,6 @@ import AlbumContainer from './AlbumContainer'
 import ArtistHeader from './ArtistHeader'
 import Slider from './Slider'
 import useApiCall from '../hooks/useApiCall'
-import { finalizeRoute } from '../../utils/finalizeRoute'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, setActiveHeader }) => {
@@ -94,17 +93,17 @@ const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, s
         }
     }
     const API = 'https://api.spotify.com/'
-    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
 
     const { artist , top_tracks, all_albums, related_artists } = { ...state }
 
     useEffect(() => {
         let id = activeItem && activeItem.id ? activeItem.id : location.pathname.substr( routes.artist.length - 2 )
-        finalizeRoute( 'get', `${routes.artist}/${id}`, fetchApi, id)
-        finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, fetchApi, id, `market=ES`)
-        finalizeRoute( 'get', `${routes.artist}/${id}/albums`, fetchApi, id, 'limit=50')
-        finalizeRoute( 'get', `${routes.artist}/${id}/related-artists`, fetchApi, id, 'limit=50')
+        finalizeRoute( 'get', `${routes.artist}/${id}`, id)
+        finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, id, `market=ES`)
+        finalizeRoute( 'get', `${routes.artist}/${id}/albums`, id, 'limit=50')
+        finalizeRoute( 'get', `${routes.artist}/${id}/related-artists`, id, 'limit=50')
 
     }, [])
 

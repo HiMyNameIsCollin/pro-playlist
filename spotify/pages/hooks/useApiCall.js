@@ -67,6 +67,21 @@ const useApiCall = (url) => {
         }
     }
 
+    const finalizeRoute = (method, route, requestID, ...args) => {
+    let finalRoute = route
+    
+    if(args.length > 0){
+        args.forEach((arg, i) => {
+            if( i === 0 ) {
+                finalRoute += `?${arg}`
+            }else {
+                finalRoute += `&${arg}`
+            }
+        })
+    }
+    fetchApi( finalRoute, method , requestID)
+}
+
     useEffect(() => {
         if(tokenFetchComplete){
             const { route, method, body } = thisCallRef.current
@@ -75,7 +90,7 @@ const useApiCall = (url) => {
         } 
     },[ tokenFetchComplete ])
 
-    return { fetchApi, apiError, apiIsPending, apiPayload }
+    return { finalizeRoute, apiError, apiIsPending, apiPayload }
 }
 
 export default useApiCall

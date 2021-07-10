@@ -1,10 +1,9 @@
 import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
 import { Switch, Route, useLocation, useHistory, NavLink } from 'react-router-dom'
-import { finalizeRoute } from '../../utils/finalizeRoute'
 import { calcScroll } from '../../utils/calcScroll'
 import  useApiCall  from '../hooks/useApiCall'
 import Home from './Home'
-import Manage from './Manage'
+import Manage from './manage/Manage'
 import Search from './search/Search'
 
 import Overlay from './Overlay'
@@ -155,7 +154,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const API = 'https://api.spotify.com/'
     const location = useLocation()
     const history = useHistory()
-    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const [ state, dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState( false )
     const [ scrollPosition, setScrollPosition ] = useState(0)
@@ -165,7 +164,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ queue, setQueue ] = useState( [] )
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
-    const [ dashboardState, setDashboardState ] = useState('home')
+    const [ dashboardState, setDashboardState ] = useState('manage')
     const [ searchState, setSearchState ] = useState('default')
     const [ playerSize, setPlayerSize ] = useState( 'small' )
 
@@ -271,16 +270,16 @@ const Dashboard = ({ setAuth, audioRef }) => {
         // Callback function from fetchHook
         // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
         // 5th and onwards arguments will add query params to final url (Limit, offset, etc)
-        finalizeRoute('get', routes.user_info, fetchApi, null)
-        finalizeRoute( 'get', routes.player_info, fetchApi, null)
-        finalizeRoute( 'get', routes.featured_playlists, fetchApi, null )
-        finalizeRoute( 'get', routes.new_releases, fetchApi, null )
-        finalizeRoute( 'get', routes.recently_played, fetchApi, null, 'limit=50' ) 
-        finalizeRoute( 'get', routes.new_releases, fetchApi, null )
-        finalizeRoute( 'get', routes.available_genre_seeds, fetchApi, null )
-        finalizeRoute( 'get', routes.my_top_tracks, fetchApi, null )
-        finalizeRoute( 'get', routes.my_top_artists, fetchApi, null )
-        finalizeRoute ('get', routes.followed_artists, fetchApi, null, 'type=artist')
+        finalizeRoute('get', routes.user_info, null)
+        finalizeRoute( 'get', routes.player_info, null)
+        finalizeRoute( 'get', routes.featured_playlists, null )
+        finalizeRoute( 'get', routes.new_releases, null )
+        finalizeRoute( 'get', routes.recently_played, null, 'limit=50' ) 
+        finalizeRoute( 'get', routes.new_releases, null )
+        finalizeRoute( 'get', routes.available_genre_seeds, null )
+        finalizeRoute( 'get', routes.my_top_tracks, null )
+        finalizeRoute( 'get', routes.my_top_artists, null )
+        finalizeRoute ('get', routes.followed_artists, null, 'type=artist')
     },[])
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
@@ -419,6 +418,7 @@ useEffect(() => {
             }
         }
         
+        // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
     },[ dashboardState ])
 
 

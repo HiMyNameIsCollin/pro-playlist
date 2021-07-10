@@ -1,12 +1,11 @@
 import Tab from './Tab'
 import { useState, useEffect, useRef } from 'react'
-import { finalizeRoute } from '../../utils/finalizeRoute'
 import  useApiCall  from '../hooks/useApiCall'
 
 const TabsContainer = ({ items }) => {
 
     const API = 'https://api.spotify.com/'
-    const { fetchApi, apiPayload } = useApiCall(API)
+    const { finalizeRoute, apiPayload } = useApiCall(API)
     const [ data, setData ] = useState([])
     const messyDataRef = useRef([])
     const played_atRef = useRef([])
@@ -14,7 +13,7 @@ const TabsContainer = ({ items }) => {
     useEffect(() => {
         items.map((item) => {
             if(item.context && item.context.href){
-                finalizeRoute('get', item.context.href.substring(API.length), fetchApi)
+                finalizeRoute('get', item.context.href.substring(API.length))
                 played_atRef.current = [ ...played_atRef.current, item.played_at]
             } else {
                 

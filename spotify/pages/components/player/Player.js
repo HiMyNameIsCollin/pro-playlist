@@ -1,6 +1,5 @@
 import PlayerCollapsed from './PlayerCollapsed'
 import PlayerLarge from './PlayerLarge'
-import { finalizeRoute } from '../../../utils/finalizeRoute'
 import { useState, useEffect,  useLayoutEffect, useContext, useRef, createContext} from 'react'
 import { DbHookContext } from '../Dashboard'
 import  useApiCall  from '../../hooks/useApiCall'
@@ -36,7 +35,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize }) => {
         
     }
 
-    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const getTrack_route = 'v1/tracks'
 
     
@@ -73,7 +72,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize }) => {
         } else {
             queuedTrackContextRef.current.push(track.context)
             const id = track.id
-            finalizeRoute('get', `${ getTrack_route }/${id}`, fetchApi, id)
+            finalizeRoute('get', `${ getTrack_route }/${id}`, id)
         }
     }
 

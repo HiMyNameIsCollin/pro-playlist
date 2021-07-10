@@ -1,8 +1,6 @@
 
 import { useState, useEffect, useReducer, useContext } from 'react'
 import  useApiCall  from '../hooks/useApiCall'
-
-import { finalizeRoute } from '../../utils/finalizeRoute'
 import { whichPicture } from '../../utils/whichPicture'
 import CollectionHeader from './CollectionHeader'
 import CollectionMeta from './CollectionMeta'
@@ -96,7 +94,7 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
 
     // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
-    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const {  overlay, setOverlay, location, activeHomeItem, setActiveHomeItem  } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext )
@@ -113,11 +111,11 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
             type ==='album' ?
             location.pathname.substr( routes.album.length - 2 ) :
             location.pathname.substr( routes.playlist.length - 2 )
-            finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, fetchApi, id)
+            finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, id)
     
         } else {
             let id = activeItem.id
-            finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, fetchApi, id)
+            finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, id)
     
         }    
     }, [])
@@ -125,11 +123,11 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
     useEffect(() => {
         if( collection.id && !artists[0] ){
             if(type === 'album'){
-                collection.artists.map((artist, i) => {
-                    finalizeRoute( 'get', `${routes.artist}/${artist.id}` , fetchApi , artist.id)
+                collection.artists.map((artist, i) =>{
+                    finalizeRoute( 'get', `${routes.artist}/${artist.id}`  , artist.id)
                 })
             } else if (type === 'playlist'){
-                finalizeRoute('get', `${routes.user}/${collection.owner.id}`, fetchApi , collection.owner.id)
+                finalizeRoute('get', `${routes.user}/${collection.owner.id}` , collection.owner.id)
             }
         } 
     }, [ collection ])
@@ -146,7 +144,7 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
             tracksRoute = routes.playlist.substr( 0, routes.tracks.length - 7 )
             tracksRoute += `/${collection.id}`
             tracksRoute += '/tracks'
-            finalizeRoute( 'get', tracksRoute , fetchApi , collection.id)
+            finalizeRoute( 'get', tracksRoute , collection.id)
         } 
     }, [ collection ])
 

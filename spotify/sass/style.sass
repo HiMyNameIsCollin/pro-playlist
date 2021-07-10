@@ -1225,8 +1225,59 @@ i
             span
                 padding-left: 1rem
 
-        
+.manageHeader
+    color: $white
+    &__top
+        align-items: center
+        display: flex
+        padding: 1rem
+        i:nth-of-type(1)
+            margin-left: auto
+        i:nth-of-type(2)
+            margin-left: 1rem
+    &__imgContainer
+        border-radius: 50%
+        height: 2rem
+        overflow: hidden
+        width: 2rem
+        img
+            height: 100%
+            max-width: 100%
+    &__title
+        padding: 0 1rem
 
+.manageFilters
+    align-items: center
+    display: flex
+    overflow-x: auto
+    padding: .25rem .5rem
+    width: auto
+    &__closeBtn
+        align-items: center
+        background: inherit
+        border: solid $white 1px
+        border-radius: 50%
+        display: flex
+        i
+            font-size: .8rem
+    &__btn
+        background: inherit
+        border: solid $white 1px
+        border-radius: 25px
+        font-size: .8rem
+        margin: 0 .5rem
+        padding: .25rem 1rem
+        text-align: center
+        z-index: 2
+        &--sub
+            margin: 0
+        &--active
+            background: $green
+            border: $lightGreen 1px solid
+            &:focus
+                background: $green
+                border-color: $lightGreen
+        
 @media only screen and (min-width: 768px)
     .login
         padding: 4rem 4rem 2rem 4rem

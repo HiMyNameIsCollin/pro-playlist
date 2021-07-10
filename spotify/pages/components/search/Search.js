@@ -1,6 +1,5 @@
 import { useState, useEffect, useReducer, useRef, useContext, createContext } from 'react'
 import { capital } from '../../../utils/capital'
-import { finalizeRoute } from '../../../utils/finalizeRoute'
 import { useTransition, animated } from 'react-spring'
 import  useApiCall  from '../../hooks/useApiCall'
 
@@ -73,7 +72,7 @@ const Search = ({
     activeSearchItem, 
     setActiveSearchItem }) => {
     const API = 'https://api.spotify.com/'
-    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
     const [ state, dispatch ] = useReducer( reducer , initialState )
     const [ activeHeader, setActiveHeader ] = useState( {} )
@@ -92,7 +91,7 @@ const Search = ({
     }
 
     useEffect(() => {
-        finalizeRoute( 'get', routes.all_categories, fetchApi, null, 'limit=10' ) 
+        finalizeRoute( 'get', routes.all_categories, null, 'limit=10' ) 
     },[])
 
     useEffect(() => {

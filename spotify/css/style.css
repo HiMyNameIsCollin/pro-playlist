@@ -1697,6 +1697,73 @@ i {
   padding-left: 1rem;
 }
 
+.manageHeader {
+  color: #FFFFFF;
+}
+.manageHeader__top {
+  align-items: center;
+  display: flex;
+  padding: 1rem;
+}
+.manageHeader__top i:nth-of-type(1) {
+  margin-left: auto;
+}
+.manageHeader__top i:nth-of-type(2) {
+  margin-left: 1rem;
+}
+.manageHeader__imgContainer {
+  border-radius: 50%;
+  height: 2rem;
+  overflow: hidden;
+  width: 2rem;
+}
+.manageHeader__imgContainer img {
+  height: 100%;
+  max-width: 100%;
+}
+.manageHeader__title {
+  padding: 0 1rem;
+}
+
+.manageFilters {
+  align-items: center;
+  display: flex;
+  overflow-x: auto;
+  padding: 0.25rem 0.5rem;
+  width: auto;
+}
+.manageFilters__closeBtn {
+  align-items: center;
+  background: inherit;
+  border: solid #FFFFFF 1px;
+  border-radius: 50%;
+  display: flex;
+}
+.manageFilters__closeBtn i {
+  font-size: 0.8rem;
+}
+.manageFilters__btn {
+  background: inherit;
+  border: solid #FFFFFF 1px;
+  border-radius: 25px;
+  font-size: 0.8rem;
+  margin: 0 0.5rem;
+  padding: 0.25rem 1rem;
+  text-align: center;
+  z-index: 2;
+}
+.manageFilters__btn--sub {
+  margin: 0;
+}
+.manageFilters__btn--active {
+  background: #1DB954;
+  border: #1ed764 1px solid;
+}
+.manageFilters__btn--active:focus {
+  background: #1DB954;
+  border-color: #1ed764;
+}
+
 @media only screen and (min-width: 768px) {
   .login {
     padding: 4rem 4rem 2rem 4rem;

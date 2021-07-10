@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from 'react'
 import BrowseContainer from './BrowseContainer'
-import { finalizeRoute } from '../../utils/finalizeRoute'
 import  useApiCall  from '../hooks/useApiCall'
 import { DbHookContext } from './Dashboard'
 
@@ -11,13 +10,13 @@ const routes = {
 const Showcase = ({ data }) => {
 
     const API = 'https://api.spotify.com/'
-    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const { activeSearchItem, setActiveSearchItem } = useContext( DbHookContext)
     const [ categoryResults, setCategoryResults ] = useState( [] )
 
     useEffect(() => {
         if( data.type === 'category'){
-            finalizeRoute('get', `${ routes.all_categories }/${data.id}/playlists`, fetchApi, data.id )
+            finalizeRoute('get', `${ routes.all_categories }/${data.id}/playlists`, data.id )
         }
         
     },[])

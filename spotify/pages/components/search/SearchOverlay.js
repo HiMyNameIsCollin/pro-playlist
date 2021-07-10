@@ -3,7 +3,6 @@ import { useSpring, animated } from 'react-spring'
 import SearchFilters from './SearchFilters'
 import SearchResults from './SearchResults'
 import useApiCall from '../../hooks/useApiCall'
-import { finalizeRoute } from '../../../utils/finalizeRoute'
 
 const SearchOverlay = ({ searchState, setSearchState }) => {
 
@@ -24,8 +23,6 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
         pointerEvents: searchState === 'search' ?  'auto ': 'none'
     })
 
-
-
     useEffect(() => {
         if( searchState === 'search' ) searchBarRef.current.focus()
         if( searchState !=='search' && searchInput !== '' ) {
@@ -39,7 +36,6 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
             setActiveFilter( 'top' )
             finalizeRoute('get', 
             `${ route }`, 
-            fetchApi, 
             null, 
             `q=${searchInput}`, 
             `type=album,artist,playlist,track` )
