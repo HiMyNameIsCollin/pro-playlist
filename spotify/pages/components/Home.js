@@ -38,7 +38,7 @@ const Home = ({  state }) => {
     const pageTransition = useTransition(location, {
         initial: { transform: `translateX(${100 * dir}%)`, },
         from: { transform: `translateX(${100 * dir}%)`, position: 'absolute', width: '100%' , zIndex: 2 },
-        update: {  position: 'relative'},
+        update: {  position: 'absolute'},
         enter: { transform: `translateX(${0 * dir}%)`},
         leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
     })
@@ -52,7 +52,7 @@ const Home = ({  state }) => {
 
     const mainTransition = useTransition(location, {
         from: { transform: `translateX(${0 * dir }%)`, position: 'absolute', width: '100%'},
-        update: {  position: 'relative'},
+        update: {  position: 'absolute'},
         enter: { transform: `translateX(${0 * dir }%)`},
         leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute'},
     })

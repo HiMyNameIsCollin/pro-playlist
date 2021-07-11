@@ -15,7 +15,7 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
     const [ albumResults, setAlbumResults ] = useState([])
     const [ playlistResults, setPlaylistResults ] = useState([])
     const [ trackResults, setTrackResults ] = useState([])
-    const { fetchApi , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const searchBarRef = useRef()
     
     const overlayActive = useSpring({

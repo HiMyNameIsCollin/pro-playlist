@@ -32,11 +32,13 @@ const FixedHeader = ({type, activeHeader, headerScrolled }) => {
 
     const handleBackBtn = () => {
         if( type === 'Home' ){
-            homePageHistoryRef.current.length > 0 &&
-            setActiveHomeItem( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem  )
+            homePageHistoryRef.current.length > 0 ?
+            setActiveHomeItem( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem  ):
+            setActiveHomeItem( {} )
         } else if ( type === 'Search' ){
-            searchPageHistoryRef.current.length > 0 &&
-            setActiveSearchItem( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem )
+            searchPageHistoryRef.current.length > 0 ?
+            setActiveSearchItem( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem ) :
+            setActiveHomeItem( {} )
         }
     }
 

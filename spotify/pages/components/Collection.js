@@ -184,7 +184,6 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
             const { seedGenres, seedArtists, seedTracks } = seeds
             finalizeRoute( 'get',
             `${routes.recommendations}`, 
-            fetchApi, 
             null, 
             `seed_genres=${seedGenres.join()}`, 
             `seed_artists=${seedArtists.join()}`, 

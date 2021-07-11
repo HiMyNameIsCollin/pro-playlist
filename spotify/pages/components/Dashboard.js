@@ -171,6 +171,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
     const [ activeHomeItem, setActiveHomeItem ] = useState( {} ) 
 
+    const dashboardRef = useRef()
     const pageScrollRef = useRef( initialPageScroll )
     const currActiveHomeRef = useRef( {} )
     const currActiveSearchRef = useRef( {} )
@@ -253,13 +254,13 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
 
 // HANDLE SCROLL PERCENTAGE 
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll)
-    },[])
 
     const handleScroll = () => {
-        const percent = calcScroll()
-        setScrollPosition( percent ? percent : 0)
+        if(dashboardRef.current){
+            const percent = calcScroll()
+            setScrollPosition( percent ? percent : 0)
+        }
+        
     }
 
 // API CALLS 
@@ -267,13 +268,14 @@ const Dashboard = ({ setAuth, audioRef }) => {
         // First four arguments in 'finalizeRoute' are 
         // Method of fetch
         // Route of fetch (From the routes object)
-        // Callback function from fetchHook
         // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
-        // 5th and onwards arguments will add query params to final url (Limit, offset, etc)
+        // 4th and onwards arguments will add query params to final url (Limit, offset, etc)
         finalizeRoute('get', routes.user_info, null)
         finalizeRoute( 'get', routes.player_info, null)
         finalizeRoute( 'get', routes.featured_playlists, null )
         finalizeRoute( 'get', routes.new_releases, null )
+        finalizeRoute( 'get', routes.my_albums, null, 'limit=50')
+        finalizeRoute( 'get', routes.my_playlists, null, 'limit=50')
         finalizeRoute( 'get', routes.recently_played, null, 'limit=50' ) 
         finalizeRoute( 'get', routes.new_releases, null )
         finalizeRoute( 'get', routes.available_genre_seeds, null )
@@ -426,7 +428,10 @@ useEffect(() => {
     return(
         <DbHookContext.Provider value={ dbHookState }>
         <DbFetchedContext.Provider value={ dbFetchedState }>
-            <section className={ `dashboard`}>  
+            <section
+            ref={ dashboardRef }
+            onScroll={ handleScroll } 
+            className={ `dashboard`}>  
 
                 <Overlay />
 

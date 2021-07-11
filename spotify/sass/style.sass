@@ -101,6 +101,7 @@ body
     background: $black
     font-family: 'Rubik', sans-serif
     min-height: 100vh
+    max-height: 100vh
     max-width: 100%
 a
     color: inherit
@@ -153,10 +154,6 @@ i
 
 
 .login
-    background-image: $bg__1--sm
-    background-position: center center
-    background-size: cover
-    background-attachment: fixed
     display: flex
     &__card
         @include shadowA
@@ -220,22 +217,19 @@ i
         width: 192px
  
 .page
+    background: $black
+    color: $white
     min-height: 100vh
     min-width: 100vw
+    overflow: hidden
     z-index: 2 !important
     &--welcome
-        background: $darkGrey
         padding: 8rem 0
     &--collection
-        background: $black
-        color: $white
         padding: 0 0 8rem 0
-    &--artist
-        background: $black
-        color: $white
+    &--artist        
         padding: 0 0 8rem 0
     &--search
-        background: $darkGrey
         padding: 9rem 0 
 
 #homePage, #searchPage, #managePage
