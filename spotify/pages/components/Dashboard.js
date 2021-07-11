@@ -308,41 +308,41 @@ useEffect(() => {
 // Navigation through the pages is handled here.
 // When a dynamic page is selected(Playlist, Album, Artist), it will be set as the activeItem state, which fires this.
 
-    useEffect(() => {
-        if(activeHomeItem.type){
-            if(dashboardState !== 'home') setDashboardState('home')
-            switch(activeHomeItem.type){
+    // useEffect(() => {
+    //     if(activeHomeItem.type){
+    //         if(dashboardState !== 'home') setDashboardState('home')
+    //         switch(activeHomeItem.type){
                 
-                case 'artist':
-                    if(location.pathname !== `/artist/${activeHomeItem.id}`){
-                        history.push(`/artist/${activeHomeItem.id}`)
-                    }
-                    break
-                case 'album':
-                    if(location.pathname !== `/album/${activeHomeItem.id}`){
-                        history.push(`/album/${activeHomeItem.id}`)
-                    }
+    //             case 'artist':
+    //                 if(location.pathname !== `/artist/${activeHomeItem.id}`){
+    //                     history.push(`/artist/${activeHomeItem.id}`)
+    //                 }
+    //                 break
+    //             case 'album':
+    //                 if(location.pathname !== `/album/${activeHomeItem.id}`){
+    //                     history.push(`/album/${activeHomeItem.id}`)
+    //                 }
                     
-                    break
-                case 'playlist':
-                    if(location.pathname !== `/playlist/${activeHomeItem.id}`){
-                        history.push(`/playlist/${activeHomeItem.id}`)
-                    }
-                    break
-                case 'track':
-                    if(location.pathname !== `/album/${activeHomeItem.album.id}`){
-                        history.push(`/album/${activeHomeItem.album.id}`)
-                    }
-                default:
-                    console.log('hey', activeHomeItem)
-                    break
-            }
-        } else {
-            if(location.pathname !== '/' && firstMountRef.current ){
-                history.push('/')
-            }
-        }
-    },[ activeHomeItem ])
+    //                 break
+    //             case 'playlist':
+    //                 if(location.pathname !== `/playlist/${activeHomeItem.id}`){
+    //                     history.push(`/playlist/${activeHomeItem.id}`)
+    //                 }
+    //                 break
+    //             case 'track':
+    //                 if(location.pathname !== `/album/${activeHomeItem.album.id}`){
+    //                     history.push(`/album/${activeHomeItem.album.id}`)
+    //                 }
+    //             default:
+    //                 console.log('hey', activeHomeItem)
+    //                 break
+    //         }
+    //     } else {
+    //         if(location.pathname !== '/' && firstMountRef.current ){
+    //             history.push('/')
+    //         }
+    //     }
+    // },[ activeHomeItem ])
 
     useEffect(() => {
         firstMountRef.current = true

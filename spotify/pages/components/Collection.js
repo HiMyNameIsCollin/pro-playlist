@@ -96,7 +96,7 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
-    const {  overlay, setOverlay, location, activeHomeItem, setActiveHomeItem  } = useContext( DbHookContext )
+    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem  } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext )
     const { collection, artists, tracks, recommendations } = {...state}
 
@@ -104,20 +104,9 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
 
     useEffect(() => {
-        if( !searchContext ){
-            let id
-            id = activeItem && activeItem.id ? 
-            activeItem.id :
-            type ==='album' ?
-            location.pathname.substr( routes.album.length - 2 ) :
-            location.pathname.substr( routes.playlist.length - 2 )
-            finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, id)
-    
-        } else {
-            let id = activeItem.id
-            finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, id)
-    
-        }    
+
+        let id = activeItem.id
+        finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, id)
     }, [])
 
     useEffect(() => {

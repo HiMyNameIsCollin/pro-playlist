@@ -99,7 +99,7 @@ const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, s
     const { artist , top_tracks, all_albums, related_artists } = { ...state }
 
     useEffect(() => {
-        let id = activeItem && activeItem.id ? activeItem.id : location.pathname.substr( routes.artist.length - 2 )
+        let id = activeItem.id
         finalizeRoute( 'get', `${routes.artist}/${id}`, id)
         finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, id, `market=ES`)
         finalizeRoute( 'get', `${routes.artist}/${id}/albums`, id, 'limit=50')
@@ -111,12 +111,9 @@ const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, s
         if(apiPayload) dispatch(apiPayload)
     },[ apiPayload ])
 
-    useEffect(() => {
-        if(artist.id && !activeItem) setActiveItem(artist)
-    },[ artist ])
 
     useEffect(() => {
-        if(artist.id && !activeHeader){
+        if(artist.id ){
             setActiveHeader({ artist })
         }
     }, [ artist ])
