@@ -1,5 +1,4 @@
 import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
-import { Switch, Route, useLocation, useHistory, NavLink } from 'react-router-dom'
 import { calcScroll } from '../../utils/calcScroll'
 import  useApiCall  from '../hooks/useApiCall'
 import Home from './Home'
@@ -152,8 +151,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
     // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
-    const location = useLocation()
-    const history = useHistory()
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const [ state, dispatch ] = useReducer(reducer, initialState)
     const [ loaded, setLoaded ] = useState( false )
@@ -199,12 +196,12 @@ const Dashboard = ({ setAuth, audioRef }) => {
         setQIndex,
         playNextQueue,
         setPlayNextQueue,
-        location,
         hiddenUI,
         setHiddenUI,
         loaded, 
         setLoaded,
-        setAuth
+        setAuth,
+        dashboardRef
     }
 
     const dbFetchedState = {
@@ -260,7 +257,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
             const percent = calcScroll()
             setScrollPosition( percent ? percent : 0)
         }
-        
     }
 
 // API CALLS 
@@ -289,67 +285,25 @@ const Dashboard = ({ setAuth, audioRef }) => {
 //  END OF API CALLS 
  
 
-useEffect(() => {
-    const winScroll = document.body.scrollTop || document.documentElement.scrollTop
-    if( activeHomeItem.id ){
-        if( homePageHistoryRef.current.length > 0 ){
-            if( currActiveHomeRef.current.selectedTrack) currActiveHomeRef.current.selectedTrack = false
-            if( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem.id !== activeHomeItem.id ){
+    useEffect(() => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop
+        if( activeHomeItem.id ){
+            if( homePageHistoryRef.current.length > 0 ){
+                if( currActiveHomeRef.current.selectedTrack) currActiveHomeRef.current.selectedTrack = false
+                if( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem.id !== activeHomeItem.id ){
+                    homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, scroll: winScroll })
+                } 
+            } else {
                 homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, scroll: winScroll })
-            } 
-        } else {
-            homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, scroll: winScroll })
-        }
-    } 
-    currActiveHomeRef.current = activeHomeItem
-},[ activeHomeItem ])
+            }
+        } 
+        currActiveHomeRef.current = activeHomeItem
+    },[ activeHomeItem ])
 
-
-// Navigation through the pages is handled here.
-// When a dynamic page is selected(Playlist, Album, Artist), it will be set as the activeItem state, which fires this.
-
-    // useEffect(() => {
-    //     if(activeHomeItem.type){
-    //         if(dashboardState !== 'home') setDashboardState('home')
-    //         switch(activeHomeItem.type){
-                
-    //             case 'artist':
-    //                 if(location.pathname !== `/artist/${activeHomeItem.id}`){
-    //                     history.push(`/artist/${activeHomeItem.id}`)
-    //                 }
-    //                 break
-    //             case 'album':
-    //                 if(location.pathname !== `/album/${activeHomeItem.id}`){
-    //                     history.push(`/album/${activeHomeItem.id}`)
-    //                 }
-                    
-    //                 break
-    //             case 'playlist':
-    //                 if(location.pathname !== `/playlist/${activeHomeItem.id}`){
-    //                     history.push(`/playlist/${activeHomeItem.id}`)
-    //                 }
-    //                 break
-    //             case 'track':
-    //                 if(location.pathname !== `/album/${activeHomeItem.album.id}`){
-    //                     history.push(`/album/${activeHomeItem.album.id}`)
-    //                 }
-    //             default:
-    //                 console.log('hey', activeHomeItem)
-    //                 break
-    //         }
-    //     } else {
-    //         if(location.pathname !== '/' && firstMountRef.current ){
-    //             history.push('/')
-    //         }
-    //     }
-    // },[ activeHomeItem ])
 
     useEffect(() => {
         firstMountRef.current = true
     },[])
-
-
-
 
 //  When overlay is open, makes the rest of the APP no clicky
     useLayoutEffect(() => {

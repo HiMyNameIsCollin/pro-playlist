@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useReducer, useContext } from 'react'
+import { useState, useLayoutEffect, useEffect, useReducer, useContext } from 'react'
 import  useApiCall  from '../hooks/useApiCall'
 import { whichPicture } from '../../utils/whichPicture'
 import CollectionHeader from './CollectionHeader'
@@ -96,15 +96,22 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
-    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem  } = useContext( DbHookContext )
+    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem, dashboardRef  } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext )
     const { collection, artists, tracks, recommendations } = {...state}
 
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+        dashboardRef.current.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        })
+    }, [])
 
+    useEffect(() => {
         let id = activeItem.id
         finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, id)
     }, [])
@@ -200,6 +207,7 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
 
     return(
         <div className={ `page page--collection collection ${ overlay.type && 'page--blurred' }` }>
+        <Loading />
         {
             collection.id&&
             <>
