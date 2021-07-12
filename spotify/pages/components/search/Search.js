@@ -78,9 +78,10 @@ const Search = ({
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     
-    const [ loaded, setLoaded ] = useState( false )
     
     const { overlay, scrollPosition } = useContext( DbHookContext )
+
+    const currSearchPageRef = useRef()
 
     const searchHookState ={
         searchState, 
@@ -181,14 +182,14 @@ const Search = ({
 
     const pageTransition = useTransition(activeSearchItem, {
         initial: { transform: `translateX(${100 * dir}%)`},
-        from: { transform: `translateX(${100 * dir}%)`, position: 'absolute', width: '100%' , zIndex: 2 },
+        from: { transform: `translateX(${100 * dir}%)`, position: 'absolute',minHeight: currSearchPageRef.current ? currSearchPageRef.current.offsetHeight : 0, width: '100%' , zIndex: 2 },
         update: {  position: 'absolute'},
         enter: { transform: `translateX(${0 * dir}%)`, zIndex: 2},
         leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
     })
 
     const headerTransition = useTransition(activeSearchItem, {
-        from: { transform: `translateX(${100 * dir}%)`, position: 'fixed', width: '100%' , zIndex: 3 },
+        from: { transform: `translateX(${100 * dir}%)`, position: 'fixed',  width: '100%' , zIndex: 3 },
         update: {  position: 'fixed'},
         enter: { transform: `translateX(${0 * dir}%)`, },
         leave: { transform: `translateX(${-100 * dir}%)`, position: 'fixed', zIndex: 1},
@@ -203,7 +204,7 @@ const Search = ({
     
 
     const mainTransition = useTransition(activeSearchItem, {
-        from: { transform: `'translateX(${ 0 * dir }%)'`, position: 'absolute', width: '100%' , zIndex: 2},
+        from: { transform: `'translateX(${ 0 * dir }%)'`, position: 'absolute', minHeight: currSearchPageRef.current ? currSearchPageRef.current.offsetHeight : 0, width: '100%' , zIndex: 2},
         update: {  position: 'absolute'},
         enter: { transform: `'translateX(${ 0 * dir }%)'`, },
         leave: { transform: `'translateX(${ -20 * dir }%)'`, position: 'absolute', zIndex: 1},
@@ -247,6 +248,7 @@ const Search = ({
                 !item.type  &&
                 <animated.div 
                 style={props}
+                ref={ currSearchPageRef }
                 className={ `page page--search ${ overlay.type && 'page--blurred' }` }>
                     <BrowseContainer 
                     type='BcSearch'
@@ -262,43 +264,47 @@ const Search = ({
         }
         {
             pageTransition((props, item) => (
-                <animated.div style={ props }>
-                    {
-                    item.type === 'category' &&
-                        <Showcase data={ activeSearchItem } /> 
-                    }
-                    {
-                    item.type === 'playlist' &&
-                        <Collection 
-                        activeHeader={ activeHeader }
-                        setActiveHeader={ setActiveHeader }
-                        headerScrolled={ headerScrolled }
-                        setHeaderScrolled={ setHeaderScrolled}
-                        type='playlist'
-                        genreSeeds={ available_genre_seeds }/>
-                    }
-                    {
-                    item.type === 'album' &&
-                        <Collection 
-                        activeHeader={ activeHeader }
-                        setActiveHeader={ setActiveHeader }
-                        headerScrolled={ headerScrolled }
-                        setHeaderScrolled={ setHeaderScrolled}
-                        type='album'
-                        genreSeeds={ available_genre_seeds }/> 
-                    }
-                    {
-                    item.type === 'artist' &&
-                        <Artist 
-                        type='artist'
-                        activeHeader={ activeHeader }
-                        setActiveHeader={ setActiveHeader }
-                        headerScrolled={ headerScrolled }
-                        setHeaderScrolled={ setHeaderScrolled}
-                        genreSeeds={ available_genre_seeds}/> 
-                    }
-                        
-                </animated.div>
+                
+                    
+                item.type === 'category' ?
+                <Showcase
+                transition={ props } 
+                currPageRef={currSearchPageRef} 
+                data={ activeSearchItem } /> 
+                :
+                item.type === 'playlist' ?
+                <Collection 
+                currPageRef={currSearchPageRef}
+                transition={ props } 
+                activeHeader={ activeHeader }
+                setActiveHeader={ setActiveHeader }
+                headerScrolled={ headerScrolled }
+                setHeaderScrolled={ setHeaderScrolled}
+                type='playlist'
+                genreSeeds={ available_genre_seeds }/>
+                :
+                item.type === 'album' ?
+                <Collection 
+                currPageRef={currSearchPageRef}
+                transition={ props } 
+                activeHeader={ activeHeader }
+                setActiveHeader={ setActiveHeader }
+                headerScrolled={ headerScrolled }
+                setHeaderScrolled={ setHeaderScrolled}
+                type='album'
+                genreSeeds={ available_genre_seeds }/> 
+                :
+                item.type === 'artist' &&
+                <Artist 
+                currPageRef={currSearchPageRef}
+                transition={ props } 
+                type='artist'
+                activeHeader={ activeHeader }
+                setActiveHeader={ setActiveHeader }
+                headerScrolled={ headerScrolled }
+                setHeaderScrolled={ setHeaderScrolled}
+                genreSeeds={ available_genre_seeds}/> 
+                    
         ))
         }
         </div>    

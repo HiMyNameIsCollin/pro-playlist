@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react'
+import { animated } from 'react-spring'
 import BrowseContainer from './BrowseContainer'
 import  useApiCall  from '../hooks/useApiCall'
 import { DbHookContext } from './Dashboard'
@@ -7,7 +8,7 @@ const routes = {
     all_categories: 'v1/browse/categories', // id/playlists
     search: 'v1/search',
 }
-const Showcase = ({ data }) => {
+const Showcase = ({ transition, currPageRef, data }) => {
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
@@ -71,7 +72,10 @@ const Showcase = ({ data }) => {
     },[ apiPayload ])
 
     return(
-        <div className='page page--search showcase'>
+        <animated.div
+        style={ transition }
+        ref={ currPageRef } 
+        className='page page--search showcase'>
             <h2 className='showcase__title'> { data.name }</h2>
         {
         categoryResults.map(( cat, i ) => {
@@ -87,7 +91,7 @@ const Showcase = ({ data }) => {
             
         })
         }
-        </div>
+        </animated.div>
     )
 }
 

@@ -161,7 +161,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ queue, setQueue ] = useState( [] )
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
-    const [ dashboardState, setDashboardState ] = useState('manage')
+    const [ dashboardState, setDashboardState ] = useState('home')
     const [ searchState, setSearchState ] = useState('default')
     const [ playerSize, setPlayerSize ] = useState( 'small' )
 
@@ -285,20 +285,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 //  END OF API CALLS 
  
 
-    useEffect(() => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop
-        if( activeHomeItem.id ){
-            if( homePageHistoryRef.current.length > 0 ){
-                if( currActiveHomeRef.current.selectedTrack) currActiveHomeRef.current.selectedTrack = false
-                if( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem.id !== activeHomeItem.id ){
-                    homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, scroll: winScroll })
-                } 
-            } else {
-                homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, scroll: winScroll })
-            }
-        } 
-        currActiveHomeRef.current = activeHomeItem
-    },[ activeHomeItem ])
+
 
 
     useEffect(() => {
@@ -384,12 +371,13 @@ const Dashboard = ({ setAuth, audioRef }) => {
         <DbFetchedContext.Provider value={ dbFetchedState }>
             <section
             ref={ dashboardRef }
-            onScroll={ handleScroll } 
+            onScroll={ handleScroll }
             className={ `dashboard`}>  
 
                 <Overlay />
 
                 <Home
+                currActiveHomeRef={ currActiveHomeRef }
                 state={ state } 
                 homePageHistoryRef={ homePageHistoryRef }/> 
 

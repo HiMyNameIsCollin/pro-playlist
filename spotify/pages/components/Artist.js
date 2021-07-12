@@ -1,4 +1,5 @@
-import { useState, useEffect, useReducer , useLayoutEffect, useContext} from 'react'
+import { useState, useLayoutEffect, useEffect, useReducer , useRef, useContext} from 'react'
+import { animated } from 'react-spring'
 import TracksContainer from './TracksContainer'
 import Loading from './Loading'
 import AlbumContainer from './AlbumContainer'
@@ -7,10 +8,10 @@ import Slider from './Slider'
 import useApiCall from '../hooks/useApiCall'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
-const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, setActiveHeader }) => {
+const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, transition, headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, setActiveHeader }) => {
 
 
-    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem, location } = useContext( DbHookContext )
+    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext )
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
@@ -98,6 +99,20 @@ const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, s
 
     const { artist , top_tracks, all_albums, related_artists } = { ...state }
 
+    const thisComponentRef = useRef()
+
+    useEffect(() => {
+        if( transitionComplete ) {
+            thisComponentRef.current.style.minHeight = 0
+            setTransitionComplete( false )
+        }
+    },[ transitionComplete ])
+
+    
+    useLayoutEffect(() => {
+        setTransMinHeight(thisComponentRef.current.offsetHeight)
+    })
+
     useEffect(() => {
         let id = activeItem.id
         finalizeRoute( 'get', `${routes.artist}/${id}`, id)
@@ -120,7 +135,7 @@ const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, s
 
 
     return(
-        <div className={ `page page--artist artist ${ overlay.type && 'page--blurred' } ` }>
+        <animated.div ref={ thisComponentRef } style={ transition } className={ `page page--artist artist ${ overlay.type && 'page--blurred' } ` }>
             {
                 artist.id &&
                 <ArtistHeader 
@@ -140,7 +155,7 @@ const Artist = ({ headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, s
                 items={ related_artists }
                 setActiveItem={ setActiveItem } />
         
-        </div>
+        </animated.div>
     )
 }
 

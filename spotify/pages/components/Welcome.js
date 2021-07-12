@@ -1,14 +1,33 @@
-import { useContext } from 'react'
+import { useContext, useLayoutEffect, useRef, useEffect } from 'react'
+import { animated } from 'react-spring'
 import Slider from './Slider'
 import TabsContainer from './TabsContainer'
 import { DbHookContext } from './Dashboard'
 
-const Welcome = ({ state }) => {
+const Welcome = ({transition, transitionComplete, setTransitionComplete, setTransMinHeight, state }) => {
 
     const { setActiveItem, } = useContext(DbHookContext)
+    const thisComponentRef = useRef()
+
+    useEffect(() => {
+        if( transitionComplete ) {
+            thisComponentRef.current.style.minHeight = 0
+            setTransitionComplete( false )
+        }
+    },[ transitionComplete ])
+
+
+    useLayoutEffect(() => {
+        setTransMinHeight(thisComponentRef.current.offsetHeight)
+    })
+
+
 
     return(
-        <div className='page page--welcome'>
+        <animated.div
+        style={ transition }
+        ref={ thisComponentRef } 
+        className='page page--welcome '>
 
             <TabsContainer items={ state.recently_played }  />
             <Slider 
@@ -19,7 +38,7 @@ const Welcome = ({ state }) => {
             message='Featured playlists' 
             items={ state.featured_playlists }
             setActiveItem={ setActiveItem } /> 
-        </div>
+        </animated.div>
     )
 }
 

@@ -1,5 +1,6 @@
 
-import { useState, useLayoutEffect, useEffect, useReducer, useContext } from 'react'
+import { useRef, useEffect, useLayoutEffect, useReducer, useContext } from 'react'
+import { animated } from 'react-spring'
 import  useApiCall  from '../hooks/useApiCall'
 import { whichPicture } from '../../utils/whichPicture'
 import CollectionHeader from './CollectionHeader'
@@ -11,7 +12,7 @@ import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 
 
-const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader, }) => {
+const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComplete, transition, type, genreSeeds, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader, }) => {
     
 
     const initialState = {
@@ -103,13 +104,26 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
 
+    const thisComponentRef = useRef()
+
+    useEffect(() => {
+        if( transitionComplete ) {
+            thisComponentRef.current.style.minHeight = 0
+            setTransitionComplete( false )
+        }
+    },[ transitionComplete ])
+
     useLayoutEffect(() => {
-        dashboardRef.current.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-        })
-    }, [])
+        setTransMinHeight(thisComponentRef.current.offsetHeight)
+    })
+
+    // useLayoutEffect(() => {
+    //     dashboardRef.current.scrollTo({
+    //         top: 0,
+    //         left: 0,
+    //         behavior: 'smooth'
+    //     })
+    // }, [])
 
     useEffect(() => {
         let id = activeItem.id
@@ -206,8 +220,10 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
     },[ tracks ])
 
     return(
-        <div className={ `page page--collection collection ${ overlay.type && 'page--blurred' }` }>
-        <Loading />
+        <animated.div
+        ref={ thisComponentRef } 
+        style={ transition } 
+        className={ `page page--collection collection ${ overlay.type && 'page--blurred' }` }>
         {
             collection.id&&
             <>
@@ -231,7 +247,7 @@ const Collection = ({ type, genreSeeds, headerScrolled, setHeaderScrolled, activ
             }
             </>
         }
-        </div>
+        </animated.div>
     )
 }
 
