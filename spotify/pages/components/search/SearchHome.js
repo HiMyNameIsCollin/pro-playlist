@@ -23,7 +23,7 @@ const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, 
         <animated.div 
         style={transition}
         ref={ thisComponentRef }
-        className={ `page page--search ${ overlay.type && 'page--blurred' }` }>
+        className={ `page page--search ` }>
             <BrowseContainer 
             type='BcSearch'
             message='My top genres' 

@@ -251,6 +251,12 @@ const Dashboard = ({ setAuth, audioRef }) => {
         
 }, [ recently_played, player_info  ])
 
+    useEffect(() => {
+        if( dashboardState !== 'home' ){
+            if( activeHomeItem.id ) setDashboardState( 'home' )
+        }
+    }, [ activeHomeItem ])
+
 
 // HANDLE SCROLL PERCENTAGE 
 
@@ -286,10 +292,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
     },[apiPayload])
 //  END OF API CALLS 
  
-
-
-
-
     useEffect(() => {
         firstMountRef.current = true
     },[])

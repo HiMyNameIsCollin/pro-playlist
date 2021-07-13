@@ -136,7 +136,7 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
 
 
     return(
-        <animated.div ref={ thisComponentRef } style={ transition } className={ `page page--artist artist ${ overlay.type && 'page--blurred' } ` }>
+        <animated.div ref={ thisComponentRef } style={ transition } className={ `page page--artist artist ` }>
             {
                 artist.id &&
                 <ArtistHeader 

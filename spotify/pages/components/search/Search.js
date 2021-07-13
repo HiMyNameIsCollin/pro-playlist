@@ -83,7 +83,7 @@ const Search = ({
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     
     
-    const { overlay, scrollPosition } = useContext( DbHookContext )
+    const { overlay, scrollPosition, dashboardRef } = useContext( DbHookContext )
 
     const searchHookState ={
         searchState, 
@@ -186,7 +186,7 @@ const Search = ({
                 })
             }
         }
-    },[ activeSearchItem ]) 
+    },[ activeSearchItem, transitionComplete ]) 
     
     const transitionConfig = {
         tension: 170
