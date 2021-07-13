@@ -7,6 +7,7 @@ import SearchHeader from './SearchHeader'
 import FixedHeader from '../FixedHeader'
 import Artist from '../Artist'
 import Collection from '../Collection'
+import SearchHome from './SearchHome'
 import Showcase from '../Showcase'
 import SearchOverlay from './SearchOverlay'
 import Loading from '../Loading'
@@ -63,6 +64,8 @@ const reducer = ( state, action ) => {
 export const SearchHookContext = createContext()
 
 const Search = ({  
+    transMinHeight,
+    setTransMinHeight,
     my_top_artists, 
     available_genre_seeds, 
     searchPageHistoryRef, 
@@ -77,11 +80,10 @@ const Search = ({
     const [ state, dispatch ] = useReducer( reducer , initialState )
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
+    const [ transitionComplete, setTransitionComplete ] = useState( false )
     
     
     const { overlay, scrollPosition } = useContext( DbHookContext )
-
-    const currSearchPageRef = useRef()
 
     const searchHookState ={
         searchState, 
@@ -139,22 +141,6 @@ const Search = ({
         return newArr
     }
 
-    
-
-    useEffect(() => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop
-        if( activeSearchItem.id ){
-            if( searchPageHistoryRef.current.length > 0 ){
-                if( currActiveSearchRef.current.selectedTrack) currActiveSearchRef.current.selectedTrack = false
-                if( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem.id !== activeSearchItem.id ){
-                    searchPageHistoryRef.current.push({ activeItem: currActiveSearchRef.current, scroll: winScroll })
-                } 
-            } else {
-                searchPageHistoryRef.current.push({ activeItem: currActiveSearchRef.current, scroll: winScroll })
-            }
-        } 
-        currActiveSearchRef.current = activeSearchItem
-    },[ activeSearchItem ])
 
     const dir = searchPageHistoryRef.current.length > 0  ?
     activeSearchItem.id === searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1].activeItem.id || 
@@ -164,17 +150,43 @@ const Search = ({
     1
     : 
     1
+    
 
     useEffect(() => {
-        if( searchPageHistoryRef.current.length > 0 && activeSearchItem.id === searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1].activeItem.id ){
-            const lastItem = searchPageHistoryRef.current.pop()
-            // window.scroll({
-            //     x: 0,
-            //     y: lastItem.scroll,
-            //     behavior: 'auto'
-            // })
-        }
+        if( activeSearchItem.id ){
+            if( searchPageHistoryRef.current.length > 0 ){
+                if( currActiveSearchRef.current.selectedTrack) currActiveSearchRef.current.selectedTrack = false
+                if( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem.id !== activeSearchItem.id ){
+                    searchPageHistoryRef.current.push({ activeItem: currActiveSearchRef.current, minHeight: transMinHeight, scroll: Math.round(transMinHeight * (scrollPosition / 100)) })
+                } 
+            } else {
+                searchPageHistoryRef.current.push({ activeItem: currActiveSearchRef.current, minHeight: transMinHeight, scroll: Math.round(transMinHeight * (scrollPosition / 100)) })
+            }
+        } 
+        currActiveSearchRef.current = activeSearchItem
     },[ activeSearchItem ])
+
+
+    useEffect(() => {
+        if( transitionComplete &&
+            searchPageHistoryRef.current.length > 0 && 
+            activeSearchItem.id === searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1].activeItem.id ){
+            const lastItem = searchPageHistoryRef.current.pop()
+            dashboardRef.current.scroll({
+                left: 0,
+                top: lastItem.scroll,
+                behavior: 'auto'
+            })
+        }else {
+            if(transitionComplete){
+                dashboardRef.current.scroll({
+                    left: 0,
+                    top: 0 ,
+                    behavior: 'auto'
+                })
+            }
+        }
+    },[ activeSearchItem ]) 
     
     const transitionConfig = {
         tension: 170
@@ -182,10 +194,11 @@ const Search = ({
 
     const pageTransition = useTransition(activeSearchItem, {
         initial: { transform: `translateX(${100 * dir}%)`},
-        from: { transform: `translateX(${100 * dir}%)`, position: 'absolute',minHeight: currSearchPageRef.current ? currSearchPageRef.current.offsetHeight : 0, width: '100%' , zIndex: 2 },
+        from: { transform: `translateX(${100 * dir}%)`, position: 'absolute',minHeight: transMinHeight, width: '100%' , zIndex: 2 },
         update: {  position: 'absolute'},
         enter: { transform: `translateX(${0 * dir}%)`, zIndex: 2},
         leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
+        onRest: () => setTransitionComplete(true)
     })
 
     const headerTransition = useTransition(activeSearchItem, {
@@ -204,10 +217,11 @@ const Search = ({
     
 
     const mainTransition = useTransition(activeSearchItem, {
-        from: { transform: `'translateX(${ 0 * dir }%)'`, position: 'absolute', minHeight: currSearchPageRef.current ? currSearchPageRef.current.offsetHeight : 0, width: '100%' , zIndex: 2},
+        from: { transform: `'translateX(${ 0 * dir }%)'`, position: 'absolute', minHeight: transMinHeight, width: '100%' , zIndex: 2},
         update: {  position: 'absolute'},
         enter: { transform: `'translateX(${ 0 * dir }%)'`, },
         leave: { transform: `'translateX(${ -20 * dir }%)'`, position: 'absolute', zIndex: 1},
+        onRest: () => setTransitionComplete(true)
     })
 
     return(
@@ -236,7 +250,7 @@ const Search = ({
                 item.type === 'artist' ||
                 item.type === 'playlist' ||
                 item.type === 'album' ?
-                <FixedHeader type={'Search'} activeHeader={ activeHeader } headerScrolled={ headerScrolled }/>:
+                <FixedHeader type={'Search'}  transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />:
                 null
                 }
                 </animated.div>
@@ -246,19 +260,12 @@ const Search = ({
             mainTransition((props, item) => (
                 
                 !item.type  &&
-                <animated.div 
-                style={props}
-                ref={ currSearchPageRef }
-                className={ `page page--search ${ overlay.type && 'page--blurred' }` }>
-                    <BrowseContainer 
-                    type='BcSearch'
-                    message='My top genres' 
-                    data={ state.my_top_genres.slice(0, 4) }/>
-                    <BrowseContainer
-                    message='Browse all' 
-                    type='BcSearch'
-                    data={ state.all_categories }/> 
-                </animated.div> 
+                <SearchHome 
+                state={ state }
+                setTransMinHeight={ setTransMinHeight }
+                transitionComplete={ transitionComplete }
+                setTransitionComplete={ setTransitionComplete }
+                transition={ props } />
             
             ))
         }
@@ -268,13 +275,17 @@ const Search = ({
                     
                 item.type === 'category' ?
                 <Showcase
+                setTransMinHeight={ setTransMinHeight }
+                transitionComplete={ transitionComplete }
+                setTransitionComplete={ setTransitionComplete }
                 transition={ props } 
-                currPageRef={currSearchPageRef} 
                 data={ activeSearchItem } /> 
                 :
                 item.type === 'playlist' ?
                 <Collection 
-                currPageRef={currSearchPageRef}
+                setTransMinHeight={ setTransMinHeight }
+                transitionComplete={ transitionComplete }
+                setTransitionComplete={ setTransitionComplete }
                 transition={ props } 
                 activeHeader={ activeHeader }
                 setActiveHeader={ setActiveHeader }
@@ -285,7 +296,9 @@ const Search = ({
                 :
                 item.type === 'album' ?
                 <Collection 
-                currPageRef={currSearchPageRef}
+                setTransMinHeight={ setTransMinHeight }
+                transitionComplete={ transitionComplete }
+                setTransitionComplete={ setTransitionComplete }
                 transition={ props } 
                 activeHeader={ activeHeader }
                 setActiveHeader={ setActiveHeader }
@@ -296,7 +309,9 @@ const Search = ({
                 :
                 item.type === 'artist' &&
                 <Artist 
-                currPageRef={currSearchPageRef}
+                setTransMinHeight={ setTransMinHeight }
+                transitionComplete={ transitionComplete }
+                setTransitionComplete={ setTransitionComplete }
                 transition={ props } 
                 type='artist'
                 activeHeader={ activeHeader }

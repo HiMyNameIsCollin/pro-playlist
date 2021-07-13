@@ -11,7 +11,7 @@ const Welcome = ({transition, transitionComplete, setTransitionComplete, setTran
 
     useEffect(() => {
         if( transitionComplete ) {
-            thisComponentRef.current.style.minHeight = 0
+            thisComponentRef.current.style.minHeight = '100vh'
             thisComponentRef.current.classList.add('fadeIn')
             setTransitionComplete( false )
         }

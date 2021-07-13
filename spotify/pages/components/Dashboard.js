@@ -167,6 +167,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
     const [ activeHomeItem, setActiveHomeItem ] = useState( {} ) 
+    const [ homeTransMinHeight, setHomeTransMinHeight ] = useState( 0 )
+    const [ searchTransMinHeight, setSearchTransMinHeight ] = useState( 0 )
 
     const dashboardRef = useRef()
     const pageScrollRef = useRef( initialPageScroll )
@@ -364,6 +366,10 @@ const Dashboard = ({ setAuth, audioRef }) => {
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
     },[ dashboardState ])
 
+    useEffect(() => {
+        if(dashboardState === 'home') dashboardRef.current.scroll({top: pageScrollRef.current[dashboardState]})
+        if(dashboardState === 'search') dashboardRef.current.scroll({top: pageScrollRef.current[dashboardState]})
+    }, [ dashboardState ])
 
 
     return(
@@ -377,11 +383,15 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 <Overlay />
 
                 <Home
+                transMinHeight={ homeTransMinHeight }
+                setTransMinHeight={ setHomeTransMinHeight }
                 currActiveHomeRef={ currActiveHomeRef }
                 state={ state } 
                 homePageHistoryRef={ homePageHistoryRef }/> 
 
                 <Search
+                transMinHeight={ searchTransMinHeight }
+                setTransMinHeight={ setSearchTransMinHeight }
                 activeSearchItem={ activeSearchItem }
                 setActiveSearchItem={ setActiveSearchItem }
                 searchState={ searchState }
@@ -399,8 +409,13 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 setPlayerSize={ setPlayerSize }/>
 
                 <Nav 
+                dashboardRef={ dashboardRef }
+                homeTransMinHeight={ homeTransMinHeight }
+                searchTransMinHeight={ searchTransMinHeight }
+                dashboardRef={ dashboardRef }
                 pageScrollRef= { pageScrollRef }
                 hiddenUI={ hiddenUI } 
+                scrollPosition={ scrollPosition }
                 activeHomeItem={ activeHomeItem }
                 activeSearchItem={ activeSearchItem }
                 setActiveHomeItem={ setActiveHomeItem }

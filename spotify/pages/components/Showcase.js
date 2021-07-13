@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useLayoutEffect, useContext, useRef } from 'react'
 import { animated } from 'react-spring'
 import BrowseContainer from './BrowseContainer'
 import  useApiCall  from '../hooks/useApiCall'
@@ -8,12 +8,25 @@ const routes = {
     all_categories: 'v1/browse/categories', // id/playlists
     search: 'v1/search',
 }
-const Showcase = ({ transition, currPageRef, data }) => {
+const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransitionComplete, data }) => {
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const { activeSearchItem, setActiveSearchItem } = useContext( DbHookContext)
     const [ categoryResults, setCategoryResults ] = useState( [] )
+    const thisComponentRef = useRef()
+
+    useEffect(() => {
+        if( transitionComplete ) {
+            thisComponentRef.current.style.minHeight = '100vh'
+            thisComponentRef.current.classList.add('fadeIn')
+            setTransitionComplete( false )
+        }
+    },[ transitionComplete ])
+    
+    useLayoutEffect(() => {
+        setTransMinHeight(thisComponentRef.current.offsetHeight)
+    })
 
     useEffect(() => {
         if( data.type === 'category'){
@@ -74,7 +87,7 @@ const Showcase = ({ transition, currPageRef, data }) => {
     return(
         <animated.div
         style={ transition }
-        ref={ currPageRef } 
+        ref={ thisComponentRef } 
         className='page page--search showcase'>
             <h2 className='showcase__title'> { data.name }</h2>
         {

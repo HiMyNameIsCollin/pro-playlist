@@ -259,7 +259,7 @@ i {
   width: 100%;
   z-index: -2;
 }
-.page--artist::before, .page--collection::before, .page--welcome::before {
+.page--artist::before, .page--collection::before, .page--welcome::before, .page--search::before {
   background: #191414;
   opacity: 1;
   transition: opacity 0.75s ease-in-out;
