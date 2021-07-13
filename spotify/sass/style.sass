@@ -82,8 +82,7 @@ $bg__1--lg: url('../public/bglg.jpg')
     padding: 0
     box-sizing: border-box
     line-height: 1.6
-    // scroll-behavior: smooth
-    // -webkit-scroll-behavior: smooth
+
 
 button, input[type="submit"], input[type="reset"]
     background: none
@@ -136,6 +135,7 @@ i
     min-height: 100vh
     flex-direction: column
     overflow: auto
+    overflow-x: hidden
     width: 100%
     &::before
         background: $darkGrey
@@ -143,6 +143,9 @@ i
     &--blurred
         filter: blur(5px)
 
+.smoothScroll
+    scroll-behavior: smooth
+    -webkit-scroll-behavior: smooth
 
 .homeHeader, .nav, .tab 
     @include pseudo
@@ -217,11 +220,18 @@ i
         width: 192px
  
 .page
+    @include pseudo
     background: $black
     color: $white
     min-height: 100vh
     min-width: 100vw
     z-index: 2 !important
+    &--artist, &--collection, &--welcome
+        &::before
+            background: $black
+            opacity: 1
+            transition: opacity .75s ease-in-out
+            z-index: 3
     &--welcome
         padding: 8rem 0
     &--collection
@@ -230,6 +240,11 @@ i
         padding: 0 0 8rem 0
     &--search
         padding: 9rem 0 
+
+.fadeIn
+    &::before
+        opacity: 0
+        pointer-events: none
 
 #homePage, #searchPage, #managePage
     display: none
@@ -774,6 +789,7 @@ i
     top: 0 
     left: 0
     text-align: center
+    min-height: 3.5rem
     width: 100%
     z-index: 991
     &__backBtn

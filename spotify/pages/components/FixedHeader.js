@@ -3,31 +3,20 @@ import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 
-const FixedHeader = ({type, activeHeader, headerScrolled }) => {
-    const [ hidden, setHidden ] = useState(true)
-
+const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled }) => {
+    const [ mounted, setMounted ] = useState(false)
     const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext ) 
     const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
-
-
+    
     useEffect(() => {
-        if( headerScrolled > 50 ){
-            setHidden(false)
-        } else{
-            setHidden( true )
-        }
-        
-    },[headerScrolled])
-
-    const showFixedHeader = useSpring({
-        opacity: hidden ? 0 : 1
-    })
+        if( transitionComplete ) setMounted( true )
+    }, [ transitionComplete ])
 
     const { fadeIn, textScroll, btnMove} = useSpring({
-        fadeIn: `${ 0 + ( headerScrolled * 0.01 )}`,
-        textScroll: `${ 200 - ( headerScrolled * 2 )}`,
-        btnMove: `${ 50 -( headerScrolled / 2 )}`
+        fadeIn: (mounted) ? `${ 0 + ( headerScrolled * 0.01 )}`: `0` ,
+        textScroll: (mounted) ?  `${ 200 - ( headerScrolled * 2 )}` : `0` ,
+        btnMove: (mounted) ? `${ 50 -( headerScrolled / 2 )}` : `0`
     })
 
     const handleBackBtn = () => {
@@ -55,7 +44,7 @@ const FixedHeader = ({type, activeHeader, headerScrolled }) => {
         <animated.div
         className='fixedHeader__main'
         style={{ 
-            opacity: fadeIn.to( y => y )
+            opacity: fadeIn.to( y => y)
         }} >
 
             <animated.h4 style={{

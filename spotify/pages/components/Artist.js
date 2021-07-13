@@ -104,6 +104,7 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     useEffect(() => {
         if( transitionComplete ) {
             thisComponentRef.current.style.minHeight = 0
+            thisComponentRef.current.classList.add('fadeIn')
             setTransitionComplete( false )
         }
     },[ transitionComplete ])

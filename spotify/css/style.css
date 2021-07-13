@@ -93,6 +93,7 @@ i {
   min-height: 100vh;
   flex-direction: column;
   overflow: auto;
+  overflow-x: hidden;
   width: 100%;
 }
 .dashboard::before {
@@ -119,6 +120,11 @@ i {
 }
 .dashboard--blurred {
   filter: blur(5px);
+}
+
+.smoothScroll {
+  scroll-behavior: smooth;
+  -webkit-scroll-behavior: smooth;
 }
 
 .homeHeader, .nav, .tab {
@@ -226,11 +232,38 @@ i {
 }
 
 .page {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
   background: #191414;
   color: #FFFFFF;
   min-height: 100vh;
   min-width: 100vw;
   z-index: 2 !important;
+}
+.page::before {
+  content: "";
+  top: 0;
+  left: 0;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+}
+.page::after {
+  content: "";
+  top: 0;
+  left: 0;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: -2;
+}
+.page--artist::before, .page--collection::before, .page--welcome::before {
+  background: #191414;
+  opacity: 1;
+  transition: opacity 0.75s ease-in-out;
+  z-index: 3;
 }
 .page--welcome {
   padding: 8rem 0;
@@ -243,6 +276,11 @@ i {
 }
 .page--search {
   padding: 9rem 0;
+}
+
+.fadeIn::before {
+  opacity: 0;
+  pointer-events: none;
 }
 
 #homePage, #searchPage, #managePage {
@@ -1070,6 +1108,7 @@ i {
   top: 0;
   left: 0;
   text-align: center;
+  min-height: 3.5rem;
   width: 100%;
   z-index: 991;
 }

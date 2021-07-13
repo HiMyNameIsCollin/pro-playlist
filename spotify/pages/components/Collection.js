@@ -109,6 +109,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
     useEffect(() => {
         if( transitionComplete ) {
             thisComponentRef.current.style.minHeight = 0
+            thisComponentRef.current.classList.add('fadeIn')
             setTransitionComplete( false )
         }
     },[ transitionComplete ])
@@ -116,14 +117,6 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
     useLayoutEffect(() => {
         setTransMinHeight(thisComponentRef.current.offsetHeight)
     })
-
-    // useLayoutEffect(() => {
-    //     dashboardRef.current.scrollTo({
-    //         top: 0,
-    //         left: 0,
-    //         behavior: 'smooth'
-    //     })
-    // }, [])
 
     useEffect(() => {
         let id = activeItem.id
@@ -223,7 +216,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
         <animated.div
         ref={ thisComponentRef } 
         style={ transition } 
-        className={ `page page--collection collection ${ overlay.type && 'page--blurred' }` }>
+        className={ `page page--collection collection` }>
         {
             collection.id&&
             <>

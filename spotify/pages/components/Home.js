@@ -10,7 +10,7 @@ import FixedHeader from './FixedHeader'
 
 const Home = ({ currActiveHomeRef, state }) => {
 
-    const { homeHeaderScrolled, setHomeHeaderScrolled, activeHomeItem, homePageHistoryRef, hiddenUI, setAuth, scrollPosition } = useContext(DbHookContext)
+    const { homeHeaderScrolled, setHomeHeaderScrolled, activeHomeItem, homePageHistoryRef, hiddenUI, setAuth, scrollPosition, dashboardRef} = useContext(DbHookContext)
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ transMinHeight, setTransMinHeight ] = useState( 0 )
@@ -29,33 +29,41 @@ const Home = ({ currActiveHomeRef, state }) => {
     : 
     1
 
+
     useEffect(() => {
         if( activeHomeItem.id ){
             if( homePageHistoryRef.current.length > 0 ){
                 if( currActiveHomeRef.current.selectedTrack) currActiveHomeRef.current.selectedTrack = false
                 if( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem.id !== activeHomeItem.id ){
-                    homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, minHeight: transMinHeight, scroll: scrollPosition })
+                    homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, minHeight: transMinHeight, scroll: Math.round(transMinHeight * (scrollPosition / 100))  })
                 } 
             } else {
-                
-                homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, minHeight: transMinHeight, scroll: scrollPosition })
+                homePageHistoryRef.current.push({ activeItem: currActiveHomeRef.current, minHeight: transMinHeight, scroll: Math.round(transMinHeight * (scrollPosition / 100)) })
             }
-        } else if( !activeHomeItem.id && mounted ){
-            
-        }
+        } 
         currActiveHomeRef.current = activeHomeItem
     },[ activeHomeItem ])
 
     useEffect(() => {
-        if( homePageHistoryRef.current.length > 0 && activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id ){
+        if( transitionComplete && 
+            homePageHistoryRef.current.length > 0 && 
+            activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id){
             const lastItem = homePageHistoryRef.current.pop()
-            // window.scroll({
-            //     x: 0,
-            //     y: lastItem.scroll,
-            //     behavior: 'auto'
-            // })
+            dashboardRef.current.scroll({
+                left: 0,
+                top: lastItem.scroll ,
+                behavior: 'auto'
+            })
+        } else {
+            if(transitionComplete){
+                dashboardRef.current.scroll({
+                    left: 0,
+                    top: 0 ,
+                    behavior: 'auto'
+                })
+            }
         }
-    },[ ])
+    },[ activeHomeItem, transitionComplete ])
 
     useEffect(() => {
         setMounted(true)
@@ -95,19 +103,19 @@ const Home = ({ currActiveHomeRef, state }) => {
             <animated.div style={ props }>
                 {
                     !item.type &&
-                    <HomeHeader hiddenUI={ hiddenUI } setAuth={ setAuth } />
+                    <HomeHeader transitionComplete={ transitionComplete } hiddenUI={ hiddenUI } setAuth={ setAuth } />
                 }
                 {
                     item.type === 'artist' &&
-                    <FixedHeader type={ 'Home' } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                    <FixedHeader type={ 'Home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                 }
                 {
                     item.type === 'album' &&
-                    <FixedHeader type={ 'Home' } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                    <FixedHeader type={ 'Home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                 }
                 {
                     item.type === 'playlist' &&
-                    <FixedHeader type={ 'Home' } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                    <FixedHeader type={ 'Home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                 }
             </animated.div>
         ))

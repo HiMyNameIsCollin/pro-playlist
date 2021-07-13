@@ -4,9 +4,10 @@ import Image from 'next/image'
 import { useSpring, animated } from 'react-spring'
 
 
-const HomeHeader = ({ setAuth , hiddenUI, headerHeightRef }) => {
+const HomeHeader = ({ transitionComplete, setAuth , hiddenUI, headerHeightRef }) => {
 
-    const [showMe, setShowMe] = useState(false)
+    const [ mounted, setMounted ] = useState( false )
+    const [showMe, setShowMe] = useState( false )
 
     const logout = () => {
         localStorage.removeItem('access_token')
@@ -15,16 +16,22 @@ const HomeHeader = ({ setAuth , hiddenUI, headerHeightRef }) => {
         setAuth(false)
     }
 
+    // useEffect(() => {
+    //     setMounted( true )
+    // }, [ transitionComplete ])
+
     useEffect(() => {
+        
         if(hiddenUI){
-            setShowMe(false)
+            setShowMe( false )
         } else {
-            setShowMe(true)
+            setShowMe( true )
         }
-    }, [hiddenUI])
+    }, [hiddenUI ])
 
 
     const hideHeader = useSpring({
+        opacity: showMe ? 1 : 0,
         transform: showMe ? 'translatex(0%)' : 'translatex(-100%)' ,
         
     })
