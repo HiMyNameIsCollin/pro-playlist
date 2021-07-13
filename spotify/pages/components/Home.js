@@ -107,15 +107,15 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef, state }) =
                 }
                 {
                     item.type === 'artist' &&
-                    <FixedHeader type={ 'Home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                    <FixedHeader type={ 'home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                 }
                 {
                     item.type === 'album' &&
-                    <FixedHeader type={ 'Home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                    <FixedHeader type={ 'home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                 }
                 {
                     item.type === 'playlist' &&
-                    <FixedHeader type={ 'Home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                    <FixedHeader type={ 'home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                 }
             </animated.div>
         ))

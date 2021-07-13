@@ -776,12 +776,12 @@ i
     &::after
         opacity: .75
         z-index: -2
-    &--Search
+    &--search
         &::after
-            background: linear-gradient(to bottom, var(--headerColorSearch1) 0% , var(--headerColorSearch0)), linear-gradient(to right, var(--headerColorSearch1) , var(--headerColorSearch0))
-    &--Home
+            background: linear-gradient(to bottom, var(--headerColorsearch1) 0% , var(--headerColorsearch0)), linear-gradient(to right, var(--headerColorsearch1) , var(--headerColorsearch0))
+    &--home
         &::after
-            background: linear-gradient(to bottom, var(--headerColorHome1) 0% , var(--headerColorHome0)), linear-gradient(to right, var(--headerColorHome1) , var(--headerColorHome0))
+            background: linear-gradient(to bottom, var(--headerColorhome1) 0% , var(--headerColorhome0)), linear-gradient(to right, var(--headerColorhome1) , var(--headerColorhome0))
 
 .fixedHeader
     color: $white
@@ -816,12 +816,12 @@ i
         &::before
             @include scrimGradient($black, 'to top')
             z-index: -1
-    &--Home
+    &--home
         .fixedHeader__main
-            background: linear-gradient(to bottom, var(--headerColorHome1) 0% , var(--headerColorHome0)), linear-gradient(to right, var(--headerColorHome1) , var(--headerColorHome0))
-    &--Search
+            background: linear-gradient(to bottom, var(--headerColorhome1) 0% , var(--headerColorhome0)), linear-gradient(to right, var(--headerColorhome1) , var(--headerColorhome0))
+    &--search
         .fixedHeader__main
-            background: linear-gradient(to bottom, var(--headerColorSearch1) 0% , var(--headerColorSearch0)), linear-gradient(to right, var(--headerColorSearch1) , var(--headerColorSearch0))
+            background: linear-gradient(to bottom, var(--headerColorsearch1) 0% , var(--headerColorsearch0)), linear-gradient(to right, var(--headerColorsearch1) , var(--headerColorsearch0))
 
 .homeHeader
     align-items: center
@@ -1163,17 +1163,17 @@ i
     &::after
         background: linear-gradient(to bottom, var(--currentTrackColor1) 0%, var(--currentTrackColor0)), linear-gradient(to right, var(--currentTrackColor1), var(--currentTrackColor0)) 
 
-    &--Result
+    &--result
         &::before
             @include scrimGradient($black, 'to bottom right')
         &::after
             background: linear-gradient(to bottom, $green 0% , $darkGrey), linear-gradient(to right, $darkGrey, $green )
-    &--Home
+    &--home
         &::after
-            background: linear-gradient(to bottom, var(--headerColorHome1) 0% , var(--headerColorHome0)), linear-gradient(to right, var(--headerColorHome1) , var(--headerColorHome0))
-    &--Search
+            background: linear-gradient(to bottom, var(--headerColorhome1) 0% , var(--headerColorhome0)), linear-gradient(to right, var(--headerColorhome1) , var(--headerColorhome0))
+    &--search
         &::after
-            background: linear-gradient(to bottom, var(--headerColorSearch1) 0% , var(--headerColorSearch0)), linear-gradient(to right, var(--headerColorSearch1) , var(--headerColorSearch0))
+            background: linear-gradient(to bottom, var(--headerColorsearch1) 0% , var(--headerColorsearch0)), linear-gradient(to right, var(--headerColorsearch1) , var(--headerColorsearch0))
     &--player
         &::before
             @include scrimGradient($black, 'to top')

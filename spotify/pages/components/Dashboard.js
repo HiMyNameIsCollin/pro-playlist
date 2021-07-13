@@ -203,7 +203,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
         loaded, 
         setLoaded,
         setAuth,
-        dashboardRef
+        dashboardRef,
+        dashboardState
     }
 
     const dbFetchedState = {

@@ -221,7 +221,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             collection.id&&
             <>
             <CollectionHeader
-            pageType={ searchContext ? 'Search' : 'Home'}
+            pageType={ searchContext ? 'search' : 'home'}
             headerScrolled={ headerScrolled }
             setHeaderScrolled={ setHeaderScrolled }
             setActiveItem={ setActiveItem }
@@ -231,7 +231,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             {
             type === 'album' && 
                 <>
-                <CollectionMeta pageType={searchContext ? 'Search': 'Home' } data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
+                <CollectionMeta pageType={searchContext ? 'search': 'home' } data={ state } setOverlay={ setOverlay } setActiveItem={ setActiveItem } />
                 <Slider message={'You may also enjoy: '} items={ recommendations } setActiveItem={ setActiveItem } />                
                 <section className='collection__copyright'>
                         <p>{ collection.copyrights && collection.copyrights[0].text } </p>

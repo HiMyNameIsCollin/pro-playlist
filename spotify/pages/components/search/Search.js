@@ -250,7 +250,7 @@ const Search = ({
                 item.type === 'artist' ||
                 item.type === 'playlist' ||
                 item.type === 'album' ?
-                <FixedHeader type={'Search'}  transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />:
+                <FixedHeader type={'search'}  transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />:
                 null
                 }
                 </animated.div>

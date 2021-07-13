@@ -140,7 +140,7 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
             {
                 artist.id &&
                 <ArtistHeader 
-                pageType={ searchContext ? 'Search' : 'Home'}
+                pageType={ searchContext ? 'search' : 'home'}
                 headerScrolled={ headerScrolled }
                 setHeaderScrolled={ setHeaderScrolled }
                 activeHeader={ activeHeader }

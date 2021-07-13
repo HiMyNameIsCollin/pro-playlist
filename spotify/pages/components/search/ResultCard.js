@@ -18,7 +18,7 @@ const ResultCard = ({ data }) => {
         const popupData = {
             selectedTrack,
         }
-        setOverlay( {type: 'trackMenu', pageType: 'Result', data: popupData,  func: setActiveSearchItem} )
+        setOverlay( {type: 'trackMenu', pageType: 'result', data: popupData,  func: setActiveSearchItem} )
     }
 
     const playTrack = () => {

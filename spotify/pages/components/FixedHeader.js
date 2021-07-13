@@ -5,13 +5,22 @@ import { SearchHookContext } from './search/Search'
 
 const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled }) => {
     const [ mounted, setMounted ] = useState(false)
-    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef } = useContext( DbHookContext )
+    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef, dashboardState } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext ) 
     const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
     
     useEffect(() => {
         if( transitionComplete ) setMounted( true )
     }, [ transitionComplete ])
+
+    useEffect(() => {
+        console.log( type )
+        if( dashboardState !== type) {
+            setMounted(false)
+        } else {
+            setMounted( true )
+        }
+    }, [ dashboardState ])
 
     const { fadeIn, textScroll, btnMove} = useSpring({
         fadeIn: (mounted) ? `${ 0 + ( headerScrolled * 0.01 )}`: `0` ,
@@ -20,11 +29,11 @@ const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled })
     })
 
     const handleBackBtn = () => {
-        if( type === 'Home' ){
+        if( type === 'home' ){
             homePageHistoryRef.current.length > 0 ?
             setActiveHomeItem( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem  ):
             setActiveHomeItem( {} )
-        } else if ( type === 'Search' ){
+        } else if ( type === 'search' ){
             searchPageHistoryRef.current.length > 0 ?
             setActiveSearchItem( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem ) :
             setActiveHomeItem( {} )
