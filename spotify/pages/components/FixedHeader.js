@@ -13,14 +13,13 @@ const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled })
         if( transitionComplete ) setMounted( true )
     }, [ transitionComplete ])
 
-    useEffect(() => {
-        console.log( type )
-        if( dashboardState !== type) {
-            setMounted(false)
-        } else {
-            setMounted( true )
-        }
-    }, [ dashboardState ])
+    // useEffect(() => {
+    //     if( dashboardState !== type) {
+    //         setMounted(false)
+    //     } else {
+    //         setMounted( true)
+    //     }
+    // }, [ dashboardState ])
 
     const { fadeIn, textScroll, btnMove} = useSpring({
         fadeIn: (mounted) ? `${ 0 + ( headerScrolled * 0.01 )}`: `0` ,

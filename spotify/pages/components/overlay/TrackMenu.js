@@ -55,8 +55,15 @@ const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
     }
 
     const handleAddToQueue = () => {
-        setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, track ])
-        setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), track, ...queue.slice(qIndex + 1) ]) 
+        let trackClone = { ...track }
+        trackClone['context'] = {
+            name: 'Now playing',
+            href: trackClone.href,
+            type: 'track'
+
+        }
+        setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, trackClone ])
+        setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), trackClone, ...queue.slice(qIndex + 1) ]) 
     }
 
     return(
