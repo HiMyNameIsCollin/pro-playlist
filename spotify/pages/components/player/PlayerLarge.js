@@ -49,18 +49,13 @@ const PlayerLarge = ({ controls }) => {
         setActiveHomeItem( currPlayingContext )
     }
 
-    const handleTrackMenu = (e, selectedTrack ) => {
+    const handleTrackMenu = (e ) => {
         e.stopPropagation()
+        let track = { ...currPlaying }
+        if( !track.images ) track.images = track.album.images
         const calledFrom = 'player'
-        const pageType = null
-        if(!selectedTrack.images){
-            if(!selectedTrack.album){
-                selectedTrack.images = collection.images
-            } else{
-                selectedTrack.images = selectedTrack.album.images
-            }
-        }
-        setOverlay( {type: calledFrom, pageType: pageType, track: selectedTrack} )
+        const pageType = 'player'
+        setOverlay( {type: calledFrom, pageType: pageType, data: { track: track }} )
     }
 
 

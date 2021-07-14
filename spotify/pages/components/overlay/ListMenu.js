@@ -9,7 +9,7 @@ const ListMenu = ({ transition, pageType,  artists }) => {
     const handleViewArtist = ( e, artist) => {
         e.preventDefault()
         if( pageType === 'search' ) setActiveSearchItem( artist )
-        if( pageType === 'home' ) setActiveHomeItem( artist )
+        if( pageType === 'home' || pageType === 'player' ) setActiveHomeItem( artist )
     }
 
 

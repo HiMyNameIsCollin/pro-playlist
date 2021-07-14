@@ -20,10 +20,9 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
     const currPlaying = playerContext ? playerContext.currPlaying : null
 
     const searchContext = useContext( SearchHookContext )
-    const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
-    const setActiveItem = setActiveSearchItem ? setActiveSearchItem : setActiveHomeItem 
+    
 
-    const { collection, tracks } = { ...data }
+    const { collection  } = { ...data }
 
     useEffect(() => {
         if( queue[ qIndex ] && queue[ qIndex ].id === track.id && type !=='playerCollapsed' && type !== 'queueView'){

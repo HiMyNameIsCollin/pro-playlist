@@ -6,7 +6,7 @@ import { DbHookContext } from '../Dashboard'
 
 const TrackMenu = ({ transition, pageType, type, track }) => {
 
-    const { overlay, setOverlay, activeHomeItem, setActiveHomeItem, activeSearchItem, setActiveSearchItem} = useContext( DbHookContext )
+    const { overlay, setOverlay, setPlayNextQueue, activeHomeItem, setActiveHomeItem, activeSearchItem, setActiveSearchItem} = useContext( DbHookContext )
 
     const activeItem = pageType === 'search' ? activeSearchItem : activeHomeItem
 
@@ -25,7 +25,6 @@ const TrackMenu = ({ transition, pageType, type, track }) => {
         if( track.artists.length === 1 ){
             if( pageType === 'home' ) setActiveHomeItem( track.artists[0] )
             if( pageType === 'search' ) setActiveSearchItem( track.artists[0] )
-            setOverlay({})
         } else {
             let oClone = { ...overlay}
             oClone.data = { artists: track.artists }
@@ -39,18 +38,17 @@ const TrackMenu = ({ transition, pageType, type, track }) => {
         if( pageType === 'home' ) setActiveHomeItem( track.album )
         if( pageType === 'search' ) setActiveSearchItem( track.album )
         if( pageType === 'player' ) setActiveHomeItem( track.album )
-        setOverlay( {} )
     }
 
     const handleAddToQueue = () => {
-        // let trackClone = { ...track }
-        // trackClone['context'] = {
-        //     name: 'Now playing',
-        //     href: trackClone.href,
-        //     type: 'track'
+        let trackClone = { ...track }
+        trackClone['context'] = {
+            name: 'Now playing',
+            href: trackClone.href,
+            type: 'track'
 
-        // }
-        // setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, trackClone ])
+        }
+        setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, trackClone ])
     }
 
     return(

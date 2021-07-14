@@ -21,8 +21,8 @@ const Overlay = () => {
 
     const menuTransition = useTransition(data ,{
         initial: { transform: 'translateY(100%)', position: 'absolute'},
-        from: { transform: 'translateY(100%)' , pointerEvents: 'none',height: '100%', position: 'absolute'},
-        update: { position: 'relative' },
+        from: { transform: 'translateY(100%)' , pointerEvents: 'none', position: 'absolute'},
+        
         enter: { transform: 'translateY(0%)', pointerEvents: 'auto', overflow: 'auto', position: 'absolute' },
         leave: { transform: 'translateY(100%)' }
     })

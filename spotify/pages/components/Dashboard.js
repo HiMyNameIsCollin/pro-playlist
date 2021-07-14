@@ -315,8 +315,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
     useEffect(() => {
         if( activeSearchItem.id || activeHomeItem.id ){
             setSearchState('default')
+            if( overlay.data ) setOverlay( {} )
+            if( playerSize === 'large' ) setPlayerSize( 'small' )
         }
-    
     }, [ activeSearchItem, activeHomeItem ])
 
     useEffect(() => {
@@ -408,10 +409,10 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
                 <Manage /> */}
                 
-                {/* <Player 
+                <Player 
                 hiddenUI={ hiddenUI } 
                 playerSize={ playerSize } 
-                setPlayerSize={ setPlayerSize }/> */}
+                setPlayerSize={ setPlayerSize }/>
 
                 <Nav 
                 dashboardRef={ dashboardRef }
