@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
