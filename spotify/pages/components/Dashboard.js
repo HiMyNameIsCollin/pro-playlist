@@ -339,27 +339,27 @@ const Dashboard = ({ setAuth, audioRef }) => {
         const managePage = document.getElementById('managePage')
         const pages = [ homePage, searchPage, managePage ]
         if( homePage && searchPage && managePage ) {
-            pages.forEach( page => page.style.display = 'none')
+            pages.forEach( page => page.style.visibility = 'hidden')
             if( dashboardState === 'home' ) {
-                homePage.style.display = 'block'
-                window.scroll({ 
-                    top: pageScrollRef.current.home, 
+                homePage.style.visibility = 'visible'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.home - 160, 
                     left: 0,
                     behavior: 'auto'
                 })
             }
             if( dashboardState === 'search' ) {
-                searchPage.style.display = 'block'
-                window.scroll({ 
-                    top: pageScrollRef.current.search, 
+                searchPage.style.visibility = 'visible'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.search - 160, 
                     left: 0,
                     behavior: 'auto'
                 })
             }
             if( dashboardState === 'manage' ) {
-                managePage.style.display = 'block'
-                window.scroll({ 
-                    top: pageScrollRef.current.manage, 
+                managePage.style.visibility = 'visible'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.manage - 160, 
                     left: 0,
                     behavior: 'auto'
                 })
@@ -368,12 +368,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
         
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
     },[ dashboardState ])
-
-    useEffect(() => {
-        if(dashboardState === 'home') dashboardRef.current.scroll({top: pageScrollRef.current[dashboardState]})
-        if(dashboardState === 'search') dashboardRef.current.scroll({top: pageScrollRef.current[dashboardState]})
-    }, [ dashboardState ])
-
 
     return(
         <DbHookContext.Provider value={ dbHookState }>

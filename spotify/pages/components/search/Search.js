@@ -174,7 +174,7 @@ const Search = ({
             const lastItem = searchPageHistoryRef.current.pop()
             dashboardRef.current.scroll({
                 left: 0,
-                top: lastItem.scroll,
+                top: lastItem.scroll - 160,
                 behavior: 'auto'
             })
         }else {
@@ -187,10 +187,6 @@ const Search = ({
             }
         }
     },[ activeSearchItem, transitionComplete ]) 
-    
-    const transitionConfig = {
-        tension: 170
-    }
 
     const pageTransition = useTransition(activeSearchItem, {
         initial: { transform: `translateX(${100 * dir}%)`},

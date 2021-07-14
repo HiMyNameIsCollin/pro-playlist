@@ -10,7 +10,7 @@ const ManageFiltersBtn = ({ item, activeFilter, handleFilter }) => {
         if( !btnWidth || btnWidth === 0){
             setBtnWidth( btnRef.current.getBoundingClientRect().width )
         }
-    },[ btnWidth ])
+    })
 
 
     const { opacSwitch, peSwitch, toSwitch} = useSpring({

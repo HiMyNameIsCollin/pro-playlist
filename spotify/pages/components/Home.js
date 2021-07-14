@@ -51,7 +51,7 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef, state }) =
             const lastItem = homePageHistoryRef.current.pop()
             dashboardRef.current.scroll({
                 left: 0,
-                top: lastItem.scroll ,
+                top: lastItem.scroll - 160 ,
                 behavior: 'auto'
             })
         } else {
