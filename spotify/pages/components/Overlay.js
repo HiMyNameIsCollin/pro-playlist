@@ -9,9 +9,19 @@ const Overlay = ({ setActiveSearchItem }) => {
     const overlayRef = useRef()
     const { overlay, setOverlay } = useContext( DbHookContext )
     const { pageType, type, data } = overlay
+    const pageTypeRef = useRef()
 
     useEffect(() => {
-        overlayRef.current.classList.add(`overlay--${pageType}`)
+        if( pageType ) {
+            overlayRef.current.classList.add(`overlay--${pageType}`)
+            pageTypeRef.current = pageType
+        } else {
+            if( pageTypeRef.current ){
+                overlayRef.current.classList.remove(`overlay--${pageTypeRef.current}`)
+                pageTypeRef.current = undefined
+            }
+        }
+        
     },[ pageType ])
 
     const fadeIn = useSpring({

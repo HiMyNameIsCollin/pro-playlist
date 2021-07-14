@@ -1,6 +1,5 @@
 import { useSpring, animated } from 'react-spring'
 import { useLayoutEffect, useEffect, useState, useRef, useContext } from 'react'
-import { handleViewArtist } from '../../utils/handleViewArtist'
 import { capital } from '../../utils/capital'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleColorThief } from '../../utils/handleColorThief'
@@ -15,6 +14,7 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
     const thisHeaderRef = useRef()
 
     const { setOverlay, scrollPosition, } = useContext( DbHookContext )
+
 
     useLayoutEffect(() => {
         const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
@@ -51,6 +51,18 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
             precision: 1,
         }
     })
+
+    const handleViewArtist = (e) => {
+        e.stopPropagation()
+
+        if( collection.artists.length === 1 ){
+            setActiveItem( collection.artists[0] )
+        } else {
+            const calledFrom = 'collection'
+            setOverlay( {type: calledFrom, pageType: pageType, data: { artists: collection.artists }} )
+        }
+       
+    }
 
     return(
             <header 
@@ -101,7 +113,7 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
                     null
                 }
                     <p onClick={
-                        (e) => handleViewArtist( e, pageType, artists, setOverlay, setActiveItem ) }>
+                        (e) => handleViewArtist(e) }>
                         { artists.map((artist, i) =>  (
                             i !== artists.length - 1 ? 
                             `${ artist.name ? artist.name : artist.display_name }, ` : 
