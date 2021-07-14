@@ -1,18 +1,15 @@
 import Image from 'next/image'
+import { animated } from 'react-spring'
 import { whichPicture } from '../../../utils/whichPicture'
 import { useState, useEffect, useContext } from 'react'
 import { DbHookContext } from '../Dashboard'
 
-const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
+const TrackMenu = ({ transition, pageType, type, track }) => {
 
-    const { playNextQueue, setPlayNextQueue, queue, setQueue, qIndex } = useContext( DbHookContext )
+    const { overlay, setOverlay, activeHomeItem, setActiveHomeItem, activeSearchItem, setActiveSearchItem} = useContext( DbHookContext )
 
+    const activeItem = pageType === 'search' ? activeSearchItem : activeHomeItem
 
-
-    // FUNC 1 IS A CALLBACK SENT FROM TRACK 
-    const { type, pageType, data, func, func2 } = { ...overlay}
-    const { selectedTrack, calledFrom, collection } = {...data}
-    const [ track, setTrack ] = useState( track => track = selectedTrack )
     const copyToClip = () => {
         console.log(track)
         // ILL BE BACK FOR THIS ONCE I FIGURE IF I WANNA SHARE ON SPOTIFY OR MY APP
@@ -23,64 +20,55 @@ const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
         window.open( url )
     }
 
-
-    const handleViewArtist = ( e, pageType, artistArray, overlayFunc, activeItemFunc ) => {
+    const viewArtist = (e) => {
         e.stopPropagation()
-    
-        if( artistArray.length === 1 ){
-            activeItemFunc( artistArray[0] )
-            overlayFunc( {} )
-    
+        if( track.artists.length === 1 ){
+            if( pageType === 'home' ) setActiveHomeItem( track.artists[0] )
+            if( pageType === 'search' ) setActiveSearchItem( track.artists[0] )
+            setOverlay({})
         } else {
-            const popupData = {
-                title: 'Choose artist',
-                array: artistArray
-            }
-            overlayFunc({ type: 'listMenu' , pageType: pageType, data: popupData, func: func })
+            let oClone = { ...overlay}
+            oClone.data = { artists: track.artists }
+            setOverlay( oClone )
         }
+       
     }
 
-    const viewArtist = ( e, artists ) => {
+    const viewAlbum = ( e ) => {
         e.stopPropagation()
+        if( pageType === 'home' ) setActiveHomeItem( track.album )
+        if( pageType === 'search' ) setActiveSearchItem( track.album )
+        if( pageType === 'player' ) setActiveHomeItem( track.album )
         setOverlay( {} )
-        handleViewArtist( e , pageType, artists, setOverlay, func)
-        if( func2 ) func2()
-    }
-
-    const viewAlbum = ( e, album ) => {
-        e.stopPropagation()
-        setOverlay({})
-        setActiveHomeItem( album )
-        if( func2 ) func2()
     }
 
     const handleAddToQueue = () => {
-        let trackClone = { ...track }
-        trackClone['context'] = {
-            name: 'Now playing',
-            href: trackClone.href,
-            type: 'track'
+        // let trackClone = { ...track }
+        // trackClone['context'] = {
+        //     name: 'Now playing',
+        //     href: trackClone.href,
+        //     type: 'track'
 
-        }
-        setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, trackClone ])
-        setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), trackClone, ...queue.slice(qIndex + 1) ]) 
+        // }
+        // setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, trackClone ])
     }
 
     return(
-        <div className='popup__trackMenu'>
-            <header className='popup__header'>
-                <div className='popup__imgContainer'>
+        <animated.div 
+        style={ transition }
+        className='trackMenu overlay__popup'>
+            <header className='trackMenu__header'>
+                <div className='trackMenu__imgContainer'>
                     <img
                     src={ whichPicture( track.images, 'med' )}
                     alt='Track art' 
                     />
                 </div>
-                <h5> 
+                <h3> 
                     { track.name }
-                </h5>
+                </h3>
                 <p> { track.artists[0].name } </p>
             </header>
-            
             <button onClick={ (e) => openSpotify(e, track.external_urls.spotify )} >
                 <Image 
                 src='/Spotify_Icon_RGB_Green.png'
@@ -93,23 +81,22 @@ const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
                 <i className="fas fa-share-alt"></i> 
                 <span> Share </span>
             </button>
+       
             {
-               calledFrom !== 'artist' &&
-               <button onClick={ (e) => viewArtist( e, track.artists ) } >
-                    <i className="far fa-eye"></i>
-                    <span> View artist </span> 
-                </button>
+            type !== 'artist' &&
+            <button onClick={ viewArtist } >
+                <i className="far fa-eye"></i>
+                <span> View artist </span> 
+            </button>
             }
+        
             {
-                calledFrom === 'collection' && 
-                collection.album_type === 'playlist' ||
-                calledFrom !== 'collection' &&
-                <button onClick={ (e) => viewAlbum( e, track.album )}>
-                    <i className="far fa-eye"></i>
-                    <span> View album </span>
-                </button>
+            track.album && 
+            <button onClick={ viewAlbum }>
+                <i className="far fa-eye"></i>
+                <span> View album </span>
+            </button>
             }
-               
             
             <button onClick={ handleAddToQueue }>
                 <i className="far fa-plus-square"></i>
@@ -119,15 +106,7 @@ const TrackMenu = ({ overlay, setOverlay, setActiveHomeItem }) => {
                 <i className="far fa-plus-square"></i>
                 <span>Add song to Standby playlist</span>
             </button>
-            <button>
-                <i className="far fa-plus-square"></i>
-                <span>Add song to Standby playlist</span>
-            </button>
-            <button>
-                <i className="far fa-plus-square"></i>
-                <span>Add song to Standby playlist</span>
-            </button>
-        </div>
+        </animated.div>
     )
 } 
 

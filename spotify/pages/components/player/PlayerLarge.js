@@ -49,9 +49,10 @@ const PlayerLarge = ({ controls }) => {
         setActiveHomeItem( currPlayingContext )
     }
 
-    const handleTrackMenu = ( e ) => {
+    const handleTrackMenu = (e, selectedTrack ) => {
         e.stopPropagation()
-        let selectedTrack = { ...currPlaying }
+        const calledFrom = 'player'
+        const pageType = null
         if(!selectedTrack.images){
             if(!selectedTrack.album){
                 selectedTrack.images = collection.images
@@ -59,12 +60,7 @@ const PlayerLarge = ({ controls }) => {
                 selectedTrack.images = selectedTrack.album.images
             }
         }
-        const popupData = {
-            collection: currPlayingContext, 
-            tracks: null,
-            selectedTrack: selectedTrack,
-        }
-        setOverlay( {type: 'trackMenuPlayer', data: popupData,  func: setActiveHomeItem , func2: togglePlayer} )
+        setOverlay( {type: calledFrom, pageType: pageType, track: selectedTrack} )
     }
 
 

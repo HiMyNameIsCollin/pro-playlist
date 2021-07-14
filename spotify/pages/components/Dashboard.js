@@ -338,36 +338,44 @@ const Dashboard = ({ setAuth, audioRef }) => {
         const searchPage = document.getElementById('searchPage')
         const managePage = document.getElementById('managePage')
         const pages = [ homePage, searchPage, managePage ]
-        if( homePage && searchPage && managePage ) {
-            pages.forEach( page => page.style.visibility = 'hidden')
-            if( dashboardState === 'home' ) {
-                homePage.style.visibility = 'visible'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.home - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'search' ) {
-                searchPage.style.visibility = 'visible'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.search - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'manage' ) {
-                managePage.style.visibility = 'visible'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.manage - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-        }
+        // if( homePage && searchPage && managePage ) {
+        //     pages.forEach( page => page.style.visibility = 'hidden')
+        //     if( dashboardState === 'home' ) {
+        //         homePage.style.visibility = 'visible'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.home - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        //     if( dashboardState === 'search' ) {
+        //         searchPage.style.visibility = 'visible'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.search - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        //     if( dashboardState === 'manage' ) {
+        //         managePage.style.visibility = 'visible'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.manage - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        // }
         
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
-    },[ dashboardState ])
+        if( dashboardState === 'home' ) {
+                    homePage.style.visibility = 'visible'
+                    dashboardRef.current.scroll({ 
+                        top: pageScrollRef.current.home - 160, 
+                        left: 0,
+                        behavior: 'auto'
+                    })
+                }
+    },[  ])
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -386,7 +394,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 state={ state } 
                 homePageHistoryRef={ homePageHistoryRef }/> 
 
-                <Search
+                {/* <Search
                 transMinHeight={ searchTransMinHeight }
                 setTransMinHeight={ setSearchTransMinHeight }
                 activeSearchItem={ activeSearchItem }
@@ -398,12 +406,12 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 searchPageHistoryRef={ searchPageHistoryRef }
                 currActiveSearchRef={ currActiveSearchRef } />
 
-                <Manage />
+                <Manage /> */}
                 
-                <Player 
+                {/* <Player 
                 hiddenUI={ hiddenUI } 
                 playerSize={ playerSize } 
-                setPlayerSize={ setPlayerSize }/>
+                setPlayerSize={ setPlayerSize }/> */}
 
                 <Nav 
                 dashboardRef={ dashboardRef }

@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { useSpring, useTransition, animated } from 'react-spring'
 import ListMenu from './overlay/ListMenu'
 import TrackMenu from './overlay/TrackMenu'
@@ -6,57 +6,51 @@ import { DbHookContext } from './Dashboard'
 import { whichPicture } from '../../utils/whichPicture'
 const Overlay = () => {
 
+    const overlayRef = useRef()
     const { overlay, setOverlay } = useContext( DbHookContext )
+    const { pageType, type, data } = overlay
 
-    const { data, type, pageType, func, func2 } = { ...overlay }
-    const { selectedTrack, artists, calledFrom, collection } = { ...data }
+    useEffect(() => {
+        overlayRef.current.classList.add(`overlay--${pageType}`)
+    },[ pageType ])
 
     const fadeIn = useSpring({
         opacity: type ? 1 : 0,
         pointerEvents: type ? 'auto' : 'none',
     })
 
-    const closeOverlay = () => {
-        setOverlay( {} )
-    }
-
-    const menuTransition = useTransition(overlay ,{
+    const menuTransition = useTransition(data ,{
         initial: { transform: 'translateY(100%)', position: 'absolute'},
-        from: { transform: 'translateY(100%)' , pointerEvents: 'none', height: '100%',  position: 'absolute'},
+        from: { transform: 'translateY(100%)' , pointerEvents: 'none',height: '100%', position: 'absolute'},
         update: { position: 'relative' },
         enter: { transform: 'translateY(0%)', pointerEvents: 'auto', overflow: 'auto', position: 'absolute' },
         leave: { transform: 'translateY(100%)' }
     })
 
-    return (
+    
+    return(
         <animated.div 
-            style={ fadeIn }
-            onClick={ closeOverlay } 
-            className={ 
-                `overlay 
-                ${ overlay.type && overlay.type === 'trackMenuPlayer' && ' overlay--player '} 
-                overlay--${pageType}`
-                }>
-            {
-           
-            menuTransition((props, item) => (
-                item &&
-                item.type === 'trackMenu' ||
-                item && item.type === 'trackMenuPlayer' ?
-                <animated.div className='popup' style={props}>
-                    <TrackMenu overlay={ item } setOverlay={ setOverlay } setActiveHomeItem={ item.func } />
-                </animated.div> :
-                item &&
-                item.type === 'listMenu' ?
-                <animated.div className='popup'  style={props}>
-                    <ListMenu data={item.data} func={item.func}/>
-                </animated.div>  :
-                
-                null
-                )
-            )
-
-            }
+        style={ fadeIn }
+        ref={ overlayRef }
+        onClick={ () => setOverlay( {} )}
+        className={
+        `overlay`}>
+        {
+            menuTransition(( props, item ) => (
+                item.track ?
+                <TrackMenu
+                transition={ props } 
+                pageType={ pageType }
+                type={ type }
+                track={ item.track } /> :
+                item.artists &&
+                <ListMenu 
+                transition={ props } 
+                pageType={ pageType }
+                type={ type }
+                artists={ item.artists } />
+            ))
+        }
         </animated.div>
     )
 }

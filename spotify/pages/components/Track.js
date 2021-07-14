@@ -2,12 +2,14 @@ import { useState, useLayoutEffect, useEffect, useContext, useRef } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 import { PlayerHookContext } from './player/Player'
+import { SearchHookContext } from './search/Search'
+
 import { handleColorThief } from '../../utils/handleColorThief'
 
-const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trackMounted, setTrackMounted, data }) => {
+const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrackMounted, data }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
     
-    const { queue, setQueue, activeItem, audioRef, qIndex, setQIndex } = useContext( DbHookContext )
+    const { queue, setQueue, activeItem ,setActiveHomeItem, audioRef, qIndex, setQIndex, setOverlay } = useContext( DbHookContext )
     const playerContext = useContext( type === 'playerCollapsed' ? PlayerHookContext : '' )
     
     const isPlaying = playerContext ?  playerContext.isPlaying : null
@@ -17,8 +19,11 @@ const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trac
     const setPlayerSize = playerContext ? playerContext.setPlayerSize : null
     const currPlaying = playerContext ? playerContext.currPlaying : null
 
+    const searchContext = useContext( SearchHookContext )
+    const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
+    const setActiveItem = setActiveSearchItem ? setActiveSearchItem : setActiveHomeItem 
 
-
+    const { collection, tracks } = { ...data }
 
     useEffect(() => {
         if( queue[ qIndex ] && queue[ qIndex ].id === track.id && type !=='playerCollapsed' && type !== 'queueView'){
@@ -57,9 +62,7 @@ const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trac
             const index = data.tracks.findIndex( x => x.id === track.id )
             setQueue( nextTracks )
             setQIndex( qIndex => qIndex = index )
-
         }
-        
     }
     
     const togglePlayer = () => {
@@ -90,6 +93,20 @@ const Track = ({ type, trackIndex, collectionType , track, handleTrackMenu, trac
             colors.map((clr, i) => document.documentElement.style.setProperty(`--currentTrackColor${i}`, clr))
             setTrackMounted( true )
         }
+    }
+
+    const handleTrackMenu = (e, selectedTrack ) => {
+        e.stopPropagation()
+        const calledFrom = type
+        const pageType = searchContext ? 'search' : 'home'
+        if(!selectedTrack.images){
+            if(!selectedTrack.album){
+                selectedTrack.images = collection.images
+            } else{
+                selectedTrack.images = selectedTrack.album.images
+            }
+        }
+        setOverlay( {type: calledFrom, pageType: pageType, data: { track: selectedTrack }} )
     }
 
     return(
