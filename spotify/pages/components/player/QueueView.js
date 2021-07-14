@@ -20,7 +20,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
 
     useEffect(() => {
         const playerHeaderHeight = document.querySelector('.playerLargeContainer__header').getBoundingClientRect().height
-        document.querySelector('.PlQueueView').style.paddingTop = playerHeaderHeight + 'px'
+        document.querySelector('.plQueueView').style.paddingTop = playerHeaderHeight + 'px'
         nowPlayingHeaderRef.current.style.top = playerHeaderHeight + 'px'
         queueHeaderRef.current.style.top = playerHeaderHeight + 'px'
         if( playNextHeaderRef.current) playNextHeaderRef.current.style.top = playerHeaderHeight + 'px'
@@ -86,8 +86,8 @@ const QueueView = ({ handleTrackMenu, controls }) => {
 
 
     return(
-        <div className='PlQueueView'>
-            <h4 ref={nowPlayingHeaderRef} className='PlQueueView__nowPlaying'>Now playing: </h4> 
+        <div className='plQueueView'>
+            <h4 ref={nowPlayingHeaderRef} className='plQueueView__nowPlaying'>Now playing: </h4> 
             <Track
             type='queueView'
             handleTrackMenu={ handleTrackMenu }

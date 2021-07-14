@@ -4,7 +4,7 @@ import ListMenu from './overlay/ListMenu'
 import TrackMenu from './overlay/TrackMenu'
 import { DbHookContext } from './Dashboard'
 import { whichPicture } from '../../utils/whichPicture'
-const Overlay = () => {
+const Overlay = ({ setActiveSearchItem }) => {
 
     const overlayRef = useRef()
     const { overlay, setOverlay } = useContext( DbHookContext )
@@ -40,11 +40,13 @@ const Overlay = () => {
                 item.track ?
                 <TrackMenu
                 transition={ props } 
+                setActiveSearchItem={ setActiveSearchItem }
                 pageType={ pageType }
                 type={ type }
                 track={ item.track } /> :
                 item.artists &&
                 <ListMenu 
+                setActiveSearchItem={ setActiveSearchItem }
                 transition={ props } 
                 pageType={ pageType }
                 type={ type }

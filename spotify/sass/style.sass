@@ -400,6 +400,7 @@ i
     min-height: -webkit-fill-available
     max-height: -webkit-fill-available
     position: fixed
+    display: flex
     width: 100%
     z-index: 994
     i
@@ -407,10 +408,12 @@ i
     &__wrapper
         display: flex
         flex-direction: column
+        min-height: -webkit-fill-available
+        max-height: -webkit-fill-available
         overflow: auto
-        min-height: 100vh
         &--qv
             background: $black
+
     &__header
         @include pseudo
         align-items: center
@@ -445,15 +448,13 @@ i
     color: $white
     display: flex
     flex-direction: column
-    margin:  auto 
-    padding:  3rem 2rem
-    height: 100%
-    margin: auto
+    justify-content: space-around
+    padding: 3rem 2rem 2rem 2rem
+    max-height: -webkit-fill-available
     max-width: 100%
-    @media only screen and (max-height: 600px)
-        padding: 0rem 3rem
-    @media only screen and ( min-width: 640px )
-        max-width: 640px
+    margin: auto
+    @media only screen and (max-height: 576px)
+        padding: 3rem 2rem 1rem 2rem
     &__track
         margin-top: .5rem
         width: 100%
@@ -495,10 +496,11 @@ i
         padding: .4rem
         top: -.25rem
     &__imgContainer
-        max-width: 100%
+        margin: auto
+        max-width: clamp( 300px, 75vw, 100%)
         img
             display: block
-            max-height: auto
+            height: auto
             max-width: 100%
             margin: auto 
     
@@ -513,7 +515,7 @@ i
             color: $green
             font-size: 2rem
 
-.PlQueueView
+.plQueueView
     background: $black
     display: flex
     flex-direction: column
@@ -529,6 +531,7 @@ i
         left: 0
         position: fixed
         padding: .5rem 1rem
+
 
 .queueContainer
     color: $white
