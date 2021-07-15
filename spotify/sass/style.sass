@@ -247,8 +247,7 @@ i
         pointer-events: none
 
 #homePage, #searchPage, #managePage
-    visibility: hidden
-
+    display: none
 .showcase
     color: $white
     &__title
@@ -411,6 +410,7 @@ i
         min-height: -webkit-fill-available
         max-height: -webkit-fill-available
         overflow: auto
+        width: 100%
         &--qv
             background: $black
 
@@ -1149,7 +1149,6 @@ i
     max-width: 100vw
     z-index: 999
 
-.overlay
 
         
 .touchStart
@@ -1173,9 +1172,6 @@ i
     &::before
         @include scrimGradient($black, 'to top')
         opacity: 1
-    &::after
-        background: linear-gradient(to bottom, var(--currentTrackColor1) 0%, var(--currentTrackColor0)), linear-gradient(to right, var(--currentTrackColor1), var(--currentTrackColor0)) 
-
     &--result
         &::before
             @include scrimGradient($black, 'to bottom right')
@@ -1193,6 +1189,10 @@ i
             opacity: 1
         &::after
             background: linear-gradient(to bottom, var(--currentTrackColor1) 0%, var(--currentTrackColor0)), linear-gradient(to right, var(--currentTrackColor1), var(--currentTrackColor0)) 
+    &--selectedTrack
+        &::after
+            background: linear-gradient(to bottom, var(--selectedTrackColor1) 0% , var(--selectedTrackColor0)), linear-gradient(to right, var(--selectedTrackColor1) , var(--selectedTrackColor0))
+
     &__popup
         color: $white
         display: flex

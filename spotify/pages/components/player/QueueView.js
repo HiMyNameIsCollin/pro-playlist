@@ -90,7 +90,6 @@ const QueueView = ({ handleTrackMenu, controls }) => {
             <h4 ref={nowPlayingHeaderRef} className='plQueueView__nowPlaying'>Now playing: </h4> 
             <Track
             type='queueView'
-            handleTrackMenu={ handleTrackMenu }
             track={ currPlaying }/>
             {
             playNextQueue.length > 0 &&

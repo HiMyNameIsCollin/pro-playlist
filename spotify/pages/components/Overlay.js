@@ -9,20 +9,20 @@ const Overlay = ({ setActiveSearchItem }) => {
     const overlayRef = useRef()
     const { overlay, setOverlay } = useContext( DbHookContext )
     const { pageType, type, data } = overlay
-    const pageTypeRef = useRef()
+    // const pageTypeRef = useRef()
 
-    useEffect(() => {
-        if( pageType ) {
-            overlayRef.current.classList.add(`overlay--${pageType}`)
-            pageTypeRef.current = pageType
-        } else {
-            if( pageTypeRef.current ){
-                overlayRef.current.classList.remove(`overlay--${pageTypeRef.current}`)
-                pageTypeRef.current = undefined
-            }
-        }
+    // useEffect(() => {
+    //     if( pageType ) {
+    //         overlayRef.current.classList.add(`overlay--${pageType}`)
+    //         pageTypeRef.current = pageType
+    //     } else {
+    //         if( pageTypeRef.current ){
+    //             overlayRef.current.classList.remove(`overlay--${pageTypeRef.current}`)
+    //             pageTypeRef.current = undefined
+    //         }
+    //     }
         
-    },[ pageType ])
+    // },[ pageType ])
 
     const fadeIn = useSpring({
         opacity: type ? 1 : 0,
@@ -44,7 +44,8 @@ const Overlay = ({ setActiveSearchItem }) => {
         ref={ overlayRef }
         onClick={ () => setOverlay( {} )}
         className={
-        `overlay`}>
+        `overlay 
+        overlay--${pageType}`}>
         {
             menuTransition(( props, item ) => (
                 item.track ?

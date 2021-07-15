@@ -12,7 +12,6 @@ import Showcase from '../Showcase'
 import SearchOverlay from './SearchOverlay'
 import Loading from '../Loading'
 
-import BrowseContainer from '../BrowseContainer'
 import { DbHookContext } from '../Dashboard'
 
 

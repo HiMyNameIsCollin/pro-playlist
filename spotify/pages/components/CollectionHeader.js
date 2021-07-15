@@ -54,14 +54,12 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
 
     const handleViewArtist = (e) => {
         e.stopPropagation()
-
         if( collection.artists.length === 1 ){
             setActiveItem( collection.artists[0] )
         } else {
             const calledFrom = 'collection'
             setOverlay( {type: calledFrom, pageType: pageType, data: { artists: collection.artists }} )
         }
-       
     }
 
     return(

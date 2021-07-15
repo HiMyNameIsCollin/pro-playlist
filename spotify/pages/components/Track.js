@@ -8,7 +8,8 @@ import { handleColorThief } from '../../utils/handleColorThief'
 
 const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrackMounted, data }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
-    
+    const trackImageRef = useRef()
+
     const { queue, setQueue, activeItem ,setActiveHomeItem, audioRef, qIndex, setQIndex, setOverlay } = useContext( DbHookContext )
     const playerContext = useContext( type === 'playerCollapsed' ? PlayerHookContext : '' )
     
@@ -94,10 +95,24 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
         }
     }
 
+    const handleOverlayColors = () => {
+        const colors = handleColorThief( trackImageRef.current, 2)
+        colors.map((clr, i) => document.documentElement.style.setProperty(`--selectedTrackColor${i}`, clr))
+    }
+
     const handleTrackMenu = (e, selectedTrack ) => {
         e.stopPropagation()
-        const calledFrom = type
-        const pageType = searchContext ? 'search' : 'home'
+        let overlayType
+        let pageType
+        overlayType = type !== 'queueView' ? type : 'player'
+        pageType = type !== 'queueView' ? 
+        selectedTrack.album && selectedTrack.album.images ? 
+        'selectedTrack' :
+        searchContext ? 
+        'search' : 
+        'home' : 
+        'player'
+        if( pageType === 'selectedTrack' ) handleOverlayColors()
         if(!selectedTrack.images){
             if(!selectedTrack.album){
                 selectedTrack.images = collection.images
@@ -105,7 +120,7 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
                 selectedTrack.images = selectedTrack.album.images
             }
         }
-        setOverlay( {type: calledFrom, pageType: pageType, data: { track: selectedTrack }} )
+        setOverlay( {type: overlayType, pageType: pageType, data: { track: selectedTrack }} )
     }
 
     return(
@@ -129,19 +144,10 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
         }
 
         {
-            type === 'collection' && collectionType === 'playlist' &&
+            track.album && track.album.images &&
             <div className='track__imgContainer'>
                 <img
-                crossorigin='anonymous'
-                onLoad={ (e) => trackLoaded(e, 2) }
-                alt='Album' 
-                src={ whichPicture( track.album.images, 'sm') }/>
-            </div>
-        }
-        {
-            type !== 'collection' && !collectionType &&
-            <div className='track__imgContainer'>
-                <img
+                ref={ trackImageRef }
                 crossorigin='anonymous'
                 onLoad={ (e) => trackLoaded(e, 2) }
                 alt='Album' 

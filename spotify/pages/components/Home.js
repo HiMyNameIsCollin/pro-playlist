@@ -13,7 +13,6 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef, state }) =
     const { homeHeaderScrolled, setHomeHeaderScrolled, activeHomeItem, homePageHistoryRef, hiddenUI, setAuth, scrollPosition, dashboardRef} = useContext(DbHookContext)
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ activeHeader, setActiveHeader ] = useState( {} )
-    
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     const [ mounted, setMounted ] = useState( false )
     const welcomePageRef = useRef() 
@@ -107,15 +106,27 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef, state }) =
                 }
                 {
                     item.type === 'artist' &&
-                    <FixedHeader type={ 'home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                    <FixedHeader 
+                    type={ 'home' } 
+                    transitionComplete={ transitionComplete } 
+                    headerScrolled={ headerScrolled } 
+                    activeHeader={ activeHeader } />
                 }
                 {
                     item.type === 'album' &&
-                    <FixedHeader type={ 'home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                    <FixedHeader 
+                    type={ 'home' } 
+                    transitionComplete={ transitionComplete } 
+                    headerScrolled={ headerScrolled } 
+                    activeHeader={ activeHeader } />
                 }
                 {
                     item.type === 'playlist' &&
-                    <FixedHeader type={ 'home' } transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                    <FixedHeader 
+                    type={ 'home' } 
+                    transitionComplete={ transitionComplete } 
+                    headerScrolled={ headerScrolled } 
+                    activeHeader={ activeHeader } />
                 }
             </animated.div>
         ))

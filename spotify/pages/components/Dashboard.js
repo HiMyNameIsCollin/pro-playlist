@@ -340,9 +340,11 @@ const Dashboard = ({ setAuth, audioRef }) => {
         const managePage = document.getElementById('managePage')
         const pages = [ homePage, searchPage, managePage ]
         if( homePage && searchPage && managePage ) {
-            pages.forEach( page => page.style.visibility = 'hidden')
+            pages.forEach( page => {
+                page.style.display = 'none'
+            })
             if( dashboardState === 'home' ) {
-                homePage.style.visibility = 'visible'
+                homePage.style.display = 'block'
                 dashboardRef.current.scroll({ 
                     top: pageScrollRef.current.home - 160, 
                     left: 0,
@@ -350,7 +352,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 })
             }
             if( dashboardState === 'search' ) {
-                searchPage.style.visibility = 'visible'
+                searchPage.style.display = 'block'
                 dashboardRef.current.scroll({ 
                     top: pageScrollRef.current.search - 160, 
                     left: 0,
@@ -358,7 +360,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 })
             }
             if( dashboardState === 'manage' ) {
-                managePage.style.visibility = 'visible'
+                managePage.style.display = 'block'
                 dashboardRef.current.scroll({ 
                     top: pageScrollRef.current.manage - 160, 
                     left: 0,
