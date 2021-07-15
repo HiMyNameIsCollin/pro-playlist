@@ -25,6 +25,7 @@ const initialState = {
     my_top_artists: [],
     all_categories: [],
     available_genre_seeds: [],
+    followed_artists: []
 }
 
 const routes = {   
@@ -60,80 +61,79 @@ const reducer = (state, action) => {
                 }
             }
         case routes.player_info:
-            console.log(action)
             if(method==='get'){
                 return{
                     ...state,
-                    player_info: action
+                    player_info: [...state.player_info , ...action ]
                 }
             }
         case routes.my_playlists:
             if(method === 'get'){
                 return{
                     ...state,
-                    my_playlists: action.items
+                    my_playlists: [ ...state.my_playlists, ...action.items ]
                 }
             }
         case routes.my_albums:
             if(method === 'get'){
                 return{
                     ...state,
-                    my_albums: action.items
+                    my_albums: [ ...state.my_albums, ...action.items ]
                 }
             }
         case routes.recently_played:
             if(method === 'get'){
                 return{
                     ...state,
-                    recently_played: action.items
+                    recently_played: [ ...state.recently_played, ...action.items ]
                 }
             }             
         case routes.new_releases:
             if(method === 'get'){
                 return{
                     ...state,
-                    new_releases: action.albums.items
+                    new_releases: [ ...state.new_releases, ...action.albums.items ]
                 }
             }
         case routes.featured_playlists:
             if(method === 'get'){
                 return{
                     ...state,
-                    featured_playlists: action.playlists.items
+                    featured_playlists: [ ...state.featured_playlists, ...action.playlists.items ]
                 }  
             }  
         case routes.recommendations:
             if(method === 'get'){
                 return{
                     ...state,
-                    recommendations: action.items
+                    recommendations: [ ...state.recommendations, ...action.items ]
                 }
             }
         case routes.available_genre_seeds:
             if(method === 'get'){
                 return{
                     ...state,
-                    available_genre_seeds: action.genres
+                    available_genre_seeds: [ ...state.available_genre_seeds, ...action.genres ]
                 }
             }
         case routes.my_top_tracks:
             if(method === 'get'){
                 return{
                     ...state,
-                    my_top_tracks: action.items
+                    my_top_tracks: [ ...state.my_top_tracks, ...action.items ]
                 }
             }
         case routes.my_top_artists:
             if(method === 'get'){
                 return{
                     ...state,
-                    my_top_artists: action.items
+                    my_top_artists: [ ...state.my_top_artists, ...action.items ]
                 }
             } 
         case routes.followed_artists:
             return{
                 ...state,
-                followed_artists: action.artists.items
+                followed_artists: [ ...state.followed_artists, ...action.artists.items ]
             }
 
         default:
@@ -277,16 +277,16 @@ const Dashboard = ({ setAuth, audioRef }) => {
         // 4th and onwards arguments will add query params to final url (Limit, offset, etc)
         finalizeRoute('get', routes.user_info, null)
         finalizeRoute( 'get', routes.player_info, null)
-        finalizeRoute( 'get', routes.featured_playlists, null )
-        finalizeRoute( 'get', routes.new_releases, null )
-        finalizeRoute( 'get', routes.my_albums, null, 'limit=50')
-        finalizeRoute( 'get', routes.my_playlists, null, 'limit=50')
-        finalizeRoute( 'get', routes.recently_played, null, 'limit=50' ) 
-        finalizeRoute( 'get', routes.new_releases, null )
-        finalizeRoute( 'get', routes.available_genre_seeds, null )
-        finalizeRoute( 'get', routes.my_top_tracks, null )
-        finalizeRoute( 'get', routes.my_top_artists, null )
-        finalizeRoute ('get', routes.followed_artists, null, 'type=artist')
+        finalizeRoute( 'get', routes.featured_playlists, null, false )
+        finalizeRoute( 'get', routes.new_releases, null , true)
+        finalizeRoute( 'get', routes.my_albums, null, false, 'limit=50')
+        // finalizeRoute( 'get', routes.my_playlists, null, 'limit=50')
+        finalizeRoute( 'get', routes.recently_played, null, true, 'limit=50' ) 
+        // finalizeRoute( 'get', routes.new_releases, null )
+        // finalizeRoute( 'get', routes.available_genre_seeds, null )
+        // finalizeRoute( 'get', routes.my_top_tracks, null )
+        // finalizeRoute( 'get', routes.my_top_artists, null )
+        // finalizeRoute ('get', routes.followed_artists, null, 'type=artist')
     },[])
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
@@ -368,10 +368,17 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 })
             }
         }
-        
+        if( dashboardState === 'home' ) {
+            homePage.style.display = 'block'
+            dashboardRef.current.scroll({ 
+                top: pageScrollRef.current.home - 160, 
+                left: 0,
+                behavior: 'auto'
+            })
+        }
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
        
-    },[ dashboardState ])
+    },[  ])
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -390,7 +397,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 state={ state } 
                 homePageHistoryRef={ homePageHistoryRef }/> 
 
-                <Search
+                {/* <Search
                 transMinHeight={ searchTransMinHeight }
                 setTransMinHeight={ setSearchTransMinHeight }
                 activeSearchItem={ activeSearchItem }
@@ -403,7 +410,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 currActiveSearchRef={ currActiveSearchRef } />
 
                 <Manage />
-                
+                 */}
                 <Player 
                 hiddenUI={ hiddenUI } 
                 playerSize={ playerSize } 

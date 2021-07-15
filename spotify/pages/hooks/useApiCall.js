@@ -10,7 +10,8 @@ const useApiCall = (url) => {
     const host = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/'
     const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken(host)
     const thisCallRef = useRef()
-    const fetchApi = ( route, method, requestID, body,  ) => {
+    const awaitingResultsRef = useRef()
+    const fetchApi = ( route, method, requestID, fetchAll, body,  ) => {
         const errorHandling = (err) => {
             console.log(err, 1234)
             setApiError(true)
@@ -20,7 +21,7 @@ const useApiCall = (url) => {
                 refreshToken( refresh_token, setTokenBody )
             }
         }
-        thisCallRef.current = ({ route, method, body, requestID})
+        thisCallRef.current = { route, method, body, requestID}
         setApiPending(true)
         setApiError(false)
         const access_token = localStorage.getItem('access_token')
@@ -39,10 +40,50 @@ const useApiCall = (url) => {
             }else{
                 data['route'] = breakdownRoute(route, data.id ? data.id : requestID)
                 data['method'] = method
-                setApiPayload(data)
-                setApiPending(false)
+                if( fetchAll ){
+                    console.log(data)
+                    if(data.next){
+                        const args = getQueries( data.next )
+                        if(awaitingResultsRef.current){
+                            data.items = [ ...awaitingResultsRef.current.items, ...data.items ]
+                            awaitingResultsRef.current = data
+                        } else {
+                            awaitingResultsRef.current = data
+                        }
+                        finalizeRoute( method, data.route, requestID, true, ...args)
+                    } else {
+                        const payload = awaitingResultsRef.current
+                        setApiPayload( payload )
+                        setApiPending(false)
+                        awaitingResultsRef.current = undefined
+
+                    }
+                }else {
+                    setApiPayload(data)
+                    setApiPending(false)
+                }
             }
         })
+    }
+
+    const getQueries = ( str ) => {
+        let args = []
+        const regexp = /['?']/
+        const urlParams = new URLSearchParams(str)
+        const params = Object.fromEntries(urlParams.entries())
+        const keys = Object.keys( params )
+        keys.forEach(( key, i ) => {
+            const query = key.includes('?')
+            if( query ){
+                const qi = key.search( regexp )
+                const newKey = key.slice( qi + 1 )
+                args.push(`${newKey}=${params[key]}`)
+            } else {
+                args.push( `${ key }=${ params[key] }`)
+            }
+        })
+        console.log( args )
+        return args 
     }
 
     const breakdownRoute = (route , id) => {
@@ -50,8 +91,8 @@ const useApiCall = (url) => {
         let newRoute 
         if(route.includes('?')){
             const regexp = /['?']/
-            const queryIndex = route.search(regexp)
-            newRoute = route.substr(0, queryIndex)
+            const queryIndex = route.search( regexp )
+            newRoute = route.substr( 0, queryIndex )
         } else {
             newRoute = route
         }
@@ -67,20 +108,21 @@ const useApiCall = (url) => {
         }
     }
 
-    const finalizeRoute = (method, route, requestID, ...args) => {
-    let finalRoute = route
-    
-    if(args.length > 0){
-        args.forEach((arg, i) => {
-            if( i === 0 ) {
-                finalRoute += `?${arg}`
-            }else {
-                finalRoute += `&${arg}`
-            }
-        })
+
+
+    const finalizeRoute = (method, route, requestID, fetchAll, ...args) => {
+        let finalRoute = route
+        if(args.length > 0){
+            args.forEach((arg, i) => {
+                if( i === 0 ) {
+                    finalRoute += `?${arg}`
+                }else {
+                    finalRoute += `&${arg}`
+                }
+            })
+        }
+        fetchApi( finalRoute, method , requestID, fetchAll)
     }
-    fetchApi( finalRoute, method , requestID)
-}
 
     useEffect(() => {
         if(tokenFetchComplete){

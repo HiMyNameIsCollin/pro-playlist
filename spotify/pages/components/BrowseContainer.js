@@ -6,14 +6,6 @@ const BrowseContainer = ({ type, message, data, }) => {
     
     const { scrollPosition } = useContext( DbHookContext )
 
-    useEffect(() => {
-        if( scrollPosition && scrollPosition === 100 ){
-            const fetchMore = () => {
-                
-            }
-            fetchMore()
-        }
-    },[ scrollPosition ])
 
     return(
             <section className='browseContainer'> 
