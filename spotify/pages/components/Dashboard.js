@@ -92,14 +92,14 @@ const reducer = (state, action) => {
             if(method === 'get'){
                 return{
                     ...state,
-                    new_releases: [ ...state.new_releases, ...action.albums.items ]
+                    new_releases: [ ...state.new_releases, ...action.items ]
                 }
             }
         case routes.featured_playlists:
             if(method === 'get'){
                 return{
                     ...state,
-                    featured_playlists: [ ...state.featured_playlists, ...action.playlists.items ]
+                    featured_playlists: [ ...state.featured_playlists, ...action.items ]
                 }  
             }  
         case routes.recommendations:
@@ -133,7 +133,7 @@ const reducer = (state, action) => {
         case routes.followed_artists:
             return{
                 ...state,
-                followed_artists: [ ...state.followed_artists, ...action.artists.items ]
+                followed_artists: [ ...state.followed_artists, ...action.items ]
             }
 
         default:
@@ -275,18 +275,18 @@ const Dashboard = ({ setAuth, audioRef }) => {
         // Route of fetch (From the routes object)
         // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
         // 4th and onwards arguments will add query params to final url (Limit, offset, etc)
-        finalizeRoute('get', routes.user_info, null)
-        finalizeRoute( 'get', routes.player_info, null)
-        finalizeRoute( 'get', routes.featured_playlists, null, false )
-        finalizeRoute( 'get', routes.new_releases, null , true)
-        finalizeRoute( 'get', routes.my_albums, null, false, 'limit=50')
-        // finalizeRoute( 'get', routes.my_playlists, null, 'limit=50')
-        finalizeRoute( 'get', routes.recently_played, null, true, 'limit=50' ) 
-        // finalizeRoute( 'get', routes.new_releases, null )
-        // finalizeRoute( 'get', routes.available_genre_seeds, null )
-        // finalizeRoute( 'get', routes.my_top_tracks, null )
-        // finalizeRoute( 'get', routes.my_top_artists, null )
-        // finalizeRoute ('get', routes.followed_artists, null, 'type=artist')
+        // finalizeRoute('get', routes.user_info, null)
+        // finalizeRoute( 'get', routes.player_info, null)
+        // finalizeRoute( 'get', routes.featured_playlists, null, false )
+        finalizeRoute( 'get', routes.new_releases, null , true, 'limit=50', 'offset=0')
+        // finalizeRoute( 'get', routes.my_albums, null, false, 'limit=50')
+        // finalizeRoute( 'get', routes.my_playlists, null, false,  'limit=50')
+        // finalizeRoute( 'get', routes.recently_played, null, true, 'limit=50' ) 
+        // finalizeRoute( 'get', routes.new_releases, null, false )
+        // finalizeRoute( 'get', routes.available_genre_seeds, null, false )
+        // finalizeRoute( 'get', routes.my_top_tracks, null, true )
+        // finalizeRoute( 'get', routes.my_top_artists, null, true )
+        finalizeRoute ('get', routes.followed_artists, null, true, 'type=artist')
     },[])
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
