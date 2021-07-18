@@ -4,11 +4,11 @@ import { whichPicture } from '../../../utils/whichPicture'
 import { useState, useEffect, useContext } from 'react'
 import { DbHookContext } from '../Dashboard'
 
-const TrackMenu = ({ setActiveSearchItem, transition, pageType, type, track }) => {
+const TrackMenu = ({ setActiveSearchItem, transition, calledFrom, page, type, track }) => {
 
     const { overlay, setOverlay, setPlayNextQueue, activeHomeItem, setActiveHomeItem, activeSearchItem} = useContext( DbHookContext )
 
-    const activeItem = pageType === 'search' ? activeSearchItem : activeHomeItem
+    const activeItem = calledFrom === 'search' ? activeSearchItem : activeHomeItem
 
     const copyToClip = () => {
         console.log(track)
@@ -23,8 +23,8 @@ const TrackMenu = ({ setActiveSearchItem, transition, pageType, type, track }) =
     const viewArtist = (e) => {
         e.stopPropagation()
         if( track.artists.length === 1 ){
-            if( pageType === 'home' || pageType==='player' ) setActiveHomeItem( track.artists[0] )
-            if( pageType === 'search' ) setActiveSearchItem( track.artists[0] )
+            if( page === 'home' || calledFrom==='player' ) setActiveHomeItem( track.artists[0] )
+            if( page === 'search' ) setActiveSearchItem( track.artists[0] )
         } else {
             let oClone = { ...overlay}
             oClone.data = { artists: track.artists }
@@ -35,9 +35,8 @@ const TrackMenu = ({ setActiveSearchItem, transition, pageType, type, track }) =
 
     const viewAlbum = ( e ) => {
         e.stopPropagation()
-        if( pageType === 'home' ) setActiveHomeItem( track.album )
-        if( pageType === 'search' ) setActiveSearchItem( track.album )
-        if( pageType === 'player' ) setActiveHomeItem( track.album )
+        if( page === 'home' || calledFrom==='player' ) setActiveHomeItem( track.album )
+        if( page === 'search' ) setActiveSearchItem( track.album )
     }
 
     const handleAddToQueue = () => {

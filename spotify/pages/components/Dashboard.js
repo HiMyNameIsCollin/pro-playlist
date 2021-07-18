@@ -275,18 +275,18 @@ const Dashboard = ({ setAuth, audioRef }) => {
         // Route of fetch (From the routes object)
         // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
         // 4th and onwards arguments will add query params to final url (Limit, offset, etc)
-        finalizeRoute('get', routes.user_info, null)
-        finalizeRoute( 'get', routes.player_info, null)
-        finalizeRoute( 'get', routes.featured_playlists, null )
-        finalizeRoute( 'get', routes.new_releases, null )
-        finalizeRoute( 'get', routes.my_albums, null, 'limit=50')
-        finalizeRoute( 'get', routes.my_playlists, null, 'limit=50')
-        finalizeRoute( 'get', routes.recently_played, null, 'limit=50' ) 
-        finalizeRoute( 'get', routes.new_releases, null )
-        finalizeRoute( 'get', routes.available_genre_seeds, null )
-        finalizeRoute( 'get', routes.my_top_tracks, null )
-        finalizeRoute( 'get', routes.my_top_artists, null )
-        finalizeRoute ('get', routes.followed_artists, null, 'type=artist')
+        finalizeRoute('get', routes.user_info, null, false)
+        finalizeRoute( 'get', routes.player_info, null, false)
+        finalizeRoute( 'get', routes.featured_playlists, null, false )
+        finalizeRoute( 'get', routes.new_releases, null, true  )
+        // finalizeRoute( 'get', routes.my_albums, null, 'limit=50')
+        // finalizeRoute( 'get', routes.my_playlists, null, 'limit=50')
+        // finalizeRoute( 'get', routes.recently_played, null, 'limit=50' ) 
+        // finalizeRoute( 'get', routes.new_releases, null )
+        // finalizeRoute( 'get', routes.available_genre_seeds, null )
+        // finalizeRoute( 'get', routes.my_top_tracks, null )
+        // finalizeRoute( 'get', routes.my_top_artists, null )
+        // finalizeRoute ('get', routes.followed_artists, null, 'type=artist')
     },[])
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
@@ -339,39 +339,46 @@ const Dashboard = ({ setAuth, audioRef }) => {
         const searchPage = document.getElementById('searchPage')
         const managePage = document.getElementById('managePage')
         const pages = [ homePage, searchPage, managePage ]
-        if( homePage && searchPage && managePage ) {
-            pages.forEach( page => {
-                page.style.display = 'none'
+        // if( homePage && searchPage && managePage ) {
+        //     pages.forEach( page => {
+        //         page.style.display = 'none'
+        //     })
+        //     if( dashboardState === 'home' ) {
+        //         homePage.style.display = 'block'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.home - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        //     if( dashboardState === 'search' ) {
+        //         searchPage.style.display = 'block'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.search - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        //     if( dashboardState === 'manage' ) {
+        //         managePage.style.display = 'block'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.manage - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        // }
+        if( dashboardState === 'home' ) {
+            homePage.style.display = 'block'
+            dashboardRef.current.scroll({ 
+                top: pageScrollRef.current.home - 160, 
+                left: 0,
+                behavior: 'auto'
             })
-            if( dashboardState === 'home' ) {
-                homePage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.home - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'search' ) {
-                searchPage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.search - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'manage' ) {
-                managePage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.manage - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-        }
-        
+        } 
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
        
-    },[ dashboardState ])
+    },[])
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -390,7 +397,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 state={ state } 
                 homePageHistoryRef={ homePageHistoryRef }/> 
 
-                <Search
+                {/* <Search
                 transMinHeight={ searchTransMinHeight }
                 setTransMinHeight={ setSearchTransMinHeight }
                 activeSearchItem={ activeSearchItem }
@@ -402,7 +409,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 searchPageHistoryRef={ searchPageHistoryRef }
                 currActiveSearchRef={ currActiveSearchRef } />
 
-                <Manage />
+                <Manage /> */}
                 
                 <Player 
                 hiddenUI={ hiddenUI } 
