@@ -51,11 +51,10 @@ const useApiCall = (url) => {
     }
 
     const searchObject = ( data, key ) => {
-        console.log(data)
         const values = Object.values(data)
         let found 
         values.forEach((v, i) => {
-            if( typeof v === 'object'){
+            if( v &&  typeof v === 'object'){
                 if( !Array.isArray(v) ){
                     const vkeys = Object.keys(v)
                     vkeys.forEach(( vk, j ) => {

@@ -25,6 +25,7 @@ const initialState = {
     my_top_artists: [],
     all_categories: [],
     available_genre_seeds: [],
+    followed_artists: []
 }
 
 const routes = {   
@@ -71,71 +72,75 @@ const reducer = (state, action) => {
             if(method === 'get'){
                 return{
                     ...state,
-                    my_playlists: action.items
+                    my_playlists: [...state.my_playlists, ...action.items]
                 }
             }
         case routes.my_albums:
             if(method === 'get'){
                 return{
                     ...state,
-                    my_albums: action.items
+                    my_albums: [...state.my_albums, ...action.items]
                 }
             }
         case routes.recently_played:
             if(method === 'get'){
                 return{
                     ...state,
-                    recently_played: action.items
+                    recently_played: [...state.recently_played, ...action.items]
                 }
             }             
         case routes.new_releases:
+            console.log(action)
             if(method === 'get'){
                 return{
                     ...state,
-                    new_releases: action.albums.items
+                    new_releases: [...state.new_releases, ...action.albums.items]
                 }
             }
         case routes.featured_playlists:
             if(method === 'get'){
                 return{
                     ...state,
-                    featured_playlists: action.playlists.items
+                    featured_playlists: [ ...state.featured_playlists, ...action.playlists.items]
                 }  
             }  
         case routes.recommendations:
             if(method === 'get'){
                 return{
                     ...state,
-                    recommendations: action.items
+                    recommendations: [...state.recommendations, ...action.items]
                 }
             }
         case routes.available_genre_seeds:
             if(method === 'get'){
                 return{
                     ...state,
-                    available_genre_seeds: action.genres
+                    available_genre_seeds: [...state.available_genre_seeds, ...action.genres ]
                 }
             }
         case routes.my_top_tracks:
             if(method === 'get'){
                 return{
                     ...state,
-                    my_top_tracks: action.items
+                    my_top_tracks: [...state.my_top_tracks, ...action.items]
                 }
             }
         case routes.my_top_artists:
             if(method === 'get'){
                 return{
                     ...state,
-                    my_top_artists: action.items
+                    my_top_artists: [...state.my_top_artists, ...action.items]
                 }
             } 
         case routes.followed_artists:
-            return{
-                ...state,
-                followed_artists: action.artists.items
+            if(method === 'get'){
+                return{
+                    ...state,
+                    followed_artists: [ ...state.followed_artists, ...action.artists.items ]
+                }
+    
             }
-
+            
         default:
             console.log(action)
             break         
@@ -278,15 +283,15 @@ const Dashboard = ({ setAuth, audioRef }) => {
         finalizeRoute('get', routes.user_info, null, false)
         finalizeRoute( 'get', routes.player_info, null, false)
         finalizeRoute( 'get', routes.featured_playlists, null, false )
-        finalizeRoute( 'get', routes.new_releases, null, true  )
-        // finalizeRoute( 'get', routes.my_albums, null, 'limit=50')
-        // finalizeRoute( 'get', routes.my_playlists, null, 'limit=50')
-        // finalizeRoute( 'get', routes.recently_played, null, 'limit=50' ) 
-        // finalizeRoute( 'get', routes.new_releases, null )
-        // finalizeRoute( 'get', routes.available_genre_seeds, null )
-        // finalizeRoute( 'get', routes.my_top_tracks, null )
-        // finalizeRoute( 'get', routes.my_top_artists, null )
-        // finalizeRoute ('get', routes.followed_artists, null, 'type=artist')
+        finalizeRoute( 'get', routes.new_releases, null, true, 'limit=50' )
+        finalizeRoute( 'get', routes.my_albums, null, true , 'limit=50')
+        finalizeRoute( 'get', routes.my_playlists, null, true, 'limit=50')
+        finalizeRoute( 'get', routes.recently_played, null, true, 'limit=50' ) 
+        finalizeRoute( 'get', routes.new_releases, null, true )
+        finalizeRoute( 'get', routes.available_genre_seeds, null, false )
+        finalizeRoute( 'get', routes.my_top_tracks, null, true )
+        finalizeRoute( 'get', routes.my_top_artists, null , true)
+        finalizeRoute ('get', routes.followed_artists, null, true, 'type=artist')
     },[])
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
