@@ -8,21 +8,21 @@ const Overlay = ({ setActiveSearchItem }) => {
 
     const overlayRef = useRef()
     const { overlay, setOverlay } = useContext( DbHookContext )
-    const { pageType, type, data } = overlay
-    // const pageTypeRef = useRef()
+    const { calledFrom, page, type, data } = overlay
+    // const calledFromRef = useRef()
 
     // useEffect(() => {
-    //     if( pageType ) {
-    //         overlayRef.current.classList.add(`overlay--${pageType}`)
-    //         pageTypeRef.current = pageType
+    //     if( calledFrom ) {
+    //         overlayRef.current.classList.add(`overlay--${calledFrom}`)
+    //         calledFromRef.current = calledFrom
     //     } else {
-    //         if( pageTypeRef.current ){
-    //             overlayRef.current.classList.remove(`overlay--${pageTypeRef.current}`)
-    //             pageTypeRef.current = undefined
+    //         if( calledFromRef.current ){
+    //             overlayRef.current.classList.remove(`overlay--${calledFromRef.current}`)
+    //             calledFromRef.current = undefined
     //         }
     //     }
         
-    // },[ pageType ])
+    // },[ calledFrom ])
 
     const fadeIn = useSpring({
         opacity: type ? 1 : 0,
@@ -45,21 +45,23 @@ const Overlay = ({ setActiveSearchItem }) => {
         onClick={ () => setOverlay( {} )}
         className={
         `overlay 
-        overlay--${pageType}`}>
+        overlay--${calledFrom}`}>
         {
             menuTransition(( props, item ) => (
                 item.track ?
                 <TrackMenu
                 transition={ props } 
                 setActiveSearchItem={ setActiveSearchItem }
-                pageType={ pageType }
+                page={ page }
+                calledFrom={ calledFrom }
                 type={ type }
                 track={ item.track } /> :
                 item.artists &&
                 <ListMenu 
                 setActiveSearchItem={ setActiveSearchItem }
                 transition={ props } 
-                pageType={ pageType }
+                page={ page }
+                calledFrom={ calledFrom }
                 type={ type }
                 artists={ item.artists } />
             ))

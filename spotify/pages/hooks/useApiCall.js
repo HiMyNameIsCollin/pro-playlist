@@ -10,7 +10,7 @@ const useApiCall = (url) => {
     const host = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/'
     const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken(host)
     const thisCallRef = useRef()
-    const fetchApi = ( route, method, requestID, body,  ) => {
+    const fetchApi = ( route, method, requestID, fetchAll, body,  ) => {
         const errorHandling = (err) => {
             console.log(err, 1234)
             setApiError(true)
@@ -37,12 +37,43 @@ const useApiCall = (url) => {
             if(data.error){
                 errorHandling(data.error)
             }else{
+                
                 data['route'] = breakdownRoute(route, data.id ? data.id : requestID)
                 data['method'] = method
+                if(fetchAll){
+                    const next = searchObject( data, 'next' )
+                    if(next) finalizeRoute( data.method, next.substr( url.length ), requestID, true)
+                }
                 setApiPayload(data)
                 setApiPending(false)
             }
         })
+    }
+
+    const searchObject = ( data, key ) => {
+        const values = Object.values(data)
+        let found 
+        values.forEach((v, i) => {
+            if( v &&  typeof v === 'object'){
+                if( !Array.isArray(v) ){
+                    const vkeys = Object.keys(v)
+                    vkeys.forEach(( vk, j ) => {
+                        if( vk === key ){
+                            found = v[vk]
+                            return
+                        } else {
+                            if( typeof v[vk] === 'object' && !Array.isArray(v[vk])){
+                                searchObject(vk, key )
+
+                            }
+                        }
+                    })
+                }
+            }
+        })
+        if(found){
+            return found
+        }
     }
 
     const breakdownRoute = (route , id) => {
@@ -67,7 +98,7 @@ const useApiCall = (url) => {
         }
     }
 
-    const finalizeRoute = (method, route, requestID, ...args) => {
+    const finalizeRoute = (method, route, requestID, fetchAll, ...args) => {
     let finalRoute = route
     
     if(args.length > 0){
@@ -79,7 +110,7 @@ const useApiCall = (url) => {
             }
         })
     }
-    fetchApi( finalRoute, method , requestID)
+    fetchApi( finalRoute, method , requestID, fetchAll)
 }
 
     useEffect(() => {

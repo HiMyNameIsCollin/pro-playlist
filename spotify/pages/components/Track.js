@@ -102,17 +102,17 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
 
     const handleTrackMenu = (e, selectedTrack ) => {
         e.stopPropagation()
-        let overlayType
-        let pageType
-        overlayType = type !== 'queueView' ? type : 'player'
-        pageType = type !== 'queueView' ? 
+        let overlayType = type !== 'queueView' ? type : 'player'
+        let calledFrom
+        let page = searchContext ? 'search' : 'home'
+        calledFrom = type !== 'queueView' ? 
         selectedTrack.album && selectedTrack.album.images ? 
         'selectedTrack' :
         searchContext ? 
         'search' : 
         'home' : 
         'player'
-        if( pageType === 'selectedTrack' ) handleOverlayColors()
+        if( calledFrom === 'selectedTrack' ) handleOverlayColors()
         if(!selectedTrack.images){
             if(!selectedTrack.album){
                 selectedTrack.images = collection.images
@@ -120,7 +120,7 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
                 selectedTrack.images = selectedTrack.album.images
             }
         }
-        setOverlay( {type: overlayType, pageType: pageType, data: { track: selectedTrack }} )
+        setOverlay( {type: overlayType, page: page, calledFrom: calledFrom, data: { track: selectedTrack }} )
     }
 
     return(

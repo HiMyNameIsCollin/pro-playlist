@@ -54,8 +54,8 @@ const PlayerLarge = ({ controls }) => {
         let track = { ...currPlaying }
         if( !track.images ) track.images = track.album.images
         const calledFrom = 'player'
-        const pageType = 'player'
-        setOverlay( {type: calledFrom, pageType: pageType, data: { track: track }} )
+        
+        setOverlay( {type: 'player', calledFrom: calledFrom, page: null, data: { track: track }} )
     }
 
 
