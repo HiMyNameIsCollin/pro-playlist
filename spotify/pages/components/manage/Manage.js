@@ -3,9 +3,9 @@ import { useSprings, animated } from 'react-spring'
 import useApiCall from '../../hooks/useApiCall'
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
 import ManageFilters from './ManageFilters'
-const Manage = () => {
+import ManageContainer from './ManageContainer'
 
-    
+const Manage = () => {
 
     const { user_info } = useContext( DbFetchedContext )
     const API = 'https://api.spotify.com/'
@@ -23,9 +23,8 @@ const Manage = () => {
                 <div className='manageHeader__top'>
                     <div className='manageHeader__imgContainer'>
                     {
-                        user_info.images &&
-                        <img src={ user_info.images[0].url } alt={ `${ user_info.display_name }'s profile photo `} />
-
+                    user_info.images &&
+                    <img src={ user_info.images[0].url } alt={ `${ user_info.display_name }'s profile photo `} />
                     }
                     </div>
                     <h1 className='manageHeader__title'>
@@ -34,10 +33,10 @@ const Manage = () => {
                     <i className="fas fa-search"></i>
                     <i className="fas fa-plus"></i>
                 </div>
-                
                 <ManageFilters activeFilter={ activeFilter } setActiveFilter={ setActiveFilter } subFilter={ subFilter } setSubFilter={ setSubFilter }/>
-                
             </header>
+
+            <ManageContainer activeFilter={ activeFilter } subFilter={ subFilter }/> 
         </div>
     )
 }

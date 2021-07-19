@@ -9,10 +9,11 @@ import TracksContainer from './TracksContainer'
 import Slider from './Slider'
 import Loading from './Loading'
 import { DbHookContext } from './Dashboard'
+import { DbFetchedContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 
 
-const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComplete, transition, type, genreSeeds, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader, }) => {
+const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComplete, transition, type, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader, }) => {
     
 
     const initialState = {
@@ -98,6 +99,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem, dashboardRef  } = useContext( DbHookContext )
+    const { available_genre_seeds } = useContext( DbFetchedContext )
     const searchContext = useContext( SearchHookContext )
     const { collection, artists, tracks, recommendations } = {...state}
 
@@ -183,7 +185,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             artists[0] && 
             tracks[0] && 
             !recommendations[0] ){
-            let seeds = getSeeds(genreSeeds, artists, tracks)
+            let seeds = getSeeds(available_genre_seeds, artists, tracks)
             const { seedGenres, seedArtists, seedTracks } = seeds
             finalizeRoute( 'get',
             `${routes.recommendations}`, 

@@ -7,8 +7,9 @@ import ArtistHeader from './ArtistHeader'
 import Slider from './Slider'
 import useApiCall from '../hooks/useApiCall'
 import { DbHookContext } from './Dashboard'
+import { DbFetchedContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
-const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, transition, headerScrolled, setHeaderScrolled, genreSeeds, activeHeader, setActiveHeader }) => {
+const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, transition, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader }) => {
 
 
     const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem } = useContext( DbHookContext )

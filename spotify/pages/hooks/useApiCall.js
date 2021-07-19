@@ -10,7 +10,9 @@ const useApiCall = (url) => {
     const host = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/'
     const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken(host)
     const thisCallRef = useRef()
-    const fetchApi = ( route, method, requestID, fetchAll, body,  ) => {
+    const timesCalledRef = useRef(0)
+
+    const fetchApi = ( route, method, requestID, config, body,  ) => {
         const errorHandling = (err) => {
             console.log(err, 1234)
             setApiError(true)
@@ -37,40 +39,63 @@ const useApiCall = (url) => {
             if(data.error){
                 errorHandling(data.error)
             }else{
-                
                 data['route'] = breakdownRoute(route, data.id ? data.id : requestID)
                 data['method'] = method
-                if(fetchAll){
-                    const next = searchObject( data, 'next' )
-                    if(next) finalizeRoute( data.method, next.substr( url.length ), requestID, true)
+                if( config && config.fetchAll && 
+                (timesCalledRef.current < config.limit || !config.limit)){
+                    const next = fetchNext( data, requestID )
+                    if( next ){
+                        finalizeRoute( data.method, next.substr( url.length ), requestID, config )
+                        timesCalledRef.current++
+                    } 
+
                 }
+                
                 setApiPayload(data)
                 setApiPending(false)
             }
         })
     }
 
-    const searchObject = ( data, key ) => {
-        const values = Object.values(data)
-        let found 
-        values.forEach((v, i) => {
-            if( v &&  typeof v === 'object'){
-                if( !Array.isArray(v) ){
-                    const vkeys = Object.keys(v)
-                    vkeys.forEach(( vk, j ) => {
-                        if( vk === key ){
-                            found = v[vk]
-                            return
-                        } else {
-                            if( typeof v[vk] === 'object' && !Array.isArray(v[vk])){
-                                searchObject(vk, key )
-
-                            }
-                        }
-                    })
-                }
+    const fetchNext = ( data, id ) => {
+        let next = searchObject( data, 'next' )
+        if(next) {
+            const cursors = searchObject( data, 'cursors' )
+            if(cursors){
+                const newNext = next.replace(`${ cursors.before }`, `${ cursors.after }`)
+                next = newNext
             }
-        })
+            // finalizeRoute( data.method, next.substr( url.length ), id, true)
+        }
+        return next
+    }
+
+    const searchObject = ( data, key ) => {
+        let found 
+        const keys = Object.keys( data )
+        const foundKey = keys.find( x => x === key )
+        if( foundKey ) return data[ foundKey ]
+        if( !foundKey ){
+            const values = Object.values( data )
+            values.forEach((v, i) => {
+                if( v &&  typeof v === 'object'){
+                    if( !Array.isArray(v) ){
+                        const vkeys = Object.keys(v)
+                        vkeys.forEach(( vk, j ) => {
+                            if( vk === key ){
+                                found = v[vk]
+                                return
+                            } else {
+                                if( typeof v[vk] === 'object' && !Array.isArray(v[vk])){
+                                    searchObject(vk, key )
+    
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        }
         if(found){
             return found
         }

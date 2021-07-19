@@ -154,8 +154,7 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
             activeHeader={ activeHeader }
             setActiveHeader={ setActiveHeader }
             headerScrolled={ headerScrolled }
-            setHeaderScrolled={ setHeaderScrolled}
-            genreSeeds={ state.available_genre_seeds}/>
+            setHeaderScrolled={ setHeaderScrolled}/>
             :
             item.type === 'album' ?
             <Collection
@@ -167,8 +166,7 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
             setActiveHeader={ setActiveHeader }
             headerScrolled={ headerScrolled }
             setHeaderScrolled={ setHeaderScrolled}
-            type='album'
-            genreSeeds={ state.available_genre_seeds } />
+            type='album' />
             :
             item.type === 'playlist' &&
             <Collection
@@ -180,11 +178,8 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
             setActiveHeader={ setActiveHeader }
             headerScrolled={ headerScrolled }
             setHeaderScrolled={ setHeaderScrolled}
-            type='playlist'
-            genreSeeds={ state.available_genre_seeds } />
+            type='playlist' />
                 
-                        
-            
         ))
         }
         

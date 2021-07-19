@@ -166,7 +166,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ queue, setQueue ] = useState( [] )
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
-    const [ dashboardState, setDashboardState ] = useState('home')
+    const [ dashboardState, setDashboardState ] = useState('manage')
     const [ searchState, setSearchState ] = useState('default')
     const [ playerSize, setPlayerSize ] = useState( 'small' )
 
@@ -184,7 +184,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const scrollRef = useRef( scrollPosition )
     const firstMountRef = useRef()
 
-    const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds } = { ...state }
+    const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists } = { ...state }
 
 // Context set up //////////////////////////////////////////////////
 
@@ -224,7 +224,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
         my_top_tracks, 
         my_top_artists, 
         all_categories, 
-        available_genre_seeds 
+        available_genre_seeds, 
+        followed_artists
     }
 
 // Set last played track on account as active track
@@ -280,13 +281,13 @@ const Dashboard = ({ setAuth, audioRef }) => {
         // Route of fetch (From the routes object)
         // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
         // 4th and onwards arguments will add query params to final url (Limit, offset, etc)
-        // finalizeRoute('get', routes.user_info, null, false)
+        finalizeRoute('get', routes.user_info, null )
         // finalizeRoute( 'get', routes.player_info, null, false)
         // finalizeRoute( 'get', routes.featured_playlists, null, false )
         // finalizeRoute( 'get', routes.new_releases, null, true, 'limit=50' )
-        // finalizeRoute( 'get', routes.my_albums, null, true , 'limit=50')
+        finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , 'limit=50')
         // finalizeRoute( 'get', routes.my_playlists, null, true, 'limit=50')
-        finalizeRoute( 'get', routes.recently_played, null, true, 'limit=50' ) 
+        finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 } ) 
         // finalizeRoute( 'get', routes.new_releases, null, true )
         // finalizeRoute( 'get', routes.available_genre_seeds, null, false )
         // finalizeRoute( 'get', routes.my_top_tracks, null, true )
@@ -373,16 +374,16 @@ const Dashboard = ({ setAuth, audioRef }) => {
         //         })
         //     }
         // }
-        if( dashboardState === 'home' ) {
-            homePage.style.display = 'block'
-            dashboardRef.current.scroll({ 
-                top: pageScrollRef.current.home - 160, 
-                left: 0,
-                behavior: 'auto'
-            })
-        } 
+
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
-       
+            if( dashboardState === 'manage' ) {
+                managePage.style.display = 'block'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.manage - 160, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
     },[])
 
     return(
@@ -395,13 +396,13 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
                 <Overlay setActiveSearchItem={ setActiveSearchItem }/>
 
-                <Home
+                {/* <Home
                 transMinHeight={ homeTransMinHeight }
                 setTransMinHeight={ setHomeTransMinHeight }
                 currActiveHomeRef={ currActiveHomeRef }
                 homePageHistoryRef={ homePageHistoryRef }/> 
 
-                {/* <Search
+                <Search
                 transMinHeight={ searchTransMinHeight }
                 setTransMinHeight={ setSearchTransMinHeight }
                 activeSearchItem={ activeSearchItem }
@@ -411,9 +412,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 my_top_artists={ state.my_top_artists } 
                 available_genre_seeds={ state.available_genre_seeds }
                 searchPageHistoryRef={ searchPageHistoryRef }
-                currActiveSearchRef={ currActiveSearchRef } />
+                currActiveSearchRef={ currActiveSearchRef } /> */}
 
-                <Manage /> */}
+                <Manage />
                 
                 <Player 
                 hiddenUI={ hiddenUI } 

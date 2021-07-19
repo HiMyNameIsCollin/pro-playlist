@@ -83,6 +83,7 @@ const Search = ({
     
     
     const { overlay, scrollPosition, dashboardRef } = useContext( DbHookContext )
+    
 
     const searchHookState ={
         searchState, 
@@ -285,9 +286,8 @@ const Search = ({
                 activeHeader={ activeHeader }
                 setActiveHeader={ setActiveHeader }
                 headerScrolled={ headerScrolled }
-                setHeaderScrolled={ setHeaderScrolled}
-                type='playlist'
-                genreSeeds={ available_genre_seeds }/>
+                setHeaderScrolled={ setHeaderScrolled }
+                type='playlist' />
                 :
                 item.type === 'album' ?
                 <Collection 
@@ -298,9 +298,8 @@ const Search = ({
                 activeHeader={ activeHeader }
                 setActiveHeader={ setActiveHeader }
                 headerScrolled={ headerScrolled }
-                setHeaderScrolled={ setHeaderScrolled}
-                type='album'
-                genreSeeds={ available_genre_seeds }/> 
+                setHeaderScrolled={ setHeaderScrolled }
+                type='album' /> 
                 :
                 item.type === 'artist' &&
                 <Artist 
@@ -312,8 +311,7 @@ const Search = ({
                 activeHeader={ activeHeader }
                 setActiveHeader={ setActiveHeader }
                 headerScrolled={ headerScrolled }
-                setHeaderScrolled={ setHeaderScrolled}
-                genreSeeds={ available_genre_seeds}/> 
+                setHeaderScrolled={ setHeaderScrolled } /> 
                     
         ))
         }
