@@ -8,7 +8,7 @@ import Collection from './Collection'
 import HomeHeader from './HomeHeader'
 import FixedHeader from './FixedHeader'
 
-const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef, state }) => {
+const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
 
     const { homeHeaderScrolled, setHomeHeaderScrolled, activeHomeItem, homePageHistoryRef, hiddenUI, setAuth, scrollPosition, dashboardRef} = useContext(DbHookContext)
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
@@ -137,7 +137,7 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef, state }) =
         mainTransition(( props, item) => (
             !item.type && 
             
-            <Welcome transition={ props } transitionComplete={ transitionComplete } setTransitionComplete={ setTransitionComplete } setTransMinHeight={ setTransMinHeight } state={ state } />
+            <Welcome transition={ props } transitionComplete={ transitionComplete } setTransitionComplete={ setTransitionComplete } setTransMinHeight={ setTransMinHeight } />
             
         ))
         }

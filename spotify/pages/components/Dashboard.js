@@ -387,7 +387,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 transMinHeight={ homeTransMinHeight }
                 setTransMinHeight={ setHomeTransMinHeight }
                 currActiveHomeRef={ currActiveHomeRef }
-                state={ state } 
                 homePageHistoryRef={ homePageHistoryRef }/> 
 
                 <Search

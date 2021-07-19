@@ -3,10 +3,12 @@ import { animated } from 'react-spring'
 import Slider from './Slider'
 import TabsContainer from './TabsContainer'
 import { DbHookContext } from './Dashboard'
+import { DbFetchedContext } from './Dashboard'
 
-const Welcome = ({transition, transitionComplete, setTransitionComplete, setTransMinHeight, state }) => {
+const Welcome = ({transition, transitionComplete, setTransitionComplete, setTransMinHeight }) => {
 
-    const { setActiveItem, } = useContext(DbHookContext)
+    const { setActiveItem, } = useContext( DbHookContext )
+    const { recently_played, new_releases, featured_playlists } = useContext( DbFetchedContext )
     const thisComponentRef = useRef()
 
     useEffect(() => {
@@ -30,14 +32,14 @@ const Welcome = ({transition, transitionComplete, setTransitionComplete, setTran
         ref={ thisComponentRef } 
         className='page page--welcome '>
 
-            <TabsContainer items={ state.recently_played }  />
+            <TabsContainer items={ recently_played }  />
             <Slider 
             message='New Releases' 
-            items={ state.new_releases }
+            items={ new_releases }
             setActiveItem={ setActiveItem } />
             <Slider 
             message='Featured playlists' 
-            items={ state.featured_playlists }
+            items={ featured_playlists }
             setActiveItem={ setActiveItem } /> 
         </animated.div>
     )
