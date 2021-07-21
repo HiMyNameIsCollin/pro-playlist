@@ -12,9 +12,11 @@ import Player from './player/Player'
 export const DbHookContext = createContext()
 export const DbFetchedContext = createContext()
 
+
 const initialState = {
     user_info: {},
     player_info: {},
+    my_liked_tracks: [],
     my_top_genres: [],
     my_playlists: [],
     featured_playlists: [],
@@ -31,6 +33,7 @@ const initialState = {
 const routes = {   
     user_info: 'v1/me',
     player_info: 'v1/me/player',
+    my_liked_tracks: 'v1/me/tracks',
     recently_played: 'v1/me/player/recently-played',
     my_playlists: 'v1/me/playlists',
     featured_playlists: 'v1/browse/featured-playlists',
@@ -61,25 +64,39 @@ const reducer = (state, action) => {
                 }
             }
         case routes.player_info:
-            console.log(action)
             if(method==='get'){
                 return{
                     ...state,
                     player_info: action
                 }
             }
+        case routes.my_liked_tracks: 
+            if(method === 'get'){
+                const cleanedUp = action.items.map( item => {
+                    item.track['added_at'] = item.added_at
+                    return item.track
+                })
+                return{
+                    ...state,
+                    my_liked_tracks: [ ...state.my_liked_tracks, ...cleanedUp ]
+                }
+            }
         case routes.my_playlists:
             if(method === 'get'){
                 return{
                     ...state,
-                    my_playlists: [...state.my_playlists, ...action.items]
+                    my_playlists: [ ...state.my_playlists, ...action.items ]
                 }
             }
         case routes.my_albums:
             if(method === 'get'){
+                const cleanedUp = action.items.map( item => {
+                    item.album['added_at'] = item.added_at
+                    return item.album
+                })
                 return{
                     ...state,
-                    my_albums: [...state.my_albums, ...action.items]
+                    my_albums: [...state.my_albums, ...cleanedUp]
                 }
             }
         case routes.recently_played:
@@ -90,7 +107,6 @@ const reducer = (state, action) => {
                 }
             }             
         case routes.new_releases:
-            console.log(action)
             if(method === 'get'){
                 return{
                     ...state,
@@ -184,7 +200,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const scrollRef = useRef( scrollPosition )
     const firstMountRef = useRef()
 
-    const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists } = { ...state }
+    const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists, my_liked_tracks } = { ...state }
 
 // Context set up //////////////////////////////////////////////////
 
@@ -215,6 +231,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const dbFetchedState = {
         user_info,
         player_info,
+        my_liked_tracks,
         my_top_genres,
         my_playlists, 
         featured_playlists, 
@@ -284,15 +301,16 @@ const Dashboard = ({ setAuth, audioRef }) => {
         finalizeRoute('get', routes.user_info, null )
         // finalizeRoute( 'get', routes.player_info, null, false)
         // finalizeRoute( 'get', routes.featured_playlists, null, false )
-        // finalizeRoute( 'get', routes.new_releases, null, true, 'limit=50' )
-        finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , 'limit=50')
-        // finalizeRoute( 'get', routes.my_playlists, null, true, 'limit=50')
+        // finalizeRoute( 'get', routes.new_releases, null, null, 'limit=50' )
+        finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, 'limit=50' )
+        finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , 'limit=50' )
+        finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, 'limit=50' )
         finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 } ) 
-        // finalizeRoute( 'get', routes.new_releases, null, true )
+        // finalizeRoute( 'get', routes.new_releases, null, null )
         // finalizeRoute( 'get', routes.available_genre_seeds, null, false )
-        // finalizeRoute( 'get', routes.my_top_tracks, null, true )
-        // finalizeRoute( 'get', routes.my_top_artists, null , true)
-        // finalizeRoute ('get', routes.followed_artists, null, true, 'type=artist')
+        // finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
+        // finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true, limit: null })
+        finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, 'type=artist' )
     },[])
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)

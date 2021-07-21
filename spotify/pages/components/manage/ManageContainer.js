@@ -1,24 +1,56 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { DbFetchedContext } from '../Dashboard'
 
-const ManageContainer = ({ activeFilter, subFilter }) => {
+import ManageCard from './ManageCard'
 
-    const { user_info, my_albums, my_playlists, followed_artists } = useContext( DbFetchedContext )
+const ManageContainer = ({ setManageOverlay, data, likedPlaylist, sort, manageContainerListTypeRef }) => {
+    
+    const [ listType, setListType ] = useState( manageContainerListTypeRef.current )
 
-    const [ data, setData ] = useState( [] )
-    const [ sort , setSort ] = useState('')
+    const handleListType = () => {
+        let lt
+        if( listType === 'bar' ){
+            lt = 'square'
+        } else {
+            lt = 'bar'
+        }
+        setListType( lt )
+        manageContainerListTypeRef.current = lt
+    }
 
-    useEffect(() => {
-        console.log(my_albums, my_playlists, followed_artists)
-    },[ my_albums, my_playlists, followed_artists ])
-
-    useEffect(() => {
-
-    }, [activeFilter, subFilter])
+    const handleManageOverlay = () => {
+        const mngOverlay = {
+            type: 'Sort'
+        }
+        setManageOverlay( mngOverlay )
+    }
 
     return(
         <div className='mngContainer'>
-
+            <div className='sortByBar'>
+                <div onClick={ handleManageOverlay } className='sortByBar__btn'>
+                    <i className="fas fa-sort"></i>
+                    <span>
+                        { sort }
+                    </span>
+                </div>
+                <div onClick={ handleListType }>
+                {
+                    listType === 'bar' ?
+                    <i className="fas fa-bars"></i> :
+                    <i className="fas fa-th-large"></i>
+                } 
+                </div>
+            </div>
+            {
+                likedPlaylist &&
+                <ManageCard item={ likedPlaylist } listType={ listType }/>
+            }
+            {
+                data.map( item => {
+                   return <ManageCard item={ item } listType={ listType } />
+                })
+            }
         </div>
     )
 }

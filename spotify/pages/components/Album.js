@@ -16,16 +16,16 @@ const Album = ({ item }) => {
     }
 
     return(
-        <div className='album' onClick={ handleActiveItem }>
-            <div className='album__imgContainer'>
+        <div className='albumCard' onClick={ handleActiveItem }>
+            <div className='albumCard__imgContainer'>
                 <img
                 height='64px'
                 width='64px'
                 alt='Album art' 
                 src={ whichPicture( item.images, 'sm' )}/>
             </div>
-            <h5 className='album__title'> {item.name } </h5>
-            <div className='album__meta'>
+            <h5 className='albumCard__title'> {item.name } </h5>
+            <div className='albumCard__meta'>
             
                 <span> { capital( item.album_type ) } </span>
                 <i className="fas fa-dot-circle"></i>
