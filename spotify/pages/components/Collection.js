@@ -144,10 +144,8 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
 
     useEffect(() => {
         if( collection.id && !tracks[0]){
-            let tracksRoute = type === 'album' ? 
-            routes.tracks.substr( 0, routes.tracks.length - 7 ):
-            tracksRoute = routes.playlist.substr( 0, routes.tracks.length - 7 )
-            tracksRoute += `/${collection.id}`
+            let tracksRoute = routes.tracks.substr( 0, routes.tracks.length - 6 )
+            tracksRoute += `${collection.id}`
             tracksRoute += '/tracks'
             finalizeRoute( 'get', tracksRoute , collection.id)
         } 

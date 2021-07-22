@@ -3,23 +3,23 @@ import { useSprings, animated } from 'react-spring'
 import useApiCall from '../../hooks/useApiCall'
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
 import ManageFilters from './ManageFilters'
-import ManageContainer from './ManageContainer'
+import ManageActiveItemContainer from './ManageActiveItemContainer'
+import ManageLibrary from './ManageLibrary'
 import ManageOverlay from './ManageOverlay'
 import SearchOverlay from '../search/SearchOverlay'
 
 export const ManageHookContext = createContext()
 
-const Manage = ({ manageState, setManageState }) => {
+const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeManaged, manageState, setManageState }) => {
 
-    const thisComponentRef = useRef()
     const manageContainerListTypeRef = useRef( 'bar' )
     const totalLikedSongsRef = useRef(0)
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const [ data, setData ] = useState( [] )
-    const [ activeManageItem, setActiveManageItem ] = useState( {} ) 
     const [ likedPlaylist, setLikedPlaylist ] = useState()
+    const [ managerPlaylist, setManagerPlaylist ] = useState()
     const [ activeFilter, setActiveFilter ] = useState( undefined )
     const [ subFilter, setSubFilter ] = useState( false )
     const [ sort , setSort ] = useState( 'Recently added' )
@@ -41,11 +41,35 @@ const Manage = ({ manageState, setManageState }) => {
 
     useEffect(() => {
         if( my_liked_tracks.length > 0 && my_liked_tracks.length >= totalLikedSongsRef.current){
-            if( !likedPlaylist ) createLikedTracksPlaylist( my_liked_tracks )
-            if( likedPlaylist ) addToLikedTracksPlaylist( my_liked_tracks )
+            if( !likedPlaylist ) {
+                let playlist = {
+                    name: 'Liked Tracks',
+                    description: 'Your favorite songs',
+                    tracks: my_liked_tracks,
+                }
+                createPlaylist( playlist, setLikedPlaylist )
+            }
+            if( likedPlaylist ) addToPlaylist( my_liked_tracks.slice( totalLikedSongsRef.current ), likedPlaylist, setLikedPlaylist )
             totalLikedSongsRef.current = my_liked_tracks.length
         }
     }, [ my_liked_tracks ])
+
+    useEffect(() => {
+        if( toBeManaged.id ){
+            if( !managerPlaylist){
+                let playlist = {
+                    name: 'To be added',
+                    description: 'Tracks in need of a playlist to call home',
+                    tracks: [ toBeManaged ]
+                }
+                createPlaylist( playlist, setManagerPlaylist )
+                
+            }else {
+                addToPlaylist( [toBeManaged], managerPlaylist, setManagerPlaylist ) 
+            }
+            setToBeManaged( {} )
+        }
+    }, [ toBeManaged ])
     
     useEffect(() => {
         if( activeFilter === 'playlists' ){
@@ -67,22 +91,17 @@ const Manage = ({ manageState, setManageState }) => {
         sortByFilter( [ ...my_albums, ...my_playlists, ...followed_artists ] )
     }, [ my_albums, my_playlists, followed_artists ])
 
-    const createLikedTracksPlaylist = ( liked_tracks ) => {
-        
-        let likedTracks = {
-            name: 'Liked Tracks',
-            description: 'Your favorite songs',
-            tracks: liked_tracks,
-            type: 'Playlist'
-        }
-        likedTracks['images'] = liked_tracks[0].album.images
-        setLikedPlaylist( likedTracks )
+    const createPlaylist = ( playlist, callback ) => {
+
+        playlist['images'] = playlist.tracks[0].album.images
+        playlist['type'] = 'playlist'
+        callback( playlist )
     }
 
-    const addToLikedTracksPlaylist = ( liked_tracks ) => {
-        let likedPlaylistClone = { ...likedPlaylist } 
-        likedPlaylistClone.tracks = [ ...likedPlaylistClone.tracks, ...liked_tracks.slice( totalLikedSongsRef.current ) ]
-        setLikedPlaylist( likedPlaylistClone)
+    const addToPlaylist = ( tracks, state, callback ) => {
+        let stateClone = { ...state } 
+        stateClone.tracks = [ ...stateClone.tracks, ...tracks ]
+        callback( stateClone )
     }
 
     const sortByFilter = ( arr ) => {
@@ -126,15 +145,15 @@ const Manage = ({ manageState, setManageState }) => {
             <SearchOverlay type={'manage'} searchState={ manageState } setSearchState={ setManageState } />
 
             <div id='managePage' style={{ position: 'absolute '}} className={ `page page--manage`}>
-                <header className='manageHeader'>
-                    <div className='manageHeader__top'>
-                        <div className='manageHeader__imgContainer'>
+                <header className='mngHeader'>
+                    <div className='mngHeader__top'>
+                        <div className='mngHeader__imgContainer'>
                         {
                         user_info.images &&
                         <img src={ user_info.images[0].url } alt={ `${ user_info.display_name }'s profile photo `} />
                         }
                         </div>
-                        <h1 className='manageHeader__title'>
+                        <h1 className='mngHeader__title'>
                             Manage
                         </h1>
                         <i 
@@ -149,14 +168,18 @@ const Manage = ({ manageState, setManageState }) => {
                     setSubFilter={ setSubFilter }/>
                 </header>
 
-                <ManageContainer 
+                <ManageLibrary 
                 transitionComplete={ transitionComplete }
                 setTransitionComplete={ setTransitionComplete }
                 setManageOverlay={ setManageOverlay }
                 sort={ sort }
                 data={ data }
                 likedPlaylist={ likedPlaylist }
+                managerPlaylist={ managerPlaylist }
                 manageContainerListTypeRef={ manageContainerListTypeRef }/> 
+
+                <ManageActiveItemContainer />
+                
             </div>
             </>
         </ManageHookContext.Provider>

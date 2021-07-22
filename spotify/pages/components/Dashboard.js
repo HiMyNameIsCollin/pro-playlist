@@ -182,14 +182,14 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ queue, setQueue ] = useState( [] )
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
+    const [ playerSize, setPlayerSize ] = useState( 'small' )
     const [ dashboardState, setDashboardState ] = useState('manage')
     const [ searchState, setSearchState ] = useState('default')
     const [ manageState, setManageState ] = useState( 'default')
-
-    const [ playerSize, setPlayerSize ] = useState( 'small' )
-
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
     const [ activeHomeItem, setActiveHomeItem ] = useState( {} ) 
+    const [ activeManageItem, setActiveManageItem ] = useState( {} ) 
+    const [ toBeManaged, setToBeManaged ] = useState( {} )
     const [ homeTransMinHeight, setHomeTransMinHeight ] = useState( 0 )
     const [ searchTransMinHeight, setSearchTransMinHeight ] = useState( 0 )
 
@@ -227,7 +227,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
         setLoaded,
         setAuth,
         dashboardRef,
-        dashboardState
+        dashboardState,
+        toBeManaged, 
+        setToBeManaged
     }
 
     const dbFetchedState = {
@@ -355,17 +357,33 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
     useEffect(() => {
         let hideMe
-        if(scrollPosition <= scrollRef.current) {
-            hideMe = false
-        } else {
-            hideMe = true
+        if( activeManageItem.id ){
+            if( dashboardState !== 'manage'){
+                if(scrollPosition <= scrollRef.current) {
+                    hideMe = false
+                } else {
+                    hideMe = true
+                }
+                if (scrollPosition === 100 || scrollPosition < 1){
+                    hideMe = false
+                }
+            }else {
+                hideMe = true
+            }
+        }else {
+            if(scrollPosition <= scrollRef.current) {
+                hideMe = false
+            } else {
+                hideMe = true
+            }
+            if (scrollPosition === 100 || scrollPosition < 1){
+                hideMe = false
+            }
         }
-        if (scrollPosition === 100 || scrollPosition < 1){
-            hideMe = false
-        }
+
         setHiddenUI( hideMe )
         scrollRef.current = scrollPosition
-    }, [ scrollPosition ])
+    }, [ scrollPosition, activeManageItem, dashboardState ])
 
     useEffect(() => {
         const homePage = document.getElementById('homePage')
@@ -401,10 +419,10 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 })
             }
         }
-
+        
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
             
-    },[dashboardState])
+    },[ dashboardState ])
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -414,7 +432,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
             onScroll={ handleScroll }
             className={ `dashboard`}>  
 
-                <Overlay setActiveSearchItem={ setActiveSearchItem }/>
+                <Overlay 
+                setActiveSearchItem={ setActiveSearchItem }/>
 
                 <Home
                 transMinHeight={ homeTransMinHeight }
@@ -435,6 +454,10 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 currActiveSearchRef={ currActiveSearchRef } />
 
                 <Manage 
+                activeManageItem={ activeManageItem } 
+                setActiveManageItem={ setActiveManageItem }
+                toBeManaged={ toBeManaged }
+                setToBeManaged={ setToBeManaged }
                 manageState={ manageState }
                 setManageState={ setManageState } />
                 

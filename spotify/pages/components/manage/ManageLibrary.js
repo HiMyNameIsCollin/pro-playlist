@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext, useRef } from 'react'
-import { DbFetchedContext } from '../Dashboard'
+import { DbFetchedContext, DbHookContext } from '../Dashboard'
 
 import ManageCard from './ManageCard'
 
-const ManageContainer = ({ transitionComplete, setTransitionComplete, setManageOverlay, data, likedPlaylist, sort, manageContainerListTypeRef }) => {
+const ManageLibrary = ({ transitionComplete, setTransitionComplete, setManageOverlay, data, likedPlaylist, managerPlaylist, sort, manageContainerListTypeRef }) => {
     
     const thisComponentRef = useRef()
 
@@ -41,7 +41,7 @@ const ManageContainer = ({ transitionComplete, setTransitionComplete, setManageO
     return(
         <div 
         ref={ thisComponentRef }
-        className='mngContainer'>
+        className='mngLibrary'>
             <div className='sortByBar'>
                 <div onClick={ handleManageOverlay } className='sortByBar__btn'>
                     <i className="fas fa-sort"></i>
@@ -59,7 +59,11 @@ const ManageContainer = ({ transitionComplete, setTransitionComplete, setManageO
             </div>
             {
                 likedPlaylist &&
-                <ManageCard item={ likedPlaylist } listType={ listType }/>
+                <ManageCard item={ likedPlaylist } listType={ listType } />
+            }
+            {
+                managerPlaylist &&
+                <ManageCard item={ managerPlaylist } listType={ listType } />
             }
             {
                 data.map( item => {
@@ -70,4 +74,4 @@ const ManageContainer = ({ transitionComplete, setTransitionComplete, setManageO
     )
 }
 
-export default ManageContainer 
+export default ManageLibrary

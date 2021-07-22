@@ -49,7 +49,7 @@ const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState
                     className='nav__item'>
                     <button onClick={ () => handleDashboardState( 'manage' )}>
                         <i className="fas fa-i-cursor"></i>
-                        Manage
+                        Manager
                     </button>
                 </li>
 

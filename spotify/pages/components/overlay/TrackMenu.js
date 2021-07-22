@@ -6,7 +6,7 @@ import { DbHookContext } from '../Dashboard'
 
 const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track }) => {
 
-    const { overlay, setOverlay, setPlayNextQueue } = useContext( DbHookContext )
+    const { overlay, setOverlay, setPlayNextQueue, toBeManaged, setToBeManaged } = useContext( DbHookContext )
     
 
     const copyToClip = () => {
@@ -46,6 +46,11 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
 
         }
         setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, trackClone ])
+    }
+
+    const handleAddToManager = () => {
+        setOverlay( {} )
+        setToBeManaged( track ) 
     }
 
     return(
@@ -97,9 +102,9 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
                 <i className="far fa-plus-square"></i>
                 <span> Add to queue </span>
             </button>
-            <button>
+            <button onClick={ handleAddToManager }>
                 <i className="far fa-plus-square"></i>
-                <span>Add song to Standby playlist</span>
+                <span>Add track to Manager</span>
             </button>
         </animated.div>
     )

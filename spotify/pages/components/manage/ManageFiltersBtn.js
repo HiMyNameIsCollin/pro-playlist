@@ -34,7 +34,7 @@ const ManageFiltersBtn = ({ item, activeFilter, handleFilter }) => {
         return(
             <button 
             ref={ btnRef }
-            className={`manageFilters__btn`}>
+            className={`mngFilters__btn`}>
             { item }
             </button>
         )
@@ -50,7 +50,7 @@ const ManageFiltersBtn = ({ item, activeFilter, handleFilter }) => {
                 width: widthSwitch.to( z => z )
             }}
             onClick={ () => handleFilter( item ) } 
-            className={`manageFilters__btn ${ activeFilter === item && 'manageFilters__btn--active'}`}>
+            className={`mngFilters__btn ${ activeFilter === item && 'mngFilters__btn--active'}`}>
             { item }
         </animated.button>
         )

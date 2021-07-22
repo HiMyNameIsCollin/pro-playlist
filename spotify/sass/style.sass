@@ -246,7 +246,7 @@ i
 
 .fadeIn
     &::before
-        opacity: 0 !important
+        opacity: 0
         pointer-events: none
 
 #homePage, #searchPage, #managePage
@@ -1249,7 +1249,7 @@ i
         span
             padding: 0
 
-.manageHeader
+.mngHeader
     background: inherit
     color: $white
     top: 0
@@ -1276,17 +1276,11 @@ i
     &__title
         padding: 0 1rem
         
-.mngContainer
-    @include pseudo
+.mngLibrary
     display: flex
-    flex-wrap: wrap       
-    &::before
-        background: $black
-        opacity: 1
-        transition: opacity .75s ease-in-out 
-        z-index: 3
+    flex-wrap: wrap        
 
-.manageFilters
+.mngFilters
     align-items: center
     display: flex
     overflow-x: auto
@@ -1384,6 +1378,12 @@ i
             border-radius: 50%
             min-height: 100%
             min-width: 100%
+
+.mngActiveItemContainer
+    bottom: 3.6rem
+    background: white
+    position: fixed
+    width: 100%
 
 .mngOverlay
     @include pseudo

@@ -49,7 +49,7 @@ const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter 
     // })
 
     return(
-        <div className='manageFilters'>
+        <div className='mngFilters'>
             <animated.button
                 onClick={ () => setActiveFilter( undefined )}
                 style={{
@@ -58,7 +58,7 @@ const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter 
                     padding: closePaddSwitch.to( z => z),
                     width: closeWidthSwitch.to( z => z),
                 }} 
-                className={` manageFilters__closeBtn`}>
+                className={` mngFilters__closeBtn`}>
                 <i className="fas fa-times "></i>
             </animated.button>
             {
