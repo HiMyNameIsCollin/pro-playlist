@@ -29,15 +29,16 @@ const ManageOverlay = ({ data, setData, sortFilters, setSort }) => {
             item.type &&
             <animated.div 
             style={ props }
-            className='mngOverlay__sort'>
+            className='sortMenu'>
                 <h5>
                     { item.type }
                 </h5>
                 {
                     sortFilters.map( f => {
-                        return <p> { f } </p>
+                        return <button onClick={ ()=> setSort(f)} className='sortMenu__filterBtn'> { f } </button>
                     })
                 }
+                <button onClick={ closeOverlay } className='sortMenu__cancelBtn'> Cancel </button>
             </animated.div>
         ))
         }

@@ -3,6 +3,7 @@ import ResultCard from './ResultCard'
 import Slider from '../Slider'
 import  useApiCall  from '../../hooks/useApiCall'
 import { SearchHookContext } from './Search'
+import { ManageHookContext } from '../manage/Manage'
 import { DbFetchedContext } from '../Dashboard'
 
 
@@ -10,11 +11,19 @@ const RecommendCard = ({ data }) => {
 
     const [ appearsOn, setAppearsOn ] = useState([])
     
+    const albumRoute = 'v1/artists'
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
-    const { setActiveSearchItem } = useContext( SearchHookContext )
+
+    const searchContext = useContext( SearchHookContext )
+    const manageContext = useContext( ManageHookContext )
     const { user_info } = useContext( DbFetchedContext )
-    const albumRoute = 'v1/artists'
+    
+    
+    const setActiveItem = searchContext ? 
+                          searchContext.setActiveSearchItem :
+                          manageContext.setActiveManageItem
+    
     
     useEffect(() => {
         if( data.id ) {
@@ -35,7 +44,7 @@ const RecommendCard = ({ data }) => {
         <div className='recommendCard'>
             <ResultCard data={ data }/>
             
-            <Slider message={`Featuring ${data.name}`} items={ appearsOn } setActiveItem={ setActiveSearchItem }/>
+            <Slider message={`Featuring ${data.name}`} items={ appearsOn } setActiveItem={ setActiveItem }/>
         </div>
     )
 }

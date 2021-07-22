@@ -8,11 +8,11 @@ const SearchResults = ({ activeFilter, searchInput, artistResults, albumResults,
 
     const [ personalResult, setPersonalResult ] = useState( {} )
     const [ results, setResults ] = useState( [] )
-    const { my_top_artists, my_top_tracks } = useContext( DbFetchedContext )
+    const { my_top_artists, my_top_tracks, followed_artists } = useContext( DbFetchedContext )
 
     useEffect(() => {
         if(artistResults.length > 0){
-            const featArtist = my_top_artists.find( x => x.name.substr(0, searchInput.length).toLowerCase() === searchInput.toLowerCase())
+            const featArtist = [ ...my_top_artists, ...followed_artists ].find( x => x.name.substr(0, searchInput.length).toLowerCase() === searchInput.toLowerCase())
             if( featArtist ){
                 setPersonalResult( featArtist )
             } else {

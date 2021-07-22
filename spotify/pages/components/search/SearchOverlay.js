@@ -37,6 +37,7 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
             finalizeRoute('get', 
             `${ route }`, 
             null, 
+            null,
             `q=${searchInput}`, 
             `type=album,artist,playlist,track` )
         } else {

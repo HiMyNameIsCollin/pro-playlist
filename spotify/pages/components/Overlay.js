@@ -7,8 +7,14 @@ import { whichPicture } from '../../utils/whichPicture'
 const Overlay = ({ setActiveSearchItem }) => {
 
     const overlayRef = useRef()
-    const { overlay, setOverlay } = useContext( DbHookContext )
+    const { overlay, setOverlay, setActiveHomeItem } = useContext( DbHookContext )
     const { calledFrom, page, type, data } = overlay
+    const setActiveItem = page === 'home' ||
+                        page === 'manage' ||
+                        calledFrom === 'player' ?
+                        setActiveHomeItem :
+                        page === 'search' &&
+                        setActiveSearchItem 
     // const calledFromRef = useRef()
 
     // useEffect(() => {
@@ -24,9 +30,11 @@ const Overlay = ({ setActiveSearchItem }) => {
         
     // },[ calledFrom ])
 
+
+
     const fadeIn = useSpring({
-        opacity: type ? 1 : 0,
-        pointerEvents: type ? 'auto' : 'none',
+        opacity: data ? 1 : 0,
+        pointerEvents: data ? 'auto' : 'none',
     })
 
     const menuTransition = useTransition(data ,{
@@ -51,14 +59,14 @@ const Overlay = ({ setActiveSearchItem }) => {
                 item.track ?
                 <TrackMenu
                 transition={ props } 
-                setActiveSearchItem={ setActiveSearchItem }
+                setActiveItem={ setActiveItem }
                 page={ page }
                 calledFrom={ calledFrom }
                 type={ type }
                 track={ item.track } /> :
                 item.artists &&
                 <ListMenu 
-                setActiveSearchItem={ setActiveSearchItem }
+                setActiveItem={ setActiveItem }
                 transition={ props } 
                 page={ page }
                 calledFrom={ calledFrom }

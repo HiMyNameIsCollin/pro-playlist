@@ -6,20 +6,20 @@ const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter 
 
     const [ showSubFilter, setShowSubFilter ] = useState( false )
 
-    useEffect(() => {
-        if(activeFilter === 'Albums' || activeFilter === 'Playlists'){
-            setShowSubFilter( true )
-        }else {
-            setShowSubFilter( false )
-        }
-    },[ activeFilter ])
+    // useEffect(() => {
+    //     if(activeFilter === 'albums' || activeFilter === 'playlists'){
+    //         setShowSubFilter( true )
+    //     }else {
+    //         setShowSubFilter( false )
+    //     }
+    // },[ activeFilter ])
 
     useEffect(() => {
         if( activeFilter === undefined && subFilter ) setSubFilter( false )
     },[])
 
     const filters = [
-        'Playlists', 'Albums', 'Artists', 'Downloaded'
+        'playlists', 'albums', 'artists'
     ]
 
     const handleFilter = ( item ) => { 
@@ -40,13 +40,13 @@ const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter 
         }
     })
 
-    const { trSwitch, paddSwitch, zSwitch } = useSpring({
-        to:{
-            trSwitch: subFilter ? '-30' : '0',
-            paddSwitch: subFilter ? '32px': '16px',
-            zSwitch: subFilter ? 0 : 1
-        }
-    })
+    // const { trSwitch, paddSwitch, zSwitch } = useSpring({
+    //     to:{
+    //         trSwitch: subFilter ? '-30' : '0',
+    //         paddSwitch: subFilter ? '32px': '16px',
+    //         zSwitch: subFilter ? 0 : 1
+    //     }
+    // })
 
     return(
         <div className='manageFilters'>
@@ -66,7 +66,7 @@ const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter 
                 <ManageFiltersBtn item={ item } activeFilter={ activeFilter } handleFilter={ handleFilter } />
             ))
             }
-            {
+            {/* {
                 showSubFilter &&
                 <animated.button 
                 onClick={ () => setSubFilter(!subFilter)}
@@ -79,7 +79,7 @@ const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter 
                 className={`manageFilters__btn ${ subFilter && 'manageFilters__btn--active'}`}>
                 Downloaded
                 </animated.button>
-            }
+            } */}
         
         </div>
     )

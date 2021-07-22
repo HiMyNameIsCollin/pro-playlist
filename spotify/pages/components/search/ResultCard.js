@@ -1,24 +1,32 @@
-import { useEffect, useContext } from 'react'
+import { useEffect, useContext, useRef } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
 import { handleColorThief } from '../../../utils/handleColorThief'
 import { DbHookContext } from '../Dashboard'
 import { SearchHookContext } from './Search'
+import { ManageHookContext } from '../manage/Manage'
 
 const ResultCard = ({ data }) => {
 
-    const { setOverlay, setQueue, setQIndex} = useContext( DbHookContext )
-    const { setActiveSearchItem } = useContext( SearchHookContext)
+    const trackImageRef = useRef()
 
+    const { setOverlay, setQueue, setQIndex} = useContext( DbHookContext )
+    const searchContext = useContext( SearchHookContext )
+    const manageContext = useContext( ManageHookContext )
+    const setActiveItem = manageContext ? 
+                          manageContext.setActiveManageItem : 
+                          searchContext.setActiveSearchItem
     
     const handleTrackMenu = (e, selectedTrack ) => {
         e.stopPropagation()
         if(!selectedTrack.images){
             selectedTrack.images = selectedTrack.album.images
         }
-        const popupData = {
-            selectedTrack,
-        }
-        setOverlay( {type: 'trackMenu', pageType: 'result', data: popupData,  func: setActiveSearchItem} )
+        const type = undefined
+        const page = 'manage'
+        const calledFrom = 'selectedTrack'
+        const data = { track: selectedTrack}
+        handleOverlayColors()
+        setOverlay( { type, page, calledFrom, data } )
     }
 
     const playTrack = () => {
@@ -31,10 +39,14 @@ const ResultCard = ({ data }) => {
         if( data.type === 'track'){
             playTrack()
         }else {
-            setActiveSearchItem( data )
+            setActiveItem( data )
         }
     }
     
+    const handleOverlayColors = () => {
+        const colors = handleColorThief( trackImageRef.current, 2)
+        colors.map((clr, i) => document.documentElement.style.setProperty(`--selectedTrackColor${i}`, clr))
+    }
 
     return(
         <div className={`resultCard ${data.type==='artist' && 'resultCard--artist'}`} 
@@ -42,11 +54,17 @@ const ResultCard = ({ data }) => {
             <div className='resultCard__imgContainer'>
                 {
                 data.images &&
-                <img src={ whichPicture( data.images, 'sm') } />
+                <img
+                crossorigin='anonymous' 
+                ref={ trackImageRef } 
+                src={ whichPicture( data.images, 'sm') } />
                 }
                 {
                 data.album && data.album.images &&
-                <img src={ whichPicture( data.album.images, 'sm') } />
+                <img
+                crossorigin='anonymous'  
+                ref={ trackImageRef } 
+                src={ whichPicture( data.album.images, 'sm') } />
                 }
                 
             </div>

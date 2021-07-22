@@ -24,7 +24,7 @@ const Card = ({ type, item }) => {
     return(
         <div 
         onClick={ setCurrentSelection } 
-        className={`card card--${type} ${ item.type }` }>
+        className={`card card--${type} card--${item.type}` }>
             <div className='card__imgContainer'>
                 <img 
                 loading='lazy'

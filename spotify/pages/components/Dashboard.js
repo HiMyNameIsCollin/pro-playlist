@@ -184,6 +184,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ playNextQueue, setPlayNextQueue ] = useState([])
     const [ dashboardState, setDashboardState ] = useState('manage')
     const [ searchState, setSearchState ] = useState('default')
+    const [ manageState, setManageState ] = useState( 'default')
+
     const [ playerSize, setPlayerSize ] = useState( 'small' )
 
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
@@ -334,11 +336,18 @@ const Dashboard = ({ setAuth, audioRef }) => {
         } else if (searchState === 'search' && dashboardState !=='search'){
             body.classList.remove( 'noScroll' )
         }
-    }, [ overlay, playerSize, searchState, dashboardState ])
+        if( manageState === 'search' && dashboardState === 'manage' ){
+            body.classList.add( 'noScroll' )
+        } else if (manageState === 'search' && dashboardState !=='manage'){
+            body.classList.remove( 'noScroll' )
+        }
+
+    }, [ overlay, playerSize, searchState, manageState, dashboardState ])
 
     useEffect(() => {
         if( activeSearchItem.id || activeHomeItem.id ){
             setSearchState('default')
+            setManageState('default')
             if( overlay.data ) setOverlay( {} )
             if( playerSize === 'large' ) setPlayerSize( 'small' )
         }
@@ -363,37 +372,26 @@ const Dashboard = ({ setAuth, audioRef }) => {
         const searchPage = document.getElementById('searchPage')
         const managePage = document.getElementById('managePage')
         const pages = [ homePage, searchPage, managePage ]
-        // if( homePage && searchPage && managePage ) {
-        //     pages.forEach( page => {
-        //         page.style.display = 'none'
-        //     })
-        //     if( dashboardState === 'home' ) {
-        //         homePage.style.display = 'block'
-        //         dashboardRef.current.scroll({ 
-        //             top: pageScrollRef.current.home - 160, 
-        //             left: 0,
-        //             behavior: 'auto'
-        //         })
-        //     }
-        //     if( dashboardState === 'search' ) {
-        //         searchPage.style.display = 'block'
-        //         dashboardRef.current.scroll({ 
-        //             top: pageScrollRef.current.search - 160, 
-        //             left: 0,
-        //             behavior: 'auto'
-        //         })
-        //     }
-        //     if( dashboardState === 'manage' ) {
-        //         managePage.style.display = 'block'
-        //         dashboardRef.current.scroll({ 
-        //             top: pageScrollRef.current.manage - 160, 
-        //             left: 0,
-        //             behavior: 'auto'
-        //         })
-        //     }
-        // }
-
-        // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
+        if( homePage && searchPage && managePage ) {
+            pages.forEach( page => {
+                page.style.display = 'none'
+            })
+            if( dashboardState === 'home' ) {
+                homePage.style.display = 'block'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.home - 160, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
+            if( dashboardState === 'search' ) {
+                searchPage.style.display = 'block'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.search - 160, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
             if( dashboardState === 'manage' ) {
                 managePage.style.display = 'block'
                 dashboardRef.current.scroll({ 
@@ -402,7 +400,11 @@ const Dashboard = ({ setAuth, audioRef }) => {
                     behavior: 'auto'
                 })
             }
-    },[])
+        }
+
+        // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
+            
+    },[dashboardState])
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -414,7 +416,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
                 <Overlay setActiveSearchItem={ setActiveSearchItem }/>
 
-                {/* <Home
+                <Home
                 transMinHeight={ homeTransMinHeight }
                 setTransMinHeight={ setHomeTransMinHeight }
                 currActiveHomeRef={ currActiveHomeRef }
@@ -430,9 +432,11 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 my_top_artists={ state.my_top_artists } 
                 available_genre_seeds={ state.available_genre_seeds }
                 searchPageHistoryRef={ searchPageHistoryRef }
-                currActiveSearchRef={ currActiveSearchRef } /> */}
+                currActiveSearchRef={ currActiveSearchRef } />
 
-                <Manage />
+                <Manage 
+                manageState={ manageState }
+                setManageState={ setManageState } />
                 
                 <Player 
                 hiddenUI={ hiddenUI } 

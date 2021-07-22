@@ -1,10 +1,12 @@
 import { whichPicture } from '../../../utils/whichPicture'
-import { useState, useEffect } from 'react'
-
+import { useState, useEffect, useContext } from 'react'
+import { ManageHookContext } from './Manage'
 
 const ManageCard = ({ item, listType }) => {
 
     const [ image, setImage ] = useState()
+    const { setActiveManageItem } = useContext( ManageHookContext )
+
 
     useEffect(() => {
         let img
@@ -14,11 +16,11 @@ const ManageCard = ({ item, listType }) => {
             img = whichPicture( item.images, 'med' )
         }
         setImage( img )
-    }, [ listType ])
+    }, [ listType, item ])
 
     return(
-        <div className={ `mngCard mngCard--${listType}` }>
-            <div className={ `mngCard__imgContainer mngCard__imgContainer--${listType} ${ item.type } `}>
+        <div onClick={ () => setActiveManageItem( item ) } className={ `mngCard mngCard--${listType} mngCard--${item.type}` }>
+            <div className={ `mngCard__imgContainer mngCard__imgContainer--${listType} mngCard__imgContainer--${item.type} `}>
                 <img
                 alt='Liked tracks playlist cover' 
                 src={ image } />
@@ -31,6 +33,7 @@ const ManageCard = ({ item, listType }) => {
                     <>
                         <p> 
                             { item.type  } 
+                            <i className="fas fa-dot-circle"></i>
                         {
                             item.name === 'Liked Tracks' ?
                             `${ item.tracks.length } songs` :

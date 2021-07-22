@@ -3,9 +3,22 @@ import { DbFetchedContext } from '../Dashboard'
 
 import ManageCard from './ManageCard'
 
-const ManageContainer = ({ setManageOverlay, data, likedPlaylist, sort, manageContainerListTypeRef }) => {
+const ManageContainer = ({ transitionComplete, setTransitionComplete, setManageOverlay, data, likedPlaylist, sort, manageContainerListTypeRef }) => {
     
+    const thisComponentRef = useRef()
+
     const [ listType, setListType ] = useState( manageContainerListTypeRef.current )
+
+    useEffect(() => {
+        setTransitionComplete( true )
+    },[])
+
+    useEffect(() => {
+        if( transitionComplete ) {
+            thisComponentRef.current.classList.add('fadeIn')
+            setTransitionComplete( false )
+        }
+    },[ transitionComplete ])
 
     const handleListType = () => {
         let lt
@@ -26,7 +39,9 @@ const ManageContainer = ({ setManageOverlay, data, likedPlaylist, sort, manageCo
     }
 
     return(
-        <div className='mngContainer'>
+        <div 
+        ref={ thisComponentRef }
+        className='mngContainer'>
             <div className='sortByBar'>
                 <div onClick={ handleManageOverlay } className='sortByBar__btn'>
                     <i className="fas fa-sort"></i>

@@ -143,12 +143,7 @@ i
     &--blurred
         filter: blur(5px)
 
-.artist
-    border-radius: 50%
-    img
-        border-radius: 50%
-        min-height: 100%
-        min-width: 100%
+
 
 .smoothScroll
     scroll-behavior: smooth
@@ -234,7 +229,7 @@ i
     min-width: 100vw
     max-width: 100%
     z-index: 2
-    &--artist, &--collection, &--welcome, &--search &--manage
+    &--artist, &--collection, &--welcome, &--search
         &::before
             background: $black
             opacity: 1
@@ -251,14 +246,13 @@ i
 
 .fadeIn
     &::before
-        opacity: 0
+        opacity: 0 !important
         pointer-events: none
 
 #homePage, #searchPage, #managePage
     display: none
 
-#managePage
-    display: block
+
 
 .showcase
     color: $white
@@ -1147,6 +1141,12 @@ i
         max-height: 100%
         .card__imgContainer
             max-height: 10rem
+    &--artist
+        border-radius: 50%
+        img
+            border-radius: 50%
+            min-height: 100%
+            min-width: 100%
 
 .loading
     align-items: center
@@ -1277,8 +1277,14 @@ i
         padding: 0 1rem
         
 .mngContainer
+    @include pseudo
     display: flex
-    flex-wrap: wrap        
+    flex-wrap: wrap       
+    &::before
+        background: $black
+        opacity: 1
+        transition: opacity .75s ease-in-out 
+        z-index: 3
 
 .manageFilters
     align-items: center
@@ -1361,6 +1367,9 @@ i
             text-overflow: ellipsis
         p
             font-size: .8rem
+            i
+                font-size: .8rem
+                padding: 0 .5rem
         &--bar
             grid-column: 2/3
             grid-row: 1/3
@@ -1369,6 +1378,12 @@ i
             left: 0
             padding: 1rem
             position: absolute
+    &--artist
+        border-radius: 50%
+        img
+            border-radius: 50%
+            min-height: 100%
+            min-width: 100%
 
 .mngOverlay
     @include pseudo
@@ -1385,9 +1400,22 @@ i
     &::after
         @include scrimGradient($black, 'to right')
         opacity: 1
-    &__sort
-        background: $darkGrey
-        margin-top: auto
+
+.sortMenu
+    background: $darkGrey
+    color: $lightGrey
+    display: flex
+    flex-direction: column
+    margin-top: auto
+    padding: 0 1rem
+    h5
+        padding: 1rem 0
+    &__filterBtn
+        color: $white
+        margin: 1rem 0
+        text-align: start
+    &__cancelBtn
+        padding: 1rem
 
 .sortByBar
     align-items: center

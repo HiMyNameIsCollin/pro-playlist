@@ -2,14 +2,12 @@ import { useContext } from 'react'
 import { animated } from 'react-spring'
 import { DbHookContext } from '../Dashboard'
 
-const ListMenu = ({ setActiveSearchItem, transition, calledFrom, page, artists }) => {
+const ListMenu = ({ setActiveItem, transition, calledFrom, page, artists }) => {
 
-    const { setActiveHomeItem } = useContext( DbHookContext )
 
     const handleViewArtist = ( e, artist) => {
-        e.preventDefault()
-        if( calledFrom === 'search' ) setActiveSearchItem( artist )
-        if( calledFrom === 'home' || calledFrom === 'player' ) setActiveHomeItem( artist )
+    e.preventDefault()
+       setActiveItem( artist )
     }
 
 
