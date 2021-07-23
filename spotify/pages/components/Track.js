@@ -135,7 +135,7 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
             track--${ collectionType ? collectionType : type }
             ${ activeTrack && 'track--active' }`
         }
-        data-trackId={ track.id }>
+        data-trackid={ track.id }>
         {/* Ternary operators determine if this is a playlist or an album. */}
 
         {

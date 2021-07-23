@@ -357,7 +357,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
     useEffect(() => {
         let hideMe
-        if( activeManageItem.id ){
+        if( activeManageItem.type ){
             if( dashboardState !== 'manage'){
                 if(scrollPosition <= scrollRef.current) {
                     hideMe = false
@@ -390,39 +390,46 @@ const Dashboard = ({ setAuth, audioRef }) => {
         const searchPage = document.getElementById('searchPage')
         const managePage = document.getElementById('managePage')
         const pages = [ homePage, searchPage, managePage ]
-        if( homePage && searchPage && managePage ) {
-            pages.forEach( page => {
-                page.style.display = 'none'
+        // if( homePage && searchPage && managePage ) {
+        //     pages.forEach( page => {
+        //         page.style.display = 'none'
+        //     })
+        //     if( dashboardState === 'home' ) {
+        //         homePage.style.display = 'block'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.home - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        //     if( dashboardState === 'search' ) {
+        //         searchPage.style.display = 'block'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.search - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        //     if( dashboardState === 'manage' ) {
+        //         managePage.style.display = 'block'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.manage - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        // }
+        if( dashboardState === 'manage' ) {
+            managePage.style.display = 'block'
+            dashboardRef.current.scroll({ 
+                top: pageScrollRef.current.manage - 160, 
+                left: 0,
+                behavior: 'auto'
             })
-            if( dashboardState === 'home' ) {
-                homePage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.home - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'search' ) {
-                searchPage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.search - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'manage' ) {
-                managePage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.manage - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
         }
-        
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
             
-    },[ dashboardState ])
+    },[])
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -476,6 +483,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 scrollPosition={ scrollPosition }
                 activeHomeItem={ activeHomeItem }
                 activeSearchItem={ activeSearchItem }
+                activeManageItem={ activeManageItem }
                 setActiveHomeItem={ setActiveHomeItem }
                 setActiveSearchItem={ setActiveSearchItem }
                 dashboardState={ dashboardState }

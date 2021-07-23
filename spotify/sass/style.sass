@@ -149,7 +149,7 @@ i
     scroll-behavior: smooth
     -webkit-scroll-behavior: smooth
 
-.homeHeader, .nav, .tab 
+.homeHeader, .nav, .tab, .activeItem, .sortMenu
     @include pseudo
     &::before
         @include scrimGradient($grey, '135deg')
@@ -1379,11 +1379,72 @@ i
             min-height: 100%
             min-width: 100%
 
-.mngActiveItemContainer
+.activeItem
     bottom: 3.6rem
-    background: white
+    background: $darkGrey
+    display: grid
+    grid-template-rows: auto auto
+    grid-template-columns: Min( 35vw, 12rem ) auto
     position: fixed
     width: 100%
+    z-index: 3
+    &__header
+        display: grid
+        grid-column: 1/3
+        grid-row: 1/2
+        grid-template-columns: minmax( 0%, 60% ) 1fr
+        width: 100%
+        h2, span
+            text-overflow: ellipsis
+            overflow: hidden
+            padding: 1rem .5rem
+            white-space: nowrap
+        h2
+            font-size: 1rem 
+            grid-column: 1/2
+            width: 100%
+        span
+            text-align: end
+    &__imgContainer
+        grid-column: 1/2
+        grid-row: 2/3
+        position: relative
+        img
+            display: block
+            max-width: 100%
+    &__itemContainer
+        grid-column: 2/3
+        grid-row: 2/3
+        position: relative
+        &__scroll
+            position: absolute
+            height: 100%
+            overflow-x: hidden
+            overflow-y: auto
+            width: 100%
+
+.activeItemTrack
+    align-items: center
+    display: flex
+    margin: .5rem 0
+    padding: .5rem
+    &__title
+        font-size: 1rem
+        overflow: hidden
+        h4
+            overflow: hidden
+            text-overflow: ellipsis
+            white-space: nowrap
+        p
+            font-size: 0.8rem
+    &__btn
+        display: none
+        margin: 0 0 0 auto
+        &--active
+            display: inline-block
+            i
+                color: $green
+
 
 .mngOverlay
     @include pseudo
@@ -1402,13 +1463,12 @@ i
         opacity: 1
 
 .sortMenu
-    background: $darkGrey
-    color: $lightGrey
     display: flex
     flex-direction: column
     margin-top: auto
     padding: 0 1rem
     h5
+        color: $lightGrey
         padding: 1rem 0
     &__filterBtn
         color: $white

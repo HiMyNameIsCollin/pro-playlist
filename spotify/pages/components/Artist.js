@@ -118,9 +118,9 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     useEffect(() => {
         let id = activeItem.id
         finalizeRoute( 'get', `${routes.artist}/${id}`, id)
-        finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, id, `market=ES`)
-        finalizeRoute( 'get', `${routes.artist}/${id}/albums`, id, 'limit=50')
-        finalizeRoute( 'get', `${routes.artist}/${id}/related-artists`, id, 'limit=50')
+        finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, id, null ,`market=ES`)
+        finalizeRoute( 'get', `${routes.artist}/${id}/albums`, id, null, 'limit=50')
+        finalizeRoute( 'get', `${routes.artist}/${id}/related-artists`, id, null, 'limit=50')
 
     }, [])
 

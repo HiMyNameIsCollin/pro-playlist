@@ -3,7 +3,7 @@ import { useSprings, animated } from 'react-spring'
 import useApiCall from '../../hooks/useApiCall'
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
 import ManageFilters from './ManageFilters'
-import ManageActiveItemContainer from './ManageActiveItemContainer'
+import SortContainer from './SortContainer'
 import ManageLibrary from './ManageLibrary'
 import ManageOverlay from './ManageOverlay'
 import SearchOverlay from '../search/SearchOverlay'
@@ -45,7 +45,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
                 let playlist = {
                     name: 'Liked Tracks',
                     description: 'Your favorite songs',
-                    tracks: my_liked_tracks,
+                    items: my_liked_tracks,
                 }
                 createPlaylist( playlist, setLikedPlaylist )
             }
@@ -60,7 +60,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
                 let playlist = {
                     name: 'To be added',
                     description: 'Tracks in need of a playlist to call home',
-                    tracks: [ toBeManaged ]
+                    items: [ toBeManaged ]
                 }
                 createPlaylist( playlist, setManagerPlaylist )
                 
@@ -93,14 +93,14 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
 
     const createPlaylist = ( playlist, callback ) => {
 
-        playlist['images'] = playlist.tracks[0].album.images
+        playlist['images'] = playlist.items[0].album.images
         playlist['type'] = 'playlist'
         callback( playlist )
     }
 
     const addToPlaylist = ( tracks, state, callback ) => {
         let stateClone = { ...state } 
-        stateClone.tracks = [ ...stateClone.tracks, ...tracks ]
+        stateClone.items = [ ...stateClone.items, ...tracks ]
         callback( stateClone )
     }
 
@@ -178,7 +178,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
                 managerPlaylist={ managerPlaylist }
                 manageContainerListTypeRef={ manageContainerListTypeRef }/> 
 
-                <ManageActiveItemContainer />
+                <SortContainer />
                 
             </div>
             </>

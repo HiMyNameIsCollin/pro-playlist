@@ -6,7 +6,7 @@ import { DbHookContext } from './Dashboard'
 const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState, setDashboardState , pageScrollRef, activeHomeItem, activeSearchItem, setActiveHomeItem, setActiveSearchItem, scrollPosition }) => {
 
     const hideNav = useSpring({
-        transform: hiddenUI ? 'translatey(100%)' : 'translatey(0%)'
+        transform: hiddenUI ? 'translatey(100%)' : 'translatey(0%)',
     })
 
     const handleDashboardState = ( page ) => {

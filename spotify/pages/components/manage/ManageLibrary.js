@@ -66,8 +66,8 @@ const ManageLibrary = ({ transitionComplete, setTransitionComplete, setManageOve
                 <ManageCard item={ managerPlaylist } listType={ listType } />
             }
             {
-                data.map( item => {
-                   return <ManageCard item={ item } listType={ listType } />
+                data.map(( item, i ) => {
+                   return <ManageCard item={ item } key={ i } listType={ listType } />
                 })
             }
         </div>

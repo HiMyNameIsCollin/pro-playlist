@@ -62,8 +62,8 @@ const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter 
                 <i className="fas fa-times "></i>
             </animated.button>
             {
-            filters.map( item => (
-                <ManageFiltersBtn item={ item } activeFilter={ activeFilter } handleFilter={ handleFilter } />
+            filters.map(( item, i) => (
+                <ManageFiltersBtn item={ item } key={ i } activeFilter={ activeFilter } handleFilter={ handleFilter } />
             ))
             }
             {/* {

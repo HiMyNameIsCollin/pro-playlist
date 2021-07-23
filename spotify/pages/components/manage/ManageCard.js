@@ -37,7 +37,7 @@ const ManageCard = ({ item, listType }) => {
                         {
                             item.name === 'Liked Tracks' ||
                             item.name === 'To be added' ?
-                            `${ item.tracks.length } ${item.tracks.length > 1 ? 'songs' : 'song'}` :
+                            `${ item.items.length } ${item.items.length > 1 ? 'songs' : 'song'}` :
                             item.type === 'playlist' ?
                             item.owner.display_name :
                             item.type === 'album' &&
