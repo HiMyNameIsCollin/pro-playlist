@@ -22,7 +22,7 @@ const ActiveItemTrack = ({ track, selectedItems, setSelectedItems }) => {
 
     return(
         <div
-        onPointerDown={ handleSelection }
+        onPointerUp={ handleSelection }
         className={ `activeItemTrack activeItemTrack--${'placeholder'}`}>
             <div className={`activeItemTrack__title`}> 
                 <h4>
@@ -37,7 +37,7 @@ const ActiveItemTrack = ({ track, selectedItems, setSelectedItems }) => {
             {
                 selected &&
                 <button
-                onPointerDown={ handleSelection } 
+                onPointerUp={ handleSelection } 
                 className={`activeItemTrack__btn activeItemTrack__btn--active`}><i className="fas fa-check"></i></button>
             }
             

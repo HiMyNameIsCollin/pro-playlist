@@ -1,21 +1,24 @@
 import Card from './Card'
 
-const Slider = ({ message, items, setActiveItem }) => {
+const Slider = ({ message, items,  }) => {
     return(
         <section className='slider'>
-            <div className='slider__title'>
-                <h4>
-                { message }
-                </h4>
-            </div>
+            {
+                message &&
+                <div className='slider__title'>
+                    <h4>
+                    { message }
+                    </h4>
+                </div>
+            }
+            
             <div className='slider__carousel'>
                 {   items.length > 0 ?
                     items.map(( item, i ) => (
                     <Card 
                     type='HomeSlider'
                     key={ i } 
-                    item={ item }
-                    setActiveItem={ setActiveItem } />)) :
+                    item={ item } />)) :
                     <div className='slider__loading'>
                         Loading
                     </div>

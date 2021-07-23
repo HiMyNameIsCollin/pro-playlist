@@ -3,6 +3,8 @@ import { animated } from 'react-spring'
 import ActiveItemTrack from './ActiveItemTrack'
 import useApiCall from '../../hooks/useApiCall'
 import { whichPicture } from '../../../utils/whichPicture'
+import Slider from '../Slider'
+import { ManageHookContext } from './Manage'
 
 
 const ActiveItem = ({ style, data }) => {
@@ -11,26 +13,28 @@ const ActiveItem = ({ style, data }) => {
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
 
     const currentActiveItemRef = useRef({})
-    const [ items, setTracks ] = useState([])
+    const [ items, setItems ] = useState([])
     const [ selectedItems, setSelectedItems ] = useState( [] )
+
+    const { setActiveManageItem } = useContext( ManageHookContext )
 
     const routes = {
         items: data.type === 'album' ? 
         'v1/albums/tracks' :
         data.type === 'playlist' ?
         'v1/playlists/tracks' :
-        'v1/artist/albums'
+        'v1/artists/albums'
     }
 
     useEffect(() => {
-        if(apiPayload) setTracks( apiPayload.items )
+        if(apiPayload) setItems( apiPayload.items )
     }, [ apiPayload ])
 
     useEffect(() => {
         if( data.id ){
             if( currentActiveItemRef.current ){
                 if( data.id !== currentActiveItemRef.current.id ){
-                    setTracks( [] )
+                    setItems( [] )
                 }
             } else {
                 currentActiveItemRef.current = data
@@ -43,39 +47,59 @@ const ActiveItem = ({ style, data }) => {
     useEffect(() => {
         if(data.type){
             if( Array.isArray( data.items ) ){
-                setTracks( data.items )
+                setItems( data.items )
             }else {
                 let itemsRoute = routes.items.substr( 0, routes.items.length - 6 )
                 itemsRoute += data.id
-                itemsRoute += '/tracks'
-                finalizeRoute( 'get', itemsRoute, data.id, null )
+                itemsRoute += data.type === 'artist' ? '/albums' : '/tracks'
+                finalizeRoute( 'get', itemsRoute, data.id, null, 'limit=50' )
             }
         }
     },[ data ])
-    return(
-        <animated.div style={ style } className='activeItem'>
-            <div className='activeItem__header'>
-                <h2> { data.name } </h2>
-                {
-                items.length > 0 &&
-                <span> { items.length } {items.length > 1 ? 'songs' : 'song' } </span>
 
-                }
-            </div>
-                <div className='activeItem__imgContainer'>
+
+
+    return(
+        <animated.div style={ style } className={`activeItem activeItem--${ data.type }`}>
+            
+                <div className={`activeItem__imgContainer activeItem__imgContainer--${ data.type }`}>
                     <img src={ whichPicture( data.images, 'med' ) } alt={ `${data.name} image`} />
                 </div>
-                <div className='activeItem__itemContainer'>
+                
+                
+                <div className={`activeItem__meta activeItem__meta--${ data.type }`}>
+                    <h2> { data.name } </h2>
+                    {
+                    items.length > 0 &&
+                    <span> 
+                        { items.length } 
+                        {
+                            data.type === 'artist' ?
+                            items.length > 1 ? 'releases' : 'release'  :
+                            items.length > 1 ? 'tracks' : 'track'  
+                        }
+                    </span>
+
+                    }
+                </div>
+                
+
+                <div className={`activeItem__itemContainer activeItem__itemContainer--${ data.type }`}>
+                {
+                    data.type === 'artist' ?
+                    <Slider message={ undefined } items={items} setActiveItem={ setActiveManageItem }/>
+                    :
                     <div className='activeItem__itemContainer__scroll'>
                     {
                         items.map(( item, i ) => (
                             <ActiveItemTrack 
                             track={ item } 
                             selectedItems={ selectedItems }
-                            setSelectedItems={ setSelectedItems } />
+                            setSelectedItems={ setSelectedItems }/>
                         ))
                     }
                     </div>
+                }
 
 
                 </div>

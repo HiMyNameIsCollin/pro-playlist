@@ -356,7 +356,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     }, [ activeSearchItem, activeHomeItem ])
 
     useEffect(() => {
-        let hideMe
+        let hideMe = true
         if( activeManageItem.type ){
             if( dashboardState !== 'manage'){
                 if(scrollPosition <= scrollRef.current) {

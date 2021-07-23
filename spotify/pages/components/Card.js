@@ -2,16 +2,24 @@ import { useContext } from 'react'
 import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
+import { ManageHookContext } from './manage/Manage'
 
 const Card = ({ type, item }) => {
 
     const { activeHomeItem, setActiveHomeItem, setHiddenUI, searchPageHistoryRef, homePageHistoryRef } = useContext( DbHookContext )
+    const manageContext = useContext( ManageHookContext)
     const searchContext = useContext( SearchHookContext )
     const pageHistoryRef = searchContext ? searchPageHistoryRef : homePageHistoryRef
     const activeSearchItem = searchContext ? searchContext.setActiveSearchItem : null
     const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
+    const activeManageItem = manageContext ? manageContext.activeManageItem : null
+    const setActiveManageItem = manageContext ? manageContext.setActiveManageItem : null
     const activeItem = searchContext? activeSearchItem : activeHomeItem
-    const setActiveItem = searchContext ? setActiveSearchItem : setActiveHomeItem
+    const setActiveItem = manageContext ? 
+                        setActiveManageItem :
+                        searchContext ? 
+                        setActiveSearchItem : 
+                        setActiveHomeItem
 
 
     const setCurrentSelection = (e) => {
