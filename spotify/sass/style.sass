@@ -149,7 +149,7 @@ i
     scroll-behavior: smooth
     -webkit-scroll-behavior: smooth
 
-.homeHeader, .nav, .tab, .activeItem, .sortMenu
+.homeHeader, .nav, .tab, .activeItem, .sortMenu , .playlistContainer 
     @include pseudo
     &::before
         @include scrimGradient($grey, '135deg')
@@ -1379,15 +1379,24 @@ i
             min-height: 100%
             min-width: 100%
 
+.sortContainer
+    display: flex
+    flex-direction: column
+    justify-content: space-between
+    position: fixed
+    top: 0
+    left: 0
+    min-height: -webkit-fill-available
+    width: 100%
+    z-index: 4
 .activeItem
     bottom: 3.6rem
     background: $darkGrey
     display: grid
     grid-template-rows: auto auto
     grid-template-columns: Min( 40vw, 12rem ) auto
-    position: fixed
+    filter: blur(0px)
     width: 100%
-    z-index: 3
     &--artist
         grid-template-columns: 1fr 4fr
     &__meta
@@ -1395,16 +1404,16 @@ i
         grid-row: 2/3
         padding: 1rem .5rem
         width: 100%
-        h2, span
+        h2, p, h5
             text-overflow: ellipsis
             overflow: hidden
             white-space: nowrap
+            margin-bottom: 1rem
         h2
             font-size: 1rem 
             grid-column: 1/2
             width: 100%
-        span
-            text-align: end
+        
         &--artist
             grid-column: 2/3
             grid-row: 1/2
@@ -1441,7 +1450,7 @@ i
     &__title
         font-size: 1rem
         overflow: hidden
-        h4
+        h4, p
             overflow: hidden
             text-overflow: ellipsis
             white-space: nowrap
@@ -1454,7 +1463,11 @@ i
             display: inline-block
             i
                 color: $green
+.playlistContainer
 
+    overflow-x: auto
+    width: 100%
+    z-index: 4
 
 .mngOverlay
     @include pseudo

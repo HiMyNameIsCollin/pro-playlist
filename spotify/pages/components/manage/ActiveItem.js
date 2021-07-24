@@ -69,16 +69,28 @@ const ActiveItem = ({ style, data }) => {
                 
                 <div className={`activeItem__meta activeItem__meta--${ data.type }`}>
                     <h2> { data.name } </h2>
+                    
+                    {
+                        data.type !== 'artist' &&
+                        <h5> 
+                            { 
+                                data.artists ?
+                                data.artists[0].name :
+                                data.owner.display_name
+                            }
+                        </h5>
+                    }
+                    
                     {
                     items.length > 0 &&
-                    <span> 
+                    <p> 
                         { items.length } 
                         {
                             data.type === 'artist' ?
                             items.length > 1 ? 'releases' : 'release'  :
                             items.length > 1 ? 'tracks' : 'track'  
                         }
-                    </span>
+                    </p>
 
                     }
                 </div>

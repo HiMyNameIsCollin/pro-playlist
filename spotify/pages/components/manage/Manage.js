@@ -60,7 +60,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
                 let playlist = {
                     name: 'To be added',
                     description: 'Tracks in need of a playlist to call home',
-                    items: [ toBeManaged ]
+                    items: [ toBeManaged ],
                 }
                 createPlaylist( playlist, setManagerPlaylist )
                 
@@ -92,7 +92,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     }, [ my_albums, my_playlists, followed_artists ])
 
     const createPlaylist = ( playlist, callback ) => {
-
+        playlist['owner'] = { display_name: user_info.display_name}
         playlist['images'] = playlist.items[0].album.images
         playlist['type'] = 'playlist'
         callback( playlist )

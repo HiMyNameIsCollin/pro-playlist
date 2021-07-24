@@ -13,10 +13,12 @@ const ActiveItemTrack = ({ track, selectedItems, setSelectedItems }) => {
     }, [ selectedItems ])
 
     const handleSelection = () => {
+        const trackId = track.track ? track.track.id : track.id
         if( selected ){
-            setSelectedItems( items => items = items.filter( x=> x !== track.id ))
+            setSelectedItems( items => items = items.filter( x=> x !== trackId ))
         } else {
-            setSelectedItems( items => items = [ ...items, track.id ])
+            
+            setSelectedItems( items => items = [ ...items, trackId ])
         }
     }
 
@@ -30,7 +32,12 @@ const ActiveItemTrack = ({ track, selectedItems, setSelectedItems }) => {
                 </h4>
                 <p>
                 {
+                    track.artists&&
                     track.artists.map(( artist, i ) => i === track.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
+                }
+                {
+                    track.track &&
+                    track.track.artists.map(( artist, i ) => i === track.track.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
                 }
                 </p>
             </div>

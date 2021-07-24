@@ -127,14 +127,14 @@ i {
   -webkit-scroll-behavior: smooth;
 }
 
-.homeHeader, .nav, .tab, .activeItem, .sortMenu {
+.homeHeader, .nav, .tab, .activeItem, .sortMenu, .playlistContainer {
   position: relative;
   overflow: hidden;
   z-index: 1;
   background: #212121;
   color: #FFFFFF;
 }
-.homeHeader::before, .nav::before, .tab::before, .activeItem::before, .sortMenu::before {
+.homeHeader::before, .nav::before, .tab::before, .activeItem::before, .sortMenu::before, .playlistContainer::before {
   content: "";
   top: 0;
   left: 0;
@@ -143,7 +143,7 @@ i {
   width: 100%;
   z-index: -1;
 }
-.homeHeader::after, .nav::after, .tab::after, .activeItem::after, .sortMenu::after {
+.homeHeader::after, .nav::after, .tab::after, .activeItem::after, .sortMenu::after, .playlistContainer::after {
   content: "";
   top: 0;
   left: 0;
@@ -152,7 +152,7 @@ i {
   width: 100%;
   z-index: -2;
 }
-.homeHeader::before, .nav::before, .tab::before, .activeItem::before, .sortMenu::before {
+.homeHeader::before, .nav::before, .tab::before, .activeItem::before, .sortMenu::before, .playlistContainer::before {
   background: linear-gradient(135deg, #535353 0%, rgba(83, 83, 83, 0.738) 19%, rgba(83, 83, 83, 0.541) 34%, rgba(83, 83, 83, 0.382) 47%, rgba(83, 83, 83, 0.278) 56.5%, rgba(83, 83, 83, 0.194) 65%, rgba(83, 83, 83, 0.126) 73%, rgba(83, 83, 83, 0.075) 80.2%, rgba(83, 83, 83, 0.042) 86.1%, rgba(83, 83, 83, 0.021) 91%, rgba(83, 83, 83, 0.008) 95.2%, rgba(83, 83, 83, 0.002) 98.2%, rgba(83, 83, 83, 0) 100%);
   opacity: 0.7;
 }
@@ -1912,15 +1912,26 @@ i {
   min-width: 100%;
 }
 
+.sortContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-height: -webkit-fill-available;
+  width: 100%;
+  z-index: 4;
+}
+
 .activeItem {
   bottom: 3.6rem;
   background: #212121;
   display: grid;
   grid-template-rows: auto auto;
   grid-template-columns: min(40vw, 12rem) auto;
-  position: fixed;
+  filter: blur(0px);
   width: 100%;
-  z-index: 3;
 }
 .activeItem--artist {
   grid-template-columns: 1fr 4fr;
@@ -1931,18 +1942,16 @@ i {
   padding: 1rem 0.5rem;
   width: 100%;
 }
-.activeItem__meta h2, .activeItem__meta span {
+.activeItem__meta h2, .activeItem__meta p, .activeItem__meta h5 {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  margin-bottom: 1rem;
 }
 .activeItem__meta h2 {
   font-size: 1rem;
   grid-column: 1/2;
   width: 100%;
-}
-.activeItem__meta span {
-  text-align: end;
 }
 .activeItem__meta--artist {
   grid-column: 2/3;
@@ -1988,7 +1997,7 @@ i {
   font-size: 1rem;
   overflow: hidden;
 }
-.activeItemTrack__title h4 {
+.activeItemTrack__title h4, .activeItemTrack__title p {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2005,6 +2014,12 @@ i {
 }
 .activeItemTrack__btn--active i {
   color: #1DB954;
+}
+
+.playlistContainer {
+  overflow-x: auto;
+  width: 100%;
+  z-index: 4;
 }
 
 .mngOverlay {
