@@ -278,6 +278,9 @@ i {
 .page--search {
   padding: 9rem 0;
 }
+.page--manage {
+  position: absolute;
+}
 
 .fadeIn::before {
   opacity: 0;
@@ -1545,7 +1548,6 @@ i {
 .card {
   color: #FFFFFF;
   height: 100%;
-  max-height: 12rem;
   position: relative;
 }
 .card__title {
@@ -1556,7 +1558,7 @@ i {
 }
 .card__imgContainer {
   display: flex;
-  max-height: 10rem;
+  max-height: 8rem;
   position: relative;
   width: 100%;
 }
@@ -1576,7 +1578,7 @@ i {
 .card--HomeSlider {
   flex: 0 0 auto;
   margin: 0 0.5rem;
-  width: min(60vw, 10rem);
+  width: min(40vw, 8rem);
 }
 .card--HomeSlider:nth-of-type(1) {
   margin-left: 1rem;
@@ -1587,9 +1589,6 @@ i {
 .card--BcSearch, .card--BcShowcase {
   min-height: auto;
   max-height: 100%;
-}
-.card--BcSearch .card__imgContainer, .card--BcShowcase .card__imgContainer {
-  max-height: 10rem;
 }
 .card--artist {
   border-radius: 50%;
@@ -1777,7 +1776,6 @@ i {
 .mngFilters {
   align-items: center;
   display: flex;
-  overflow-x: auto;
   padding: 0.25rem 0.5rem;
   width: auto;
 }
@@ -1915,22 +1913,22 @@ i {
 .sortContainer {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   position: fixed;
   top: 0;
   left: 0;
-  min-height: -webkit-fill-available;
+  padding-bottom: 3.6rem;
   width: 100%;
-  z-index: 4;
+  z-index: 5;
 }
 
 .activeItem {
-  bottom: 3.6rem;
   background: #212121;
   display: grid;
   grid-template-rows: auto auto;
   grid-template-columns: min(40vw, 12rem) auto;
-  filter: blur(0px);
+  margin-top: auto;
   width: 100%;
 }
 .activeItem--artist {
@@ -1942,16 +1940,19 @@ i {
   padding: 1rem 0.5rem;
   width: 100%;
 }
-.activeItem__meta h2, .activeItem__meta p, .activeItem__meta h5 {
+.activeItem__meta h4, .activeItem__meta p, .activeItem__meta h5 {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  margin-bottom: 1rem;
 }
-.activeItem__meta h2 {
+.activeItem__meta h4 {
   font-size: 1rem;
   grid-column: 1/2;
   width: 100%;
+}
+.activeItem__meta p {
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 .activeItem__meta--artist {
   grid-column: 2/3;
@@ -1997,7 +1998,7 @@ i {
   font-size: 1rem;
   overflow: hidden;
 }
-.activeItemTrack__title h4, .activeItemTrack__title p {
+.activeItemTrack__title h5, .activeItemTrack__title p {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

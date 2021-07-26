@@ -243,7 +243,8 @@ i
         padding: 0 0 8rem 0
     &--search
         padding: 9rem 0 
-
+    &--manage
+        position: absolute
 .fadeIn
     &::before
         opacity: 0
@@ -1105,7 +1106,7 @@ i
 .card
     color: $white
     height: 100%
-    max-height: 12rem
+    // max-height: 12rem
     position: relative
     &__title
         margin-top: .5rem
@@ -1114,7 +1115,7 @@ i
         white-space: nowrap
     &__imgContainer
         display: flex
-        max-height: 10rem
+        max-height: 8rem
         position: relative
         width: 100%
         img
@@ -1131,7 +1132,7 @@ i
     &--HomeSlider
         flex: 0 0 auto
         margin: 0 .5rem
-        width: Min(60vw, 10rem)
+        width: Min(40vw, 8rem)
         &:nth-of-type(1)
             margin-left: 1rem
         &:nth-last-of-type(1)
@@ -1140,7 +1141,6 @@ i
         min-height: auto
         max-height: 100%
         .card__imgContainer
-            max-height: 10rem
     &--artist
         border-radius: 50%
         img
@@ -1279,11 +1279,9 @@ i
 .mngLibrary
     display: flex
     flex-wrap: wrap        
-
 .mngFilters
     align-items: center
     display: flex
-    overflow-x: auto
     padding: .25rem .5rem
     width: auto
     &__closeBtn
@@ -1382,20 +1380,20 @@ i
 .sortContainer
     display: flex
     flex-direction: column
-    justify-content: space-between
+    min-height: 100vh
+    min-height: -webkit-fill-available
     position: fixed
     top: 0
     left: 0
-    min-height: -webkit-fill-available
+    padding-bottom: 3.6rem
     width: 100%
-    z-index: 4
+    z-index: 5
 .activeItem
-    bottom: 3.6rem
     background: $darkGrey
     display: grid
     grid-template-rows: auto auto
-    grid-template-columns: Min( 40vw, 12rem ) auto
-    filter: blur(0px)
+    grid-template-columns: Min( 40vw, 12rem ) auto    
+    margin-top: auto
     width: 100%
     &--artist
         grid-template-columns: 1fr 4fr
@@ -1404,16 +1402,17 @@ i
         grid-row: 2/3
         padding: 1rem .5rem
         width: 100%
-        h2, p, h5
+        h4, p, h5
             text-overflow: ellipsis
             overflow: hidden
             white-space: nowrap
-            margin-bottom: 1rem
-        h2
+        h4
             font-size: 1rem 
             grid-column: 1/2
             width: 100%
-        
+        p
+            font-size: 0.8rem
+            font-weight: 700
         &--artist
             grid-column: 2/3
             grid-row: 1/2
@@ -1450,7 +1449,7 @@ i
     &__title
         font-size: 1rem
         overflow: hidden
-        h4, p
+        h5, p
             overflow: hidden
             text-overflow: ellipsis
             white-space: nowrap
@@ -1464,7 +1463,6 @@ i
             i
                 color: $green
 .playlistContainer
-
     overflow-x: auto
     width: 100%
     z-index: 4

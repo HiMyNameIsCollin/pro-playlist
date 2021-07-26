@@ -21,42 +21,55 @@ const reducer = ( state, action ) => {
 
 
 
-const SortContainer = () => {
+const SortContainer = ({ style }) => {
 
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-    const { activeManageItem } = useContext( ManageHookContext )
+    const { activeManageItem, setActiveManageItem } = useContext( ManageHookContext )
     const { my_playlists } = useContext( DbFetchedContext )
-    
-    const sortContainerTrans = useSpring({
-        pointerEvents: activeManageItem.type ? 'auto' : 'none'
-    })
+    const [ playlistContainerData, setPlaylistContainerData ] = useState( undefined )
 
-    const sortContainerActiveItemTrans = useTransition( activeManageItem, {
+    useEffect(() => {
+        if(activeManageItem.type ){
+            if( !playlistContainerData ) setPlaylistContainerData( { id: 'test', items: my_playlists } )
+            
+        } else {
+            setPlaylistContainerData( undefined )
+        }
+    }, [ activeManageItem ])
+    
+
+
+    const activeItemTrans = useTransition( activeManageItem, {
         initial: { transform: 'translateY( 100% )' },
         from: { transform: 'translateY( 100% )' },
+        update: { position: 'relative' } ,
         enter: { transform: 'translateY( 0% )' },
-        leave: { transform: 'translateY( 100% )' }
+        leave: { transform: 'translateY( 100% )' , position: 'absolute', bottom: 0  }
     })
 
-    const sortContainerPlaylistTrans = useTransition( activeManageItem, {
+    const playlistTrans = useTransition( playlistContainerData, {
         initial: { transform: 'translateY( -100% )' },
         from: { transform: 'translateY( -100% )' },
+        update: { position: 'relative' } ,
         enter: { transform: 'translateY( 0% )' },
-        leave: { transform: 'translateY( -100% )' }
+        leave: { transform: 'translateY( -100% )', position: 'absolute', top: 0 }
     })
 
     return(  
-        <animated.div style={ sortContainerTrans } className='sortContainer'>
+        <animated.div onClick={ () => setActiveManageItem( {} ) } style={ style } className='sortContainer'>
         {
-        sortContainerPlaylistTrans(( props, item ) => (
-            item.type &&
-            <PlaylistContainer style={ props } data={ my_playlists } />
+        playlistTrans(( props, item ) => (
+            item.id &&
+            <PlaylistContainer 
+            style={ props } 
+            data={ item } 
+            setData={ setPlaylistContainerData } />
         ))
         }
         {
-        sortContainerActiveItemTrans(( props, item ) => (
+        activeItemTrans(( props, item ) => (
             item.type &&
             <ActiveItem style={ props } data={ item } />
         ))

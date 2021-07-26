@@ -68,7 +68,7 @@ const ActiveItem = ({ style, data }) => {
                 
                 
                 <div className={`activeItem__meta activeItem__meta--${ data.type }`}>
-                    <h2> { data.name } </h2>
+                    <h4> { data.name } </h4>
                     
                     {
                         data.type !== 'artist' &&

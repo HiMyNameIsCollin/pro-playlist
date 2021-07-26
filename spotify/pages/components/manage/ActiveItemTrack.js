@@ -17,7 +17,6 @@ const ActiveItemTrack = ({ track, selectedItems, setSelectedItems }) => {
         if( selected ){
             setSelectedItems( items => items = items.filter( x=> x !== trackId ))
         } else {
-            
             setSelectedItems( items => items = [ ...items, trackId ])
         }
     }
@@ -27,9 +26,9 @@ const ActiveItemTrack = ({ track, selectedItems, setSelectedItems }) => {
         onPointerUp={ handleSelection }
         className={ `activeItemTrack activeItemTrack--${'placeholder'}`}>
             <div className={`activeItemTrack__title`}> 
-                <h4>
+                <h5>
                     { track.name ? track.name : track.track.name }
-                </h4>
+                </h5>
                 <p>
                 {
                     track.artists&&

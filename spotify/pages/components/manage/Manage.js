@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useReducer, useRef, createContext } from 'react'
-import { useSprings, animated } from 'react-spring'
+import { useTransition, useSpring, animated } from 'react-spring'
 import useApiCall from '../../hooks/useApiCall'
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
 import ManageFilters from './ManageFilters'
@@ -37,7 +37,6 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     useEffect(() => {
         if( apiPayload ) console.log(apiPayload)
     }, [ apiPayload ])
-
 
     useEffect(() => {
         if( my_liked_tracks.length > 0 && my_liked_tracks.length >= totalLikedSongsRef.current){
@@ -81,15 +80,11 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
         } else if( !activeFilter ){
             sortByFilter( [ ...my_albums, ...my_playlists, ...followed_artists ] )
         }
-    }, [activeFilter, subFilter, sort])
+    }, [activeFilter, subFilter, sort, my_albums, my_playlists, followed_artists ])
 
     useEffect(() => {
         if( manageOverlay.type ) setManageOverlay({ type: undefined })
     }, [ sort ])
-
-    useEffect(() => {
-        sortByFilter( [ ...my_albums, ...my_playlists, ...followed_artists ] )
-    }, [ my_albums, my_playlists, followed_artists ])
 
     const createPlaylist = ( playlist, callback ) => {
         playlist['owner'] = { display_name: user_info.display_name}
@@ -105,6 +100,19 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     }
 
     const sortByFilter = ( arr ) => {
+
+        const findName = ( obj ) => {
+            let result
+            if( obj.artists ){
+                result = obj.artists[0].name
+            } else if( obj.owner ){
+                result = obj.owner.display_name
+            } else if( obj.name ){
+                result = obj.name
+            }
+            return result
+        }
+
         let sorted = []
         if( sort === sortFilters[0] ){
             sorted = arr
@@ -121,30 +129,51 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
         setData( sorted )
     }
 
-    const findName = ( obj ) => {
-        let result
-        if( obj.artists ){
-            result = obj.artists[0].name
-        } else if( obj.owner ){
-            result = obj.owner.display_name
-        } else if( obj.name ){
-            result = obj.name
-        }
-        return result
+    const fadeTrans = {
+        from: { opacity: 0 },
+        enter: { opacity: 1 },
+        leave: { opacity: 0 }
     }
+
+    const manageTrans = useTransition( activeManageItem, fadeTrans)
+    const fadeOut = useSpring({
+        opacity: activeManageItem.type ? 0 : 1
+    })
+
+    const manageOverlayTrans = useTransition( manageOverlay, {
+        from: { transform: 'translate3d( 0, 100%, 0)' },
+        enter: { transform: 'translate3d( 0, 0%, 0)' },
+        leave: { transform: 'translate3d( 0, 100%, 0)' },
+    })
 
     return(
         <ManageHookContext.Provider value={ manageHookState }>
-            <>
-            <ManageOverlay 
-            sortFilters={ sortFilters } 
-            setSort={ setSort } 
-            data={ manageOverlay }
-            setData={ setManageOverlay } />
-
             <SearchOverlay type={'manage'} searchState={ manageState } setSearchState={ setManageState } />
+            {
+                    manageTrans(( props, item ) => (
+                        <animated.div style={ props } >
+                        {
+                            item.type &&
+                            <SortContainer /> 
+                        }
+                        </animated.div>
+                    ))
+                }
+            {
+                manageOverlayTrans(( props, item ) => (
+                    item.type &&
+                    
+                    <ManageOverlay 
+                    sortFilters={ sortFilters } 
+                    setSort={ setSort } 
+                    data={ manageOverlay }
+                    setData={ setManageOverlay }
+                    style={ props } />
 
-            <div id='managePage' style={{ position: 'absolute '}} className={ `page page--manage`}>
+                    
+                ))
+            }
+            <animated.div style={ fadeOut } id='managePage' className={ `page page--manage`}>
                 <header className='mngHeader'>
                     <div className='mngHeader__top'>
                         <div className='mngHeader__imgContainer'>
@@ -176,12 +205,10 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
                 data={ data }
                 likedPlaylist={ likedPlaylist }
                 managerPlaylist={ managerPlaylist }
-                manageContainerListTypeRef={ manageContainerListTypeRef }/> 
-
-                <SortContainer />
+                manageContainerListTypeRef={ manageContainerListTypeRef }/>
                 
-            </div>
-            </>
+            </animated.div>
+           
         </ManageHookContext.Provider>
     )
 }

@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext, useRef } from 'react'
 import { DbFetchedContext, DbHookContext } from '../Dashboard'
 import { ManageHookContext } from './Manage'
-import { useSpring, animated } from 'react-spring'
 import ManageCard from './ManageCard'
 
 const ManageLibrary = ({ transitionComplete, setTransitionComplete, setManageOverlay, data, likedPlaylist, managerPlaylist, sort, manageContainerListTypeRef }) => {
@@ -9,7 +8,6 @@ const ManageLibrary = ({ transitionComplete, setTransitionComplete, setManageOve
     const thisComponentRef = useRef()
 
     const { activeManageItem } = useContext( ManageHookContext )
-
     const [ listType, setListType ] = useState( manageContainerListTypeRef.current )
 
     useEffect(() => {
@@ -41,14 +39,9 @@ const ManageLibrary = ({ transitionComplete, setTransitionComplete, setManageOve
         setManageOverlay( mngOverlay )
     }
 
-    const mngLibraryTrans = useSpring({
-        filter: activeManageItem.type ? 'blur(5px)' : 'blur(0px)',
-        overflow: activeManageItem.type  ? 'auto' : 'hidden'
-    })
 
     return(
-        <animated.div
-        style={ mngLibraryTrans } 
+        <div
         ref={ thisComponentRef }
         className='mngLibrary'>
             <div className='sortByBar'>
@@ -79,7 +72,7 @@ const ManageLibrary = ({ transitionComplete, setTransitionComplete, setManageOve
                    return <ManageCard item={ item } key={ i } listType={ listType } />
                 })
             }
-        </animated.div>
+        </div>
     )
 }
 

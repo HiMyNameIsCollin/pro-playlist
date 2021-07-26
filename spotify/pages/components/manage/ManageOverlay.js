@@ -1,19 +1,7 @@
-import { useTransition, useSpring, animated } from 'react-spring'
+import { animated } from 'react-spring'
 
-
-const ManageOverlay = ({ data, setData, sortFilters, setSort }) => {
+const ManageOverlay = ({ data, setData, sortFilters, setSort, style }) => {
     
-    const trans = useTransition(data, {
-        from: { transform: 'translate3d( 0, 100%, 0)' },
-        enter: { transform: 'translate3d( 0, 0%, 0)' },
-        leave: { transform: 'translate3d( 0, 100%, 0)' },
-    })
-
-    const fadeIn = useSpring({
-        opacity: data.type ? 1 : 0,
-        pointerEvents: data.type ? 'auto' : 'none'
-    })
-
     const closeOverlay = ( e ) => {
         e.stopPropagation()
         setData({ type: undefined })
@@ -21,17 +9,14 @@ const ManageOverlay = ({ data, setData, sortFilters, setSort }) => {
 
     return(
         <animated.div
-        style={ fadeIn } 
+        style={ style }
         onClick={ closeOverlay }
         className='mngOverlay'>
-        {
-        trans(( props, item ) => (
-            item.type &&
-            <animated.div 
-            style={ props }
+
+            <div
             className='sortMenu'>
                 <h5>
-                    { item.type }
+                    { data.type }
                 </h5>
                 {
                     sortFilters.map( f => {
@@ -39,9 +24,8 @@ const ManageOverlay = ({ data, setData, sortFilters, setSort }) => {
                     })
                 }
                 <button onClick={ closeOverlay } className='sortMenu__cancelBtn'> Cancel </button>
-            </animated.div>
-        ))
-        }
+            </div>
+
         
         </animated.div>
     )

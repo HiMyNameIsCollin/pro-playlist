@@ -305,7 +305,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
         finalizeRoute('get', routes.user_info, null )
         // finalizeRoute( 'get', routes.player_info, null, false)
         // finalizeRoute( 'get', routes.featured_playlists, null, false )
-        // finalizeRoute( 'get', routes.new_releases, null, null, 'limit=50' )
+        finalizeRoute( 'get', routes.new_releases, null, null, 'limit=20' )
         finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, 'limit=50' )
         finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , 'limit=50' )
         finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, 'limit=50' )
@@ -367,7 +367,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 if (scrollPosition === 100 || scrollPosition < 1){
                     hideMe = false
                 }
-            }else {
+            }else { 
                 hideMe = true
             }
         }else {
@@ -429,7 +429,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
         }
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
             
-    },[])
+    },[  ])
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -442,7 +442,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 <Overlay 
                 setActiveSearchItem={ setActiveSearchItem }/>
 
-                <Home
+                {/* <Home
                 transMinHeight={ homeTransMinHeight }
                 setTransMinHeight={ setHomeTransMinHeight }
                 currActiveHomeRef={ currActiveHomeRef }
@@ -458,7 +458,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 my_top_artists={ state.my_top_artists } 
                 available_genre_seeds={ state.available_genre_seeds }
                 searchPageHistoryRef={ searchPageHistoryRef }
-                currActiveSearchRef={ currActiveSearchRef } />
+                currActiveSearchRef={ currActiveSearchRef } /> */}
 
                 <Manage 
                 activeManageItem={ activeManageItem } 

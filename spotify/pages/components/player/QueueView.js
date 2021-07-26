@@ -116,7 +116,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
            
                 <div className='queueContainer'>
                     <div ref={ queueHeaderRef } className='queueContainer__title'>
-                        <h4> Up next in: { queue[ qIndex ].context.name }</h4>
+                        <h4> Up next: </h4>
                     </div>
             {
                 queue.slice( qIndex + 1 + playNextQueue.length  ).map( ( track, i )  => {
