@@ -4,7 +4,7 @@ import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 import { ManageHookContext } from './manage/Manage'
 
-const Card = ({ type, item, setActivePlaylist }) => {
+const Card = ({ type, item, setActiveItem }) => {
 
     const { activeHomeItem, setActiveHomeItem, setHiddenUI, searchPageHistoryRef, homePageHistoryRef } = useContext( DbHookContext )
     const manageContext = useContext( ManageHookContext)
@@ -15,8 +15,8 @@ const Card = ({ type, item, setActivePlaylist }) => {
     const activeManageItem = manageContext ? manageContext.activeManageItem : null
     const setActiveManageItem = manageContext ? manageContext.setActiveManageItem : null
     const activeItem = searchContext? activeSearchItem : activeHomeItem
-    const setActiveItem = setActivePlaylist ?
-                            setActivePlaylist :  
+    setActiveItem = setActiveItem ?
+                            setActiveItem :  
                             manageContext ? 
                             setActiveManageItem :
                             searchContext ? 

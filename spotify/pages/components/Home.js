@@ -143,8 +143,6 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
         }
         {
         pageTransition(( props, item) => (
-            
-                
             item.type === 'artist' ?
             <Artist 
             setTransMinHeight={ setTransMinHeight }

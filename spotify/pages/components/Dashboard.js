@@ -359,24 +359,24 @@ const Dashboard = ({ setAuth, audioRef }) => {
         let hideMe = true
         if( activeManageItem.type ){
             if( dashboardState !== 'manage'){
-                if(scrollPosition <= scrollRef.current) {
+                if(scrollPosition <= scrollRef.current && scrollPosition < 98) {
                     hideMe = false
                 } else {
                     hideMe = true
                 }
-                if (scrollPosition === 100 || scrollPosition < 1){
+                if (scrollPosition < 1){
                     hideMe = false
                 }
             }else { 
                 hideMe = true
             }
         }else {
-            if(scrollPosition <= scrollRef.current) {
+            if(scrollPosition <= scrollRef.current && scrollPosition < 98 ) {
                 hideMe = false
             } else {
                 hideMe = true
             }
-            if (scrollPosition === 100 || scrollPosition < 1){
+            if (scrollPosition < 1){
                 hideMe = false
             }
         }

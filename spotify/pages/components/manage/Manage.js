@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext, useReducer, useRef, createContext } from 'react'
 import { useTransition, useSpring, animated } from 'react-spring'
 import useApiCall from '../../hooks/useApiCall'
+
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
 import ManageFilters from './ManageFilters'
 import SortContainer from './SortContainer'
@@ -25,7 +26,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     const [ sort , setSort ] = useState( 'Recently added' )
     const [ manageOverlay, setManageOverlay ] = useState( { type: undefined } )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
-
+    const [ sortContainerOpen, setSortContainerOpen ] = useState(false)
     const sortFilters = [ 'Recently added', 'Alphabetical', 'Creator' ]
     const { user_info, my_albums, my_playlists, followed_artists, my_liked_tracks, recently_played } = useContext( DbFetchedContext )
 
@@ -37,6 +38,14 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     useEffect(() => {
         if( apiPayload ) console.log(apiPayload)
     }, [ apiPayload ])
+
+    useEffect(() => {
+        if(activeManageItem.type) {
+            setSortContainerOpen( true )
+        } else {
+            setSortContainerOpen( false )
+        }
+    }, [ activeManageItem ])
 
     useEffect(() => {
         if( my_liked_tracks.length > 0 && my_liked_tracks.length >= totalLikedSongsRef.current){
@@ -135,9 +144,9 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
         leave: { opacity: 0 }
     }
 
-    const manageTrans = useTransition( activeManageItem, fadeTrans)
+    const manageTrans = useTransition( sortContainerOpen, fadeTrans)
     const fadeOut = useSpring({
-        opacity: activeManageItem.type ? 0 : 1
+        opacity: sortContainerOpen ? 0 : 1
     })
 
     const manageOverlayTrans = useTransition( manageOverlay, {
@@ -151,12 +160,11 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
             <SearchOverlay type={'manage'} searchState={ manageState } setSearchState={ setManageState } />
             {
                     manageTrans(( props, item ) => (
-                        <animated.div style={ props } >
-                        {
-                            item.type &&
-                            <SortContainer /> 
-                        }
-                        </animated.div>
+                        
+                            item &&
+                            <SortContainer style={ props } setSortContainerOpen={ setSortContainerOpen } /> 
+                        
+                        
                     ))
                 }
             {
@@ -173,8 +181,9 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
                     
                 ))
             }
-            <animated.div style={ fadeOut } id='managePage' className={ `page page--manage`}>
-                <header className='mngHeader'>
+            <animated.header 
+            style={ fadeOut }
+            className='mngHeader'>
                     <div className='mngHeader__top'>
                         <div className='mngHeader__imgContainer'>
                         {
@@ -195,17 +204,22 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
                     setActiveFilter={ setActiveFilter } 
                     subFilter={ subFilter } 
                     setSubFilter={ setSubFilter }/>
-                </header>
+                    </animated.header>
+            <animated.div style={ fadeOut } id='managePage' >
+                <div style={{ position: 'absolute' }} className={ `page page--manage`} >
+                    
 
-                <ManageLibrary 
-                transitionComplete={ transitionComplete }
-                setTransitionComplete={ setTransitionComplete }
-                setManageOverlay={ setManageOverlay }
-                sort={ sort }
-                data={ data }
-                likedPlaylist={ likedPlaylist }
-                managerPlaylist={ managerPlaylist }
-                manageContainerListTypeRef={ manageContainerListTypeRef }/>
+                    <ManageLibrary 
+                    transitionComplete={ transitionComplete }
+                    setTransitionComplete={ setTransitionComplete }
+                    setManageOverlay={ setManageOverlay }
+                    sort={ sort }
+                    data={ data }
+                    likedPlaylist={ likedPlaylist }
+                    managerPlaylist={ managerPlaylist }
+                    manageContainerListTypeRef={ manageContainerListTypeRef }/>
+                </div>
+               
                 
             </animated.div>
            

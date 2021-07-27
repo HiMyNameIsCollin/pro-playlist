@@ -27,51 +27,50 @@ const SortContainer = ({ style }) => {
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const { activeManageItem, setActiveManageItem } = useContext( ManageHookContext )
-    const { my_playlists } = useContext( DbFetchedContext )
-    const [ playlistContainerData, setPlaylistContainerData ] = useState( undefined )
+    const { my_playlists, user_info } = useContext( DbFetchedContext )
+    const [ activePlaylistItem, setActivePlaylistItem ] = useState({})
 
     useEffect(() => {
-        if(activeManageItem.type ){
-            if( !playlistContainerData ) setPlaylistContainerData( { id: 'test', items: my_playlists } )
-            
+        if(activeManageItem.type){
+            if( !activePlaylistItem.type) setActivePlaylistItem({ type:'sortPlaylist', id:'playlistSort', items: my_playlists.slice().filter( x => x.owner.display_name === user_info.display_name || x.collaborative ) })
         } else {
-            setPlaylistContainerData( undefined )
+            setActivePlaylistItem( {} )
         }
     }, [ activeManageItem ])
-    
 
+    const handleCloseSortContainer = () => {
+        setActivePlaylistItem( {} )
+        setActiveManageItem( {} )
+    }
 
     const activeItemTrans = useTransition( activeManageItem, {
-        initial: { transform: 'translateY( 100% )' },
-        from: { transform: 'translateY( 100% )' },
-        update: { position: 'relative' } ,
+        initial: { transform: 'translateY( 100% )', paddingBottom: '3.6rem', marginTop: 'auto', overflow: 'hidden' },
+        from: { transform: 'translateY( 100% )', paddingBottom: '3.6rem', marginTop: 'auto', overflow: 'hidden'  },
+        update: { position: 'relative', overflow: 'auto' } ,
         enter: { transform: 'translateY( 0% )' },
-        leave: { transform: 'translateY( 100% )' , position: 'absolute', bottom: 0  }
+        leave: { transform: 'translateY( 100% )' , position: 'absolute', bottom: 0, overflow: 'hidden'  }
     })
 
-    const playlistTrans = useTransition( playlistContainerData, {
-        initial: { transform: 'translateY( -100% )' },
+    const playlistTrans = useTransition( activePlaylistItem, {
+        initial: { transform: 'translateY( -100% )', overflow: 'hidden' },
         from: { transform: 'translateY( -100% )' },
-        update: { position: 'relative' } ,
+        update: { position: 'relative', overflow: 'auto' } ,
         enter: { transform: 'translateY( 0% )' },
-        leave: { transform: 'translateY( -100% )', position: 'absolute', top: 0 }
+        leave: { transform: 'translateY( -100% )', position: 'absolute', top: 0, overflow: 'hidden' }
     })
 
     return(  
-        <animated.div onClick={ () => setActiveManageItem( {} ) } style={ style } className='sortContainer'>
+        <animated.div onClick={ handleCloseSortContainer } style={ style } className='sortContainer'>
         {
-        playlistTrans(( props, item ) => (
-            item.id &&
-            <PlaylistContainer 
-            style={ props } 
-            data={ item } 
-            setData={ setPlaylistContainerData } />
-        ))
+            playlistTrans(( props, item) => (
+                item.type &&
+                <ActiveItem style={ props } data={ item } setActiveItem={ setActivePlaylistItem } />
+            ))
         }
         {
         activeItemTrans(( props, item ) => (
             item.type &&
-            <ActiveItem style={ props } data={ item } />
+            <ActiveItem style={ props } data={ item } setActiveItem={ setActiveManageItem } />
         ))
         }
         </animated.div>

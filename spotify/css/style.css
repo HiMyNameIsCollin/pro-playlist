@@ -31,6 +31,7 @@ body {
   min-height: 100vh;
   max-height: 100vh;
   max-width: 100%;
+  overflow: hidden;
 }
 
 a {
@@ -56,6 +57,7 @@ i {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100%;
 }
 .container--overlay {
   position: relative;
@@ -277,9 +279,6 @@ i {
 }
 .page--search {
   padding: 9rem 0;
-}
-.page--manage {
-  position: absolute;
 }
 
 .fadeIn::before {
@@ -1735,7 +1734,7 @@ i {
 }
 
 .mngHeader {
-  background: inherit;
+  background: #191414;
   color: #FFFFFF;
   top: 0;
   left: 0;
@@ -1918,7 +1917,6 @@ i {
   position: fixed;
   top: 0;
   left: 0;
-  padding-bottom: 3.6rem;
   width: 100%;
   z-index: 5;
 }
@@ -1928,8 +1926,10 @@ i {
   display: grid;
   grid-template-rows: auto auto;
   grid-template-columns: min(40vw, 12rem) auto;
-  margin-top: auto;
   width: 100%;
+}
+.activeItem--sortPlaylist {
+  display: block;
 }
 .activeItem--artist {
   grid-template-columns: 1fr 4fr;
@@ -1974,6 +1974,7 @@ i {
   grid-column: 2/3;
   grid-row: 1/3;
   position: relative;
+  overflow-x: hidden;
 }
 .activeItem__itemContainer__scroll {
   position: absolute;
@@ -2015,12 +2016,6 @@ i {
 }
 .activeItemTrack__btn--active i {
   color: #1DB954;
-}
-
-.playlistContainer {
-  overflow-x: auto;
-  width: 100%;
-  z-index: 4;
 }
 
 .mngOverlay {

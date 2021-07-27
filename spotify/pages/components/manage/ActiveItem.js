@@ -7,7 +7,7 @@ import Slider from '../Slider'
 import { ManageHookContext } from './Manage'
 
 
-const ActiveItem = ({ style, data }) => {
+const ActiveItem = ({ style, data, setActiveItem }) => {
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
@@ -15,8 +15,6 @@ const ActiveItem = ({ style, data }) => {
     const currentActiveItemRef = useRef({})
     const [ items, setItems ] = useState([])
     const [ selectedItems, setSelectedItems ] = useState( [] )
-
-    const { setActiveManageItem } = useContext( ManageHookContext )
 
     const routes = {
         items: data.type === 'album' ? 
@@ -26,9 +24,7 @@ const ActiveItem = ({ style, data }) => {
         'v1/artists/albums'
     }
 
-    useEffect(() => {
-        if(apiPayload) setItems( apiPayload.items )
-    }, [ apiPayload ])
+
 
     useEffect(() => {
         if( data.id ){
@@ -47,6 +43,7 @@ const ActiveItem = ({ style, data }) => {
     useEffect(() => {
         if(data.type){
             if( Array.isArray( data.items ) ){
+                console.log(data)
                 setItems( data.items )
             }else {
                 let itemsRoute = routes.items.substr( 0, routes.items.length - 6 )
@@ -57,49 +54,56 @@ const ActiveItem = ({ style, data }) => {
         }
     },[ data ])
 
-
+    useEffect(() => {
+        if(apiPayload) setItems( apiPayload.items )
+    }, [ apiPayload ])
 
     return(
-        <animated.div style={ style } className={`activeItem activeItem--${ data.type }`}>
-            
-                <div className={`activeItem__imgContainer activeItem__imgContainer--${ data.type }`}>
-                    <img src={ whichPicture( data.images, 'med' ) } alt={ `${data.name} image`} />
-                </div>
+        
+        <animated.div style={ style } className={`activeItem activeItem--${data.type}`}>
+        {
+            data.type === 'sortPlaylist' &&
+            <div className={`activeItem__itemContainer activeItem__itemContainer--${ data.type }`}>
+            <Slider message={ 'Your playlists' } items={items} setActiveItem={ setActiveItem }/>
+            </div>
+        }
+        {
+            data.type !== 'sortPlaylist' &&
+            <>
+            <div className={`activeItem__imgContainer activeItem__imgContainer--${ data.type }`}>
+                <img src={ whichPicture( data.images, 'med' ) } alt={ `${data.name} image`} />
+            </div>
+            <div className={`activeItem__meta activeItem__meta--${ data.type }`}>
+                <h4> { data.name } </h4>
                 
-                
-                <div className={`activeItem__meta activeItem__meta--${ data.type }`}>
-                    <h4> { data.name } </h4>
-                    
-                    {
-                        data.type !== 'artist' &&
-                        <h5> 
-                            { 
-                                data.artists ?
-                                data.artists[0].name :
-                                data.owner.display_name
-                            }
-                        </h5>
-                    }
-                    
-                    {
-                    items.length > 0 &&
-                    <p> 
-                        { items.length } 
-                        {
-                            data.type === 'artist' ?
-                            items.length > 1 ? 'releases' : 'release'  :
-                            items.length > 1 ? 'tracks' : 'track'  
+                {
+                    data.type !== 'artist' &&
+                    <h5> 
+                        { 
+                            data.artists ?
+                            data.artists[0].name :
+                            data.owner.display_name
                         }
-                    </p>
-
-                    }
-                </div>
+                    </h5>
+                }
                 
+                {
+                items.length > 0 &&
+                <p> 
+                    { items.length } 
+                    {
+                        data.type === 'artist' ?
+                        items.length > 1 ? 'releases' : 'release'  :
+                        items.length > 1 ? 'tracks' : 'track'  
+                    }
+                </p>
 
-                <div className={`activeItem__itemContainer activeItem__itemContainer--${ data.type }`}>
+                }
+            </div>
+            <div className={`activeItem__itemContainer activeItem__itemContainer--${ data.type }`}>
                 {
                     data.type === 'artist' ?
-                    <Slider message={ undefined } items={items} setActiveItem={ setActiveManageItem }/>
+                    <Slider message={ undefined } items={items} setActiveItem={ setActiveItem }/>
                     :
                     <div className='activeItem__itemContainer__scroll'>
                     {
@@ -114,7 +118,9 @@ const ActiveItem = ({ style, data }) => {
                 }
 
 
-                </div>
+            </div>
+            </>
+        }
         </animated.div>
     )
 }
