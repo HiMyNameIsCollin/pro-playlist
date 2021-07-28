@@ -1,10 +1,12 @@
 import { useState, useEffect, useContext, useReducer, useRef } from 'react'
 import { animated, useTransition, useSpring } from 'react-spring'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
 import { DbFetchedContext } from '../Dashboard'
 import { ManageHookContext } from './Manage'
 import useApiCall from '../../hooks/useApiCall'
 import ActiveItem from './ActiveItem'
-import PlaylistContainer from './PlaylistContainer'
+import ResizeBar from './ResizeBar'
 
 const initialState = {
     tracks: []
@@ -30,6 +32,10 @@ const SortContainer = ({ style }) => {
     const { my_playlists, user_info } = useContext( DbFetchedContext )
     const [ activePlaylistItem, setActivePlaylistItem ] = useState({})
 
+    const [ resizePos, setResizePos ] = useState()
+    const sortContainerRef = useRef()
+
+
     useEffect(() => {
         if(activeManageItem.type){
             if( !activePlaylistItem.type) setActivePlaylistItem({ type:'sortPlaylist', id:'playlistSort', items: my_playlists.slice().filter( x => x.owner.display_name === user_info.display_name || x.collaborative ) })
@@ -44,35 +50,46 @@ const SortContainer = ({ style }) => {
     }
 
     const activeItemTrans = useTransition( activeManageItem, {
-        initial: { transform: 'translateY( 100% )', paddingBottom: '3.6rem', marginTop: 'auto', overflow: 'hidden' },
-        from: { transform: 'translateY( 100% )', paddingBottom: '3.6rem', marginTop: 'auto', overflow: 'hidden'  },
-        update: { position: 'relative', overflow: 'auto' } ,
+        initial: { transform: 'translateY( 100% )', marginTop: 'auto', width: '100%'},
+        from: { transform: 'translateY( 100% )', marginTop: 'auto' },
+        update: { position: 'relative' } ,
         enter: { transform: 'translateY( 0% )' },
-        leave: { transform: 'translateY( 100% )' , position: 'absolute', bottom: 0, overflow: 'hidden'  }
+        leave: { transform: 'translateY( 100% )' , position: 'absolute', bottom: 0 }
     })
 
     const playlistTrans = useTransition( activePlaylistItem, {
-        initial: { transform: 'translateY( -100% )', overflow: 'hidden' },
+        initial: { transform: 'translateY( -100% )', width: '100%' },
         from: { transform: 'translateY( -100% )' },
-        update: { position: 'relative', overflow: 'auto' } ,
+        update: { position: 'relative' } ,
         enter: { transform: 'translateY( 0% )' },
-        leave: { transform: 'translateY( -100% )', position: 'absolute', top: 0, overflow: 'hidden' }
+        leave: { transform: 'translateY( -100% )', position: 'absolute', top: 0 }
     })
 
+    const dragEnd = () => {
+
+    }
+
     return(  
-        <animated.div onClick={ handleCloseSortContainer } style={ style } className='sortContainer'>
+        <animated.div style={ style } className='sortContainer'>
+        <DragDropContext onDragEnd={ dragEnd } >
+            <div 
+            ref={ sortContainerRef }
+            className='sortContainer__relative'>
         {
             playlistTrans(( props, item) => (
                 item.type &&
-                <ActiveItem style={ props } data={ item } setActiveItem={ setActivePlaylistItem } />
+                <ActiveItem orientation={ 'top '} style={ props } data={ item } setActiveItem={ setActivePlaylistItem } />
             ))
         }
+            <ResizeBar sortContainerRef={ sortContainerRef.current } resizePos={ resizePos } setResizePos={ setResizePos } />
         {
         activeItemTrans(( props, item ) => (
             item.type &&
             <ActiveItem style={ props } data={ item } setActiveItem={ setActiveManageItem } />
         ))
         }
+            </div>
+        </DragDropContext>
         </animated.div>
     )
 }

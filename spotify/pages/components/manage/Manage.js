@@ -155,6 +155,8 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
         leave: { transform: 'translate3d( 0, 100%, 0)' },
     })
 
+
+
     return(
         <ManageHookContext.Provider value={ manageHookState }>
             <SearchOverlay type={'manage'} searchState={ manageState } setSearchState={ setManageState } />

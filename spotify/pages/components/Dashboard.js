@@ -321,14 +321,11 @@ const Dashboard = ({ setAuth, audioRef }) => {
     },[apiPayload])
 //  END OF API CALLS 
  
-    useEffect(() => {
-        firstMountRef.current = true
-    },[])
 
 //  When overlay is open, makes the rest of the APP no clicky
     useLayoutEffect(() => {
         const body = document.querySelector('body')
-        if( overlay.type || playerSize === 'large' ) {
+        if( overlay.type || playerSize === 'large' || activeManageItem.id ) {
             body.classList.add('noScroll')
         } else{
             body.classList.remove('noScroll')
