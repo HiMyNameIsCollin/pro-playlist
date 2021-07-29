@@ -1,31 +1,36 @@
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
-const ResizeBar = ({ sortContainerRef, resizePos, setResizePos }) => {
+const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
 
     const [ active, setActive ] = useState( false )
+    const [ height, setHeight ] = useState()
 
-    const resizeBarRef = useRef()
-        // useEffect(() => {
-        //     const pb = window.getComputedStyle(sortContainerRef, null).getPropertyValue('padding-bottom')
-        //     const paddingBottom = Math.round( pb.substring( 0,  pb.length - 2 ) )
-        //     const height = sortContainerRef.current.getBoundingClientRect().height
-        //     const half = ( (height - paddingBottom) - 8 )/ 2 
-        //     const percent = ( half / height ) * 100
-        //     setResizePos( percent )
-        // },[])
+    const resizeBarRef = useCallback(node => {
+        if (node !== null) {
+            console.log(node)
+            setHeight( node.getBoundingClientRect().height )
+        }
+      }, []);
+
+    useEffect(() => {
+        const maxHeight = parentHeight - height
+        setResizePos( maxHeight / 2 )
+    },[ height ])
 
     useEffect(() => {
         if( active ) {
             window.addEventListener( 'pointermove', handleDrag )
             window.addEventListener( 'pointerup', stopDrag )
             window.addEventListener( 'touchmove', handleDrag )
-            window.addEventListener( 'touchup', stopDrag )
+            window.addEventListener( 'touchend', stopDrag )
+            window.addEventListener( 'touchcancel', stopDrag )
+
         } else {
             removeListeners()
         }
         return () => {
             removeListeners()
-            setResizePos( undefined )
+            
         }
     }, [ active ])
 
@@ -33,30 +38,26 @@ const ResizeBar = ({ sortContainerRef, resizePos, setResizePos }) => {
         window.removeEventListener('pointermove', handleDrag)
         window.removeEventListener( 'pointerup', stopDrag )
         window.removeEventListener( 'touchmove', handleDrag )
-        window.removeEventListener( 'touchup', stopDrag )
+        window.removeEventListener( 'touchend', stopDrag )
+        window.addEventListener( 'touchcancel', stopDrag )
+
     }
 
     const handleDrag = (e) =>{
         e.stopPropagation()
-        const parent = sortContainerRef
-        const parentHeight = parent.getBoundingClientRect().height
-        const barHeight = resizeBarRef.current.offsetHeight
+        const maxHeight = parentHeight - height
         let pos = 0
         if( e.type === 'touchmove'){
             pos = e.touches[0].clientY
         } else {
             pos = e.clientY
         }
-        let percent = 0
-        if( pos >= parentHeight ){
-            percent = 100 - ( ( barHeight / parentHeight ) * 100 )
-            
+        if( pos >= maxHeight){
+            pos = maxHeight
         } else if ( pos <= 0 ){
-            percent = 0
-        } else {
-            percent = ( pos / parentHeight ) * 100
-        }
-        setResizePos( percent  )
+            pos = 0
+        } 
+        setResizePos( pos )
     }
 
     const stopDrag = (e) => {
@@ -70,9 +71,8 @@ const ResizeBar = ({ sortContainerRef, resizePos, setResizePos }) => {
             ref={ resizeBarRef }
             // onMouseUp={ handleCloseSortContainer } 
             onPointerDown={ () => setActive( true )}
-            onClick={ () => setActive( true )}
             onTouchStart={ () => setActive( true )}
-            style={ resizePos !== undefined ? { top: resizePos + '%' } : {}}
+            style={{ top: resizePos - ( height / 2 )}}
             className='sortContainer__resize'>
 
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef } from 'react'
+import { useState, useEffect, useContext, useRef, useReducer } from 'react'
 import { animated } from 'react-spring'
 import ActiveItemTrack from './ActiveItemTrack'
 import useApiCall from '../../hooks/useApiCall'
@@ -6,31 +6,84 @@ import { whichPicture } from '../../../utils/whichPicture'
 import Slider from '../Slider'
 import { ManageHookContext } from './Manage'
 
-
 const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
 
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-
-    const currentActiveItemRef = useRef({})
-    const [ items, setItems ] = useState([])
-    const [ selectedItems, setSelectedItems ] = useState( [] )
-
     const routes = {
+        artist: 'v1/artists',
         items: data.type === 'album' ? 
         'v1/albums/tracks' :
         data.type === 'playlist' ?
         'v1/playlists/tracks' :
         'v1/artists/albums'
     }
+    const initialState = {
+        items: [],
+        artist: {}
+    }
+    
+    const reducer = ( state, action ) => {
+        let route
+        let method
+        if(action){
+            route = action.route
+            method = action.method
+        }
+        switch(route) {
+            case routes.artist:
+                if( method === 'get'){
+                    return{
+                        ...state,
+                        artist: action
+                    }
+                }
+            case routes.items:
+                if( method==='get'){
+                    return{
+                        ...state,
+                        items: action.items
+                    }
+                }
+        }
+    }
+    
 
+
+    const API = 'https://api.spotify.com/'
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const [ state, dispatch ] = useReducer(reducer, initialState)
+    const currentActiveItemRef = useRef({})
+    const [ selectedItems, setSelectedItems ] = useState( [] )
+    const [ image, setImage ] = useState()
+
+    const { items, artist } = { ...state }
+
+    useEffect(() => {
+        if(artist.images) setImage( whichPicture( artist.images, 'sm' ) )
+    }, [ artist ])
+
+    useEffect(() => {
+        if(data.type !== 'sortPlaylist'  ){
+            if( data.images ){
+                setImage( whichPicture( data.images, 'sm' ) )
+            } else {
+                console.log( data )
+                finalizeRoute( 'get', data.href.substring( API.length ), data.id, null ) 
+            }
+        }
+        
+    }, [data])
 
 
     useEffect(() => {
         if( data.id ){
             if( currentActiveItemRef.current ){
                 if( data.id !== currentActiveItemRef.current.id ){
-                    setItems( [] )
+                    const payload = {
+                        items: [],
+                        route: routes.items,
+                        method: 'get'
+                    }
+                    dispatch(payload)
                 }
             } else {
                 currentActiveItemRef.current = data
@@ -43,8 +96,12 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
     useEffect(() => {
         if(data.type){
             if( Array.isArray( data.items ) ){
-                console.log(data)
-                setItems( data.items )
+                const payload = {
+                    items: data.items,
+                    route: routes.items,
+                    method: 'get'
+                }
+                dispatch(payload)
             }else {
                 let itemsRoute = routes.items.substr( 0, routes.items.length - 6 )
                 itemsRoute += data.id
@@ -55,7 +112,7 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
     },[ data ])
 
     useEffect(() => {
-        if(apiPayload) setItems( apiPayload.items )
+        if(apiPayload) dispatch(apiPayload)
     }, [ apiPayload ])
 
     return(
@@ -73,20 +130,21 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
             data.type !== 'sortPlaylist' &&
             <>
             <div className={`activeItem__imgContainer activeItem__imgContainer--${ orientation }`}>
-                <img src={ whichPicture( data.images, 'med' ) } alt={ `${data.name} image`} />
+                <img src={ image } alt={ `${data.name} image`} />
             </div>
             <div className={`activeItem__meta activeItem__meta--${ orientation }`}>
                 <h4> { data.name } </h4>
 
                 {
-                    data.type !== 'artist' &&
-                    <span> 
-                        { 
-                            data.artists ?
-                            data.artists[0].name :
-                            data.owner.display_name
-                        }
-                    </span>
+                    data.type !== 'artist' ?
+                    data.artists ?
+                    <span onClick={ () => setActiveItem( data.artists[0]) }> 
+                        { data.artists[0].name }
+                    </span> :
+                    <span>
+                        { data.owner.display_name }
+                    </span> :
+                    null
                 }
                 
                 {
@@ -106,7 +164,10 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
             <div className={`activeItem__itemContainer activeItem__itemContainer--${ orientation }`}>
                 {
                     data.type === 'artist' ?
-                    <Slider message={ undefined } items={items} setActiveItem={ setActiveItem }/>
+                    <div className='activeItem__itemContainer__scroll'>
+
+                        <Slider message={ `Releases by ${ data.name }` } items={items} setActiveItem={ setActiveItem }/>
+                    </div>
                     :
                     <div className='activeItem__itemContainer__scroll'>
                     {
