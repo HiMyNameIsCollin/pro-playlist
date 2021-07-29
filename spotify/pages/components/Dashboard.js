@@ -324,24 +324,24 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
 //  When overlay is open, makes the rest of the APP no clicky
     useLayoutEffect(() => {
-        const body = document.querySelector('body')
-        if( overlay.type || playerSize === 'large' || activeManageItem.id ) {
-            body.classList.add('noScroll')
+        const db = dashboardRef.current
+        if( overlay.type || playerSize === 'large' || activeManageItem.type ) {
+            db.classList.add('noScroll')
         } else{
-            body.classList.remove('noScroll')
+            db.classList.remove('noScroll')
         }
         if( searchState === 'search' && dashboardState === 'search' ){
-            body.classList.add( 'noScroll' )
+            db.classList.add( 'noScroll' )
         } else if (searchState === 'search' && dashboardState !=='search'){
-            body.classList.remove( 'noScroll' )
+            db.classList.remove( 'noScroll' )
         }
         if( manageState === 'search' && dashboardState === 'manage' ){
-            body.classList.add( 'noScroll' )
+            db.classList.add( 'noScroll' )
         } else if (manageState === 'search' && dashboardState !=='manage'){
-            body.classList.remove( 'noScroll' )
+            db.classList.remove( 'noScroll' )
         }
 
-    }, [ overlay, playerSize, searchState, manageState, dashboardState ])
+    }, [ overlay, playerSize, searchState, manageState, dashboardState, activeManageItem ])
 
     useEffect(() => {
         if( activeSearchItem.id || activeHomeItem.id ){

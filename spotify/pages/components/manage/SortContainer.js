@@ -84,7 +84,7 @@ const SortContainer = ({ style }) => {
         {
             playlistTrans(( props, item) => (
                 item.type &&
-                <ActiveItem orientation={ 'top '} style={ props } data={ item } setActiveItem={ setActivePlaylistItem } />
+                <ActiveItem orientation={ 'top'} style={ props } data={ item } setActiveItem={ setActivePlaylistItem } />
             ))
         }
             <ResizeBar 
@@ -94,7 +94,7 @@ const SortContainer = ({ style }) => {
         {
         activeItemTrans(( props, item ) => (
             item.type &&
-            <ActiveItem style={ props } data={ item } setActiveItem={ setActiveManageItem } />
+            <ActiveItem orientation={ 'bottom'} style={ props } data={ item } setActiveItem={ setActiveManageItem } />
         ))
         }
             </div>

@@ -45,7 +45,7 @@ i {
 }
 
 .noScroll {
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 .noShow {
@@ -1967,7 +1967,15 @@ i {
   text-align: end;
 }
 .activeItem__meta h4 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   width: 100%;
+}
+.activeItem__meta span {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .activeItem__meta--top {
   grid-column: 1/2;
@@ -1982,7 +1990,6 @@ i {
   width: 100%;
 }
 .activeItem__itemContainer__scroll {
-  justify-content: center;
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -1990,6 +1997,9 @@ i {
   height: auto;
   overflow: hidden;
   width: 100%;
+}
+.activeItem__itemContainer__scroll .slider {
+  margin: auto 0;
 }
 .activeItem__itemContainer--full {
   grid-row: 1/3;

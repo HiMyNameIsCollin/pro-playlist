@@ -40,7 +40,6 @@ const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
         window.removeEventListener( 'touchmove', handleDrag )
         window.removeEventListener( 'touchend', stopDrag )
         window.addEventListener( 'touchcancel', stopDrag )
-
     }
 
     const handleDrag = (e) =>{
@@ -52,10 +51,10 @@ const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
         } else {
             pos = e.clientY
         }
-        if( pos >= maxHeight){
-            pos = maxHeight
-        } else if ( pos <= 0 ){
-            pos = 0
+        if( pos >= maxHeight - 48 ){
+            pos = maxHeight - 48
+        } else if ( pos <= 48 ){
+            pos = 48
         } 
         setResizePos( pos )
     }

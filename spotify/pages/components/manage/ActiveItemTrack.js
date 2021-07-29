@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
+import { Draggable } from 'react-beautiful-dnd'
 
-const ActiveItemTrack = ({ track, selectedItems, setSelectedItems }) => {
+const ActiveItemTrack = ({ track, index, selectedItems, setSelectedItems }) => {
 
     const [ selected, setSelected ] = useState(false)
 
+    const thisTrack = track.id ? track : track.track
+
     useEffect(() => {
-        if( selectedItems.includes( track.id )){
+        if( selectedItems.includes( thisTrack.id )){
             setSelected( true )
         } else {
             setSelected( false )
@@ -13,7 +16,7 @@ const ActiveItemTrack = ({ track, selectedItems, setSelectedItems }) => {
     }, [ selectedItems ])
 
     const handleSelection = () => {
-        const trackId = track.track ? track.track.id : track.id
+        const trackId = thisTrack.id
         if( selected ){
             setSelectedItems( items => items = items.filter( x=> x !== trackId ))
         } else {
@@ -22,32 +25,37 @@ const ActiveItemTrack = ({ track, selectedItems, setSelectedItems }) => {
     }
 
     return(
-        <div
-        onPointerUp={ handleSelection }
-        className={ `activeItemTrack activeItemTrack--${'placeholder'}`}>
-            <div className={`activeItemTrack__title`}> 
-                <h5>
-                    { track.name ? track.name : track.track.name }
-                </h5>
-                <p>
+        <Draggable key={ thisTrack.id } draggableId={ thisTrack.id } index={ index }>
+            {provided => (
+                <li
+                ref={provided.innerRef} 
+                {...provided.draggableProps} 
+                {...provided.dragHandleProps}
+                onPointerUp={ handleSelection }
+                className={ `activeItemTrack activeItemTrack--${'placeholder'}`}>
+                <div className={`activeItemTrack__title`}> 
+                    <h5>
+                        { thisTrack.name }
+                    </h5>
+                    <p>
+                    {                    
+                        thisTrack.artists.map(( artist, i ) => i === thisTrack.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
+                    }
+
+                    </p>
+                </div>
                 {
-                    track.artists&&
-                    track.artists.map(( artist, i ) => i === track.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
+                    selected &&
+                    <button
+                    onPointerUp={ handleSelection } 
+                    className={`activeItemTrack__btn activeItemTrack__btn--active`}><i className="fas fa-check"></i></button>
                 }
-                {
-                    track.track &&
-                    track.track.artists.map(( artist, i ) => i === track.track.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
-                }
-                </p>
-            </div>
-            {
-                selected &&
-                <button
-                onPointerUp={ handleSelection } 
-                className={`activeItemTrack__btn activeItemTrack__btn--active`}><i className="fas fa-check"></i></button>
-            }
+                
+            </li>
+            )}
             
-        </div>
+        </Draggable>
+       
     )
 }
 

@@ -5,7 +5,7 @@ import useApiCall from '../../hooks/useApiCall'
 import { whichPicture } from '../../../utils/whichPicture'
 import Slider from '../Slider'
 import { ManageHookContext } from './Manage'
-
+import { Droppable } from 'react-beautiful-dnd'
 const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
 
     const routes = {
@@ -121,7 +121,7 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
         {
             data.type === 'sortPlaylist' &&
             <div className={`activeItem__itemContainer activeItem__itemContainer--full`}>
-                <div className='activeItem__itemContainer__scroll'>
+                <div className='activeItem__itemContainer__scroll' style={{ overflowY: 'hidden'}}>
                     <Slider message={ 'Your playlists' } items={items} setActiveItem={ setActiveItem }/>
                 </div>
             </div>
@@ -170,16 +170,24 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
                         <Slider message={ `Releases by ${ data.name }` } items={items} setActiveItem={ setActiveItem }/>
                     </div>
                     :
-                    <div className='activeItem__itemContainer__scroll'>
-                    {
-                        items.map(( item, i ) => (
-                            <ActiveItemTrack 
-                            track={ item } 
-                            selectedItems={ selectedItems }
-                            setSelectedItems={ setSelectedItems }/>
-                        ))
-                    }
-                    </div>
+                    <Droppable droppableId={ orientation }>
+                        { provided => (
+                            <ul className='activeItem__itemContainer__scroll' {...provided.droppableProps} ref={provided.innerRef}>
+                            {
+                                items.map(( item, i ) => (
+                                        <ActiveItemTrack 
+                                        track={ item } 
+                                        key={ item.id }
+                                        index={ i }
+                                        selectedItems={ selectedItems }
+                                        setSelectedItems={ setSelectedItems }/>
+                                ))
+                            }
+                            {provided.placeholder}
+                            </ul>
+                        )}
+                        
+                    </Droppable>
                 }
 
 
