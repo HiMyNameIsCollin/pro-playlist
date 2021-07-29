@@ -161,7 +161,8 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
                 }
                 
             </div>
-            <div className={`activeItem__itemContainer activeItem__itemContainer--${ orientation }`}>
+            <div 
+            className={`activeItem__itemContainer activeItem__itemContainer--${ orientation }`}>
                 {
                     data.type === 'artist' ?
                     <div className='activeItem__itemContainer__scroll'>

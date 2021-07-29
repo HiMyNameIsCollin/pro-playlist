@@ -1936,19 +1936,16 @@ i {
 }
 
 .activeItem {
-  border-top: solid #FFFFFF 4px;
   display: grid;
   grid-template-rows: minmax(0, 3rem) auto;
-  grid-template-columns: 3rem auto;
+  grid-template-columns: 3rem 1fr;
   min-height: 50%;
   overflow: hidden;
   width: 100%;
 }
 .activeItem--top {
-  border-top: none;
-  border-bottom: solid #FFFFFF 4px;
-  grid-template-rows: auto minmax(0, 3rem);
-  grid-template-columns: auto 3rem;
+  grid-template-rows: 1fr minmax(0, 3rem);
+  grid-template-columns: 1fr 3rem;
 }
 .activeItem__imgContainer {
   grid-column: 1/2;
@@ -1981,6 +1978,7 @@ i {
   position: relative;
   grid-column: 1/3;
   height: auto;
+  overflow: auto;
   width: 100%;
 }
 .activeItem__itemContainer__scroll {
@@ -1988,9 +1986,9 @@ i {
   display: flex;
   flex-direction: column;
   position: absolute;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  min-height: 100%;
+  height: auto;
+  overflow: hidden;
   width: 100%;
 }
 .activeItem__itemContainer--full {
