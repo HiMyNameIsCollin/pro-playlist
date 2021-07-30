@@ -13,16 +13,16 @@ const Slider = ({ message, items, setActiveItem  }) => {
             }
             
             <div className='slider__carousel'>
-                {   items.length > 0 ?
+                {   items.length > 0 &&
                     items.map(( item, i ) => (
-                    <Card 
-                    type='HomeSlider'
-                    key={ i } 
-                    item={ item }
-                    setActiveItem={ setActiveItem } />)) :
-                    <div className='slider__loading'>
-                        Loading
-                    </div>
+
+                        <Card 
+                        type='homeSlider'
+                        key={ i } 
+                        item={ item }
+                        setActiveItem={ setActiveItem } />
+                    
+                    )) 
                 }
             </div>
         </section>

@@ -51,10 +51,10 @@ const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
         } else {
             pos = e.clientY
         }
-        if( pos >= maxHeight - 48 ){
-            pos = maxHeight - 48
-        } else if ( pos <= 48 ){
-            pos = 48
+        if( pos >= maxHeight - (height / 2) ){
+            pos = maxHeight - (height / 2) + ( height / 3)
+        } else if ( pos <= height ){
+            pos = height
         } 
         setResizePos( pos )
     }
@@ -72,7 +72,7 @@ const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
             onPointerDown={ () => setActive( true )}
             onTouchStart={ () => setActive( true )}
             style={{ top: resizePos - ( height / 2 )}}
-            className='sortContainer__resize'>
+            className={` sortContainer__resize ${ active && 'sortContainer__resize--active'}`}>
 
         </div>
     )

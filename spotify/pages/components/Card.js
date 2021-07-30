@@ -4,6 +4,8 @@ import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 import { ManageHookContext } from './manage/Manage'
 
+import { Droppable } from 'react-beautiful-dnd'
+
 const Card = ({ type, item, setActiveItem }) => {
 
     const { activeHomeItem, setActiveHomeItem, setHiddenUI, searchPageHistoryRef, homePageHistoryRef } = useContext( DbHookContext )
@@ -31,7 +33,6 @@ const Card = ({ type, item, setActiveItem }) => {
         
     }
     
-
     return(
         <div 
         onClick={ setCurrentSelection } 
@@ -53,7 +54,7 @@ const Card = ({ type, item, setActiveItem }) => {
             {
                 item.name &&
                 <h5 className={`card__title `}>
-                  { item.name }               
+                { item.name }               
                 </h5>
             }
             {

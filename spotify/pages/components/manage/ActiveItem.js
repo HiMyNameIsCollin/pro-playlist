@@ -115,6 +115,7 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
         if(apiPayload) dispatch(apiPayload)
     }, [ apiPayload ])
 
+    
     return(
 
         <animated.div style={ style } className={`activeItem activeItem--${ orientation } `}>
@@ -134,7 +135,7 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
             </div>
             <div className={`activeItem__meta activeItem__meta--${ orientation }`}>
                 <h4> { data.name } </h4>
-
+                <div>
                 {
                     data.type !== 'artist' ?
                     data.artists ?
@@ -152,14 +153,14 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
                 <span> 
                     { items.length } 
                     {
-                        data.type === 'artist' ?
-                        items.length > 1 ? 'releases' : 'release'  :
-                        items.length > 1 ? 'tracks' : 'track'  
+                        data.type === ' artist' ?
+                        items.length > 1 ? ' releases' : ' release'  :
+                        items.length > 1 ? ' tracks' : ' track'  
                     }
                 </span>
 
                 }
-                
+                </div>
             </div>
             <div 
             className={`activeItem__itemContainer activeItem__itemContainer--${ orientation }`}>
@@ -172,7 +173,7 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
                     :
                     <Droppable droppableId={ orientation }>
                         { provided => (
-                            <ul className='activeItem__itemContainer__scroll' {...provided.droppableProps} ref={provided.innerRef}>
+                            <ul className={ `activeItem__itemContainer__scroll activeItem__itemContainer__scroll--${ orientation } `} {...provided.droppableProps} ref={provided.innerRef}>
                             {
                                 items.map(( item, i ) => (
                                         <ActiveItemTrack 
@@ -194,6 +195,8 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
             </div>
             </>
         }
+                
+
         </animated.div>
     )
 }

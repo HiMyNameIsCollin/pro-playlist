@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
+import { createPortal } from 'react-dom'
 
 const ActiveItemTrack = ({ track, index, selectedItems, setSelectedItems }) => {
 
@@ -24,34 +25,51 @@ const ActiveItemTrack = ({ track, index, selectedItems, setSelectedItems }) => {
         }
     }
 
-    return(
-        <Draggable key={ thisTrack.id } draggableId={ thisTrack.id } index={ index }>
-            {provided => (
-                <li
-                ref={provided.innerRef} 
-                {...provided.draggableProps} 
-                {...provided.dragHandleProps}
-                onPointerUp={ handleSelection }
-                className={ `activeItemTrack activeItemTrack--${'placeholder'}`}>
-                <div className={`activeItemTrack__title`}> 
-                    <h5>
-                        { thisTrack.name }
-                    </h5>
-                    <p>
-                    {                    
-                        thisTrack.artists.map(( artist, i ) => i === thisTrack.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
-                    }
+    const optionalPortal = (styles, element) => {
+        const _dragEl = document.getElementById('draggable')
+        if(styles.position === 'fixed') {
+          return createPortal(
+            element,
+            _dragEl,
+          );
+        }
+        return element;
+      }
+      
 
-                    </p>
-                </div>
-                {
-                    selected &&
-                    <button
-                    onPointerUp={ handleSelection } 
-                    className={`activeItemTrack__btn activeItemTrack__btn--active`}><i className="fas fa-check"></i></button>
-                }
-                
-            </li>
+    return(
+        <Draggable 
+          key={ thisTrack.id } 
+          draggableId={ thisTrack.id } 
+          index={ index }>
+            {( provided, snapshot ) => (
+                optionalPortal( provided.draggableProps.style, (
+                    <li
+                    ref={provided.innerRef} 
+                    style={ provided.draggableStyle }
+                    {...provided.draggableProps} 
+                    {...provided.dragHandleProps}
+                    className={ `activeItemTrack `} >
+                        <div className={`activeItemTrack__title`}> 
+                            <h5>
+                                { thisTrack.name }
+                            </h5>
+                            <p>
+                            {                    
+                                thisTrack.artists.map(( artist, i ) => i === thisTrack.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
+                            }
+    
+                            </p>
+                        </div>
+                        {
+                            selected &&
+                            <button
+                            onPointerUp={ handleSelection } 
+                            className={`activeItemTrack__btn activeItemTrack__btn--active`}><i className="fas fa-check"></i></button>
+                        }
+                        
+                    </li>
+                ))
             )}
             
         </Draggable>

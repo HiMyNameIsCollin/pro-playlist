@@ -32,7 +32,7 @@ const ManageCard = ({ item, listType }) => {
                 item.type !== 'artist' &&
                     <>
                         <p> 
-                            { item.type  } 
+                            { item.type.charAt(0).toUpperCase() + item.type.substr( 1 )  } 
                             <i className="fas fa-dot-circle"></i>
                         {
                             item.name === 'Liked Tracks' ||

@@ -77,10 +77,13 @@ const SortContainer = ({ style }) => {
 
     return(  
         <animated.div style={ style } className='sortContainer'>
+
         <DragDropContext onDragEnd={ dragEnd } >
             <div 
             ref={ sortContainerRef }
             className='sortContainer__relative'>
+                <div id="draggable"></div>
+
         {
             playlistTrans(( props, item) => (
                 item.type &&
