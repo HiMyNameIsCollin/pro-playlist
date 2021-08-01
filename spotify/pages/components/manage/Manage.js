@@ -29,7 +29,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     const [ sortContainerOpen, setSortContainerOpen ] = useState(false)
     const sortFilters = [ 'Recently added', 'Alphabetical', 'Creator' ]
     const { user_info, my_albums, my_playlists, followed_artists, my_liked_tracks, recently_played } = useContext( DbFetchedContext )
-
+    const { dashboardState } = useContext( DbHookContext )
     const manageHookState = {
         activeManageItem,
         setActiveManageItem
@@ -183,30 +183,30 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
                     
                 ))
             }
-            <animated.header 
-            style={ fadeOut }
+            <header 
+            style={{ display: dashboardState === 'manage' ? 'block': 'none'}}
             className='mngHeader'>
-                    <div className='mngHeader__top'>
-                        <div className='mngHeader__imgContainer'>
-                        {
-                        user_info.images &&
-                        <img src={ user_info.images[0].url } alt={ `${ user_info.display_name }'s profile photo `} />
-                        }
-                        </div>
-                        <h1 className='mngHeader__title'>
-                            Manage
-                        </h1>
-                        <i 
-                        onClick={ () => setManageState( 'search' ) }
-                        className="fas fa-search"></i>
-                        <i className="fas fa-plus"></i>
+                <div className='mngHeader__top'>
+                    <div className='mngHeader__imgContainer'>
+                    {
+                    user_info.images &&
+                    <img src={ user_info.images[0].url } alt={ `${ user_info.display_name }'s profile photo `} />
+                    }
                     </div>
-                    <ManageFilters 
-                    activeFilter={ activeFilter } 
-                    setActiveFilter={ setActiveFilter } 
-                    subFilter={ subFilter } 
-                    setSubFilter={ setSubFilter }/>
-                    </animated.header>
+                    <h1 className='mngHeader__title'>
+                        Manage
+                    </h1>
+                    <i 
+                    onClick={ () => setManageState( 'search' ) }
+                    className="fas fa-search"></i>
+                    <i className="fas fa-plus"></i>
+                </div>
+                <ManageFilters 
+                activeFilter={ activeFilter } 
+                setActiveFilter={ setActiveFilter } 
+                subFilter={ subFilter } 
+                setSubFilter={ setSubFilter }/>
+            </header>
             <animated.div style={ fadeOut } id='managePage' >
                 <div style={{ position: 'absolute' }} className={ `page page--manage`} >
                     

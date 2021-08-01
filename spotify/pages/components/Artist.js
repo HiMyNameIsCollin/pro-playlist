@@ -58,7 +58,7 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
                 const ids = action.items.map(album => album.id)
                 const multiCall = ( arr, limit ) => {
                     const makeCall = ( arr ) => {
-                        finalizeRoute('get', `${routes.all_albums}`, null, `ids=${ [ ...arr ] }`)
+                        finalizeRoute('get', `${routes.all_albums}`, null, null, `ids=${ [ ...arr ] }`)
                     }
                     if( arr.length > limit ){
                         makeCall( arr.slice( 0, limit ) )

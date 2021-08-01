@@ -183,7 +183,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
     const [ playerSize, setPlayerSize ] = useState( 'small' )
-    const [ dashboardState, setDashboardState ] = useState('manage')
+    const [ dashboardState, setDashboardState ] = useState('home')
     const [ searchState, setSearchState ] = useState('default')
     const [ manageState, setManageState ] = useState( 'default')
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
@@ -303,17 +303,17 @@ const Dashboard = ({ setAuth, audioRef }) => {
         // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
         // 4th and onwards arguments will add query params to final url (Limit, offset, etc)
         finalizeRoute('get', routes.user_info, null )
-        // finalizeRoute( 'get', routes.player_info, null, false)
-        // finalizeRoute( 'get', routes.featured_playlists, null, false )
+        finalizeRoute( 'get', routes.player_info, null, false)
+        finalizeRoute( 'get', routes.featured_playlists, null, false )
         finalizeRoute( 'get', routes.new_releases, null, null, 'limit=20' )
         finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, 'limit=50' )
         finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , 'limit=50' )
         finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, 'limit=50' )
         finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 } ) 
-        // finalizeRoute( 'get', routes.new_releases, null, null )
-        // finalizeRoute( 'get', routes.available_genre_seeds, null, false )
-        // finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
-        // finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true, limit: null })
+        finalizeRoute( 'get', routes.new_releases, null, null )
+        finalizeRoute( 'get', routes.available_genre_seeds, null, false )
+        finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
+        finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true, limit: null })
         finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, 'type=artist' )
     },[])
     useEffect(() => {
@@ -387,46 +387,39 @@ const Dashboard = ({ setAuth, audioRef }) => {
         const searchPage = document.getElementById('searchPage')
         const managePage = document.getElementById('managePage')
         const pages = [ homePage, searchPage, managePage ]
-        // if( homePage && searchPage && managePage ) {
-        //     pages.forEach( page => {
-        //         page.style.display = 'none'
-        //     })
-        //     if( dashboardState === 'home' ) {
-        //         homePage.style.display = 'block'
-        //         dashboardRef.current.scroll({ 
-        //             top: pageScrollRef.current.home - 160, 
-        //             left: 0,
-        //             behavior: 'auto'
-        //         })
-        //     }
-        //     if( dashboardState === 'search' ) {
-        //         searchPage.style.display = 'block'
-        //         dashboardRef.current.scroll({ 
-        //             top: pageScrollRef.current.search - 160, 
-        //             left: 0,
-        //             behavior: 'auto'
-        //         })
-        //     }
-        //     if( dashboardState === 'manage' ) {
-        //         managePage.style.display = 'block'
-        //         dashboardRef.current.scroll({ 
-        //             top: pageScrollRef.current.manage - 160, 
-        //             left: 0,
-        //             behavior: 'auto'
-        //         })
-        //     }
-        // }
-        if( dashboardState === 'manage' ) {
-            managePage.style.display = 'block'
-            dashboardRef.current.scroll({ 
-                top: pageScrollRef.current.manage - 160, 
-                left: 0,
-                behavior: 'auto'
+        if( homePage && searchPage && managePage ) {
+            pages.forEach( page => {
+                page.style.display = 'none'
             })
+            if( dashboardState === 'home' ) {
+                homePage.style.display = 'block'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.home - 160, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
+            if( dashboardState === 'search' ) {
+                searchPage.style.display = 'block'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.search - 160, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
+            if( dashboardState === 'manage' ) {
+                managePage.style.display = 'block'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.manage - 160, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
         }
+        
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
             
-    },[  ])
+    },[ dashboardState ])
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -439,7 +432,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 <Overlay 
                 setActiveSearchItem={ setActiveSearchItem }/>
 
-                {/* <Home
+                <Home
                 transMinHeight={ homeTransMinHeight }
                 setTransMinHeight={ setHomeTransMinHeight }
                 currActiveHomeRef={ currActiveHomeRef }
@@ -455,7 +448,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 my_top_artists={ state.my_top_artists } 
                 available_genre_seeds={ state.available_genre_seeds }
                 searchPageHistoryRef={ searchPageHistoryRef }
-                currActiveSearchRef={ currActiveSearchRef } /> */}
+                currActiveSearchRef={ currActiveSearchRef } />
 
                 <Manage 
                 activeManageItem={ activeManageItem } 
