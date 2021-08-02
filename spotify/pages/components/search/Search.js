@@ -81,7 +81,6 @@ const Search = ({
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     
-    
     const { overlay, scrollPosition, dashboardRef } = useContext( DbHookContext )
     
     const { all_categories, my_top_categories } = {...state}
@@ -91,7 +90,6 @@ const Search = ({
         setSearchState,
         activeSearchItem,
         setActiveSearchItem,
-
     }
 
     useEffect(() => {
@@ -104,7 +102,7 @@ const Search = ({
 
     // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
-        if(my_top_artists.length > 0) {
+        if(my_top_artists.length > 0 && all_categories.length > 0) {
             let topArtists = [...my_top_artists]
             const categories = calcCategories(topArtists)
             const sortedCats = sortCategories( categories )
@@ -124,13 +122,12 @@ const Search = ({
        artists.forEach((art, i ) => {
            art.genres.forEach(( genre, j ) => {
                 all_categories.forEach((cat, k) => {
-                    if( available_genre_seeds.includes( genre ) ){
+                    if( available_genre_seeds.includes( genre.toLowerCase().replace(' ', '-') ) ){
                         const foundCat = cat.name.toLowerCase().search( genre )
                         if( foundCat !== -1 ){
                             if( cat.name.charAt( foundCat - 1 ) === '-' ||
-                                cat.name.charAt( foundCat -1 ) === ' ' ||
-                                cat.name.charAt( (foundCat + genre.length ) + 1 ) === ' ') return
-                            
+                                cat.name.charAt( foundCat - 1 ) === ' ' ||
+                                cat.name.charAt( foundCat + genre.length ) === ' ' ) return
                             if(categories[cat.name]){
                                 categories[cat.name].total += 1
                                 }else {

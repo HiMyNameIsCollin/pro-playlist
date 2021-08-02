@@ -1,4 +1,4 @@
-import { useRef, useEffect, useLayoutEffect, useState, useContext } from 'react'
+import { useRef, useEffect, useState, useContext } from 'react'
 import { animated } from 'react-spring'
 import { DbHookContext } from '../Dashboard'
 
@@ -15,7 +15,7 @@ const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, 
         }
     },[ transitionComplete ])
     
-    useLayoutEffect(() => {
+    useEffect(() => {
         const cb = (mutList, observer) => {
             setTransMinHeight( thisComponentRef.current.offsetHeight)
         }

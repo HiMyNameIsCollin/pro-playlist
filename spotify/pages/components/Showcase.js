@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useContext, useRef } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { animated } from 'react-spring'
 import BrowseContainer from './BrowseContainer'
 import  useApiCall  from '../hooks/useApiCall'
@@ -24,15 +24,17 @@ const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransi
         }
     },[ transitionComplete ])
     
-    useLayoutEffect(() => {
-        const cb = (mutList, observer) => {
-            setTransMinHeight( thisComponentRef.current.offsetHeight)
+    useEffect(() => {
+        if( transitionComplete ){
+            const cb = (mutList, observer) => {
+                setTransMinHeight( thisComponentRef.current.offsetHeight)
+            }
+            const config = { attributes: true, childList: false, subtree: false }
+            const obs = new MutationObserver(cb)
+            obs.observe( thisComponentRef.current, config)
+            return () => obs.disconnect() 
         }
-        const config = { attributes: true, childList: false, subtree: false }
-        const obs = new MutationObserver(cb)
-        obs.observe( thisComponentRef.current, config)
-        return () => obs.disconnect() 
-    },[])
+    },[ transitionComplete ])
 
     useEffect(() => {
         if( data.type === 'category'){

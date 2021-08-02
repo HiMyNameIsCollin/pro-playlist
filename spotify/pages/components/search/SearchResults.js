@@ -22,18 +22,19 @@ const SearchResults = ({ activeFilter, searchInput, artistResults, albumResults,
     }, [ artistResults ])
 
     useEffect(() => {
-        if( activeFilter === 'top' ) setResults( [ ...artistResults.slice(0, 2), ...albumResults.slice(0, 2), ...trackResults.slice(0, 2), ...playlistResults.slice(0, 2) ].sort(( a, b ) => Math.random() - 0.5 ) )
-        if( activeFilter === 'artists') setResults( artistResults )
-        if( activeFilter === 'albums') setResults( albumResults )
-        if( activeFilter === 'playlists') setResults( playlistResults )
-        if( activeFilter === 'tracks') setResults( trackResults )
+        if( activeFilter === 'Top' ) setResults( [ ...artistResults.slice(0, 2), ...albumResults.slice(0, 2), ...trackResults.slice(0, 2), ...playlistResults.slice(0, 2) ].sort(( a, b ) => Math.random() - 0.5 ) )
+        if( activeFilter === 'Artists') setResults( artistResults )
+        if( activeFilter === 'Albums') setResults( albumResults )
+        if( activeFilter === 'Playlists') setResults( playlistResults )
+        if( activeFilter === 'Tracks') setResults( trackResults )
+        if( searchInput === '' ) setResults( [] )
     }, [ activeFilter, searchInput ])
 
 
     return(
         <div className='searchResultsContainer'>
             {
-            personalResult.images && activeFilter === 'top' &&
+            personalResult.images && activeFilter === 'Top' &&
             <RecommendCard data={ personalResult } />    
             }
             {

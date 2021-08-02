@@ -6,10 +6,12 @@ import useApiCall from '../../hooks/useApiCall'
 
 const SearchOverlay = ({ searchState, setSearchState }) => {
 
+
+
     const API = 'https://api.spotify.com/'
     const route = 'v1/search'
     const [ searchInput, setSearchInput ] = useState('')
-    const [ activeFilter, setActiveFilter ] = useState( 'top' )
+    const [ activeFilter, setActiveFilter ] = useState( 'Top' )
 
     const [ artistResults, setArtistResults ] = useState([])
     const [ albumResults, setAlbumResults ] = useState([])
@@ -17,7 +19,7 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
     const [ trackResults, setTrackResults ] = useState([])
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const searchBarRef = useRef()
-    
+
     const overlayActive = useSpring({
         opacity: searchState === 'search' ? 1 : 0,
         pointerEvents: searchState === 'search' ?  'auto ': 'none'
@@ -33,7 +35,6 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
 
     useEffect(() => {
         if(searchInput !== ''){
-            setActiveFilter( 'top' )
             finalizeRoute('get', 
             `${ route }`, 
             null, 
@@ -68,7 +69,7 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
                 </form>
                 <button className='searchOverlay__header__button' onClick={ () => setSearchState('default')}> Cancel </button>
                 {
-                searchInput.length > 0 &&
+                searchInput.length !== 0 &&
                 <SearchFilters activeFilter={ activeFilter } setActiveFilter={ setActiveFilter }/>
                 }
             </header>

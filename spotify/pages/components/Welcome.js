@@ -10,6 +10,7 @@ const Welcome = ({transition, transitionComplete, setTransitionComplete, setTran
     const { setActiveItem, } = useContext( DbHookContext )
     const { recently_played, new_releases, featured_playlists } = useContext( DbFetchedContext )
     const thisComponentRef = useRef()
+    
 
     useEffect(() => {
         if( transitionComplete ) {
@@ -18,18 +19,18 @@ const Welcome = ({transition, transitionComplete, setTransitionComplete, setTran
             setTransitionComplete( false )
         }
     },[ transitionComplete ])
-
-
-    useLayoutEffect(() => {
-        const cb = (mutList, observer) => {
-            setTransMinHeight( thisComponentRef.current.offsetHeight)
+    
+    useEffect(() => {
+        if( transitionComplete ){
+            const cb = (mutList, observer) => {
+                setTransMinHeight( thisComponentRef.current.offsetHeight)
+            }
+            const config = { attributes: true, childList: false, subtree: false }
+            const obs = new MutationObserver(cb)
+            obs.observe( thisComponentRef.current, config)
+            return () => obs.disconnect() 
         }
-        const config = { attributes: true, childList: false, subtree: false }
-        const obs = new MutationObserver(cb)
-        obs.observe( thisComponentRef.current, config)
-        return () => obs.disconnect() 
-    },[])
-
+    },[ transitionComplete ])
 
 
     return(

@@ -1,5 +1,5 @@
 
-import { useRef, useEffect, useLayoutEffect, useReducer, useContext } from 'react'
+import { useRef, useEffect, useReducer, useContext } from 'react'
 import { animated } from 'react-spring'
 import  useApiCall  from '../hooks/useApiCall'
 import { whichPicture } from '../../utils/whichPicture'
@@ -116,15 +116,18 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
         }
     },[ transitionComplete ])
 
-    useLayoutEffect(() => {
-        const cb = (mutList, observer) => {
-            setTransMinHeight( thisComponentRef.current.offsetHeight)
+    
+    useEffect(() => {
+        if( transitionComplete ){
+            const cb = (mutList, observer) => {
+                setTransMinHeight( thisComponentRef.current.offsetHeight)
+            }
+            const config = { attributes: true, childList: false, subtree: false }
+            const obs = new MutationObserver(cb)
+            obs.observe( thisComponentRef.current, config)
+            return () => obs.disconnect() 
         }
-        const config = { attributes: true, childList: false, subtree: false }
-        const obs = new MutationObserver(cb)
-        obs.observe( thisComponentRef.current, config)
-        return () => obs.disconnect() 
-    },[])
+    },[ transitionComplete ])
 
     useEffect(() => {
         let id = activeItem.id

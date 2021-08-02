@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useEffect, useReducer , useRef, useContext} from 'react'
+import { useState, useEffect, useReducer , useRef, useContext} from 'react'
 import { animated } from 'react-spring'
 import TracksContainer from './TracksContainer'
 import Loading from './Loading'
@@ -16,7 +16,6 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     const searchContext = useContext( SearchHookContext )
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
-
 
     const initialState = {
         artist: {},
@@ -111,14 +110,15 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     },[ transitionComplete ])
 
     
-    useLayoutEffect(() => {
-        const cb = (mutList, observer) => {
-            setTransMinHeight( thisComponentRef.current.offsetHeight)
-        }
-        const config = { attributes: true, childList: false, subtree: false }
-        const obs = new MutationObserver(cb)
-        obs.observe( thisComponentRef.current, config)
-        return () => obs.disconnect() 
+    useEffect(() => {
+            const cb = (mutList, observer) => {
+                setTransMinHeight( thisComponentRef.current.offsetHeight)
+            }
+            const config = { attributes: true, childList: false, subtree: false }
+            const obs = new MutationObserver(cb)
+            obs.observe( thisComponentRef.current, config)
+            return () => obs.disconnect() 
+        
     },[])
 
     useEffect(() => {

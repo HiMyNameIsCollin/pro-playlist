@@ -5,16 +5,16 @@ const FilterBtn = ({ name, activeFilter, setActiveFilter}) => {
     const [ activeBtn, setActiveBtn ] = useState( false )
 
     useEffect(() => {
-        if( activeFilter === name.toLowerCase()){
+        if( activeFilter === name){
             setActiveBtn( true )
-        } else if ( activeBtn && activeFilter !== name.toLowerCase()){
+        } else if ( activeBtn && activeFilter !== name){
             setActiveBtn(false)
         }
     }, [ activeFilter ])
 
     return(
         <button
-        onClick={ () => setActiveFilter( name.toLowerCase() )}
+        onClick={ () => setActiveFilter( name )}
         className={`searchFilters__btn ${ activeBtn && 'searchFilters__btn--active' } `} >
             { name }
         </button>
@@ -26,7 +26,6 @@ const SearchFilters = ({ activeFilter, setActiveFilter }) => {
     const filters = [
         'Top', 'Artists', 'Albums', 'Tracks', 'Playlists', 'Genres & Moods'
     ]
-
     return(
         <div className='searchFilters'>
         {
