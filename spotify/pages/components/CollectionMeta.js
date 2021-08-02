@@ -1,18 +1,8 @@
 import { calculateTotalDuration } from '../../utils/calculateTotalDuration'
 import { whichPicture } from '../../utils/whichPicture'
-const CollectionMeta = ({pageType, data , setOverlay , setActiveItem }) => {
+const CollectionMeta = ({data, setActiveItem }) => {
 
     const { collection, artists, tracks } = {...data}
-
-    const handleViewArtist = (e) => {
-        e.stopPropagation()
-        if( collection.artists.length === 1 ){
-            setActiveItem( collection.artists[0] )
-        } else {
-            const calledFrom = 'collection'
-            setOverlay( {type: calledFrom, pageType: pageType, data: { artists: collection.artists }} )
-        }
-    }
 
     return(
         <section className='collection__meta'>
@@ -37,7 +27,7 @@ const CollectionMeta = ({pageType, data , setOverlay , setActiveItem }) => {
                     src={ whichPicture( artist.images, 'sm' ) } 
                     alt='Artist' />
                 
-                    <p onClick={ handleViewArtist }>
+                    <p onClick={ () => setActiveItem( artist ) }>
                         { artist.name }
                     </p>
 

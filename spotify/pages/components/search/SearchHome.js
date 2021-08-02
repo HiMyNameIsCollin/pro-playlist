@@ -6,7 +6,7 @@ import BrowseContainer from '../BrowseContainer'
 const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, setTransitionComplete }) => {
 
     const thisComponentRef = useRef()
-    const { overlay } = useContext( DbHookContext )
+
     useEffect(() => {
         if( transitionComplete ) {
             thisComponentRef.current.style.minHeight = '100vh'
@@ -16,8 +16,14 @@ const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, 
     },[ transitionComplete ])
     
     useLayoutEffect(() => {
-        setTransMinHeight(thisComponentRef.current.offsetHeight)
-    })
+        const cb = (mutList, observer) => {
+            setTransMinHeight( thisComponentRef.current.offsetHeight)
+        }
+        const config = { attributes: true, childList: false, subtree: false }
+        const obs = new MutationObserver(cb)
+        obs.observe( thisComponentRef.current, config)
+        return () => obs.disconnect() 
+    },[])
 
     return(
         <animated.div 
@@ -27,7 +33,11 @@ const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, 
             <BrowseContainer 
             type='BcSearch'
             message='My top genres' 
-            data={ state.my_top_genres.slice(0, 4) }/>
+            data={ 
+                state.my_top_categories.length % 2 !== 0  ?
+                state.my_top_categories.slice( 0, state.my_top_categories.length - 1 ) :
+                state.my_top_categories
+            }/>
             <BrowseContainer
             message='Browse all' 
             type='BcSearch'

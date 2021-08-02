@@ -1558,16 +1558,17 @@ i {
 }
 .card__imgContainer {
   display: flex;
-  max-height: 8rem;
   position: relative;
+  overflow: hidden;
+  padding-top: 100%;
   width: 100%;
 }
 .card__imgContainer img {
-  display: block;
+  top: 0;
+  left: 0;
+  position: absolute;
   height: auto;
-  max-width: 100%;
   width: 100%;
-  object-fit: fill;
 }
 .card__meta {
   font-size: 0.8rem;

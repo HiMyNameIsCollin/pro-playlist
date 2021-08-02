@@ -25,8 +25,14 @@ const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransi
     },[ transitionComplete ])
     
     useLayoutEffect(() => {
-        setTransMinHeight(thisComponentRef.current.offsetHeight)
-    })
+        const cb = (mutList, observer) => {
+            setTransMinHeight( thisComponentRef.current.offsetHeight)
+        }
+        const config = { attributes: true, childList: false, subtree: false }
+        const obs = new MutationObserver(cb)
+        obs.observe( thisComponentRef.current, config)
+        return () => obs.disconnect() 
+    },[])
 
     useEffect(() => {
         if( data.type === 'category'){

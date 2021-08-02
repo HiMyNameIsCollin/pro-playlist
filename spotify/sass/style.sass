@@ -1117,15 +1117,16 @@ i
         white-space: nowrap
     &__imgContainer
         display: flex
-        max-height: 8rem
         position: relative
+        overflow: hidden
+        padding-top: 100%
         width: 100%
         img
-            display: block
+            top: 0
+            left: 0
+            position: absolute
             height: auto
-            max-width: 100%
             width: 100%
-            object-fit: fill
     &__meta
         font-size: .8rem
     

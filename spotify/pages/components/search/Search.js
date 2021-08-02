@@ -18,7 +18,7 @@ import { DbHookContext } from '../Dashboard'
 const initialState = {
     all_categories: [],
     search: {},
-    my_top_genres: [],
+    my_top_categories: [],
 }
 
 const routes = {
@@ -27,7 +27,7 @@ const routes = {
     // My reducer is based off a set 'Route' string attached during the fetch process,
     // I set the top genre state with a makeshift 'my_top_genres' "route". 
     // Hopefully Spotify adds a top genres route eventually :(
-    my_top_genres: 'genres',
+    my_top_categories: 'categories',
 }
 
 const reducer = ( state, action ) => {
@@ -47,11 +47,11 @@ const reducer = ( state, action ) => {
                 }
             }               
         
-        case routes.my_top_genres:
+        case routes.my_top_categories:
             // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
             return{
                 ...state,
-                my_top_genres: action.items
+                my_top_categories: action.items
             }
         default:
             console.log(action)
@@ -84,6 +84,7 @@ const Search = ({
     
     const { overlay, scrollPosition, dashboardRef } = useContext( DbHookContext )
     
+    const { all_categories, my_top_categories } = {...state}
 
     const searchHookState ={
         searchState, 
@@ -94,7 +95,7 @@ const Search = ({
     }
 
     useEffect(() => {
-        finalizeRoute( 'get', routes.all_categories, null, 'limit=10' ) 
+        finalizeRoute( 'get', routes.all_categories, null,{ fetchAll: true, limit: null }, 'limit=50') 
     },[])
 
     useEffect(() => {
@@ -103,44 +104,61 @@ const Search = ({
 
     // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
-        if(my_top_artists.length > 0 && state.my_top_genres.length === 0) {
+        if(my_top_artists.length > 0) {
             let topArtists = [...my_top_artists]
-            const topGenres = calcTopGenre(topArtists)
+            const categories = calcCategories(topArtists)
+            const sortedCats = sortCategories( categories )
+            console.log(sortedCats)
             const payload = {
-                route: 'genres',
-                items: topGenres
+                route: 'categories',
+                items: sortedCats
             }
             dispatch(payload)
         }
-    },[my_top_artists])
+    },[my_top_artists, all_categories])
 
-    const calcTopGenre = (arr) => {
-        let genres = {}
-        arr.map((ele, i) => {
-            ele.genres.map((genre, j) => {
-                if( available_genre_seeds.includes( genre ) ){
-                    if(genres[genre]){
-                        genres[genre].total += 1
-                    }else {
-                        genres[genre] = {total: 1, images: ele.images}
+
+
+    const calcCategories = ( artists ) => {
+       let categories = {}
+       artists.forEach((art, i ) => {
+           art.genres.forEach(( genre, j ) => {
+                all_categories.forEach((cat, k) => {
+                    if( available_genre_seeds.includes( genre ) ){
+                        const foundCat = cat.name.toLowerCase().search( genre )
+                        if( foundCat !== -1 ){
+                            if( cat.name.charAt( foundCat - 1 ) === '-' ||
+                                cat.name.charAt( foundCat -1 ) === ' ' ||
+                                cat.name.charAt( (foundCat + genre.length ) + 1 ) === ' ') return
+                            
+                            if(categories[cat.name]){
+                                categories[cat.name].total += 1
+                                }else {
+                                    categories[cat.name] = {total: 1, id:cat.id, images: art.images}
+                                }
+                            }
                     }
-                }
-            })
-        })
+                })
+               
+           })
+       })
+       return categories
+    }
+
+    const sortCategories = ( obj ) => {
         let sortable = []
-        for(const genre in genres){
-            sortable.push([genre, genres[genre].images, genres[genre].total])
+        for(const genre in obj){
+            sortable.push([genre, obj[genre].images, obj[genre].id, obj[genre].total])
         }
         sortable.sort((a,b) => {
             return b[2] - a[2]
         })
         let newArr = []
         sortable.map((item, i) => {
-            newArr.push({ name: capital( item[0] ), id: item[0] , type: 'category' ,  images: item[1]})
+            newArr.push({ name: capital( item[0] ), id: item[2] , type: 'category' ,  images: item[1]})
         })
         return newArr
     }
-
 
     const dir = searchPageHistoryRef.current.length > 0  ?
     activeSearchItem.id === searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1].activeItem.id || 

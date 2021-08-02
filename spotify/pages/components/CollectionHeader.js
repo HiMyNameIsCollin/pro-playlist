@@ -25,7 +25,6 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
             setBackgroundImage(null)
             setHeaderScrolled( 0 )
         }
-        
     }, [])
 
     useEffect(() => {
@@ -42,7 +41,6 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
 
     const {scaleDown, fadeOut, moveDown} = useSpring({
         to: {
-            
             scaleDown: `${ 1.00 - ( headerScrolled * 0.005 )  }`,
             fadeOut: `${ 1 - ( headerScrolled * 0.02 )}`,
             moveDown: `${ ( headerScrolled * 2 )  }`
@@ -57,8 +55,8 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
         if( collection.artists.length === 1 ){
             setActiveItem( collection.artists[0] )
         } else {
-            const calledFrom = 'collection'
-            setOverlay( {type: calledFrom, pageType: pageType, data: { artists: collection.artists }} )
+            const calledFrom = pageType
+            setOverlay( {type: 'collection', calledFrom: calledFrom, page: pageType, data: { artists: collection.artists }} )
         }
     }
 
