@@ -5,8 +5,9 @@ import useApiCall from '../../hooks/useApiCall'
 import { whichPicture } from '../../../utils/whichPicture'
 import Slider from '../Slider'
 import { ManageHookContext } from './Manage'
+import { DbFetchedContext } from '../Dashboard'
 import { Droppable } from 'react-beautiful-dnd'
-const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
+const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
 
     const routes = {
         artist: 'v1/artists',
@@ -28,6 +29,7 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
             route = action.route
             method = action.method
         }
+        console.log(action)
         switch(route) {
             case routes.artist:
                 if( method === 'get'){
@@ -40,7 +42,7 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
                 if( method==='get'){
                     return{
                         ...state,
-                        items: action.items
+                        items: [ ...state.items, ...action.items ]
                     }
                 }
         }
@@ -53,9 +55,26 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
     const [ state, dispatch ] = useReducer(reducer, initialState)
     const currentActiveItemRef = useRef({})
     const [ selectedItems, setSelectedItems ] = useState( [] )
+    const [ disabled, setDisabled ] = useState( false )
     const [ image, setImage ] = useState()
 
     const { items, artist } = { ...state }
+    const { user_info } = useContext( DbFetchedContext )
+
+    useEffect(() => {
+        if(dragging){
+            if( orientation === 'bottom' && 
+            !data.collaborative &&
+            !data.owner ||
+            data.owner && data.owner.display_name !== user_info.display_name ||
+            data.name === 'Liked Tracks' ||
+            data.name === 'To be added'){
+                setDisabled(true)
+            }
+        } else {
+            if( disabled ) setDisabled( false )
+        }
+    }, [ dragging ])
 
     useEffect(() => {
         if(artist.images) setImage( whichPicture( artist.images, 'sm' ) )
@@ -83,7 +102,7 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
                         route: routes.items,
                         method: 'get'
                     }
-                    dispatch(payload)
+                    dispatch(payload)        
                 }
             } else {
                 currentActiveItemRef.current = data
@@ -118,7 +137,7 @@ const ActiveItem = ({ orientation, style, data, setActiveItem }) => {
     
     return(
 
-        <animated.div style={ style } className={`activeItem activeItem--${ orientation } `}>
+        <animated.div style={ style } className={`activeItem activeItem--${ orientation }  ${ disabled && 'activeItem__itemContainer--disabled'} `}>
         {
             data.type === 'sortPlaylist' &&
             <div className={`activeItem__itemContainer activeItem__itemContainer--full`}>

@@ -1,22 +1,38 @@
 import { useState, useEffect, useLayoutEffect, useRef, useContext } from 'react'
 import { useSpring, animated } from 'react-spring'
-import { capital } from '../../utils/capital'
+import useApiCall from '../hooks/useApiCall'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleColorThief } from '../../utils/handleColorThief'
 import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
+import { DbFetchedContext } from './Dashboard'
+
+const routes = {
+    followed_artists: 'v1/me/following'
+}
 
 const ArtistHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader,  }) => {
 
+    const API = 'https://api.spotify.com/'
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+
+
     const { collection, artist, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
+    const [ followed, setFollowed ] = useState( false ) 
     const thisHeaderRef = useRef()
-    const {  scrollPosition } = useContext( DbHookContext )
+    const { scrollPosition } = useContext( DbHookContext )
+    const { followed_artists } = useContext( DbFetchedContext )
+
+    useEffect(() => {
+        const following = followed_artists.find( x => x.name === artist.name )
+        if(following) setFollowed(true)
+    }, [ followed_artists ])
     
     useLayoutEffect(() => {
         const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
         setElementHeight( headerHeight )
-
+        setActiveHeader({ data: artist.name })
         return () => {
             setHeaderScrolled( 0 )
         }
@@ -25,8 +41,16 @@ const ArtistHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, activ
     const finishMount = (e, amount)=>{
         const colors = handleColorThief(e.target, amount)
         colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
-        setActiveHeader({ data: artist.name})
     }
+
+    const handleFollow = () => {
+        // finalizeRoute('PUT', routes.followed_artists, artist.id, null, 'type=artist', `ids=${ artist.id }`)
+        console.log( 'I dont think this route works... https://developer.spotify.com/console/put-following/?type=artist&ids=2CIMQHirSU0MQqyYHq0eOx%2C57dN52uHvrHOxijzpIgu3E%2C1vCWHaC5f2uS3yhpwWbIA6 doesnt work either')
+    }
+
+    useEffect(() => {
+        if( apiPayload ) console.log(apiPayload)
+    },[ apiPayload ])
 
     useEffect(() => {
         const percent = calcScroll( elementHeight )
@@ -62,8 +86,12 @@ const ArtistHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, activ
             </div>
             <div className='artistHeader__info'>
                 <p> { artist.followers.total } followers </p>
-                <button> Follow </button>
-                <i className="fas fa-ellipsis-h"></i>
+                {
+                    followed ?
+                    <button onClick={ handleFollow } className='artistHeader__info__btn artistHeader__info__btn--active'> Following </button> :
+                    <button onClick={ handleFollow } className='artistHeader__info__btn'> Follow </button>
+                }
+                {/* <i className="fas fa-ellipsis-h"></i> */}
             </div>
         </header>  
          

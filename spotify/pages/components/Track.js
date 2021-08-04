@@ -3,14 +3,16 @@ import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 import { PlayerHookContext } from './player/Player'
 import { SearchHookContext } from './search/Search'
-
+import { DbFetchedContext } from './Dashboard'
 import { handleColorThief } from '../../utils/handleColorThief'
 
 const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrackMounted, data }) => {
     const [ activeTrack, setActiveTrack ] = useState(false)
+    const [ liked, setLiked ] = useState( false )
     const trackImageRef = useRef()
 
     const { queue, setQueue, activeItem ,setActiveHomeItem, audioRef, qIndex, setQIndex, setOverlay } = useContext( DbHookContext )
+    const { my_liked_tracks } = useContext( DbFetchedContext )
     const playerContext = useContext( type === 'playerCollapsed' ? PlayerHookContext : '' )
     
     const isPlaying = playerContext ?  playerContext.isPlaying : null
@@ -22,9 +24,16 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
 
     const searchContext = useContext( SearchHookContext )
     
-
     const { collection  } = { ...data }
 
+    useEffect(() => {
+        if( type !=='playerCollapsed' && type !== 'queueView' ){
+            const imLiked = my_liked_tracks.find( x => x.name === track.name )
+            if( imLiked ) setLiked( true )
+        }
+        
+    },[ my_liked_tracks ])
+    
     useEffect(() => {
         if( queue[ qIndex ] && queue[ qIndex ].id === track.id && type !=='playerCollapsed' && type !== 'queueView'){
             setActiveTrack( true )
@@ -164,7 +173,7 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
                 }
             </span>
             {
-                type !== 'playerCollapsed' && type !== 'queueView' &&
+                liked &&
                 <i className="fas fa-heart track__likeBtn"></i>
 
             }

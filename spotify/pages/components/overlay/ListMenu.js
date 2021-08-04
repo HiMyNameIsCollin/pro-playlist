@@ -4,10 +4,12 @@ import { DbHookContext } from '../Dashboard'
 
 const ListMenu = ({ setActiveItem, transition, calledFrom, page, artists }) => {
 
+    const { setOverlay } = useContext( DbHookContext )
 
     const handleViewArtist = ( e, artist) => {
-    e.preventDefault()
-       setActiveItem( artist )
+        e.preventDefault()
+        setOverlay( {} )
+        setTimeout(() => setActiveItem( artist ) , 250 )
     }
 
 

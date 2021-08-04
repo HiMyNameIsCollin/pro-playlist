@@ -15,10 +15,8 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     const [ mounted, setMounted ] = useState( false )
-    const welcomePageRef = useRef() 
-    const artistPageRef = useRef()
-    const collectionPageRef = useRef()
-    
+    const thisComponentRef = useRef()
+
     const dir = homePageHistoryRef.current.length > 0  ?
     activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id || 
     !activeHomeItem.type ? 
@@ -71,8 +69,8 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
     const pageTransition = useTransition(activeHomeItem, {
         initial: { transform: `translateX(${100 * dir}%)`, },
         from: { transform: `translateX(${100 * dir}%)`, position: 'absolute', minHeight: transMinHeight , width: '100%' , zIndex: 2 },
-        enter: { transform: `translateX(${0 * dir}%)`},
-        update: {  position: 'absolute'},
+        enter: { transform: `translateX(${0 * dir}%)`, minHeight: transMinHeight},
+        update: {  position: 'absolute' },
         leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
         onRest: () => setTransitionComplete(true)
         
@@ -80,15 +78,16 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
 
     const headerTransition = useTransition(activeHomeItem, {
         from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: 3 },
-        update: {  position: 'fixed',},
+        update: {  position: 'fixed' },
         enter: { transform: `translateX(${0 * dir }%)`},
         leave: { transform: `translateX(${-100 * dir }%)`, position: 'fixed', zIndex: 1},
     })
 
     const mainTransition = useTransition(activeHomeItem, {
+        initial: { transform: `translateX(${0 * dir }%)`, position: 'absolute', width: '100%'},
         from: { transform: `translateX(${0 * dir }%)`, position: 'absolute', minHeight: transMinHeight, width: '100%'},
-        enter: { transform: `translateX(${0 * dir }%)`},
-        update: {  position: 'absolute' },
+        enter: { transform: `translateX(${0 * dir }%)`, minHeight: transMinHeight,},
+        update: {  position: 'absolute', },
         leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute'},
         onRest: () => setTransitionComplete(true)
     })
@@ -96,32 +95,13 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
 
     return(
         <div
+        ref={ thisComponentRef }
         id='homePage'>
         {
         headerTransition(( props, item ) => (
             <animated.div style={ props }>
                 {
-                    !item.type &&
-                    <HomeHeader transitionComplete={ transitionComplete } hiddenUI={ hiddenUI } setAuth={ setAuth } />
-                }
-                {
-                    item.type === 'artist' &&
-                    <FixedHeader 
-                    type={ 'home' } 
-                    transitionComplete={ transitionComplete } 
-                    headerScrolled={ headerScrolled } 
-                    activeHeader={ activeHeader } />
-                }
-                {
-                    item.type === 'album' &&
-                    <FixedHeader 
-                    type={ 'home' } 
-                    transitionComplete={ transitionComplete } 
-                    headerScrolled={ headerScrolled } 
-                    activeHeader={ activeHeader } />
-                }
-                {
-                    item.type === 'playlist' &&
+                    item.type &&
                     <FixedHeader 
                     type={ 'home' } 
                     transitionComplete={ transitionComplete } 
@@ -136,7 +116,6 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
         {
         mainTransition(( props, item) => (
             !item.type && 
-            
             <Welcome transition={ props } transitionComplete={ transitionComplete } setTransitionComplete={ setTransitionComplete } setTransMinHeight={ setTransMinHeight } />
             
         ))

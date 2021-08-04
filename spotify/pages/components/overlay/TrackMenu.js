@@ -6,7 +6,7 @@ import { DbHookContext } from '../Dashboard'
 
 const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track }) => {
 
-    const { overlay, setOverlay, setPlayNextQueue, toBeManaged, setToBeManaged } = useContext( DbHookContext )
+    const { overlay, setOverlay, setPlayNextQueue, toBeManaged, setToBeManaged, setMessageOverlay } = useContext( DbHookContext )
     
 
     const copyToClip = () => {
@@ -22,7 +22,10 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
     const viewArtist = (e) => {
         e.stopPropagation()
         if( track.artists.length === 1 ){
-            if( page === 'home' || page==='manage' || calledFrom==='player' ) setActiveItem( track.artists[0] )
+            if( page === 'home' || page==='manage' || calledFrom==='player' ){
+                setOverlay( {} )
+                setTimeout(() => setActiveItem( track.artists[0] ) , 250 )
+            } 
             if( page === 'search' ) setActiveItem( track.artists[0] )
         } else {
             let oClone = { ...overlay}
@@ -34,10 +37,12 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
 
     const viewAlbum = ( e ) => {
         e.stopPropagation()
-        setActiveItem( track.album )
+        setOverlay( {} )
+        setTimeout(() => setActiveItem( track.album ), 250)
     }
 
     const handleAddToQueue = () => {
+        setMessageOverlay({ message: `${track.name} added to queue`, active: true })
         let trackClone = { ...track }
         trackClone['context'] = {
             name: 'Now playing',
@@ -49,6 +54,7 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
     }
 
     const handleAddToManager = () => {
+        setMessageOverlay({ message: `${track.name} added to manager`, active: true })
         setOverlay( {} )
         setToBeManaged( track ) 
     }

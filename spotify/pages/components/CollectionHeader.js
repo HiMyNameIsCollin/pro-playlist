@@ -21,6 +21,7 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
         setElementHeight(headerHeight)
         const img = whichPicture(collection.images, 'lrg')
         setBackgroundImage( img )
+        setActiveHeader( {data : collection.name} )
         return () => {
             setBackgroundImage(null)
             setHeaderScrolled( 0 )
@@ -36,7 +37,6 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
     const finishMount = (e, amount)=>{
         const colors = handleColorThief(e.target, amount)
         colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
-        setActiveHeader( {data : collection.name} )
     }
 
     const {scaleDown, fadeOut, moveDown} = useSpring({
@@ -52,11 +52,14 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
 
     const handleViewArtist = (e) => {
         e.stopPropagation()
-        if( collection.artists.length === 1 ){
-            setActiveItem( collection.artists[0] )
-        } else {
-            const calledFrom = pageType
-            setOverlay( {type: 'collection', calledFrom: calledFrom, page: pageType, data: { artists: collection.artists }} )
+        if( collection.artists ){
+            // TEMPORARY FIX TO PREVENT CLICKING ON PLAYLIST OWNERS NAME
+            if( collection.artists.length === 1 ){
+                setActiveItem( collection.artists[0] )
+            } else {
+                const calledFrom = pageType
+                setOverlay( {type: 'collection', calledFrom: calledFrom, page: pageType, data: { artists: collection.artists }} )
+            }
         }
     }
 

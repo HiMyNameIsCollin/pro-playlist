@@ -42,6 +42,8 @@ const Login = ({ setTokenBody }) => {
       url += ' '
       url += 'user-library-modify'
       url += ' '
+      url += 'user-follow-modify'
+      url += ' '
       url += 'playlist-read-collaborative'
       url += ' '
       url += 'user-read-recently-played'

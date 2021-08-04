@@ -1,4 +1,5 @@
 import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
+import { useSpring, animated } from 'react-spring'
 import { calcScroll } from '../../utils/calcScroll'
 import  useApiCall  from '../hooks/useApiCall'
 import Home from './Home'
@@ -6,6 +7,8 @@ import Manage from './manage/Manage'
 import Search from './search/Search'
 
 import Overlay from './Overlay'
+import MessageOverlay from './MessageOverlay'
+import SelectOverlay from './SelectOverlay'
 import Nav from './Nav'
 import Player from './player/Player'
 
@@ -177,6 +180,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ loaded, setLoaded ] = useState( false )
     const [ scrollPosition, setScrollPosition ] = useState(0)
     const [ overlay, setOverlay ] = useState({})
+    const [ selectOverlay, setSelectOverlay ] = useState( { data: 'aa'})
+    const [ messageOverlay, setMessageOverlay ] = useState( { message: '', active: false } )
     const [ hiddenUI, setHiddenUI ] = useState( false )
 // activeHeader contains the data from the active page required for certain headers to function
     const [ queue, setQueue ] = useState( [] )
@@ -186,6 +191,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ dashboardState, setDashboardState ] = useState('home')
     const [ searchState, setSearchState ] = useState('default')
     const [ manageState, setManageState ] = useState( 'default')
+    const [ sortContainerOpen, setSortContainerOpen ] = useState( false )
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
     const [ activeHomeItem, setActiveHomeItem ] = useState( {} ) 
     const [ activeManageItem, setActiveManageItem ] = useState( {} ) 
@@ -212,6 +218,10 @@ const Dashboard = ({ setAuth, audioRef }) => {
         searchPageHistoryRef,
         activeHomeItem, 
         setActiveHomeItem, 
+        sortContainerOpen, 
+        setSortContainerOpen,
+        messageOverlay,
+        setMessageOverlay,
         overlay, 
         setOverlay,  
         scrollPosition, 
@@ -297,11 +307,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
 // API CALLS 
     useEffect(() => {
-        // First four arguments in 'finalizeRoute' are 
-        // Method of fetch
-        // Route of fetch (From the routes object)
-        // The ID of the request (The id of the JSON im referencing like calls for albums tracks)
-        // 4th and onwards arguments will add query params to final url (Limit, offset, etc)
+
         finalizeRoute('get', routes.user_info, null )
         finalizeRoute( 'get', routes.player_info, null, false)
         finalizeRoute( 'get', routes.featured_playlists, null, false )
@@ -325,7 +331,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 //  When overlay is open, makes the rest of the APP no clicky
     useLayoutEffect(() => {
         const db = dashboardRef.current
-        if( overlay.type || playerSize === 'large' || activeManageItem.type ) {
+        if( overlay.type || playerSize === 'large' || sortContainerOpen ) {
             db.classList.add('noScroll')
         } else{
             db.classList.remove('noScroll')
@@ -341,16 +347,24 @@ const Dashboard = ({ setAuth, audioRef }) => {
             db.classList.remove( 'noScroll' )
         }
 
-    }, [ overlay, playerSize, searchState, manageState, dashboardState, activeManageItem ])
+    }, [ overlay, playerSize, searchState, manageState, dashboardState, sortContainerOpen ])
 
     useEffect(() => {
         if( activeSearchItem.id || activeHomeItem.id ){
             setSearchState('default')
             setManageState('default')
-            if( overlay.data ) setOverlay( {} )
+            setSortContainerOpen( false )
             if( playerSize === 'large' ) setPlayerSize( 'small' )
         }
-    }, [ activeSearchItem, activeHomeItem ])
+    },[ activeSearchItem, activeHomeItem ])
+
+    useEffect(() => {
+        if(activeManageItem.type){
+            setSortContainerOpen( true )
+        } else {
+            setSortContainerOpen( false )
+        }
+    }, [ activeManageItem ])
 
     useEffect(() => {
         let hideMe = true
@@ -383,48 +397,64 @@ const Dashboard = ({ setAuth, audioRef }) => {
     }, [ scrollPosition, activeManageItem, dashboardState ])
 
     useEffect(() => {
-        const homePage = document.getElementById('homePage')
-        const searchPage = document.getElementById('searchPage')
-        const managePage = document.getElementById('managePage')
-        const pages = [ homePage, searchPage, managePage ]
-        if( homePage && searchPage && managePage ) {
-            pages.forEach( page => {
-                page.style.display = 'none'
+        // const homePage = document.getElementById('homePage')
+        // const searchPage = document.getElementById('searchPage')
+        // const managePage = document.getElementById('managePage')
+        // const pages = [ homePage, searchPage, managePage ]
+        // if( homePage && searchPage && managePage ) {
+        //     pages.forEach( page => {
+        //         page.style.display = 'none'
+        //     })
+        //     if( dashboardState === 'home' ) {
+        //         homePage.style.display = 'block'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.home - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        //     if( dashboardState === 'search' ) {
+        //         searchPage.style.display = 'block'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.search - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+        //     if( dashboardState === 'manage' ) {
+        //         managePage.style.display = 'block'
+        //         dashboardRef.current.scroll({ 
+        //             top: pageScrollRef.current.manage - 160, 
+        //             left: 0,
+        //             behavior: 'auto'
+        //         })
+        //     }
+            
+        // }
+        if( dashboardState === 'home' ) {
+            homePage.style.display = 'block'
+            dashboardRef.current.scroll({ 
+                top: pageScrollRef.current.home - 160, 
+                left: 0,
+                behavior: 'auto'
             })
-            if( dashboardState === 'home' ) {
-                homePage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.home - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'search' ) {
-                searchPage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.search - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'manage' ) {
-                managePage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.manage - 160, 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
         }
-        
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
             
-    },[ dashboardState ])
+    },[])
+
+    const dbScale = useSpring({
+        transform: selectOverlay.data ? 'scaleX(90%) scaleY(95%) ' : 'scaleX(100%) scaleY(100%)' ,
+        borderRadius: selectOverlay.data ? '10px' : '0px'
+    })
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
         <DbFetchedContext.Provider value={ dbFetchedState }>
-            <section
+            <SelectOverlay selectOverlay={ selectOverlay } setSelectOverlay={ setSelectOverlay } />
+
+            <animated.section
+            style={ dbScale }
             ref={ dashboardRef }
             onScroll={ handleScroll }
             className={ `dashboard`}>  
@@ -432,13 +462,16 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 <Overlay 
                 setActiveSearchItem={ setActiveSearchItem }/>
 
+                <MessageOverlay messageOverlay={ messageOverlay } setMessageOverlay={ setMessageOverlay }/>
+
+
                 <Home
                 transMinHeight={ homeTransMinHeight }
                 setTransMinHeight={ setHomeTransMinHeight }
                 currActiveHomeRef={ currActiveHomeRef }
                 homePageHistoryRef={ homePageHistoryRef }/> 
 
-                <Search
+                {/* <Search
                 transMinHeight={ searchTransMinHeight }
                 setTransMinHeight={ setSearchTransMinHeight }
                 activeSearchItem={ activeSearchItem }
@@ -456,7 +489,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 toBeManaged={ toBeManaged }
                 setToBeManaged={ setToBeManaged }
                 manageState={ manageState }
-                setManageState={ setManageState } />
+                setManageState={ setManageState } /> */}
                 
                 <Player 
                 hiddenUI={ hiddenUI } 
@@ -478,7 +511,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 setActiveSearchItem={ setActiveSearchItem }
                 dashboardState={ dashboardState }
                 setDashboardState={ setDashboardState } />
-            </section>
+            </animated.section>
         </DbFetchedContext.Provider>
         </DbHookContext.Provider>  
     )

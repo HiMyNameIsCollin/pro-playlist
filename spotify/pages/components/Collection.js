@@ -1,5 +1,5 @@
 
-import { useRef, useEffect, useReducer, useContext } from 'react'
+import { useCallback, useRef, useEffect, useState, useReducer, useContext } from 'react'
 import { animated } from 'react-spring'
 import  useApiCall  from '../hooks/useApiCall'
 import { whichPicture } from '../../utils/whichPicture'
@@ -106,28 +106,32 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
 
-    const thisComponentRef = useRef()
+    const thisComponentRef = useRef() 
+    const [ mounted, setMounted ] = useState(false)
+
+    const thisComponent = useCallback(node => {
+        if (node !== null) {
+            setTransMinHeight( node.offsetHeight )
+            const ro = new ResizeObserver( entries => setTransMinHeight( node.offsetHeight ))
+            ro.observe( node )
+            thisComponentRef.current = node
+            
+            return () => ro.disconnect()
+        }
+      }, []);
 
     useEffect(() => {
         if( transitionComplete ) {
-            thisComponentRef.current.style.minHeight = '100vh'
             thisComponentRef.current.classList.add('fadeIn')
-            setTransitionComplete( false )
+            setTransitionComplete(false)
+            setMounted( true )
         }
-    },[ transitionComplete ])
+    }, [ transitionComplete ])
 
-    
     useEffect(() => {
-        if( transitionComplete ){
-            const cb = (mutList, observer) => {
-                setTransMinHeight( thisComponentRef.current.offsetHeight)
-            }
-            const config = { attributes: true, childList: false, subtree: false }
-            const obs = new MutationObserver(cb)
-            obs.observe( thisComponentRef.current, config)
-            return () => obs.disconnect() 
-        }
-    },[ transitionComplete ])
+        if(mounted) thisComponentRef.current.style.minHeight = '100vh'
+    },[ mounted ])
+
 
     useEffect(() => {
         let id = activeItem.id
@@ -223,7 +227,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
 
     return(
         <animated.div
-        ref={ thisComponentRef } 
+        ref={ thisComponent } 
         style={ transition } 
         className={ `page page--collection collection` }>
         {

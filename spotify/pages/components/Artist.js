@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer , useRef, useContext} from 'react'
+import { useState, useEffect, useReducer , useRef, useCallback, useContext} from 'react'
 import { animated } from 'react-spring'
 import TracksContainer from './TracksContainer'
 import Loading from './Loading'
@@ -98,28 +98,35 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     const [ state , dispatch ] = useReducer(reducer, initialState)
 
     const { artist , top_tracks, all_albums, related_artists } = { ...state }
+    
+    const thisComponentRef = useRef() 
 
-    const thisComponentRef = useRef()
+    const [ mounted, setMounted ] = useState(false)
+
+    const thisComponent = useCallback(node => {
+        if (node !== null) {
+            setTransMinHeight( node.offsetHeight )
+            const ro = new ResizeObserver( entries => setTransMinHeight( node.offsetHeight ))
+            ro.observe( node )
+            thisComponentRef.current = node
+            
+            return () => ro.disconnect()
+        }
+      }, []);
 
     useEffect(() => {
         if( transitionComplete ) {
-            thisComponentRef.current.style.minHeight = '100vh'
             thisComponentRef.current.classList.add('fadeIn')
-            setTransitionComplete( false )
+            setTransitionComplete(false)
+            setMounted( true )
         }
-    },[ transitionComplete ])
+    }, [ transitionComplete ])
 
-    
     useEffect(() => {
-            const cb = (mutList, observer) => {
-                setTransMinHeight( thisComponentRef.current.offsetHeight)
-            }
-            const config = { attributes: true, childList: false, subtree: false }
-            const obs = new MutationObserver(cb)
-            obs.observe( thisComponentRef.current, config)
-            return () => obs.disconnect() 
-        
-    },[])
+        if(mounted) thisComponentRef.current.style.minHeight = '100vh'
+    },[ mounted ])
+
+
 
     useEffect(() => {
         let id = activeItem.id
@@ -135,15 +142,9 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     },[ apiPayload ])
 
 
-    useEffect(() => {
-        if(artist.id ){
-            setActiveHeader({ artist })
-        }
-    }, [ artist ])
-
 
     return(
-        <animated.div ref={ thisComponentRef } style={ transition } className={ `page page--artist artist ` }>
+        <animated.div ref={ thisComponent } style={ transition } className={ `page page--artist artist ` }>
             {
                 artist.id &&
                 <ArtistHeader 

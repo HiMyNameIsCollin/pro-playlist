@@ -26,10 +26,9 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     const [ sort , setSort ] = useState( 'Alphabetical' )
     const [ manageOverlay, setManageOverlay ] = useState( { type: undefined } )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
-    const [ sortContainerOpen, setSortContainerOpen ] = useState(false)
     const sortFilters = [ 'Recently added', 'Alphabetical', 'Creator' ]
     const { user_info, my_albums, my_playlists, followed_artists, my_liked_tracks, recently_played } = useContext( DbFetchedContext )
-    const { dashboardState } = useContext( DbHookContext )
+    const { dashboardState, sortContainerOpen, setSortContainerOpen } = useContext( DbHookContext )
     const manageHookState = {
         activeManageItem,
         setActiveManageItem
@@ -38,14 +37,6 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     useEffect(() => {
         if( apiPayload ) console.log(apiPayload)
     }, [ apiPayload ])
-
-    useEffect(() => {
-        if(activeManageItem.type) {
-            setSortContainerOpen( true )
-        } else {
-            setSortContainerOpen( false )
-        }
-    }, [ activeManageItem ])
 
     useEffect(() => {
         if( my_liked_tracks.length > 0 && my_liked_tracks.length >= totalLikedSongsRef.current){

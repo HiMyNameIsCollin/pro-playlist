@@ -1,34 +1,43 @@
-import { useRef, useEffect, useState, useContext } from 'react'
+import { useCallback, useEffect, useState, useRef, useContext } from 'react'
 import { animated } from 'react-spring'
 import { DbHookContext } from '../Dashboard'
 
 import BrowseContainer from '../BrowseContainer'
 const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, setTransitionComplete }) => {
 
-    const thisComponentRef = useRef()
+    const thisComponentRef = useRef() 
+
+    const [ mounted, setMounted ] = useState(false)
+
+    const thisComponent = useCallback(node => {
+        if (node !== null) {
+            setTransMinHeight( node.offsetHeight )
+            const ro = new ResizeObserver( entries => setTransMinHeight( node.offsetHeight ))
+            ro.observe( node )
+            thisComponentRef.current = node
+            
+            return () => ro.disconnect()
+        }
+      }, []);
 
     useEffect(() => {
         if( transitionComplete ) {
-            thisComponentRef.current.style.minHeight = '100vh'
             thisComponentRef.current.classList.add('fadeIn')
-            setTransitionComplete( false )
+            setTransitionComplete(false)
+            setMounted( true )
         }
-    },[ transitionComplete ])
-    
+    }, [ transitionComplete ])
+
     useEffect(() => {
-        const cb = (mutList, observer) => {
-            setTransMinHeight( thisComponentRef.current.offsetHeight)
-        }
-        const config = { attributes: true, childList: false, subtree: false }
-        const obs = new MutationObserver(cb)
-        obs.observe( thisComponentRef.current, config)
-        return () => obs.disconnect() 
-    },[])
+        if(mounted) thisComponentRef.current.style.minHeight = '100vh'
+    },[ mounted ])
+
+
 
     return(
         <animated.div 
         style={transition}
-        ref={ thisComponentRef }
+        ref={ thisComponent }
         className={ `page page--search ` }>
             <BrowseContainer 
             type='BcSearch'

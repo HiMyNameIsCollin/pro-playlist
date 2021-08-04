@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef } from 'react'
+import { useState, useEffect, useContext, useRef, useCallback } from 'react'
 import { animated } from 'react-spring'
 import BrowseContainer from './BrowseContainer'
 import  useApiCall  from '../hooks/useApiCall'
@@ -14,27 +14,34 @@ const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransi
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const { activeSearchItem, setActiveSearchItem } = useContext( DbHookContext)
     const [ categoryResults, setCategoryResults ] = useState( [] )
-    const thisComponentRef = useRef()
+    
+    const thisComponentRef = useRef() 
+
+    const [ mounted, setMounted ] = useState(false)
+
+    const thisComponent = useCallback(node => {
+        if (node !== null) {
+            setTransMinHeight( node.offsetHeight )
+            const ro = new ResizeObserver( entries => setTransMinHeight( node.offsetHeight ))
+            ro.observe( node )
+            thisComponentRef.current = node
+            
+            return () => ro.disconnect()
+        }
+      }, []);
 
     useEffect(() => {
         if( transitionComplete ) {
-            thisComponentRef.current.style.minHeight = '100vh'
             thisComponentRef.current.classList.add('fadeIn')
-            setTransitionComplete( false )
+            setTransitionComplete(false)
+            setMounted( true )
         }
-    },[ transitionComplete ])
-    
+    }, [ transitionComplete ])
+
     useEffect(() => {
-        if( transitionComplete ){
-            const cb = (mutList, observer) => {
-                setTransMinHeight( thisComponentRef.current.offsetHeight)
-            }
-            const config = { attributes: true, childList: false, subtree: false }
-            const obs = new MutationObserver(cb)
-            obs.observe( thisComponentRef.current, config)
-            return () => obs.disconnect() 
-        }
-    },[ transitionComplete ])
+        if(mounted) thisComponentRef.current.style.minHeight = '100vh'
+    },[ mounted ])
+
 
     useEffect(() => {
         if( data.type === 'category'){
@@ -95,7 +102,7 @@ const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransi
     return(
         <animated.div
         style={ transition }
-        ref={ thisComponentRef } 
+        ref={ thisComponent } 
         className='page page--search showcase'>
             <h2 className='showcase__title'> { data.name }</h2>
         {

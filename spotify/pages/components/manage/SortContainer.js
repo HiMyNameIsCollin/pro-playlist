@@ -31,6 +31,7 @@ const SortContainer = ({ style }) => {
     const { activeManageItem, setActiveManageItem } = useContext( ManageHookContext )
     const { my_playlists, user_info } = useContext( DbFetchedContext )
     const [ activePlaylistItem, setActivePlaylistItem ] = useState({})
+    const [ dragging, setDragging ] = useState( false )
 
     const [ height, setHeight ] = useState()
     const [ resizePos, setResizePos ] = useState(0)
@@ -71,14 +72,23 @@ const SortContainer = ({ style }) => {
         leave: { transform: 'translateY( -100% )', minHeight: resizePos, position: 'absolute', top: 0 }
     })
 
-    const dragEnd = () => {
-
+    const dragEnd = (e) => {
+        if( e.source === e.destination){
+            
+        }
+        setDragging( false )
     }
 
+    const dragStart = (e) => {
+        setDragging( true )
+    }
+    
     return(  
         <animated.div style={ style } className='sortContainer'>
 
-        <DragDropContext onDragEnd={ dragEnd } >
+        <DragDropContext 
+        onDragStart={ dragStart }
+        onDragEnd={ dragEnd } >
             <div 
             ref={ sortContainerRef }
             className='sortContainer__relative'>
@@ -87,7 +97,7 @@ const SortContainer = ({ style }) => {
         {
             playlistTrans(( props, item) => (
                 item.type &&
-                <ActiveItem orientation={ 'top'} style={ props } data={ item } setActiveItem={ setActivePlaylistItem } />
+                <ActiveItem orientation={ 'top'} dragging={ dragging } style={ props } data={ item } setActiveItem={ setActivePlaylistItem } />
             ))
         }
             <ResizeBar 
@@ -97,7 +107,7 @@ const SortContainer = ({ style }) => {
         {
         activeItemTrans(( props, item ) => (
             item.type &&
-            <ActiveItem orientation={ 'bottom'} style={ props } data={ item } setActiveItem={ setActiveManageItem } />
+            <ActiveItem orientation={ 'bottom'} dragging={ dragging } style={ props } data={ item } setActiveItem={ setActiveManageItem } />
         ))
         }
             </div>
