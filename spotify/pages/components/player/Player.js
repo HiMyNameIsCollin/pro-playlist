@@ -1,3 +1,4 @@
+import { useTransition } from 'react-spring'
 import PlayerCollapsed from './PlayerCollapsed'
 import PlayerLarge from './PlayerLarge'
 import { useState, useEffect,  useLayoutEffect, useContext, useRef, createContext} from 'react'
@@ -175,12 +176,20 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize }) => {
         prevTrack,
         handleRepeat
     }
-
+    const largePlayerTrans = useTransition(playerSize,{
+        from: { transform: 'translateY(100%) '},
+        enter: { transform: 'translateY(0%) '} ,
+        leave: { transform: 'translateY(100%) '}
+    })
     return(
         <>
             <PlayerHookContext.Provider value={ playerHookState }>
                 {
-                currPlaying.id && <PlayerLarge controls={ controls }/>
+                largePlayerTrans(( props, item ) => (
+                    item === 'large' &&
+                    <PlayerLarge style={ props } controls={ controls }/>
+                ))
+                
                 }
                 <PlayerCollapsed hiddenUI={ hiddenUI } />
             </PlayerHookContext.Provider>

@@ -7,7 +7,7 @@ const PlayerCollapsed = ({ hiddenUI }) => {
 
     const trackMountedRef = useRef(false)
 
-    const { audioRef } = useContext( DbHookContext )
+    const { audioRef, hideAll } = useContext( DbHookContext )
     const  { isPlaying, trackProgress, currPlaying, setIsPlaying } = useContext( PlayerHookContext )
     const [ trackMounted, setTrackMounted ] = useState( trackMountedRef.current )
 
@@ -33,6 +33,7 @@ const PlayerCollapsed = ({ hiddenUI }) => {
         height: trackMounted ? '3.6rem': '0rem',
         opacity: trackMounted ? 1 : 0,
         transform: hiddenUI ? 'translateY(0rem)' : 'translateY(-3.06rem)',
+        opacity: hideAll ? 0 : 1
     })
 
     return (

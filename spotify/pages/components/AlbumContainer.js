@@ -1,22 +1,29 @@
 import Album from './Album'
 import { useContext } from 'react'
+import { DbHookContext } from './Dashboard'
+
+const AlbumContainer = ({ page, albums }) => {
 
 
-const AlbumContainer = ({ type, albums }) => {
+    const { setSelectOverlay, setHideAll } = useContext( DbHookContext )
+
+    const handleSeeMore = () => {
+        setHideAll(true)
+        setTimeout(() => setSelectOverlay({ page: page, type: 'albums', data: albums }), 500)
+        
+    }
 
     return(
         <section className='albumContainer'>
-        <h4>
-            { type === 'artist--page' ? 'Popular releases' : 'Discography' }
-        </h4>
-        {
-        type === 'artist--page' &&
-        albums.map((album, i) => i < 5 && <Album item={ album } />)
-        }
-        {
-            type === 'artist--page' &&
-            <button className='albumContainer__btn'> See discography </button>
-        }
+            <h4>
+                Popular releases 
+            </h4>
+            {
+            albums.slice(0, 5).map( item => <Album  item={ item } />)
+            }
+            
+            <button onClick={ handleSeeMore } className='albumContainer__btn'> See discography </button>
+            
         </section>
     )
 }

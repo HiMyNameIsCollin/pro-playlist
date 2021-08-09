@@ -11,7 +11,7 @@ import { checkTime } from '../../utils/checkTime'
 const Welcome = ({transition, transitionComplete, setTransitionComplete, setTransMinHeight }) => {
 
     const { setActiveItem, } = useContext( DbHookContext )
-    const { recently_played, new_releases, featured_playlists } = useContext( DbFetchedContext )
+    const { recently_played, new_releases, featured_playlists, my_top_artists , my_playlists} = useContext( DbFetchedContext )
 
     const thisComponentRef = useRef() 
 
@@ -19,14 +19,15 @@ const Welcome = ({transition, transitionComplete, setTransitionComplete, setTran
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
-            setTransMinHeight( node.offsetHeight )
-            const ro = new ResizeObserver( entries => setTransMinHeight( node.offsetHeight ))
+            const ro = new ResizeObserver( entries => {
+                if( node.offsetHeight > 0 ) setTransMinHeight( node.offsetHeight )
+            })
             ro.observe( node )
             thisComponentRef.current = node
             
             return () => ro.disconnect()
         }
-      }, []);
+      }, [])
 
     useEffect(() => {
         if( transitionComplete ) {
@@ -64,8 +65,14 @@ const Welcome = ({transition, transitionComplete, setTransitionComplete, setTran
             message='Featured playlists' 
             items={ featured_playlists }
             setActiveItem={ setActiveItem } /> 
-            
-            
+            <Slider
+            message='Favorite artists'
+            items={ my_top_artists }
+            setActiveItem={ setActiveItem }/>
+            <Slider 
+            message='Favorite playlists'
+            items={ my_playlists }
+            setActiveItem={ setActiveItem }/>
         </animated.div>
     )
 }

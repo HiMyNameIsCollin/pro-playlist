@@ -5,7 +5,7 @@ import { SearchHookContext } from './search/Search'
 
 const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled }) => {
     const [ mounted, setMounted ] = useState(false)
-    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef, dashboardState } = useContext( DbHookContext )
+    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef, hideAll } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext ) 
     const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
     
@@ -24,7 +24,11 @@ const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled })
     const { fadeIn, textScroll, btnMove} = useSpring({
         fadeIn: (mounted) ? `${ 0 + ( headerScrolled * 0.01 )}`: `0` ,
         textScroll: (mounted) ?  `${ 200 - ( headerScrolled * 2 )}` : `0` ,
-        btnMove: (mounted) ? `${ 50 -( headerScrolled / 2 )}` : `0`
+        btnMove: (mounted) ? `${ 50 -( headerScrolled / 2 )}` : `0`,
+    })
+
+    const hideMe = useSpring({
+        transform: hideAll ? 'translateY(-100%)' : 'translateY(0%)'
     })
 
     const handleBackBtn = () => {
@@ -40,7 +44,7 @@ const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled })
     }
 
     return(
-        <header className={`fixedHeader fixedHeader--${type}`}>
+        <animated.header style={ hideMe } className={`fixedHeader fixedHeader--${type}`}>
         <animated.button
             onClick={ handleBackBtn }
             style={{
@@ -60,7 +64,7 @@ const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled })
                 transform: textScroll.to( y => `translateY(${ y }%)`)
             }}> { activeHeader.data && activeHeader.data } </animated.h4>
         </animated.div>
-        </header>
+        </animated.header>
 
     )
 }

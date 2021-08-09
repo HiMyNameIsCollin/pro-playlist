@@ -1,12 +1,12 @@
 import Tab from './Tab'
-import { useState, useEffect, useRef } from 'react'
-import  useApiCall  from '../hooks/useApiCall'
+import { useState, useEffect, useRef, useContext } from 'react'
+import { DbHookContext } from './Dashboard'
 
 const TabsContainer = ({ items }) => {
 
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute, apiPayload } = useApiCall(API)
-    const [ data, setData ] = useState([])
+    const [ data, setData ] = useState([]) 
+
+    const { setHideAll, setSelectOverlay } = useContext( DbHookContext )
 
     useEffect(() => {
         const taggedItems = items.map(( item, i ) => {
@@ -22,13 +22,18 @@ const TabsContainer = ({ items }) => {
         setData(sorted)
     },[ items ])
 
+    const handleSeeMore = () => {
+        setHideAll(true)
+        setTimeout(() => setSelectOverlay({ page: 'home', type: 'recPlayed', data: data }), 500)
+    }
+
     return(
         <section className='tabsContainer'>
             <div className='tabsContainer__title'>
                 <h4>
                     Recently played
                 </h4>
-                <span>
+                <span onClick={ handleSeeMore }>
                     More
                 </span>
             </div>

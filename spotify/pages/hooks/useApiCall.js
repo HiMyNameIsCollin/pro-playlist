@@ -41,6 +41,9 @@ const useApiCall = (url) => {
             }else{
                 data['route'] = breakdownRoute(route, data.id ? data.id : requestID)
                 data['method'] = method
+                if(method !== 'get'){
+                    data['id'] = data.id ? data.id : requestID 
+                }
                 if( config && config.fetchAll && 
                 (timesCalledRef.current < config.limit || !config.limit)){
                     const next = fetchNext( data, requestID )

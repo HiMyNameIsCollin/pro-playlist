@@ -1,5 +1,5 @@
 import { useSpring, animated } from 'react-spring'
-import { useLayoutEffect, useEffect, useState, useRef, useContext } from 'react'
+import { useLayoutEffect, useEffect, useState, useRef, useContext, useCallback } from 'react'
 import { capital } from '../../utils/capital'
 import { whichPicture } from '../../utils/whichPicture'
 import { handleColorThief } from '../../utils/handleColorThief'
@@ -7,7 +7,7 @@ import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 
-const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader }) => {
+const CollectionHeader = ({ pageType, data, transitionComplete, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader }) => {
     const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ backgroundImage, setBackgroundImage ] = useState(null)
@@ -15,6 +15,13 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
 
     const { setOverlay, scrollPosition, } = useContext( DbHookContext )
 
+    const thisComponentImage = useCallback(node => {
+        if (node !== null && transitionComplete) {
+            const image = node
+            const colors = handleColorThief(image, 2)
+            colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+        }
+      }, [ transitionComplete ])
 
     useLayoutEffect(() => {
         const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
@@ -32,12 +39,6 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
         const percent = calcScroll( elementHeight )
         setHeaderScrolled( percent <= 100 ? percent : 100 )
     }, [scrollPosition , elementHeight])
-
-
-    const finishMount = (e, amount)=>{
-        const colors = handleColorThief(e.target, amount)
-        colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
-    }
 
     const {scaleDown, fadeOut, moveDown} = useSpring({
         to: {
@@ -84,7 +85,7 @@ const CollectionHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, s
                         <img
                         crossorigin='anonymous' 
                         // ON LOAD HERE ########################################
-                        onLoad={(e) => finishMount(e, 2)} 
+                        ref={ thisComponentImage }
                         className='collectionHeader__img' 
                         src={ whichPicture(collection.images, 'med') } />
                     </animated.div>

@@ -26,10 +26,21 @@ const Album = ({ item }) => {
             </div>
             <h5 className='albumCard__title'> {item.name } </h5>
             <div className='albumCard__meta'>
-            
-                <span> { capital( item.album_type ) } </span>
-                <i className="fas fa-dot-circle"></i>
-                <span> {item.release_date.substr(0, 4)} </span>
+                {
+                    item.album_type ?
+                    <>
+                        <span> { capital( item.album_type ) } </span>
+                        <i className="fas fa-dot-circle"></i>
+                        <span> {item.release_date.substr(0, 4)} </span>
+                    </>
+                    :
+                    <>
+                        <span> by { item.owner.display_name }</span>
+                        <i className="fas fa-dot-circle"></i>
+                        <span> {`${item.tracks.total} tracks`} </span>
+                    </>
+                }
+                
             </div>
         </div> 
     )

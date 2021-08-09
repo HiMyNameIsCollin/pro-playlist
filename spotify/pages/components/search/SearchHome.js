@@ -11,14 +11,15 @@ const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, 
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
-            setTransMinHeight( node.offsetHeight )
-            const ro = new ResizeObserver( entries => setTransMinHeight( node.offsetHeight ))
+            const ro = new ResizeObserver( entries => {
+                if( node.offsetHeight > 0 ) setTransMinHeight( node.offsetHeight )
+            })
             ro.observe( node )
             thisComponentRef.current = node
             
             return () => ro.disconnect()
         }
-      }, []);
+      }, [])
 
     useEffect(() => {
         if( transitionComplete ) {

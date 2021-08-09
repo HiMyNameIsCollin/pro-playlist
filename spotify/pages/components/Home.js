@@ -5,7 +5,6 @@ import { DbHookContext } from './Dashboard'
 import Welcome from './Welcome'
 import Artist from './Artist'
 import Collection from './Collection'
-import HomeHeader from './HomeHeader'
 import FixedHeader from './FixedHeader'
 
 const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
@@ -25,7 +24,6 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
     1
     : 
     1
-
 
     useEffect(() => {
         if( activeHomeItem.id ){
@@ -67,8 +65,7 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
     },[])
     
     const pageTransition = useTransition(activeHomeItem, {
-        initial: { transform: `translateX(${100 * dir}%)`, },
-        from: { transform: `translateX(${100 * dir}%)`, position: 'absolute', minHeight: transMinHeight , width: '100%' , zIndex: 2 },
+        from: { transform: `translateX(${100 * dir}%)`, position: 'absolute',  width: '100%' , zIndex: 2 },
         enter: { transform: `translateX(${0 * dir}%)`, minHeight: transMinHeight},
         update: {  position: 'absolute' },
         leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
@@ -79,13 +76,12 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
     const headerTransition = useTransition(activeHomeItem, {
         from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: 3 },
         update: {  position: 'fixed' },
-        enter: { transform: `translateX(${0 * dir }%)`},
+        enter: { transform: `translateX(${0 * dir }%)` },
         leave: { transform: `translateX(${-100 * dir }%)`, position: 'fixed', zIndex: 1},
     })
 
     const mainTransition = useTransition(activeHomeItem, {
-        initial: { transform: `translateX(${0 * dir }%)`, position: 'absolute', width: '100%'},
-        from: { transform: `translateX(${0 * dir }%)`, position: 'absolute', minHeight: transMinHeight, width: '100%'},
+        from: { transform: `translateX(${0 * dir }%)`, position: 'absolute', width: '100%'},
         enter: { transform: `translateX(${0 * dir }%)`, minHeight: transMinHeight,},
         update: {  position: 'absolute', },
         leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute'},

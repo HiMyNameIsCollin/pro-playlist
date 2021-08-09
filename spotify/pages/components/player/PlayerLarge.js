@@ -6,7 +6,7 @@ import { PlayerHookContext } from './Player'
 import { DbHookContext } from '../Dashboard'
 import { useSpring, animated } from 'react-spring'
 
-const PlayerLarge = ({ controls }) => {
+const PlayerLarge = ({ style, controls }) => {
 
     const  { currPlaying, playerSize, setPlayerSize, } = useContext( PlayerHookContext )
     const  { setActiveHomeItem, setOverlay } = useContext( DbHookContext )
@@ -36,9 +36,7 @@ const PlayerLarge = ({ controls }) => {
     }, [ currPlaying ])
 
     
-    const largePlayerAnimation = useSpring({
-        transform: playerSize === 'large' ? 'translateY(0%)' : 'translateY(100%)'
-    })
+ 
 
     const togglePlayer = () => {
         setPlayerSize('small')
@@ -61,7 +59,7 @@ const PlayerLarge = ({ controls }) => {
 
     return(
         <animated.div
-        style={ largePlayerAnimation }
+        style={ style }
         className='playerLargeContainer'>
             <div className={ `playerLargeContainer__wrapper ${ queueView && 'playerLargeContainer__wrapper--qv'}` }>
                 <div className={`playerLargeContainer__header ${queueView && 'playerLargeContainer__header--qv'} ` }>

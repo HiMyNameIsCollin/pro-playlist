@@ -51,120 +51,7 @@ const routes = {
     followed_artists: 'v1/me/following',
 }
 
-const reducer = (state, action) => {
-    let route
-    let method
-    if(action){
-        route = action.route
-        method = action.method
-    }
-    switch(route) {
-        case routes.user_info:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    user_info: action
-                }
-            }
-        case routes.player_info:
-            if(method==='get'){
-                return{
-                    ...state,
-                    player_info: action
-                }
-            }
-        case routes.my_liked_tracks: 
-            if(method === 'get'){
-                const cleanedUp = action.items.map( item => {
-                    item.track['added_at'] = item.added_at
-                    return item.track
-                })
-                return{
-                    ...state,
-                    my_liked_tracks: [ ...state.my_liked_tracks, ...cleanedUp ]
-                }
-            }
-        case routes.my_playlists:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    my_playlists: [ ...state.my_playlists, ...action.items ]
-                }
-            }
-        case routes.my_albums:
-            if(method === 'get'){
-                const cleanedUp = action.items.map( item => {
-                    item.album['added_at'] = item.added_at
-                    return item.album
-                })
-                return{
-                    ...state,
-                    my_albums: [...state.my_albums, ...cleanedUp]
-                }
-            }
-        case routes.recently_played:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    recently_played: [...state.recently_played, ...action.items]
-                }
-            }             
-        case routes.new_releases:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    new_releases: [...state.new_releases, ...action.albums.items]
-                }
-            }
-        case routes.featured_playlists:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    featured_playlists: [ ...state.featured_playlists, ...action.playlists.items]
-                }  
-            }  
-        case routes.recommendations:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    recommendations: [...state.recommendations, ...action.items]
-                }
-            }
-        case routes.available_genre_seeds:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    available_genre_seeds: [...state.available_genre_seeds, ...action.genres ]
-                }
-            }
-        case routes.my_top_tracks:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    my_top_tracks: [...state.my_top_tracks, ...action.items]
-                }
-            }
-        case routes.my_top_artists:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    my_top_artists: [...state.my_top_artists, ...action.items]
-                }
-            } 
-        case routes.followed_artists:
-            if(method === 'get'){
-                return{
-                    ...state,
-                    followed_artists: [ ...state.followed_artists, ...action.artists.items ]
-                }
-    
-            }
-            
-        default:
-            console.log(action)
-            break         
-    }
-}
+
 
 const initialPageScroll = {
     home: 0,
@@ -173,6 +60,123 @@ const initialPageScroll = {
 }
 const Dashboard = ({ setAuth, audioRef }) => {
 
+
+    const reducer = (state, action) => {
+        let route
+        let method
+        if(action){
+            route = action.route
+            method = action.method
+        }
+        switch(route) {
+            case routes.user_info:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        user_info: action
+                    }
+                }
+            case routes.player_info:
+                if(method==='get'){
+                    return{
+                        ...state,
+                        player_info: action
+                    }
+                }
+            case routes.my_liked_tracks: 
+                if(method === 'get'){
+                    const cleanedUp = action.items.map( item => {
+                        item.track['added_at'] = item.added_at
+                        return item.track
+                    })
+                    return{
+                        ...state,
+                        my_liked_tracks: [ ...state.my_liked_tracks, ...cleanedUp ]
+                    }
+                }
+            case routes.my_playlists:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        my_playlists: [ ...state.my_playlists, ...action.items ]
+                    }
+                } else if( method === 'put'){
+                    
+                }
+            case routes.my_albums:
+                if(method === 'get'){
+                    const cleanedUp = action.items.map( item => {
+                        item.album['added_at'] = item.added_at
+                        return item.album
+                    })
+                    return{
+                        ...state,
+                        my_albums: [...state.my_albums, ...cleanedUp]
+                    }
+                }
+            case routes.recently_played:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        recently_played: [...state.recently_played, ...action.items]
+                    }
+                }             
+            case routes.new_releases:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        new_releases: [...state.new_releases, ...action.albums.items]
+                    }
+                }
+            case routes.featured_playlists:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        featured_playlists: [ ...state.featured_playlists, ...action.playlists.items]
+                    }  
+                }  
+            case routes.recommendations:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        recommendations: [...state.recommendations, ...action.items]
+                    }
+                }
+            case routes.available_genre_seeds:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        available_genre_seeds: [...state.available_genre_seeds, ...action.genres ]
+                    }
+                }
+            case routes.my_top_tracks:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        my_top_tracks: [...state.my_top_tracks, ...action.items]
+                    }
+                }
+            case routes.my_top_artists:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        my_top_artists: [...state.my_top_artists, ...action.items]
+                    }
+                } 
+            case routes.followed_artists:
+                if(method === 'get'){
+                    return{
+                        ...state,
+                        followed_artists: [ ...state.followed_artists, ...action.artists.items ]
+                    }
+        
+                }
+                
+            default:
+                console.log(action)
+                break         
+        }
+    }
     // ENV VARIABLE FOR API?
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
@@ -180,7 +184,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ loaded, setLoaded ] = useState( false )
     const [ scrollPosition, setScrollPosition ] = useState(0)
     const [ overlay, setOverlay ] = useState({})
-    const [ selectOverlay, setSelectOverlay ] = useState( { data: 'aa'})
+    const [ selectOverlay, setSelectOverlay ] = useState( { type: undefined, page: undefined  })
     const [ messageOverlay, setMessageOverlay ] = useState( { message: '', active: false } )
     const [ hiddenUI, setHiddenUI ] = useState( false )
 // activeHeader contains the data from the active page required for certain headers to function
@@ -198,6 +202,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ toBeManaged, setToBeManaged ] = useState( {} )
     const [ homeTransMinHeight, setHomeTransMinHeight ] = useState( 0 )
     const [ searchTransMinHeight, setSearchTransMinHeight ] = useState( 0 )
+
+    const [ hideAll, setHideAll ] = useState(false)
 
     const dashboardRef = useRef()
     const pageScrollRef = useRef( initialPageScroll )
@@ -218,10 +224,16 @@ const Dashboard = ({ setAuth, audioRef }) => {
         searchPageHistoryRef,
         activeHomeItem, 
         setActiveHomeItem, 
+        activeSearchItem, 
+        setActiveSearchItem, 
+        activeManageItem,
+        setActiveManageItem,
         sortContainerOpen, 
         setSortContainerOpen,
         messageOverlay,
         setMessageOverlay,
+        selectOverlay,
+        setSelectOverlay,
         overlay, 
         setOverlay,  
         scrollPosition, 
@@ -233,6 +245,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
         setPlayNextQueue,
         hiddenUI,
         setHiddenUI,
+        hideAll,
+        setHideAll,
         loaded, 
         setLoaded,
         setAuth,
@@ -315,7 +329,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
         finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, 'limit=50' )
         finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , 'limit=50' )
         finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, 'limit=50' )
-        finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 } ) 
+        finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, 'limit=50' ) 
         finalizeRoute( 'get', routes.new_releases, null, null )
         finalizeRoute( 'get', routes.available_genre_seeds, null, false )
         finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
@@ -327,6 +341,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     },[apiPayload])
 //  END OF API CALLS 
  
+
 
 //  When overlay is open, makes the rest of the APP no clicky
     useLayoutEffect(() => {
@@ -397,73 +412,77 @@ const Dashboard = ({ setAuth, audioRef }) => {
     }, [ scrollPosition, activeManageItem, dashboardState ])
 
     useEffect(() => {
-        // const homePage = document.getElementById('homePage')
-        // const searchPage = document.getElementById('searchPage')
-        // const managePage = document.getElementById('managePage')
-        // const pages = [ homePage, searchPage, managePage ]
-        // if( homePage && searchPage && managePage ) {
-        //     pages.forEach( page => {
-        //         page.style.display = 'none'
-        //     })
-        //     if( dashboardState === 'home' ) {
-        //         homePage.style.display = 'block'
-        //         dashboardRef.current.scroll({ 
-        //             top: pageScrollRef.current.home - 160, 
-        //             left: 0,
-        //             behavior: 'auto'
-        //         })
-        //     }
-        //     if( dashboardState === 'search' ) {
-        //         searchPage.style.display = 'block'
-        //         dashboardRef.current.scroll({ 
-        //             top: pageScrollRef.current.search - 160, 
-        //             left: 0,
-        //             behavior: 'auto'
-        //         })
-        //     }
-        //     if( dashboardState === 'manage' ) {
-        //         managePage.style.display = 'block'
-        //         dashboardRef.current.scroll({ 
-        //             top: pageScrollRef.current.manage - 160, 
-        //             left: 0,
-        //             behavior: 'auto'
-        //         })
-        //     }
-            
-        // }
-        if( dashboardState === 'home' ) {
-            homePage.style.display = 'block'
-            dashboardRef.current.scroll({ 
-                top: pageScrollRef.current.home - 160, 
-                left: 0,
-                behavior: 'auto'
+        const homePage = document.getElementById('homePage')
+        const searchPage = document.getElementById('searchPage')
+        const managePage = document.getElementById('managePage')
+        const pages = [ homePage, searchPage, managePage ]
+        if( homePage && searchPage && managePage ) {
+            pages.forEach( page => {
+                page.style.display = 'none'
             })
+            if( dashboardState === 'home' ) {
+                homePage.style.display = 'block'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.home - 160, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
+            if( dashboardState === 'search' ) {
+                searchPage.style.display = 'block'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.search - 160, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
+            if( dashboardState === 'manage' ) {
+                managePage.style.display = 'block'
+                dashboardRef.current.scroll({ 
+                    top: pageScrollRef.current.manage - 160, 
+                    left: 0,
+                    behavior: 'auto'
+                })
+            }
+            
         }
+        // if( dashboardState === 'home' ) {
+        //     homePage.style.display = 'block'
+        //     dashboardRef.current.scroll({ 
+        //         top: pageScrollRef.current.home - 160, 
+        //         left: 0,
+        //         behavior: 'auto'
+        //     })
+        // }
         // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
             
-    },[])
+    },[ dashboardState ])
+
+    useEffect(() => {
+        if( !selectOverlay.type && hideAll ){
+            setTimeout(() => setHideAll( false ), 250)
+        }
+    }, [ selectOverlay ])
 
     const dbScale = useSpring({
-        transform: selectOverlay.data ? 'scaleX(90%) scaleY(95%) ' : 'scaleX(100%) scaleY(100%)' ,
-        borderRadius: selectOverlay.data ? '10px' : '0px'
+        borderRadius: selectOverlay.type ? '10px' : '0px',
+        overflow: selectOverlay.type ? 'hidden' : 'auto'
     })
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
         <DbFetchedContext.Provider value={ dbFetchedState }>
-            <SelectOverlay selectOverlay={ selectOverlay } setSelectOverlay={ setSelectOverlay } />
+
+            <SelectOverlay dbDispatch={ dispatch } />
+
+            <Overlay setActiveSearchItem={ setActiveSearchItem }/>
+            <MessageOverlay messageOverlay={ messageOverlay } setMessageOverlay={ setMessageOverlay } response={ apiPayload } />
 
             <animated.section
             style={ dbScale }
             ref={ dashboardRef }
             onScroll={ handleScroll }
-            className={ `dashboard`}>  
-
-                <Overlay 
-                setActiveSearchItem={ setActiveSearchItem }/>
-
-                <MessageOverlay messageOverlay={ messageOverlay } setMessageOverlay={ setMessageOverlay }/>
-
+            className={ `dashboard ${selectOverlay.type && 'dashboard--shrink'}`}> 
 
                 <Home
                 transMinHeight={ homeTransMinHeight }
@@ -471,7 +490,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 currActiveHomeRef={ currActiveHomeRef }
                 homePageHistoryRef={ homePageHistoryRef }/> 
 
-                {/* <Search
+                <Search
                 transMinHeight={ searchTransMinHeight }
                 setTransMinHeight={ setSearchTransMinHeight }
                 activeSearchItem={ activeSearchItem }
@@ -489,7 +508,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 toBeManaged={ toBeManaged }
                 setToBeManaged={ setToBeManaged }
                 manageState={ manageState }
-                setManageState={ setManageState } /> */}
+                setManageState={ setManageState } />
                 
                 <Player 
                 hiddenUI={ hiddenUI } 
@@ -512,6 +531,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 dashboardState={ dashboardState }
                 setDashboardState={ setDashboardState } />
             </animated.section>
+                
         </DbFetchedContext.Provider>
         </DbHookContext.Provider>  
     )

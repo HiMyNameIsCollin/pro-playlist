@@ -63,7 +63,7 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
         <animated.div style={ overlayActive } className='searchOverlay'>
             
             <header className='searchOverlay__header'>
-                <form>
+                <form className='searchOverlay__form'>
                     <i className="fas fa-search"></i>
                     <input ref={ searchBarRef } onChange={ (e) => setSearchInput( e.target.value ) } type='text' placeholder='Search'/>
                 </form>

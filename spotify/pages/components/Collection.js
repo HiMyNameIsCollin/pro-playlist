@@ -111,14 +111,15 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
-            setTransMinHeight( node.offsetHeight )
-            const ro = new ResizeObserver( entries => setTransMinHeight( node.offsetHeight ))
+            const ro = new ResizeObserver( entries => {
+                if( node.offsetHeight > 0 ) setTransMinHeight( node.offsetHeight )
+            })
             ro.observe( node )
             thisComponentRef.current = node
             
             return () => ro.disconnect()
         }
-      }, []);
+      }, [])
 
     useEffect(() => {
         if( transitionComplete ) {
@@ -239,7 +240,8 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             setHeaderScrolled={ setHeaderScrolled }
             setActiveItem={ setActiveItem }
             setActiveHeader={ setActiveHeader }
-            data={{collection, tracks, artists,}}/>
+            data={{collection, tracks, artists,}}
+            transitionComplete={ transitionComplete }/>
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             {
             type === 'album' && 

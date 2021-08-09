@@ -121,22 +121,28 @@ i
     opacity: 0
     pointer-events: none
 
+.container
+    position: relative
 
 .dashboard
     @include pseudo
     display: flex
     min-height: 100vh
+    max-height: 100vh
     flex-direction: column
     overflow: auto
     overflow-x: hidden
     transform-origin: 50% bottom
+    transition: all 0.25s ease-in-out
+    margin: auto
     width: 100%
     &::before
         background: $darkGrey
         opacity: 0.9
     &--blurred
         filter: blur(5px)
-
+    &--shrink
+        transform: scaleX(0.90) scaleY(0.97)
 
 
 .smoothScroll
@@ -231,12 +237,22 @@ i
             z-index: 3
     &--welcome
         padding: 0 0 min(20vh, 8rem) 0 
+        will-change: transform
+        &::after
+            @include scrimGradient( $green, '135deg')
+            top: 0
+            left: 0
+            opacity: 0.25
+            z-index: -1
     &--manage
         padding: 7rem 0
     &--collection
         padding: 0 0 8rem 0
+        will-change: transform
     &--artist        
         padding: 0 0 8rem 0
+        will-change: transform
+
     &--search
         padding: 9rem 0 
  
@@ -247,7 +263,7 @@ i
 
 #homePage, #searchPage, #managePage
     display: none
-
+    
 
 
 .showcase
@@ -322,6 +338,8 @@ i
         overflow: hidden
         text-overflow: ellipsis
         white-space: nowrap
+        &--active
+            color: $green
     &__meta
         align-self: flex-start
         grid-row: 2/3
@@ -400,6 +418,7 @@ i
     background: linear-gradient(to bottom, var(--currentTrackColor1) 0%, var(--currentTrackColor0)), linear-gradient(to right, var(--currentTrackColor1), var(--currentTrackColor0)) 
     min-height: -webkit-fill-available
     max-height: -webkit-fill-available
+    top: 0
     position: fixed
     display: flex
     width: 100%
@@ -823,13 +842,14 @@ i
             width: 75%
         &::before
             @include scrimGradient($black, 'to top')
+            opacity: .75
             z-index: -1
     &--home
         .fixedHeader__main
-            background: linear-gradient(to bottom, var(--headerColorhome1) 0% , var(--headerColorhome0)), linear-gradient(to right, var(--headerColorhome1) , var(--headerColorhome0))
+            background: linear-gradient(to bottom, var(--headerColorhome1) 0% ,  var(--headerColorhome0)), linear-gradient(to right, var(--headerColorhome1) , var(--headerColorhome0))
     &--search
         .fixedHeader__main
-            background: linear-gradient(to bottom, var(--headerColorsearch1) 0% , var(--headerColorsearch0)), linear-gradient(to right, var(--headerColorsearch1) , var(--headerColorsearch0))
+            background: linear-gradient(to bottom, var(--headerColorsearch1) 0% ,  var(--headerColorsearch0)), linear-gradient(to right, var(--headerColorsearch1) , var(--headerColorsearch0))
 
 .welcomeHeader
     align-items: center
@@ -911,36 +931,36 @@ i
             font-size: .8rem
             font-weight: 600
             padding: 0 .5rem   
-        form
-            @include pseudo
-            align-items: center
-            background: $black
-            border-radius: 10px
+    &__form
+        @include pseudo
+        align-items: center
+        background: $black
+        border-radius: 10px
+        color: $white
+        display: flex
+        padding: .5rem
+        margin: .5rem
+        width: auto
+        min-width: calc(100% - 5rem)
+        input
+            background: none
+            border: none
             color: $white
-            display: flex
-            padding: .5rem
-            margin: .5rem
-            width: auto
-            min-width: calc(100% - 5rem)
-            input
-                background: none
-                border: none
+            user-select: initial
+            padding: 0 .5rem
+            font-size: 1rem
+            height: 100%
+            width: 100%
+            &:focus
+                outline: none
+            &::placeholder
                 color: $white
-                user-select: initial
-                padding: 0 .5rem
-                font-size: 1rem
-                height: 100%
-                width: 100%
-                &:focus
-                    outline: none
-                &::placeholder
-                    color: $white
-            i
-                color: $white
-                font-size: 1rem
-            &::before
-                background: $grey
-                opacity: 0.5
+        i
+            color: $white
+            font-size: 1rem
+        &::before
+            background: $grey
+            opacity: 0.5
 
 .searchFilters
     display: flex
@@ -1582,34 +1602,35 @@ i
 
 .messageOverlay
     bottom: 2rem
-    display: flex
     left: 0
+    padding: 0 1rem
+    pointer-events: none
     position: fixed
     width: 100%
     z-index: 12
     p
         @include pseudo
         @include shadowA
-        background: $black
+        background: $white
         border-radius: 5px
-        color: $white
+        color: $black
         margin: auto
-        text-align: center
         padding: .5rem 2rem
         &::before
-            @include scrimGradient( $grey, '45deg')
+            @include scrimGradient( $lightGrey, '45deg')
+            opacity: 0.25
 
     
 .selectOverlay
     background: $darkGrey
+    color: $white
     border-radius: 20px
     border-bottom-right-radius: 0
     border-bottom-left-radius: 0
-    color: $white
-    grid-template-rows: auto 1fr
+    display: grid
     margin-top: auto
-    min-height: 80vh
-    max-height: 80vh
+    min-height: 90vh
+    max-height: 90vh
     position: relative
     overflow: hidden
     width: 100%
@@ -1622,38 +1643,45 @@ i
         left: 0
         text-align: center
         width: 100%
+        z-index: 2
         &::before
             @include scrimGradient($darkGrey, 'to bottom')
             opacity: 0.7
         &::after
             @include scrimGradient($black, 'to right')
             opacity: 0.7
-    &__container
-        display: flex
-        min-height: -webkit-fill-available
-        max-height: 100vh
-        min-width: 100vw
-        position: fixed
-        z-index: 10
+        button
+            position: absolute
+            top: 0
+            height: 100%
+            left: 1rem
     &__main
         padding: 1rem 0
-        min-height: 100%
+        position: relative
+        min-height: 90vh
+        height: auto
+        overflow: auto
         min-width: 100%
     &__scroll
-            padding: 3rem 0 
-            position: absolute
-            overflow: auto
-            top: 5
-            height: 100%
-            width: 100%
-
-  
+        display: flex
+        flex-direction: column
+        padding: 3rem 1rem
+        position: absolute
+        top: 5
+        height: auto
+        width: 100%
+    &__form
+        
+.playlistMenu
+    &__newBtn
+        background: $white
+        border-radius: 20px
+        color: $black
+        padding: 1rem 2rem
+        margin: .5rem auto
+    
         
 @media only screen and (min-width: 768px)
     .login
         padding: 4rem 4rem 2rem 4rem
-
-@media only screen and (min-width: 1536px)
-    .container
-        background-image: $bg__1--lg
 

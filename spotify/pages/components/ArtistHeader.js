@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useContext } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useContext, useCallback } from 'react'
 import { useSpring, animated } from 'react-spring'
 import useApiCall from '../hooks/useApiCall'
 import { whichPicture } from '../../utils/whichPicture'
@@ -11,7 +11,7 @@ const routes = {
     followed_artists: 'v1/me/following'
 }
 
-const ArtistHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader,  }) => {
+const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader,  }) => {
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
@@ -23,6 +23,15 @@ const ArtistHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, activ
     const thisHeaderRef = useRef()
     const { scrollPosition } = useContext( DbHookContext )
     const { followed_artists } = useContext( DbFetchedContext )
+
+    
+    const thisComponentImage = useCallback(node => {
+        if (node !== null && transitionComplete) {
+            const image = node
+            const colors = handleColorThief(image, 2)
+            colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+        }
+      }, [ transitionComplete ])
 
     useEffect(() => {
         const following = followed_artists.find( x => x.name === artist.name )
@@ -37,11 +46,6 @@ const ArtistHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, activ
             setHeaderScrolled( 0 )
         }
     },[])
-    
-    const finishMount = (e, amount)=>{
-        const colors = handleColorThief(e.target, amount)
-        colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
-    }
 
     const handleFollow = () => {
         // finalizeRoute('PUT', routes.followed_artists, artist.id, null, 'type=artist', `ids=${ artist.id }`)
@@ -76,10 +80,9 @@ const ArtistHeader = ({ pageType, data, headerScrolled, setHeaderScrolled, activ
                 <img 
                 crossOrigin='anonymous' 
                 // ON LOAD HERE ########################################
-                onLoad={(e) => finishMount(e, 2)}
+                ref={ thisComponentImage }
                 src={ whichPicture(artist.images, 'lrg') }
-                alt='Artist'
-                /> 
+                alt='Artist'/> 
                 <animated.h1 style={{
                     opacity: fadeOut.to( o => o )
                 }}> {artist.name} </animated.h1>

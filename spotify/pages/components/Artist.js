@@ -12,7 +12,7 @@ import { SearchHookContext } from './search/Search'
 const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, transition, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader }) => {
 
 
-    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem } = useContext( DbHookContext )
+    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem, setSearchOverlay } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext )
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
@@ -105,14 +105,15 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
-            setTransMinHeight( node.offsetHeight )
-            const ro = new ResizeObserver( entries => setTransMinHeight( node.offsetHeight ))
+            const ro = new ResizeObserver( entries => {
+                if( node.offsetHeight > 0 ) setTransMinHeight( node.offsetHeight )
+            })
             ro.observe( node )
             thisComponentRef.current = node
             
             return () => ro.disconnect()
         }
-      }, []);
+      }, [])
 
     useEffect(() => {
         if( transitionComplete ) {
@@ -153,12 +154,13 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
                 setHeaderScrolled={ setHeaderScrolled }
                 activeHeader={ activeHeader }
                 setActiveHeader={ setActiveHeader }
-                data={{ artist }} />
+                data={{ artist }} 
+                transitionComplete={ transitionComplete } />
             }
 
                 
                 <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks, artist: artist} } setOverlay={ setOverlay }/>
-                <AlbumContainer type='artist--page' albums={ all_albums } />
+                <AlbumContainer page={ searchContext ? 'search' : 'home' } albums={ all_albums } />
                 <Slider 
                 message='Fans also enjoy'
                 items={ related_artists }

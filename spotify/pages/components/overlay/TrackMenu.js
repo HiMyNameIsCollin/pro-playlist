@@ -6,8 +6,7 @@ import { DbHookContext } from '../Dashboard'
 
 const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track }) => {
 
-    const { overlay, setOverlay, setPlayNextQueue, toBeManaged, setToBeManaged, setMessageOverlay } = useContext( DbHookContext )
-    
+    const { overlay, setOverlay, setPlayNextQueue, toBeManaged, setToBeManaged, setMessageOverlay, setSelectOverlay, setHideAll } = useContext( DbHookContext )
 
     const copyToClip = () => {
         console.log(track)
@@ -57,6 +56,14 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
         setMessageOverlay({ message: `${track.name} added to manager`, active: true })
         setOverlay( {} )
         setToBeManaged( track ) 
+    }
+
+    const handleAddToPlaylist = (e) => {
+        e.stopPropagation()
+        setOverlay( {} )
+        setHideAll(true)
+        setTimeout(() => setSelectOverlay( {type:'playlists', page: 'home', data: [track] }), 500)
+        
     }
 
     return(
@@ -111,6 +118,10 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
             <button onClick={ handleAddToManager }>
                 <i className="far fa-plus-square"></i>
                 <span>Add track to Manager</span>
+            </button>
+            <button onClick={ handleAddToPlaylist }>
+                <i className="far fa-plus-square"></i>
+                <span>Add track to playlist</span>
             </button>
         </animated.div>
     )
