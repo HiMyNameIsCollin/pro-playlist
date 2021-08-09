@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useContext } from 'react'
-import { useSpring, animated } from 'react-spring'
+import { useSpring, animated, useTransition } from 'react-spring'
 import SearchFilters from './SearchFilters'
 import SearchResults from './SearchResults'
 import useApiCall from '../../hooks/useApiCall'
 
-const SearchOverlay = ({ searchState, setSearchState }) => {
+const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) => {
 
 
 
@@ -20,18 +20,10 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const searchBarRef = useRef()
 
-    const overlayActive = useSpring({
-        opacity: searchState === 'search' ? 1 : 0,
-        pointerEvents: searchState === 'search' ?  'auto ': 'none'
-    })
 
     useEffect(() => {
         if( searchState === 'search' ) searchBarRef.current.focus()
-        if( searchState !=='search' && searchInput !== '' ) {
-            setSearchInput('')
-            searchBarRef.current.value = ''
-        }
-    }, [ searchState ])
+    }, [ searchState  ])
 
     useEffect(() => {
         if(searchInput !== ''){
@@ -58,9 +50,16 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
         }
     }, [ apiPayload ])
 
+    // const overlaySelectTrans = useTransition( {
+
+    // })
+    
+    // const overlayExit = useSpring({
+    //     transform: activeItem.type ? 'translateX(-100%)': 'translateX(0%)'
+    // })
 
     return(
-        <animated.div style={ overlayActive } className='searchOverlay'>
+        <animated.div style={ style } className='searchOverlay'>
             
             <header className='searchOverlay__header'>
                 <form className='searchOverlay__form'>
@@ -93,7 +92,8 @@ const SearchOverlay = ({ searchState, setSearchState }) => {
             albumResults={ albumResults }
             artistResults={ artistResults }
             trackResults={ trackResults }
-            playlistResults={ playlistResults } />
+            playlistResults={ playlistResults }
+            setActiveItem={ setActiveItem } />
             }
 
         </animated.div>

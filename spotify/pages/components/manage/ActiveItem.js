@@ -48,33 +48,15 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
         }
     }
     
-
-
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const [ state, dispatch ] = useReducer(reducer, initialState)
     const currentActiveItemRef = useRef({})
     const [ selectedItems, setSelectedItems ] = useState( [] )
-    const [ disabled, setDisabled ] = useState( false )
     const [ image, setImage ] = useState()
-
+    const [ disabled, setDisabled ] = useState( false )
     const { items, artist } = { ...state }
     const { user_info } = useContext( DbFetchedContext )
-
-    useEffect(() => {
-        if(dragging){
-            if( orientation === 'bottom' && 
-            !data.collaborative &&
-            !data.owner ||
-            data.owner && data.owner.display_name !== user_info.display_name ||
-            data.name === 'Liked Tracks' ||
-            data.name === 'To be added'){
-                setDisabled(true)
-            }
-        } else {
-            if( disabled ) setDisabled( false )
-        }
-    }, [ dragging ])
 
     useEffect(() => {
         if(artist.images) setImage( whichPicture( artist.images, 'sm' ) )
@@ -91,7 +73,6 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
         }
         
     }, [data])
-
 
     useEffect(() => {
         if( data.id ){
@@ -134,10 +115,28 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
         if(apiPayload) dispatch(apiPayload)
     }, [ apiPayload ])
 
-    
+    useEffect(() => {
+        if( dragging ){
+            if(data.type === 'sortPlaylist'){
+                setDisabled( true )
+            }
+            if(( data.id === '1' || data.id === '2' ) &&
+            dragging.source.droppableId !== orientation ){
+                setDisabled(true)
+            }
+            if(( !data.collaborative || data.owner && data.owner.display_name === user_info.display_name ) && orientation === 'bottom'){
+                setDisabled(true)
+            }
+        }else {
+           
+            setDisabled( false )
+            
+        }
+    }, [ dragging ])
+
     return(
 
-        <animated.div style={ style } className={`activeItem activeItem--${ orientation }  ${ disabled && 'activeItem__itemContainer--disabled'} `}>
+        <animated.div style={ style } className={`activeItem activeItem--${ orientation } ${ disabled && `activeItem--disabled`}`}>
         {
             data.type === 'sortPlaylist' &&
             <div className={`activeItem__itemContainer activeItem__itemContainer--full`}>
@@ -190,14 +189,17 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
                         <Slider message={ `Releases by ${ data.name }` } items={items} setActiveItem={ setActiveItem }/>
                     </div>
                     :
-                    <Droppable droppableId={ orientation }>
+                    <Droppable 
+                    isDropDisabled={ disabled ? true : false}
+                    droppableId={ orientation }>
                         { provided => (
                             <ul className={ `activeItem__itemContainer__scroll activeItem__itemContainer__scroll--${ orientation } `} {...provided.droppableProps} ref={provided.innerRef}>
                             {
                                 items.map(( item, i ) => (
                                         <ActiveItemTrack 
+                                        orientation={ orientation }
                                         track={ item } 
-                                        key={ item.id }
+                                        key={ `${ orientation }--${item.id}--${i}` } 
                                         index={ i }
                                         selectedItems={ selectedItems }
                                         setSelectedItems={ setSelectedItems }/>

@@ -43,6 +43,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
             if( !likedPlaylist ) {
                 let playlist = {
                     name: 'Liked Tracks',
+                    id: '1',
                     description: 'Your favorite songs',
                     items: my_liked_tracks,
                 }
@@ -58,6 +59,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
             if( !managerPlaylist){
                 let playlist = {
                     name: 'To be added',
+                    id: '2',
                     description: 'Tracks in need of a playlist to call home',
                     items: [ toBeManaged ],
                 }
@@ -146,20 +148,32 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
         leave: { transform: 'translate3d( 0, 100%, 0)' },
     })
 
+    const overlayTrans = useTransition( manageState , {
+        initial: { opacity: 0 },
+        from: { opacity: 0, transform: 'translateX(0%)' },
+        enter: { opacity: 1 },
+        leave: { opacity: 0 }
+    })
 
 
     return(
         <ManageHookContext.Provider value={ manageHookState }>
-            <SearchOverlay type={'manage'} searchState={ manageState } setSearchState={ setManageState } />
             {
-                    manageTrans(( props, item ) => (
-                        
-                            item &&
-                            <SortContainer style={ props } setSortContainerOpen={ setSortContainerOpen } /> 
-                        
-                        
-                    ))
-                }
+                overlayTrans(( props, item) => (
+                    item === 'search' &&
+                    <SearchOverlay style={ props } setActiveItem={ setActiveManageItem } searchState={ manageState } setSearchState={ setManageState } />
+
+                ))
+            }
+            {
+                manageTrans(( props, item ) => (
+                    
+                        item &&
+                        <SortContainer style={ props } setSortContainerOpen={ setSortContainerOpen } /> 
+                    
+                    
+                ))
+            }
             {
                 manageOverlayTrans(( props, item ) => (
                     item.type &&

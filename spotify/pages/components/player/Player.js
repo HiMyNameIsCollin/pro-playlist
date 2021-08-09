@@ -68,7 +68,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize }) => {
     },[ qIndex , queue])
 
     const getTrack = ( track ) => {
-        if( track.album ) {
+        if( track.album && track.preview_url) {
             setCurrPlaying( track )
         } else {
             queuedTrackContextRef.current.push(track.context)

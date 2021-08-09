@@ -77,10 +77,10 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
                         return item
                     }
                 })
-                const allSongs = songs.filter( x => x.preview_url)
+                // const allSongs = songs.filter( x => x.preview_url)
                 return{
                     ...state,
-                    tracks: allSongs
+                    tracks: songs
                 }
             case routes.recommendations :
                 const recommendations = action.tracks.map(track => track.album)

@@ -4,7 +4,7 @@ import ResultCard from './ResultCard'
 import { DbFetchedContext } from '../Dashboard'
 
 
-const SearchResults = ({ activeFilter, searchInput, artistResults, albumResults, trackResults, playlistResults }) => {
+const SearchResults = ({ setActiveItem, activeFilter, searchInput, artistResults, albumResults, trackResults, playlistResults }) => {
 
     const [ personalResult, setPersonalResult ] = useState( {} )
     const [ results, setResults ] = useState( [] )
@@ -35,10 +35,10 @@ const SearchResults = ({ activeFilter, searchInput, artistResults, albumResults,
         <div className='searchResultsContainer'>
             {
             personalResult.images && activeFilter === 'Top' &&
-            <RecommendCard data={ personalResult } />    
+            <RecommendCard setActiveItem={ setActiveItem } data={ personalResult } />    
             }
             {
-            results.map( res => <ResultCard data={ res } />)
+            results.map( res => <ResultCard  setActiveItem={ setActiveItem } data={ res } />)
             }
         </div>
     )

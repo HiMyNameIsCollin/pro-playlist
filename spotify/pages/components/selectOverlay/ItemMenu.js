@@ -33,7 +33,7 @@ const ItemMenu = ({ style, handleClose, handlePlaylist, type, items }) => {
                             New playlist 
                         </button>
                         
-                        <form className='selectOverlay__form searchOverlay__header__form'>
+                        <form className='selectOverlay__form searchOverlay__form'>
                             <i className="fas fa-search"></i>
                             <input type='text' placeholder='Search playlists'/>
                         </form>

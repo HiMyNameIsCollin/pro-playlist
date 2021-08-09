@@ -7,7 +7,7 @@ import { ManageHookContext } from '../manage/Manage'
 import { DbFetchedContext } from '../Dashboard'
 
 
-const RecommendCard = ({ data }) => {
+const RecommendCard = ({ setActiveItem, data }) => {
 
     const [ appearsOn, setAppearsOn ] = useState([])
     
@@ -20,9 +20,9 @@ const RecommendCard = ({ data }) => {
     const { user_info } = useContext( DbFetchedContext )
     
     
-    const setActiveItem = searchContext ? 
-                          searchContext.setActiveSearchItem :
-                          manageContext.setActiveManageItem
+    // const setActiveItem = searchContext ? 
+    //                       searchContext.setActiveSearchItem :
+    //                       manageContext.setActiveManageItem
     
     
     useEffect(() => {
@@ -42,7 +42,7 @@ const RecommendCard = ({ data }) => {
 
     return(
         <div className='recommendCard'>
-            <ResultCard data={ data }/>
+            <ResultCard setActiveItem={ setActiveItem } data={ data }/>
             
             <Slider message={`Featuring ${data.name}`} items={ appearsOn } setActiveItem={ setActiveItem }/>
         </div>

@@ -76,11 +76,14 @@ const SortContainer = ({ style }) => {
         if( e.source === e.destination){
             
         }
-        setDragging( false )
+        setDragging( undefined )
+    }
+
+    const dragUpdate = (e) => {
     }
 
     const dragStart = (e) => {
-        setDragging( true )
+        setDragging( e )
     }
     
     return(  
@@ -88,6 +91,7 @@ const SortContainer = ({ style }) => {
 
         <DragDropContext 
         onDragStart={ dragStart }
+        onDragUpdate={ dragUpdate }
         onDragEnd={ dragEnd } >
             <div 
             ref={ sortContainerRef }

@@ -1441,18 +1441,18 @@ i
     overflow: hidden
     width: 100%
     &--disabled
-            @include pseudo
-            overflow: hidden
+        @include pseudo
+        overflow: hidden
+        pointer-events: none
+        &::before
+            @include scrimGradient( $black, 'to bottom')
             pointer-events: none
-            &::before
-                @include scrimGradient( $black, 'to bottom')
-                pointer-events: none
-                z-index: 1
-            &::after
-                background: $black
-                opacity: 0.75
-                pointer-events: none
-                z-index: 1
+            z-index: 1
+        &::after
+            background: $black
+            opacity: 0.75
+            pointer-events: none
+            z-index: 1
     &--top
         grid-template-rows: 1fr auto
         grid-template-columns: 1fr 3rem

@@ -22,6 +22,7 @@ const ManageCard = ({ item, listType }) => {
         <div onClick={ () => setActiveManageItem( item ) } className={ `mngCard mngCard--${listType} mngCard--${item.type}` }>
             <div className={ `mngCard__imgContainer mngCard__imgContainer--${listType} mngCard__imgContainer--${item.type} `}>
                 <img
+                loading='lazy'
                 alt='Liked tracks playlist cover' 
                 src={ image } />
             </div>

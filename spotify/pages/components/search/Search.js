@@ -235,11 +235,28 @@ const Search = ({
         onRest: () => setTransitionComplete(true)
     })
 
+    const overlayTrans = useTransition( searchState , {
+        initial: { opacity: 0 },
+        from: { opacity: 0, transform: 'translateX(0%)' },
+        enter: { opacity: 1 },
+        leave: item => activeSearchItem.type ? { transform: 'translateX(-100%' } : { opacity: 0 }
+    })
+
     return(
         <SearchHookContext.Provider value={ searchHookState }>   
 
-        <div id='searchPage' >
-            <SearchOverlay searchState={ searchState } setSearchState={ setSearchState }/>
+        <div id='searchPage' style={{ position: 'relative'}} >
+        {
+            overlayTrans(( props, item ) => (
+                item === 'search' &&
+                <SearchOverlay 
+                setActiveItem={ setActiveSearchItem } 
+                style={ props } 
+                searchState={ searchState } 
+                setSearchState={ setSearchState }/>
+                
+            ))
+        }
         {
             headerTransition2(( props, item ) => (
                 <animated.div style={ props }>
