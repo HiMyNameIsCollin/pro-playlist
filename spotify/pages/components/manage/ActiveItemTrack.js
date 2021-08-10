@@ -51,11 +51,11 @@ const ActiveItemTrack = ({ track, orientation, index, selectedItems, setSelected
                         {...provided.draggableProps} 
                         {...provided.dragHandleProps}
                         className={ `activeItemTrack `} >
-                            <div className={`activeItemTrack__title`}> 
-                                <h5>
+                            <div > 
+                                <p className='activeItemTrack__title'>
                                     { thisTrack.name }
-                                </h5>
-                                <p>
+                                </p>
+                                <p className='activeItemTrack__info'>
                                 {                    
                                     thisTrack.artists.map(( artist, i ) => i === thisTrack.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
                                 }

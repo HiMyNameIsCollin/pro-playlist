@@ -16,9 +16,9 @@ const SearchHeader = ({ setSearchState }) => {
     })
     return(
         <animated.header style={hideHeader} className='searchHeader'>
-            <h1 className='searchHeader__title'>
+            <p className='searchHeader__title'>
                 Search
-            </h1>
+            </p>
             <div className='searchHeader__search' onClick={() => setSearchState('search') }>
                 <i className="fas fa-search"></i>
                 <input type='text' placeholder='Search for artists, songs, or podcasts'/>

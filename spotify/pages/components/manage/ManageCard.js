@@ -27,12 +27,12 @@ const ManageCard = ({ item, listType }) => {
                 src={ image } />
             </div>
             
-            <div className={ `mngCard__info mngCard__info--${listType}`}>
-                <h5> { item.name } </h5>
+            <div className={ `mngCard__meta mngCard__meta--${listType}`}>
+                <p className='mngCard__title'> { item.name } </p>
                 {
                 item.type !== 'artist' &&
                     <>
-                        <p> 
+                        <p className='mngCard__info'> 
                             { item.type.charAt(0).toUpperCase() + item.type.substr( 1 )  } 
                             <i className="fas fa-dot-circle"></i>
                         {

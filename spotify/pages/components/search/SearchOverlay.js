@@ -79,9 +79,9 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
             !playlistResults.length &&
             !trackResults.length ?
             <div className='searchOverlay__defaultMsg'>
-                <h1>
+                <p>
                     Find what you love
-                </h1>
+                </p>
                 <p>
                     Search for artists, tracks, playlists and albums.
                 </p>

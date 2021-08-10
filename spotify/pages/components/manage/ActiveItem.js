@@ -152,8 +152,8 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
                 <img src={ image } alt={ `${data.name} image`} />
             </div>
             <div className={`activeItem__meta activeItem__meta--${ orientation }`}>
-                <h4> { data.name } </h4>
-                <div>
+                <p className='activeItem__title'> { data.name } </p>
+                <div className='activeItem__info'>
                 {
                     data.type !== 'artist' ?
                     data.artists ?

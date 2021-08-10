@@ -68,9 +68,9 @@ const ResultCard = ({ data, setActiveItem }) => {
                 }
                 
             </div>
-            <h5 className='resultCard__name'>
+            <p className='resultCard__name'>
                 { data.name }
-            </h5>   
+            </p>   
             <span className='resultCard__type'> { data.type.charAt(0).toUpperCase() + data.type.slice(1) } </span>
             {
             data.type !== 'track' ?

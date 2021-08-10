@@ -15,9 +15,9 @@ const ManageOverlay = ({ data, setData, sortFilters, setSort, style }) => {
 
             <div
             className='sortMenu'>
-                <h5>
+                <p className='sortMenu__title'>
                     { data.type }
-                </h5>
+                </p>
                 {
                     sortFilters.map( f => {
                         return <button onClick={ ()=> setSort(f)} className='sortMenu__filterBtn'> { f } </button>

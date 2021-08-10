@@ -441,8 +441,9 @@ i
         h5
             color: $lightGreen
     &--album
-        h5, span
-            padding: 0
+        .track
+            &__title, &__info
+                padding: 0
     &--playerCollapsed
         padding: 0
         min-width: calc(100% - 4rem)
@@ -927,8 +928,8 @@ i
         opacity: .7
     &__title
         @include sectionTitle
+        @include bigBold
         padding: 1rem 0
-        font-size: 1.5rem
         width: 100%
     &__search
         align-items: center
@@ -966,6 +967,8 @@ i
         padding: 0 2rem
         text-align: center
         margin: auto
+        p:nth-of-type(1)
+            @include bigBold
     &__header
         background: $darkGrey
         display: flex
@@ -990,12 +993,12 @@ i
         width: auto
         min-width: calc(100% - 5rem)
         input
+            @include midFirm
             background: none
             border: none
             color: $white
             user-select: initial
             padding: 0 .5rem
-            font-size: 1rem
             height: 100%
             width: 100%
             &:focus
@@ -1014,6 +1017,7 @@ i
     overflow-x: auto
     padding: .5rem 0
     &__btn
+        @include smallFirm
         flex: 0 0 auto
         border: solid $white 1px
         border-radius: 25px
@@ -1046,6 +1050,7 @@ i
     i
         grid-row: 1/3
     &__name
+        @include smallFirm
         align-self: flex-end
         grid-column: 2/3
         grid-row: 1/2
@@ -1054,6 +1059,7 @@ i
         overflow: hidden
         white-space: nowrap
     &__type
+        @include smallSkin
         align-self: flex-start
         color: $lightGrey
         grid-column: 2/3
@@ -1363,10 +1369,10 @@ i
         i
             font-size: .8rem
     &__btn
+        @include smallFirm
         background: inherit
         border: solid $white 1px
         border-radius: 25px
-        font-size: .8rem
         margin: 0 .5rem
         padding: .25rem 1rem
         text-align: center
@@ -1418,20 +1424,11 @@ i
         img
             height: 100%
             max-width: 100%
-    &__info
+    &__meta
         padding-left: 1rem
         font-weight: 500
         width: 100%
         z-index: 2
-        h5, p
-            overflow: hidden
-            white-space: nowrap
-            text-overflow: ellipsis
-        p
-            font-size: .8rem
-            i
-                font-size: .8rem
-                padding: 0 .5rem
         &--bar
             grid-column: 2/3
             grid-row: 1/3
@@ -1440,6 +1437,17 @@ i
             left: 0
             padding: 1rem
             position: absolute
+    &__title
+        @include smallBold
+    &__title, &__info
+        overflow: hidden
+        white-space: nowrap
+        text-overflow: ellipsis
+    &__info
+        @include smallSkin
+        i
+            font-size: .8rem
+            padding: 0 .5rem
     &--artist
         border-radius: 50%
         img
@@ -1531,24 +1539,7 @@ i
         padding: 0 .5rem
         margin:.5rem 0
         text-align: end
-        h4
-            text-overflow: ellipsis
-            overflow: hidden
-            white-space: nowrap
-            width: 100%
-        div
-            display: flex
-            justify-content: space-between
-            span
-                font-size: .8rem
-                text-overflow: ellipsis
-                overflow: hidden
-                white-space: nowrap
-            span:nth-of-type(1)
-                font-weight: 700 
-            span:nth-of-type(2)
-                margin: 0 .5rem
-                               
+        width: 100%
         &--bottom
             div
                 span:nth-of-type(1)
@@ -1559,6 +1550,26 @@ i
             grid-column: 1/2
             grid-row: 2/3
             text-align: start
+    &__title
+        @include midBold
+        text-overflow: ellipsis
+        overflow: hidden
+        white-space: nowrap
+        width: 100%
+    &__info
+        display: flex
+        justify-content: space-between
+        span
+            text-overflow: ellipsis
+            overflow: hidden
+            white-space: nowrap
+        span:nth-of-type(1)
+            @include smallFirm
+        span:nth-of-type(2)
+            @include smallSkin
+            margin: 0 .5rem
+                               
+
     &__itemContainer
         background: $darkGrey
         position: relative
@@ -1595,14 +1606,13 @@ i
     display: flex
     padding: 1rem .5rem
     &__title
-        font-size: 1rem
+        @include smallFirm
         overflow: hidden
-        h5, p
-            overflow: hidden
-            text-overflow: ellipsis
-            white-space: nowrap
-        p
-            font-size: 0.8rem
+        text-overflow: ellipsis
+        white-space: nowrap
+    &__info
+        @include smallSkin
+        color: $lightGrey
     &__btn
         display: none
         margin: 0 0 0 auto
@@ -1632,10 +1642,12 @@ i
     flex-direction: column
     margin-top: auto
     padding: 0 1rem
-    h5
+    &__title
+        @include midBold
         color: $lightGrey
         padding: 1rem 0
     &__filterBtn
+        @include midFirm
         color: $white
         margin: 1rem 0
         text-align: start
@@ -1650,7 +1662,7 @@ i
     i
         font-size: 1rem
     &__btn
-        font-size: 0.8rem
+        @include smallFirm
         margin-right: auto
         span
             padding: 0 1rem
