@@ -5,11 +5,11 @@ const Slider = ({ message, items, setActiveItem  }) => {
         <section className='slider'>
             {
                 message &&
-                <div className='slider__title'>
-                    <h4>
+                <p className='slider__title'>
+                    
                     { message }
-                    </h4>
-                </div>
+                    
+                </p>
             }
             
             <div className='slider__carousel'>

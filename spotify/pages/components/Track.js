@@ -149,7 +149,7 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
 
         {
             type === 'artist' &&
-            <p> { trackIndex + 1 } </p> 
+            <p className='track__trackIndex'> { trackIndex + 1 } </p> 
         }
 
         {
@@ -164,10 +164,10 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
             </div>
         }
         
-            <h5>
+            <p className='track__title'>
                 { track.name }
-            </h5>
-            <span>
+            </p>
+            <span className='track__info'>
                 {
                     track.artists.map((artist , j) => j !== track.artists.length - 1 ? `${ artist.name }, ` : `${ artist.name }`)
                 }

@@ -87,7 +87,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
 
     return(
         <div className='plQueueView'>
-            <h4 ref={nowPlayingHeaderRef} className='plQueueView__nowPlaying'>Now playing: </h4> 
+            <p ref={nowPlayingHeaderRef} className='plQueueView__nowPlaying'>Now playing: </p> 
             <Track
             type='queueView'
             track={ currPlaying }/>
@@ -95,8 +95,8 @@ const QueueView = ({ handleTrackMenu, controls }) => {
             playNextQueue.length > 0 &&
             <div className=' queueContainer'>
                 <div ref={ playNextHeaderRef } className='queueContainer__title'>
-                    <h4> Next In Queue </h4>
-                    <span onClick={ removePlayNext }> Clear queue </span> 
+                    <p> Next In Queue </p>
+                    <button onClick={ removePlayNext }> Clear queue </button> 
                 </div>
                 {
                 playNextQueue.map(( track, i ) => {
@@ -116,7 +116,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
            
                 <div className='queueContainer'>
                     <div ref={ queueHeaderRef } className='queueContainer__title'>
-                        <h4> Up next: </h4>
+                        <p> Up next: </p>
                     </div>
             {
                 queue.slice( qIndex + 1 + playNextQueue.length  ).map( ( track, i )  => {
@@ -135,11 +135,11 @@ const QueueView = ({ handleTrackMenu, controls }) => {
             {
                 queueViewSelected.length > 0 || playNextQueueSelected.length > 0?
                 <div className='queueControls'>
-                    <span onClick={ handleRemove }> Remove </span>
+                    <button onClick={ handleRemove }> Remove </button>
                     
                     {
                         playNextQueueSelected.length === 0 &&
-                        <span onClick={ handleAddToPlayNext } > Add to Queue </span>
+                        <button onClick={ handleAddToPlayNext } > Add to Queue </button>
 
                     }
                 </div> : 

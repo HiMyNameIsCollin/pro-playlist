@@ -6,23 +6,21 @@ const BrowseContainer = ({ type, message, data, }) => {
     
     const { scrollPosition } = useContext( DbHookContext )
 
-    useEffect(() => {
-        if( scrollPosition && scrollPosition === 100 ){
-            const fetchMore = () => {
+    // useEffect(() => {
+    //     if( scrollPosition && scrollPosition === 100 ){
+    //         const fetchMore = () => {
                 
-            }
-            fetchMore()
-        }
-    },[ scrollPosition ])
+    //         }
+    //         fetchMore()
+    //     }
+    // },[ scrollPosition ])
 
     return(
             <section className='browseContainer'> 
-                <div className='browseContainer__title'>
-                    <h4>
-                        { message }
-                    </h4>
-                    
-                </div> 
+                <p className='browseContainer__title'>
+                    { message }
+
+                </p> 
                {
                    data.map(( item, i ) => {
                     return (

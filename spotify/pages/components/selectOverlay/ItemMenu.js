@@ -12,8 +12,8 @@ const ItemMenu = ({ style, handleClose, handlePlaylist, type, items }) => {
         style={ style } 
         className='selectOverlay playlistMenu'>
             <header className='selectOverlay__header '>
-                <button onClick={ handleClose }> Cancel </button>
-                <p>
+                <button className='selectOverlay__header__btn' onClick={ handleClose }> Cancel </button>
+                <p className='selectOverlay__title'>
                     {
                         type === 'playlists' ? 
                         'Add to playlist' :

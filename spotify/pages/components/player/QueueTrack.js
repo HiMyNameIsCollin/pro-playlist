@@ -40,8 +40,8 @@ const QueueTrack = ({ track, trackSelected, setTrackSelected }) => {
                 <span className={` queueTrack__radio__control ${ selected && 'queueTrack__radio__control--selected'}`}></span>
             </span>
             
-            <h5 onClick={ playTrack }> { track.name }</h5>
-            <p onClick={ playTrack }> { track.artists[0].name} </p>
+            <p className='queueTrack__title' onClick={ playTrack }> { track.name }</p>
+            <p className='queueTrack__info' onClick={ playTrack }> { track.artists[0].name} </p>
 
             <i className="fas fa-bars"></i>
 

@@ -29,9 +29,9 @@ const Tab = ({ item }) => {
             <div className='tab__image'>
                 <img src={ item.images ? whichPicture(item.images, 'sm') : whichPicture(item.album.images, 'sm')} alt=""/>
             </div>
-            <h5 className='tab__title'>
+            <p className='tab__title'>
                 { item.name }
-            </h5>
+            </p>
         </div>
     )
 }

@@ -24,7 +24,7 @@ const Album = ({ item }) => {
                 alt='Album art' 
                 src={ whichPicture( item.images, 'sm' )}/>
             </div>
-            <h5 className='albumCard__title'> {item.name } </h5>
+            <p className='albumCard__title'> {item.name } </p>
             <div className='albumCard__meta'>
                 {
                     item.album_type ?

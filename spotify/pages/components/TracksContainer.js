@@ -18,7 +18,7 @@ const TracksContainer = ({ type, data , setOverlay }) => {
         <section className={ `trackContainer trackContainer--${type} ${mounted && 'trackContainer--active'}`}>
         {
             type === 'artist' &&
-            <h4> Popular </h4> 
+            <p className='trackContainer__title'> Popular </p> 
         }
         {
             tracks.map((track, i) => {

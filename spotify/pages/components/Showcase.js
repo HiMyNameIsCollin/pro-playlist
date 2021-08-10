@@ -105,7 +105,7 @@ const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransi
         style={ transition }
         ref={ thisComponent } 
         className='page page--search showcase'>
-            <h2 className='showcase__title'> { data.name }</h2>
+            <p className='showcase__title'> { data.name }</p>
         {
         categoryResults.map(( cat, i ) => {
             if( cat.playlists.length > 0 ){

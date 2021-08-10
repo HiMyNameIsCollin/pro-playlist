@@ -17,7 +17,7 @@ const ListMenu = ({ setActiveItem, transition, calledFrom, page, artists }) => {
         <animated.div
         style={ transition } 
         className='overlay__popup listMenu'>
-        <h3> Select an artist </h3>
+        <p className='trackMenu__title'> Select an artist </p>
         {
             artists.map( (a, i) => {
                 return <button onClick={ (e) => handleViewArtist( e, a )  }> <span> { a.name } </span> <i class="fas fa-arrow-right"></i></button>

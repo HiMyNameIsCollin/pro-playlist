@@ -53,9 +53,9 @@ const Card = ({ type, item, setActiveItem }) => {
             </div>
             {
                 item.name &&
-                <h5 className={`card__title `}>
+                <p className={`card__title `}>
                 { item.name }               
-                </h5>
+                </p>
             }
             {
                 item.tracks && 

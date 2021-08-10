@@ -72,10 +72,11 @@ const PlayerLarge = ({ style, controls }) => {
                         onClick={ togglePlayer }  
                         className="fas fa-chevron-down"></i>
                     }
-                    <h4
+                    <p
+                    className='playerLargeContainer__title'
                     onClick={ handleViewCollection }> 
                     { currPlayingContext.name } 
-                    </h4>
+                    </p>
                     
                     <i
                     onClick={ handleTrackMenu } 

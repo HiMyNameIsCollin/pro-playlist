@@ -74,7 +74,7 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
     return(
         <header 
         ref={ thisHeaderRef }
-        className={ `artistHeader  }`}>
+        className={ `artistHeader`}>
             <div className={`headerBacking headerBacking--${pageType}`}></div>
                 <div className='artistHeader__imgContainer'>
                 <img 
@@ -83,9 +83,11 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
                 ref={ thisComponentImage }
                 src={ whichPicture(artist.images, 'lrg') }
                 alt='Artist'/> 
-                <animated.h1 style={{
+                <animated.p 
+                className='artistHeader__title'
+                style={{
                     opacity: fadeOut.to( o => o )
-                }}> {artist.name} </animated.h1>
+                }}> {artist.name} </animated.p>
             </div>
             <div className='artistHeader__info'>
                 <p> { artist.followers.total } followers </p>

@@ -30,9 +30,9 @@ const TabsContainer = ({ items }) => {
     return(
         <section className='tabsContainer'>
             <div className='tabsContainer__title'>
-                <h4>
+                <p>
                     Recently played
-                </h4>
+                </p>
                 <span onClick={ handleSeeMore }>
                     More
                 </span>

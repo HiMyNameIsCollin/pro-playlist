@@ -15,9 +15,9 @@ const AlbumContainer = ({ page, albums }) => {
 
     return(
         <section className='albumContainer'>
-            <h4>
+            <p className='albumContainer__title'>
                 Popular releases 
-            </h4>
+            </p>
             {
             albums.slice(0, 5).map( item => <Album  item={ item } />)
             }

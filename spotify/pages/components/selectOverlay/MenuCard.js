@@ -67,7 +67,7 @@ const MenuCard = ({ item, items, type, index, handlePlaylist }) => {
                 alt='Album art' 
                 src={ whichPicture( item.images ? item.images : item.album.images , 'sm' )}/>
             </div>
-            <h5 className={`albumCard__title albumCard__title--${ active && 'active'}` }> {item.name } </h5>
+            <p className={`albumCard__title albumCard__title--${ active && 'active'}` }> {item.name } </p>
             <div className='albumCard__meta'>
                 {
                     type === 'playlists' &&

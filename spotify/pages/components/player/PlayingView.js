@@ -42,10 +42,10 @@ const PlayingView = ({ controls, queueView, setQueueView }) => {
                     alt={`Album art for ${ currPlaying.artists[0].name }'s  album ${ currPlaying.album.name }`}
                     src={ whichPicture( currPlaying.album.images, 'lrg' ) } />
                 </div>
-                <h4>
+                <p className='playingView__title'>
                 { currPlaying.name }
-                </h4>
-                <p>
+                </p>
+                <p className='playingView__info'>
                 { currPlaying.artists[0].name }
                 </p>
             </div>

@@ -77,10 +77,10 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
                     alt='Track art' 
                     />
                 </div>
-                <h3> 
+                <p className='trackMenu__title'> 
                     { track.name }
-                </h3>
-                <p> { track.artists[0].name } </p>
+                </p>
+                <p className='trackMenu__info'> { track.artists[0].name } </p>
             </header>
             <button onClick={ (e) => openSpotify(e, track.external_urls.spotify )} >
                 <Image 

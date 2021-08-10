@@ -75,7 +75,43 @@ $bg__1--lg: url('../public/bglg.jpg')
         border-radius: 50%
         margin-right: 1rem 
     p
-        font-weight: 600
+        @include midFirm
+
+@mixin bigBold 
+    font-weight: 700
+    font-size: 1.5rem
+
+@mixin midBold
+    font-weight: 700
+    font-size: 1rem
+
+@mixin smallBold
+    font-weight: 700
+    font-size: .8rem
+
+@mixin bigFirm 
+    font-weight: 500
+    font-size: 1.5rem
+
+@mixin midFirm
+    font-weight: 500
+    font-size: 1rem
+
+@mixin smallFirm
+    font-weight: 500
+    font-size: .8rem
+
+@mixin bigSkin
+    font-weight: 400
+    font-size: 1.5rem
+
+@mixin midSkin
+    font-weight: 400
+    font-size: 1rem
+
+@mixin smallSkin
+    font-weight: 400
+    font-size: .8rem
     
 *
     margin: 0
@@ -269,14 +305,15 @@ i
 .showcase
     color: $white
     &__title
+        @include midBold
         padding: 0 1rem
 
 .collection
+    @include smallSkin
     > *
-            margin-bottom: 1rem      
+        margin-bottom: .5rem      
     &__meta
         color: $white
-        font-size: 0.8rem
         padding: 0 1rem
         i
             font-size: 0.8rem
@@ -288,14 +325,15 @@ i
             @include artistDisplay
             padding: 1rem 0 0 0 
     &__copyright
-        font-size: .8rem
         padding: 0 1rem
 
 .trackContainer
     opacity: 0
     transition: opacity .75s ease-in-out
+    &__title
+        @include midBold
     &--artist
-        h4
+        .trackContainer__title
             padding: .5rem 1rem 
     &--active
         opacity: 1
@@ -304,13 +342,13 @@ i
     display: flex
     flex-direction: column
     padding: 0 1rem
-    h4
+    &__title
+        @include midBold
         padding: .5rem 0
     &__btn
+        @include smallBold
         border: solid $white 1px
         border-radius: 25px
-        font-size: 0.75rem
-        font-weight: 600
         margin: 1rem auto
         padding: .25rem 1rem
     &--active
@@ -332,6 +370,7 @@ i
             height: 100%
             width: 100%
     &__title
+        @include smallFirm
         align-self: flex-end
         grid-row: 1/2
         grid-column: 2/3
@@ -341,12 +380,12 @@ i
         &--active
             color: $green
     &__meta
+        @include smallSkin
         align-self: flex-start
         grid-row: 2/3
         grid-column: 2/3
         span
             color: $lightGrey
-            font-size: .8rem
         i
             font-size: .8rem
 
@@ -368,22 +407,24 @@ i
         img
             height: 100%
             width: 100%
-    h5, span
+    &__title, &__info
         grid-column: 3/4
         overflow: hidden
         padding: 0 .5rem
         text-overflow: ellipsis
         white-space: nowrap
         min-width: 100%
-    h5
+    &__title
+        @include smallFirm
         align-self: flex-end
         grid-row: 1/2
-    span
+    &__info
+        @include smallSkin
         align-self: flex-start
         color: $lightGrey
         grid-row: 2/3
         font-size: 0.8rem
-    p
+    &__trackIndex
         grid-column: 1/2
         grid-row: 1/3
         padding-right: 1rem
@@ -448,17 +489,17 @@ i
         text-align: center
         webkit-transform: translate3d(0,0,0)
         width: 100%
-        h4
-            white-space: nowrap
-            overflow: hidden
-            text-overflow: ellipsis
-            font-size: 1rem
-            padding: 0 1rem
         i
             color: $white
             font-size: 1rem
         &--qv
             background: $black
+    &__title
+        @include smallBold
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+        padding: 0 1rem
     &::before
         @include scrimGradient($black, 'to top')
     &::after
@@ -479,13 +520,15 @@ i
     &__track
         margin-top: .5rem
         width: 100%
-        h4
-            margin: .5rem 0 0 0 
-            white-space: nowrap
-            overflow: hidden
-            text-overflow: ellipsis
-        p
-            color: $lightGrey
+    &__title
+        @include midBold
+        margin: .5rem 0 0 0 
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+    &__info
+        @include midSkin
+        color: $lightGrey
     &__progress        
     &__time
         display: flex
@@ -542,6 +585,7 @@ i
     flex-direction: column
     padding-bottom: 5.5rem
     &__nowPlaying
+        @include midBold
         background: $black
         color: $white
         position: sticky
@@ -565,10 +609,12 @@ i
         left: 0
         padding: 1rem
         position: sticky
-        span
+        p
+            @include midBold
+        button
+            @include smallFirm
             border: solid $white 1px
             border-radius: 10px
-            font-size: .8rem
             padding: 0 .5rem
 
     
@@ -581,7 +627,8 @@ i
     padding: .5rem 1rem
     max-width: 100%
     width: 100%
-    h5
+    &__title
+        @include smallFirm
         grid-row: 1/2
         grid-column: 2/3
         overflow: hidden
@@ -589,12 +636,12 @@ i
         white-space: nowrap
         text-overflow: ellipsis
         max-width: 100%
-    p
+    &__info
+        @include smallSkin
         color: $lightGrey
         grid-column: 2/3
         grid-row: 2/3
         padding: 0 1rem
-        font-size: 0.8rem
     i
         grid-row: 1/3
     &__radio
@@ -622,7 +669,8 @@ i
     padding: 1rem
     position: fixed
     width: 100%
-    span
+    button
+        @include smallFirm
         color: $lightGrey
                 
 .controls
@@ -712,10 +760,11 @@ i
             @include scrimGradient($black ,'to top')
             opacity: .75
             z-index: 1          
-    h1
+    &__title
         color: $white
         padding: 1rem
-        font-size: clamp(2rem, 15vw, 3rem)
+        font-weight: 700
+        font-size: max(1.5rem, 10vw )
         position: absolute
         bottom: 0
         left: 0
@@ -723,11 +772,11 @@ i
         z-index: 1
     &__info
         @include pseudo
+        @include smallSkin
         align-items: center
         color: $lightGrey
         display: flex
         flex-wrap: wrap
-        font-size: .8rem
         z-index: 1
         p
             padding: .5rem 1rem
@@ -736,9 +785,9 @@ i
             padding: .25rem .5rem
             margin: 0 0 1rem 1rem
         &__btn
+            @include smallFirm
             border: solid $grey 1px
             border-radius: 5px
-            font-weight: 600
             &--active
                 border-color: $green
                 color: $green
@@ -753,10 +802,11 @@ i
     transform-origin: top left
     width: 100%
     z-index: 2
-    h1
+    &__title
+        @include bigBold
         padding: 0 1rem
     > *
-        margin-bottom: 1rem
+        margin-bottom: .5rem
     &__imgContainer
         padding: 2rem 1rem 1rem 1rem
         div
@@ -766,13 +816,12 @@ i
                 max-width: 100%
                 margin: auto
     &__info
+        @include smallBold
         color: $lightGrey
-        font-size: 0.8rem
-        font-weight: 700
         padding: 0 1rem
         p
+            @include smallSkin
             color: $white
-            font-weight: 400
         i
             font-size: .8rem
             padding: 0 .5rem
@@ -784,7 +833,6 @@ i
 
 .headerBacking
     @include pseudo
-    
     background-size: cover
     background-position: 50% 50%
     height: 100%
@@ -811,8 +859,8 @@ i
             background: linear-gradient(to bottom, var(--headerColorhome1) 0% , var(--headerColorhome0)), linear-gradient(to right, var(--headerColorhome1) , var(--headerColorhome0))
 
 .fixedHeader
+    @include smallBold
     color: $white
-    font-size: 1rem
     position: fixed 
     top: 0 
     left: 0
@@ -827,19 +875,18 @@ i
         z-index: 9
         i
             font-size: 1.5rem
+    &__title
+        margin: auto
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
+        width: 75%
     &__main
         @include pseudo
         @include shadowA
         opacity: 0
         padding: 1rem
         width: 100%
-        h4
-            font-size: 1rem
-            margin: auto
-            overflow: hidden
-            text-overflow: ellipsis
-            white-space: nowrap
-            width: 75%
         &::before
             @include scrimGradient($black, 'to top')
             opacity: .75
@@ -1047,10 +1094,10 @@ i
         display: flex
         justify-content: center
         button
+            @include smallSkin
             align-items: center
             display: flex
             flex-direction: column
-            font-size: .7rem
             justify-content: center
             width: 100%
             i
@@ -1070,6 +1117,7 @@ i
     width: auto
     &__title
         @include sectionTitle
+        @include midBold
         flex: 1 0 100%
         padding: 1rem 0
         max-width: 100%
@@ -1081,6 +1129,7 @@ i
     margin: .25rem 0
     width: calc(50% - .5rem)
     &__title
+        @include smallFirm
         display: -webkit-box
         line-height: normal
         overflow: hidden
@@ -1099,6 +1148,7 @@ i
 .slider
     &__title
         @include sectionTitle
+        @include midBold
     &__carousel
         display: flex
         min-height: 12rem
@@ -1115,6 +1165,7 @@ i
     grid-gap: 1rem
     padding: 1rem
     &__title
+        @include midBold
         color: $white
         grid-column: 1/-1
         width: 100%
@@ -1125,6 +1176,7 @@ i
     // max-height: 12rem
     position: relative
     &__title
+        @include smallFirm
         margin-top: .5rem
         overflow: hidden
         text-overflow: ellipsis
@@ -1142,7 +1194,7 @@ i
             max-height: 100%
             width: 100%
     &__meta
-        font-size: .8rem
+        @include smallSkin
     
     &--homeSlider
         flex: 0 0 auto
@@ -1157,6 +1209,7 @@ i
         max-height: 100%
         .card__imgContainer
     &--artist
+        text-align: center
         border-radius: 50%
         img
             border-radius: 50%
@@ -1242,10 +1295,12 @@ i
     &__header
         text-align: center
         width: 100%
-        h3
-            color: $white
-        p
-            color: $lightGrey
+    &__title
+        @include midBold
+        color: $white
+    &__info
+        @include midSkin
+        color: $lightGrey
     button
         align-items: center
         display: flex
@@ -1253,11 +1308,11 @@ i
         padding: 1rem 0 
         width: 100%
         span
-            font-weight: 600
+            @include midFirm
             padding-left: 1rem
 
 .listMenu
-    h3
+    .trackMenu__title
         margin-top: auto
     button
         justify-content: space-between
@@ -1611,6 +1666,7 @@ i
     p
         @include pseudo
         @include shadowA
+        @include smallFirm
         background: $white
         border-radius: 5px
         color: $black
@@ -1650,11 +1706,14 @@ i
         &::after
             @include scrimGradient($black, 'to right')
             opacity: 0.7
-        button
+        &__btn
+            @include smallFirm
             position: absolute
             top: 0
             height: 100%
             left: 1rem
+    &__title
+        @include midBold
     &__main
         padding: 1rem 0
         position: relative
@@ -1674,6 +1733,7 @@ i
         
 .playlistMenu
     &__newBtn
+        @include smallBold
         background: $white
         border-radius: 20px
         color: $black

@@ -91,11 +91,13 @@ const CollectionHeader = ({ pageType, data, transitionComplete, headerScrolled, 
                     </animated.div>
                 </animated.div> 
 
-                <animated.h1 style={{
+                <animated.p
+                className='collectionHeader__title' 
+                style={{
                     opacity: fadeOut.to( fadeOut => fadeOut ),                  
                 }}> 
                 { collection.name } 
-                </animated.h1>
+                </animated.p>
                 
                 <animated.div
                     style={{

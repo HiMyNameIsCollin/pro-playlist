@@ -59,10 +59,12 @@ const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled })
             opacity: fadeIn.to( y => y)
         }} >
 
-            <animated.h4 style={{
+            <animated.p 
+            className='fixedHeader__title'
+            style={{
                 opacity: fadeIn.to( o => o),
                 transform: textScroll.to( y => `translateY(${ y }%)`)
-            }}> { activeHeader.data && activeHeader.data } </animated.h4>
+            }}> { activeHeader.data && activeHeader.data } </animated.p>
         </animated.div>
         </animated.header>
 
