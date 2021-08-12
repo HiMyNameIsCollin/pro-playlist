@@ -27,24 +27,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
         
     }, [ playNextQueue ])
 
-    useEffect(() => {
-        if(playNextQueue[0]){
-            if( queue[ qIndex + 1] && queue[ qIndex + 1 ].id !== playNextQueue[0].id){
-                setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...playNextQueue, ...queue.slice(qIndex + 1) ]) 
-            } else if ( !queue[ qIndex + 1 ] ){
-                setQueue( queue => queue = [ ...queue, ...playNextQueue ]) 
 
-            }
-
-        }
-    },[ queue ])
-    
-    useEffect(() => {
-        if( playNextQueue[0] && queue[ qIndex ].id === playNextQueue[0].id){
-            setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
-            setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...queue.slice( qIndex + 1 ) ])
-        }
-    }, [ qIndex ])
 
     const handleAddToPlayNext = () => {
         setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue, ...queueViewSelected ])

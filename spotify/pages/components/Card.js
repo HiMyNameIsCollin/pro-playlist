@@ -4,8 +4,6 @@ import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 import { ManageHookContext } from './manage/Manage'
 
-import { Droppable } from 'react-beautiful-dnd'
-
 const Card = ({ type, item, setActiveItem }) => {
 
     const { activeHomeItem, setActiveHomeItem, setHiddenUI, searchPageHistoryRef, homePageHistoryRef } = useContext( DbHookContext )
@@ -30,7 +28,6 @@ const Card = ({ type, item, setActiveItem }) => {
     const setCurrentSelection = (e) => {
         e.stopPropagation()
         setActiveItem( item )
-        
     }
     
     return(

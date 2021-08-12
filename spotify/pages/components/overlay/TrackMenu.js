@@ -21,11 +21,8 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
     const viewArtist = (e) => {
         e.stopPropagation()
         if( track.artists.length === 1 ){
-            if( page === 'home' || page==='manage' || calledFrom==='player' ){
-                setOverlay( {} )
-                setTimeout(() => setActiveItem( track.artists[0] ) , 250 )
-            } 
-            if( page === 'search' ) setActiveItem( track.artists[0] )
+            setOverlay( {} )
+            setTimeout(() => setActiveItem( track.artists[0] ) , 250 )
         } else {
             let oClone = { ...overlay}
             oClone.data = { artists: track.artists }

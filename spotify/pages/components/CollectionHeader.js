@@ -16,10 +16,18 @@ const CollectionHeader = ({ pageType, data, transitionComplete, headerScrolled, 
     const { setOverlay, scrollPosition, } = useContext( DbHookContext )
 
     const thisComponentImage = useCallback(node => {
-        if (node !== null && transitionComplete) {
+        if( node !== null && transitionComplete ) {
             const image = node
-            const colors = handleColorThief(image, 2)
-            colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+            const setColors = ( image ) => {
+                if( image.getBoundingClientRect().width > 0 ){
+                    const colors = handleColorThief(image, 2)
+                    colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+                } else {
+                    setTimeout( () => setColors( image ), 500 )
+                }
+            }
+            setColors(image)
+
         }
       }, [ transitionComplete ])
 

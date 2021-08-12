@@ -202,6 +202,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ toBeManaged, setToBeManaged ] = useState( {} )
     const [ homeTransMinHeight, setHomeTransMinHeight ] = useState( 0 )
     const [ searchTransMinHeight, setSearchTransMinHeight ] = useState( 0 )
+    const [ navHeight, setNavHeight ] = useState( undefined )
 
     const [ hideAll, setHideAll ] = useState(false)
 
@@ -253,7 +254,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
         dashboardRef,
         dashboardState,
         toBeManaged, 
-        setToBeManaged
+        setToBeManaged,
+        navHeight,
+        setNavHeight
     }
 
     const dbFetchedState = {
@@ -513,7 +516,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 <Player 
                 hiddenUI={ hiddenUI } 
                 playerSize={ playerSize } 
-                setPlayerSize={ setPlayerSize }/>
+                setPlayerSize={ setPlayerSize }
+                navHeight={ navHeight } />
 
                 <Nav 
                 dashboardRef={ dashboardRef }
@@ -529,7 +533,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 setActiveHomeItem={ setActiveHomeItem }
                 setActiveSearchItem={ setActiveSearchItem }
                 dashboardState={ dashboardState }
-                setDashboardState={ setDashboardState } />
+                setDashboardState={ setDashboardState }
+                setNavHeight={ setNavHeight } />
             </animated.section>
                 
         </DbFetchedContext.Provider>

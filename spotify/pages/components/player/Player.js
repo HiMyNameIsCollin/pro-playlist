@@ -7,9 +7,9 @@ import  useApiCall  from '../../hooks/useApiCall'
 
 export const PlayerHookContext = createContext()
 
-const Player = ({ hiddenUI, playerSize, setPlayerSize }) => {
+const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
     const API = 'https://api.spotify.com/'
-    const { queue , setQueue, audioRef, qIndex, setQIndex } = useContext( DbHookContext )
+    const { queue , setQueue, playNextQueue, setPlayNextQueue, audioRef, qIndex, setQIndex } = useContext( DbHookContext )
 
     const [ currPlaying, setCurrPlaying ] = useState( {} )
     const [ trackProgress, setTrackProgress ] = useState( 0 );
@@ -127,8 +127,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize }) => {
             let clone = { ...currPlaying }
             setCurrPlaying( clone )
         } else if ( repeat === 'all' ){
-            if( qIndex === queue.length - 1 ){
-                
+            if( qIndex === queue.length ){
                 setTrackProgress( 0 )
                 setQIndex( 0 )
             } else {
@@ -181,6 +180,23 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize }) => {
         enter: { transform: 'translateY(0%) '} ,
         leave: { transform: 'translateY(100%) '}
     })
+
+        useEffect(() => {
+        if(playNextQueue[0]){
+            if( queue[ qIndex + 1] && queue[ qIndex + 1 ].id !== playNextQueue[0].id){
+                setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1), ...playNextQueue, ...queue.slice(qIndex + 1) ]) 
+            } else if ( !queue[ qIndex + 1 ] ){
+                setQueue( queue => queue = [ ...queue, ...playNextQueue ]) 
+            }
+        }
+        },[ playNextQueue ])
+     
+    useEffect(() => {
+        if( playNextQueue[0] && queue[ qIndex ].id === playNextQueue[0].id){
+            setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
+            // setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...queue.slice( qIndex + 1 ) ])
+        }
+    }, [ qIndex ])
     return(
         <>
             <PlayerHookContext.Provider value={ playerHookState }>
@@ -191,7 +207,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize }) => {
                 ))
                 
                 }
-                <PlayerCollapsed hiddenUI={ hiddenUI } />
+                <PlayerCollapsed navHeight={ navHeight } hiddenUI={ hiddenUI } />
             </PlayerHookContext.Provider>
             
         </>

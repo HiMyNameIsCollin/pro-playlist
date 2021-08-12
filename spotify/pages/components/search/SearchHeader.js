@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from 'react'
 import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from '../Dashboard'
 
-const SearchHeader = ({ setSearchState }) => {
+const SearchHeader = ({ searchState, setSearchState }) => {
 
     const [ mounted, setMounted ] = useState( false )
 
@@ -11,7 +11,7 @@ const SearchHeader = ({ setSearchState }) => {
 
     const { hiddenUI } = useContext( DbHookContext )
     const hideHeader = useSpring({
-        transform: !hiddenUI && mounted ? 'translateY(0rem)' : 'translateY(-4rem)',
+        transform: !hiddenUI && mounted && searchState !== 'search' ? 'translateY(0rem)' : 'translateY(-4rem)',
         top: mounted ? '0rem' : '-7rem'
     })
     return(

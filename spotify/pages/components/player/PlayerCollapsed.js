@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import { PlayerHookContext } from './Player'
 import { DbHookContext } from '../Dashboard'
 import { useSpring, animated } from 'react-spring'
-const PlayerCollapsed = ({ hiddenUI }) => {
+const PlayerCollapsed = ({ navHeight , hiddenUI }) => {
 
     const trackMountedRef = useRef(false)
 
@@ -30,9 +30,9 @@ const PlayerCollapsed = ({ hiddenUI }) => {
     },[ trackMounted ])
 
     const slideIn = useSpring({
-        height: trackMounted ? '3.6rem': '0rem',
+        bottom: trackMounted ? '0rem' : '-4rem',
         opacity: trackMounted ? 1 : 0,
-        transform: hiddenUI ? 'translateY(0rem)' : 'translateY(-3.06rem)',
+        transform: navHeight && hiddenUI ? 'translateY(0px)' : `translateY(-${ navHeight ? navHeight: 0 }px)` ,
         opacity: hideAll ? 0 : 1
     })
 

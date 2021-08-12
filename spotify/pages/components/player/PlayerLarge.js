@@ -56,6 +56,7 @@ const PlayerLarge = ({ style, controls }) => {
         setOverlay( {type: 'player', calledFrom: calledFrom, page: null, data: { track: track }} )
     }
 
+    
 
     return(
         <animated.div

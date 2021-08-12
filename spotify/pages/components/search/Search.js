@@ -106,7 +106,6 @@ const Search = ({
             let topArtists = [...my_top_artists]
             const categories = calcCategories(topArtists)
             const sortedCats = sortCategories( categories )
-            console.log(sortedCats)
             const payload = {
                 route: 'categories',
                 items: sortedCats
@@ -262,11 +261,11 @@ const Search = ({
                 <animated.div style={ props }>
                     {
                         !item.type &&
-                        <SearchHeader setSearchState={ setSearchState } /> 
+                        <SearchHeader searchState={ searchState } setSearchState={ setSearchState } /> 
                     }
                     {
                         item.type === 'category' &&
-                        <SearchHeader setSearchState={ setSearchState }/> 
+                        <SearchHeader searchState={ searchState } setSearchState={ setSearchState }/> 
                     }
                 </animated.div>
             ))

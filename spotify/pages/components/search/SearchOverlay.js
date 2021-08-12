@@ -3,10 +3,9 @@ import { useSpring, animated, useTransition } from 'react-spring'
 import SearchFilters from './SearchFilters'
 import SearchResults from './SearchResults'
 import useApiCall from '../../hooks/useApiCall'
+import { DbHookContext } from '../Dashboard'
 
 const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) => {
-
-
 
     const API = 'https://api.spotify.com/'
     const route = 'v1/search'
@@ -20,10 +19,12 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const searchBarRef = useRef()
 
+    const { hiddenUI, setHiddenUI } = useContext( DbHookContext )
 
     useEffect(() => {
-        if( searchState === 'search' ) searchBarRef.current.focus()
-    }, [ searchState  ])
+        if( hiddenUI ) setHiddenUI( false )
+        searchBarRef.current.focus()
+    },[])
 
     useEffect(() => {
         if(searchInput !== ''){

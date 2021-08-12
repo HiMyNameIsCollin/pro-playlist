@@ -22,7 +22,8 @@ const TracksContainer = ({ type, data , setOverlay }) => {
         }
         {
             tracks.map((track, i) => {
-                if( type === 'artist' && i < 5 || type !== 'artist')
+                if(( type === 'artist' && i < 5 || type !== 'artist' ) && 
+                ( track.track || track.artists ) )
                 return (
                     <Track 
                     type={ type }

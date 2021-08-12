@@ -51,7 +51,7 @@ const MenuCard = ({ item, items, type, index, handlePlaylist }) => {
         if( selectOverlay.type === 'recPlayed'){
             menuAction( param )
         }else {
-            setTimeout(() => menuAction(param), 150)
+            setTimeout(() => menuAction(param), 250)
             setSelectOverlay({type: undefined, page: undefined})
         }
 

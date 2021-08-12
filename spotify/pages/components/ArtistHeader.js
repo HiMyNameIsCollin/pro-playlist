@@ -26,10 +26,18 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
 
     
     const thisComponentImage = useCallback(node => {
-        if (node !== null && transitionComplete) {
+        if( node !== null && transitionComplete ) {
             const image = node
-            const colors = handleColorThief(image, 2)
-            colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+            
+            const setColors = ( image ) => {
+                if( image.getBoundingClientRect().width > 0 ){
+                    const colors = handleColorThief(image, 2)
+                    colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+                } else {
+                    setTimeout( () => setColors( image ), 500 )
+                }
+            }
+            setColors(image)
         }
       }, [ transitionComplete ])
 
@@ -39,12 +47,10 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
     }, [ followed_artists ])
     
     useLayoutEffect(() => {
+        setHeaderScrolled( 0 )
         const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
         setElementHeight( headerHeight )
         setActiveHeader({ data: artist.name })
-        return () => {
-            setHeaderScrolled( 0 )
-        }
     },[])
 
     const handleFollow = () => {
@@ -62,9 +68,10 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
     }, [scrollPosition , elementHeight])
 
 
-    const { fadeOut } = useSpring({
+    const { fadeOut, imgSlide } = useSpring({
         to: {
             fadeOut: `${ 1 - ( headerScrolled * 0.02 )}`,
+            imgSlide: headerScrolled + 20 <= 100 ? ( headerScrolled + 20 ) : 100
         },
         config: {
             precision: 1,
@@ -77,7 +84,8 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
         className={ `artistHeader`}>
             <div className={`headerBacking headerBacking--${pageType}`}></div>
                 <div className='artistHeader__imgContainer'>
-                <img 
+                <animated.img 
+                style={{ objectPosition: imgSlide.to( t => `0% ${t}%` ) }}
                 crossOrigin='anonymous' 
                 // ON LOAD HERE ########################################
                 ref={ thisComponentImage }
@@ -86,7 +94,7 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
                 <animated.p 
                 className='artistHeader__title'
                 style={{
-                    opacity: fadeOut.to( o => o )
+                    opacity: fadeOut.to( o => o ),
                 }}> {artist.name} </animated.p>
             </div>
             <div className='artistHeader__info'>

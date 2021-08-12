@@ -29,7 +29,6 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
             route = action.route
             method = action.method
         }
-        console.log(action)
         switch(route) {
             case routes.artist:
                 if( method === 'get'){
@@ -67,7 +66,6 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
             if( data.images ){
                 setImage( whichPicture( data.images, 'sm' ) )
             } else {
-                console.log( data )
                 finalizeRoute( 'get', data.href.substring( API.length ), data.id, null ) 
             }
         }
@@ -117,9 +115,6 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
 
     useEffect(() => {
         if( dragging ){
-            if(data.type === 'sortPlaylist'){
-                setDisabled( true )
-            }
             if(( data.id === '1' || data.id === '2' ) &&
             dragging.source.droppableId !== orientation ){
                 setDisabled(true)
@@ -141,7 +136,7 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
             data.type === 'sortPlaylist' &&
             <div className={`activeItem__itemContainer activeItem__itemContainer--full`}>
                 <div className='activeItem__itemContainer__scroll' style={{ overflowY: 'hidden'}}>
-                    <Slider message={ 'Your playlists' } items={items} setActiveItem={ setActiveItem }/>
+                    <Slider sortEnabled message={ 'Your playlists' } items={items} setActiveItem={ setActiveItem }/>
                 </div>
             </div>
         }
@@ -185,24 +180,23 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
                 {
                     data.type === 'artist' ?
                     <div className='activeItem__itemContainer__scroll'>
-
                         <Slider message={ `Releases by ${ data.name }` } items={items} setActiveItem={ setActiveItem }/>
                     </div>
                     :
                     <Droppable 
                     isDropDisabled={ disabled ? true : false}
-                    droppableId={ orientation }>
+                    droppableId={ `${ orientation }--${ data.id }` }>
                         { provided => (
                             <ul className={ `activeItem__itemContainer__scroll activeItem__itemContainer__scroll--${ orientation } `} {...provided.droppableProps} ref={provided.innerRef}>
                             {
                                 items.map(( item, i ) => (
-                                        <ActiveItemTrack 
-                                        orientation={ orientation }
-                                        track={ item } 
-                                        key={ `${ orientation }--${item.id}--${i}` } 
-                                        index={ i }
-                                        selectedItems={ selectedItems }
-                                        setSelectedItems={ setSelectedItems }/>
+                                    <ActiveItemTrack 
+                                    orientation={ orientation }
+                                    track={ item } 
+                                    key={ `${ orientation }--${item.id}--${i}` } 
+                                    index={ i }
+                                    selectedItems={ selectedItems }
+                                    setSelectedItems={ setSelectedItems }/>
                                 ))
                             }
                             {provided.placeholder}

@@ -72,11 +72,20 @@ const SortContainer = ({ style }) => {
         leave: { transform: 'translateY( -100% )', minHeight: resizePos, position: 'absolute', top: 0 }
     })
 
+    const breakDownId = (str) =>{
+        const split = '--'
+        const id = str.split('--')
+        return id
+        
+    } 
+
     const dragEnd = (e) => {
-        if( e.source === e.destination){
-            
-        }
         setDragging( undefined )
+        console.log(e)
+        if( e.destination){
+            const id = breakDownId( e.destination.droppableId )
+        }
+         
     }
 
     const dragUpdate = (e) => {

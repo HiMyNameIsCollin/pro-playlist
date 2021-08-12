@@ -1,6 +1,6 @@
 import Card from './Card'
-
-const Slider = ({ message, items, setActiveItem  }) => {
+import { Droppable } from 'react-beautiful-dnd'
+const Slider = ({ sortEnabled, message, items, setActiveItem  }) => {
     return(
         <section className='slider'>
             {
@@ -12,19 +12,37 @@ const Slider = ({ message, items, setActiveItem  }) => {
                 </p>
             }
             
-            <div className='slider__carousel'>
+            <ul className='slider__carousel'>
                 {   items.length > 0 &&
-                    items.map(( item, i ) => (
-
-                        <Card 
-                        type='homeSlider'
-                        key={ i } 
-                        item={ item }
-                        setActiveItem={ setActiveItem } />
-                    
-                    )) 
+                    items.map(( item, i ) => {
+                        if( sortEnabled ){
+                            return(
+                                <Droppable droppableId={`playlist--${item.id}`}>
+                                    {provided => (
+                                        <li {...provided.droppableProps} ref={provided.innerRef} >
+                                            <Card 
+                                            type='homeSlider'
+                                            key={ i } 
+                                            item={ item }
+                                            setActiveItem={ setActiveItem } />
+                                        </li>
+                                    )}
+                                </Droppable> 
+                            )
+                        } else {
+                            return(
+                                <li >
+                                    <Card 
+                                    type='homeSlider'
+                                    key={ i } 
+                                    item={ item }
+                                    setActiveItem={ setActiveItem } />
+                                </li>
+                            )
+                        }
+                    }) 
                 }
-            </div>
+            </ul>
         </section>
     )
 }
