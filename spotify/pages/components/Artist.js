@@ -13,6 +13,7 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
 
 
     const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem, setSearchOverlay } = useContext( DbHookContext )
+    const { user_info } = useContext( DbFetchedContext )
     const searchContext = useContext( SearchHookContext )
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
@@ -20,19 +21,17 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     const initialState = {
         artist: {},
         top_tracks: [],
-        artistAlbums: [],
-        all_albums: [],
+        albums: [],
         follow: false,
         related_artists: []
     }
 
     const routes = {
         artist: 'v1/artists',
-        top_tracks: 'v1/artists/top-tracks',
-        artistAlbums: 'v1/artists/albums',
+        albums: 'v1/artists/albums',
         following: 'v1/me/following/contains',
-        all_albums: 'v1/albums',
-        related_artists: 'v1/artists/related-artists'
+        related_artists: 'v1/artists/related-artists' ,
+        top_tracks: 'v1/artists/top-tracks'
     }
 
     const reducer = ( state, action ) => {
@@ -42,6 +41,7 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
             route = action.route
             method = action.method 
         }
+
         switch(route){
             case routes.artist :
                 return {
@@ -49,34 +49,10 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
                     artist: action
                 }
             case routes.top_tracks :
+                console.log(action)
                 return {
                     ...state,
                     top_tracks: action.tracks
-                }
-            case routes.artistAlbums :
-                const ids = action.items.map(album => album.id)
-                const multiCall = ( arr, limit ) => {
-                    const makeCall = ( arr ) => {
-                        finalizeRoute('get', `${routes.all_albums}`, null, null, `ids=${ [ ...arr ] }`)
-                    }
-                    if( arr.length > limit ){
-                        makeCall( arr.slice( 0, limit ) )
-                        arr.splice( 0, limit )
-                        multiCall( arr, limit)
-                    } else {
-                        makeCall( arr )
-                    }
-                }
-                multiCall(ids, 20)
-                return {
-                    ...state,
-                    albums: action.items
-                }
-            case routes.all_albums :
-                console.log(action)
-                return{
-                    ...state,
-                    all_albums: [...state.all_albums, ...action.albums]
                 }
             case routes.following :
                 return {
@@ -88,6 +64,11 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
                     ...state,
                     related_artists: action.artists
                 }
+            case routes.albums:
+                return {
+                    ...state,
+                    albums: [ ...state.albums, ...action.items ]
+                }
             default: 
                 console.log(action)
                 break
@@ -97,7 +78,7 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
 
-    const { artist , top_tracks, all_albums, related_artists } = { ...state }
+    const { artist , top_tracks, albums, related_artists } = { ...state }
     
     const thisComponentRef = useRef() 
 
@@ -130,13 +111,15 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
 
 
     useEffect(() => {
-        let id = activeItem.id
-        finalizeRoute( 'get', `${routes.artist}/${id}`, id)
-        finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, id, null ,`market=ES`)
-        finalizeRoute( 'get', `${routes.artist}/${id}/albums`, id, null, 'limit=50')
-        finalizeRoute( 'get', `${routes.artist}/${id}/related-artists`, id, null, 'limit=50')
-
-    }, [])
+        if( user_info.country ){
+            const market = user_info.country
+            const id = activeItem.id
+            finalizeRoute( 'get', `${routes.artist}/${id}`, id, null, `market=${market}` )
+            finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, id, null, `market=${market}` )
+            finalizeRoute( 'get', `${routes.artist}/${id}/albums`, id, { fetchAll: true, limit: null }, 'limit=50', `market=${market}`)
+            finalizeRoute( 'get', `${routes.artist}/${id}/related-artists`, id, null, 'limit=50', `market=${market}`)
+        }
+    }, [ user_info])
 
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
@@ -160,7 +143,7 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
 
                 
                 <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks, artist: artist} } setOverlay={ setOverlay }/>
-                <AlbumContainer page={ searchContext ? 'search' : 'home' } albums={ all_albums } />
+                <AlbumContainer page={ searchContext ? 'search' : 'home' } albums={ albums } />
                 <Slider 
                 message='Fans also enjoy'
                 items={ related_artists }

@@ -13,6 +13,8 @@ $bg__1--lg: url('../public/bglg.jpg')
     --headerBackground: ''
     --headerHeight: 0
 
+.transition
+    transition: opacity 0.25s ease-in-out
 
 @mixin opacTransition
     opacity: 0
@@ -790,7 +792,7 @@ li
             max-height: 100%
             width: 100%
             object-fit: cover
-            object-position: 0% 0%
+            object-position: 0% 75%
         &::before
             @include scrimGradient($black ,'to top')
             opacity: .75
@@ -856,6 +858,7 @@ li
                 display: block
                 height: auto
                 max-width: 100%
+                margin: auto
                 
     &__info
         @include smallBold
@@ -1494,6 +1497,31 @@ li
     padding-bottom: 3.6rem
     width: 100%
     z-index: 5
+    &__close
+        display: flex
+        position: absolute
+        left: 1rem
+        height: 3.5rem
+        z-index: 1
+        button
+            @include pseudo
+            border-radius: 50%
+            margin: auto
+            z-index: 2
+            &::before
+                @include scrimGradient($lightGreen, 'to bottom')
+                opacity: 0.5
+                z-index: 1
+            &::after
+                @include scrimGradient($green, '45deg')
+                opacity: 0.5
+                z-index: 1
+            i
+                background: $black
+                padding: .25rem
+                font-size: 1.5rem
+                
+                
     &__relative
         @include flexCol
         position: relative
@@ -1611,11 +1639,16 @@ li
             grid-row: 1/2
 
 #draggable
-    color: $green
+    
     position: absolute
     pointer-events: none
     height: 100%
     width: 100%
+    li
+        background: $black
+        color: $green
+        border-top: solid 1px $green
+        border-bottom: solid 1px $green
     
 
 .activeItemTrack
@@ -1628,6 +1661,9 @@ li
     &__info
         @include smallSkin
         color: $lightGrey
+    i
+        margin: auto 0 auto auto
+        font-size: 1.5rem
     &__btn
         display: none
         margin: 0 0 0 auto

@@ -9,7 +9,7 @@ import FixedHeader from './FixedHeader'
 
 const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
 
-    const { homeHeaderScrolled, setHomeHeaderScrolled, activeHomeItem, homePageHistoryRef, hiddenUI, setAuth, scrollPosition, dashboardRef} = useContext(DbHookContext)
+    const { homeHeaderScrolled, setHomeHeaderScrolled, activeHomeItem, homePageHistoryRef, hiddenUI, setAuth, scrollPosition, dashboardRef, selectOverlay} = useContext(DbHookContext)
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
@@ -67,22 +67,23 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
     const pageTransition = useTransition(activeHomeItem, {
         from: { transform: `translateX(${100 * dir}%)`, position: 'absolute',  width: '100%' , zIndex: 2 },
         enter: { transform: `translateX(${0 * dir}%)`, minHeight: transMinHeight},
-        update: {  position: 'absolute' },
+        update: {  position: 'absolute', },
         leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
         onRest: () => setTransitionComplete(true)
         
     })
 
     const headerTransition = useTransition(activeHomeItem, {
-        from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: 3 },
-        update: {  position: 'fixed' },
-        enter: { transform: `translateX(${0 * dir }%)` },
-        leave: { transform: `translateX(${-100 * dir }%)`, position: 'fixed', zIndex: 1},
+        from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: 3 , top: 0},
+        update: { position: 'fixed', top: selectOverlay.type ? dashboardRef.current.scrollTop : 0 , config: { duration: .01 }},
+        enter: {  transform: `translateX(${0 * dir }%)` },
+        leave: { transform: `translateX(${-100 * dir }%)`},
+       
     })
 
     const mainTransition = useTransition(activeHomeItem, {
         from: { transform: `translateX(${0 * dir }%)`, position: 'absolute', width: '100%'},
-        enter: { transform: `translateX(${0 * dir }%)`, minHeight: transMinHeight,},
+        enter: { transform: `translateX(${0 * dir }%)`, minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight,},
         update: {  position: 'absolute', },
         leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute'},
         onRest: () => setTransitionComplete(true)
@@ -95,16 +96,14 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
         id='homePage'>
         {
         headerTransition(( props, item ) => (
-            <animated.div style={ props }>
-                {
-                    item.type &&
-                    <FixedHeader 
-                    type={ 'home' } 
-                    transitionComplete={ transitionComplete } 
-                    headerScrolled={ headerScrolled } 
-                    activeHeader={ activeHeader } />
-                }
-            </animated.div>
+            item.type &&
+            <FixedHeader 
+            style={ props }
+            type={ 'home' } 
+            transitionComplete={ transitionComplete } 
+            headerScrolled={ headerScrolled } 
+            activeHeader={ activeHeader } />
+
         ))
         }
 

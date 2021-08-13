@@ -138,6 +138,7 @@ const useApiCall = (url) => {
             }
         })
     }
+    
     fetchApi( finalRoute, method , requestID, fetchAll)
 }
 

@@ -173,7 +173,10 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
         pauseTrack,
         nextTrack,
         prevTrack,
-        handleRepeat
+        handleRepeat,
+        trackProgressIntervalRef,
+        startTimer
+        
     }
     const largePlayerTrans = useTransition(playerSize,{
         from: { transform: 'translateY(100%) '},

@@ -51,7 +51,7 @@ const ManageFiltersBtn = ({ item, activeFilter, handleFilter }) => {
             }}
             onClick={ () => handleFilter( item ) } 
             className={`mngFilters__btn ${ activeFilter === item && 'mngFilters__btn--active'}`}>
-            { item }
+            { item.charAt(0).toUpperCase() + item.slice(1) }
         </animated.button>
         )
     }

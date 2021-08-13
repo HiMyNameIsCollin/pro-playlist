@@ -272,15 +272,12 @@ const Search = ({
         } 
         {
             headerTransition(( props, item )=> (
-                <animated.div style={ props }>
-                {
+
                 item.type === 'artist' ||
                 item.type === 'playlist' ||
-                item.type === 'album' ?
-                <FixedHeader type={'search'}  transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />:
-                null
-                }
-                </animated.div>
+                item.type === 'album' &&
+                <FixedHeader style={ props } type={'search'} transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
+                
             ))
         }
         {

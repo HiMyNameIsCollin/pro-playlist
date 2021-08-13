@@ -20,6 +20,8 @@ const CollectionHeader = ({ pageType, data, transitionComplete, headerScrolled, 
             const image = node
             const setColors = ( image ) => {
                 if( image.getBoundingClientRect().width > 0 ){
+                    const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
+                    setElementHeight(headerHeight)
                     const colors = handleColorThief(image, 2)
                     colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
                 } else {
@@ -32,8 +34,8 @@ const CollectionHeader = ({ pageType, data, transitionComplete, headerScrolled, 
       }, [ transitionComplete ])
 
     useLayoutEffect(() => {
-        const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
-        setElementHeight(headerHeight)
+        // const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
+        // setElementHeight(headerHeight)
         const img = whichPicture(collection.images, 'lrg')
         setBackgroundImage( img )
         setActiveHeader( {data : collection.name} )

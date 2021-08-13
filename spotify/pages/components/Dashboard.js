@@ -204,7 +204,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ searchTransMinHeight, setSearchTransMinHeight ] = useState( 0 )
     const [ navHeight, setNavHeight ] = useState( undefined )
 
-    const [ hideAll, setHideAll ] = useState(false)
 
     const dashboardRef = useRef()
     const pageScrollRef = useRef( initialPageScroll )
@@ -246,8 +245,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
         setPlayNextQueue,
         hiddenUI,
         setHiddenUI,
-        hideAll,
-        setHideAll,
         loaded, 
         setLoaded,
         setAuth,
@@ -324,21 +321,28 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
 // API CALLS 
     useEffect(() => {
-
         finalizeRoute('get', routes.user_info, null )
-        finalizeRoute( 'get', routes.player_info, null, false)
-        finalizeRoute( 'get', routes.featured_playlists, null, false )
-        finalizeRoute( 'get', routes.new_releases, null, null, 'limit=20' )
-        finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, 'limit=50' )
-        finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , 'limit=50' )
-        finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, 'limit=50' )
-        finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, 'limit=50' ) 
-        finalizeRoute( 'get', routes.new_releases, null, null )
-        finalizeRoute( 'get', routes.available_genre_seeds, null, false )
-        finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
-        finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true, limit: null })
-        finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, 'type=artist' )
     },[])
+
+
+    useEffect(() => {
+        if(user_info.country){
+            const market = user_info.country
+            finalizeRoute( 'get', routes.player_info, null, false, `market=${market}`)
+            finalizeRoute( 'get', routes.featured_playlists, null, false , `market=${market}`)
+            finalizeRoute( 'get', routes.new_releases, null, null, 'limit=20' , `market=${market}`)
+            finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, 'limit=50', `market=${market}` )
+            finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , 'limit=50', `market=${market}` )
+            finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, 'limit=50', `market=${market}` )
+            finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, 'limit=50' , `market=${market}`) 
+            finalizeRoute( 'get', routes.new_releases, null, null, `market=${market}` )
+            finalizeRoute( 'get', routes.available_genre_seeds, null, false, `market=${market}` )
+            finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
+            finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true, limit: null })
+            finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, 'type=artist')
+        }
+    },[ user_info ])
+
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
     },[apiPayload])
@@ -461,11 +465,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
             
     },[ dashboardState ])
 
-    useEffect(() => {
-        if( !selectOverlay.type && hideAll ){
-            setTimeout(() => setHideAll( false ), 250)
-        }
-    }, [ selectOverlay ])
 
     const dbScale = useSpring({
         borderRadius: selectOverlay.type ? '10px' : '0px',
@@ -486,7 +485,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
             ref={ dashboardRef }
             onScroll={ handleScroll }
             className={ `dashboard ${selectOverlay.type && 'dashboard--shrink'}`}> 
-
+            {
+                
+            }
                 <Home
                 transMinHeight={ homeTransMinHeight }
                 setTransMinHeight={ setHomeTransMinHeight }

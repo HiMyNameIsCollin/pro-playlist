@@ -99,7 +99,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
     const [ state , dispatch ] = useReducer(reducer, initialState)
     const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem, dashboardRef  } = useContext( DbHookContext )
-    const { available_genre_seeds } = useContext( DbFetchedContext )
+    const { available_genre_seeds, user_info } = useContext( DbFetchedContext )
     const searchContext = useContext( SearchHookContext )
     const { collection, artists, tracks, recommendations } = {...state}
 
@@ -196,7 +196,9 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             collection.id && 
             artists[0] && 
             tracks[0] && 
-            !recommendations[0] ){
+            !recommendations[0] &&
+            user_info.country ){
+            const market = user_info.country
             let seeds = getSeeds(available_genre_seeds, artists, tracks)
             const { seedGenres, seedArtists, seedTracks } = seeds
             finalizeRoute( 'get',
@@ -204,17 +206,11 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             null, 
             `seed_genres=${seedGenres.join()}`, 
             `seed_artists=${seedArtists.join()}`, 
-            `seed_tracks=${seedTracks.join()}` )
+            `seed_tracks=${seedTracks.join()}`,
+            `market=${market}` )
 
         }
     }, [ collection, artists, tracks ])
-
-    // If users first page is Collection, fetch the data from here, and then set in the dashboard component.
-
-    useEffect(() => {
-        if( !activeItem && collection.id ) setActiveItem( collection )
-    }, [collection])
-
 
     useEffect(() => {
         if( activeItem.selectedTrack ){

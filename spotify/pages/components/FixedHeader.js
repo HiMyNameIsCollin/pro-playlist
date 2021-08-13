@@ -3,12 +3,14 @@ import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 
-const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled }) => {
+const FixedHeader = ({ style, transitionComplete, type, activeHeader, headerScrolled }) => {
     const [ mounted, setMounted ] = useState(false)
-    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef, hideAll } = useContext( DbHookContext )
+    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef, selectOverlay, dashboardRef } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext ) 
     const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
     
+    const thisComponentRef = useRef()
+
     useEffect(() => {
         if( transitionComplete ) setMounted( true )
     }, [ transitionComplete ])
@@ -21,15 +23,13 @@ const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled })
     //     }
     // }, [ dashboardState ])
 
+
     const { fadeIn, textScroll, btnMove} = useSpring({
         fadeIn: (mounted) ? `${ 0 + ( headerScrolled * 0.01 )}`: `0` ,
         textScroll: (mounted) ?  `${ 200 - ( headerScrolled * 2 )}` : `0` ,
         btnMove: (mounted) ? `${ 50 -( headerScrolled / 2 )}` : `0`,
     })
 
-    const hideMe = useSpring({
-        transform: hideAll ? 'translateY(-100%)' : 'translateY(0%)'
-    })
 
     const handleBackBtn = () => {
         if( type === 'home' ){
@@ -43,8 +43,14 @@ const FixedHeader = ({ transitionComplete, type, activeHeader, headerScrolled })
         }
     }
 
+
     return(
-        <animated.header style={ hideMe } className={`fixedHeader fixedHeader--${type}`}>
+        <animated.header style={{ 
+            position: style.position.to( p => p ),
+            transform: style.transform.to( x => x),
+            width: style.width.to( w => w ),
+            top: style.top.to( t => t )
+            }} ref={ thisComponentRef } className={`fixedHeader fixedHeader--${type}`}>
         <animated.button
             onClick={ handleBackBtn }
             style={{

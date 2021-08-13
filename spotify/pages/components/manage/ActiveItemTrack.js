@@ -68,6 +68,7 @@ const ActiveItemTrack = ({ track, orientation, index, selectedItems, setSelected
                                 onPointerUp={ handleSelection } 
                                 className={`activeItemTrack__btn activeItemTrack__btn--active`}><i className="fas fa-check"></i></button>
                             }
+                            <i className="fas fa-bars"></i>
                             
                         </li>
                     ))

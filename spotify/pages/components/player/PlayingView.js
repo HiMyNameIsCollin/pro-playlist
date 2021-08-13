@@ -1,15 +1,20 @@
-import { useContext } from 'react'
+import { useContext , useState, useEffect, useRef} from 'react'
 import { DbHookContext } from '../Dashboard'
 import { PlayerHookContext } from './Player'
 
 import { whichPicture } from '../../../utils/whichPicture'
 import Controls from './Controls'
+import { FrameValue } from 'react-spring'
 
 const PlayingView = ({ controls, queueView, setQueueView }) => {
 
-    const { audioRef, queue, setQueue, overlay, setOverlay } = useContext( DbHookContext )
-    const  { currPlaying, isPlaying, repeat, playerSize, setPlayerSize, trackProgress, shuffle, setShuffle } = useContext( PlayerHookContext )
+    const progressBarRef = useRef()
+    const progressRef = useRef()
+    const [ scrubActive, setScrubActive ] = useState( false )
 
+    const { audioRef, queue, setQueue, overlay, setOverlay } = useContext( DbHookContext )
+    const  { currPlaying, isPlaying, repeat, playerSize, setPlayerSize, trackProgress, setTrackProgress, shuffle, setShuffle } = useContext( PlayerHookContext )
+    const { playTrack, pauseTrack, nextTrack, prevTrack, handleRepeat, trackProgressIntervalRef, startTimer } = controls
 
     const formatTime = ( val, total ) => {
         if( !total ) total = val
@@ -31,6 +36,66 @@ const PlayingView = ({ controls, queueView, setQueueView }) => {
         e.stopPropagation()
         window.open( currPlaying.external_urls.spotify )
     }
+
+    const handleScrub = (e) => {
+        setScrubActive(true)
+    }
+    useEffect(() => {
+        if( scrubActive ) {
+            window.addEventListener( 'pointermove', handleDrag )
+            window.addEventListener( 'pointerup', stopDrag )
+            window.addEventListener( 'touchmove', handleDrag )
+            window.addEventListener( 'touchend', stopDrag )
+            window.addEventListener( 'touchcancel', stopDrag )
+
+        } else {
+            removeListeners()
+        }
+        return () => {
+            removeListeners()
+            
+        }
+    }, [ scrubActive ])
+
+    const removeListeners = () => {
+        window.removeEventListener('pointermove', handleDrag)
+        window.removeEventListener( 'pointerup', stopDrag )
+        window.removeEventListener( 'touchmove', handleDrag )
+        window.removeEventListener( 'touchend', stopDrag )
+        window.addEventListener( 'touchcancel', stopDrag )
+    }
+
+
+    const handleDrag = (e) =>{
+        e.stopPropagation()
+        clearInterval( trackProgressIntervalRef.current )
+        const bar = progressBarRef.current.getBoundingClientRect()
+        const barLeft = bar.left
+        const barRight = bar.right
+        const barWidth = bar.width
+        const diff = window.innerWidth - barWidth
+        let pos = 0
+        if( e.type === 'touchmove'){
+            pos = e.touches[0].clientX
+        } else {
+            pos = e.clientX
+        }
+        if(pos < barLeft ){
+            pos = barLeft
+        } else if( pos > barRight ){
+            pos = barRight
+        } 
+        const value = ((pos - diff/2) / barWidth)  * audioRef.current.duration 
+        setTrackProgress( value )
+        progressRef.current = value
+    }
+
+    const stopDrag = (e) => {
+        setScrubActive(false)
+        audioRef.current.currentTime = progressRef.current
+        startTimer() 
+    }
+
     
 
     return(
@@ -50,13 +115,16 @@ const PlayingView = ({ controls, queueView, setQueueView }) => {
                 </p>
             </div>
             
-            <div className='playingView__progress'>
+            <div
+            ref={ progressBarRef } 
+            className='playingView__progress'>
                 <div className='playingView__bar'>
                     <div
                     style={{ width: ( trackProgress / audioRef.current.duration ) * 100 + '%'}} 
                     className='playingView__elapsed'>
                     </div>
                     <div
+                    onPointerDown={ handleScrub }
                     style={{ left: ( trackProgress / audioRef.current.duration ) * 100 + '%'}} 
                     className='playingView__thumb'>
                     </div>

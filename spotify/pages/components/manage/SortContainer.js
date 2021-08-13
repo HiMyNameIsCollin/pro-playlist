@@ -23,12 +23,12 @@ const reducer = ( state, action ) => {
 
 
 
-const SortContainer = ({ style }) => {
+const SortContainer = ({ style, setActiveItem,  }) => {
 
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-    const { activeManageItem, setActiveManageItem } = useContext( ManageHookContext )
+    const { activeManageItem, setActiveManageItem,} = useContext( ManageHookContext )
     const { my_playlists, user_info } = useContext( DbFetchedContext )
     const [ activePlaylistItem, setActivePlaylistItem ] = useState({})
     const [ dragging, setDragging ] = useState( false )
@@ -93,11 +93,16 @@ const SortContainer = ({ style }) => {
 
     const dragStart = (e) => {
         setDragging( e )
-    }
-    
+    } 
+
     return(  
         <animated.div style={ style } className='sortContainer'>
-
+        <div className='sortContainer__close'>
+            <button onClick={ handleCloseSortContainer } c>
+                <i className="fas fa-chevron-left"></i>
+            </button>
+        </div>
+       
         <DragDropContext 
         onDragStart={ dragStart }
         onDragUpdate={ dragUpdate }

@@ -87,7 +87,6 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
                 <animated.img 
                 style={{ objectPosition: imgSlide.to( t => `0% ${t}%` ) }}
                 crossOrigin='anonymous' 
-                // ON LOAD HERE ########################################
                 ref={ thisComponentImage }
                 src={ whichPicture(artist.images, 'lrg') }
                 alt='Artist'/> 

@@ -168,8 +168,8 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
             {
                 manageTrans(( props, item ) => (
                     
-                        item &&
-                        <SortContainer style={ props } setSortContainerOpen={ setSortContainerOpen } /> 
+                    item &&
+                    <SortContainer style={ props } setSortContainerOpen={ setSortContainerOpen } /> 
                     
                     
                 ))

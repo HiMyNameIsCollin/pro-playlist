@@ -6,7 +6,7 @@ const TabsContainer = ({ items }) => {
 
     const [ data, setData ] = useState([]) 
 
-    const { setHideAll, setSelectOverlay } = useContext( DbHookContext )
+    const { selectOverlay, setSelectOverlay } = useContext( DbHookContext )
 
     useEffect(() => {
         const taggedItems = items.map(( item, i ) => {
@@ -23,8 +23,7 @@ const TabsContainer = ({ items }) => {
     },[ items ])
 
     const handleSeeMore = () => {
-        setHideAll(true)
-        setTimeout(() => setSelectOverlay({ page: 'home', type: 'recPlayed', data: data }), 500)
+        setSelectOverlay({ page: 'home', type: 'recPlayed', data: data })
     }
 
     return(
