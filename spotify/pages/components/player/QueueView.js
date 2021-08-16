@@ -79,41 +79,38 @@ const QueueView = ({ handleTrackMenu, controls }) => {
         if( e.destination && e.source ){
             if( e.destination.droppableId === e.source.droppableId ){
                 if( e.destination.droppableId === 'queue' ){
-                    let track
-                    const q = queue.filter( x => {
-                        if( x.id !== e.draggableId.split('--')[0] ){
-                            return x
-                        } else {
-                            track = x
-                        }
-                    })
-                    setQueue( queue => queue = [ ...q.slice( 0, e.destination.index + 1 ), track, ...q.slice( e.destination.index + 1 )])
+                    const result = moveIndex( e.source.index + 1, e.destination.index + 1, queue )
+                    setQueue( result )
+
                 } else {
-                    let track 
-                    const PNQ = playNextQueue.filter( x => {
-                        if( x.id !== e.draggableId.split('--')[0] ){
-                            return x
-                        } else {
-                            track = x
-                        }
-                    })
-                    console.log( e.destination.index )
-                    setPlayNextQueue( playNextQueue => playNextQueue = [ ...PNQ.slice( 0 , e.destination.index + 1 ), track, ...PNQ.slice( e.destination.index + 1 )])
+                    const result = moveIndex( e.source.index, e.destination.index, playNextQueue )
+                    setPlayNextQueue( result )
                 }
             } else {
-                
+                if(e.destination.droppableId === 'queue'){
+                    const result = moveIndexBetween(e.source.index, playNextQueue, e.destination.index + 1 , queue )
+                    setQueue( result[1] )
+                    setPlayNextQueue( result[0] )
+                } else {
+                    const result = moveIndexBetween(e.source.index + 1 , queue, e.destination.index, playNextQueue,  )
+                    setQueue( result[0] )
+                    setPlayNextQueue( result[1] )
+                }
             }
             
         }
     }
 
-    const moveQueueTrack = ( stateArr, dragId, index ) => {
-        const clone = [ ... stateArr ]
-        const id = dragId.split('--')[0]
-        const track = clone.find( x => x.id === id )
-        const newQueue = clone.filter( x => x.id !== id )
-        const result = [ newQueue[0], ...newQueue.slice( 1, index ), track, ...newQueue.slice( index ) ]
-        return result
+    const moveIndexBetween = ( from, arr1, to, arr2 ) => {
+        const item = arr1.splice( from, 1 )[0]
+        arr2.splice( to, 0, item )
+        return [ arr1, arr2 ]
+    }
+
+    const moveIndex = ( from, to, arr ) => {
+        const item = arr.splice( from, 1 )[0]
+        arr.splice( to, 0, item)
+        return arr
     }
 
     return(
