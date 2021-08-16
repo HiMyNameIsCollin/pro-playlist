@@ -116,24 +116,29 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
     }, [ shuffle ])
 
     const handleQueue = () => {
-        if( repeat === 'none' ){
-            if( qIndex !== queue.length - 1){
-                setQIndex( qIndex => qIndex = qIndex + 1 )
-            } else {
-                setTrackProgress( 0 )
-                setQIndex( 0 )
-            }
-        } else if ( repeat === 'one'){
-            let clone = { ...currPlaying }
-            setCurrPlaying( clone )
-        } else if ( repeat === 'all' ){
-            if( qIndex === queue.length ){
-                setTrackProgress( 0 )
-                setQIndex( 0 )
-            } else {
-                setQIndex( qIndex => qIndex = qIndex + 1 )
+        if( playNextQueue[0] ){
+            setCurrPlaying( playNextQueue[0])
+        } else {
+            if( repeat === 'none' ){
+                if( qIndex !== queue.length - 1){
+                    setQIndex( qIndex => qIndex = qIndex + 1 )
+                } else {
+                    setTrackProgress( 0 )
+                    setQIndex( 0 )
+                }
+            } else if ( repeat === 'one'){
+                let clone = { ...currPlaying }
+                setCurrPlaying( clone )
+            } else if ( repeat === 'all' ){
+                if( qIndex === queue.length ){
+                    setTrackProgress( 0 )
+                    setQIndex( 0 )
+                } else {
+                    setQIndex( qIndex => qIndex = qIndex + 1 )
+                }
             }
         }
+
     }
 
     const playTrack = () => {
@@ -184,22 +189,12 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
         leave: { transform: 'translateY(100%) '}
     })
 
-        useEffect(() => {
-        if(playNextQueue[0]){
-            if( queue[ qIndex + 1] && queue[ qIndex + 1 ].id !== playNextQueue[0].id){
-                setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1), ...playNextQueue, ...queue.slice(qIndex + 1) ]) 
-            } else if ( !queue[ qIndex + 1 ] ){
-                setQueue( queue => queue = [ ...queue, ...playNextQueue ]) 
-            }
-        }
-        },[ playNextQueue ])
-     
     useEffect(() => {
-        if( playNextQueue[0] && queue[ qIndex ].id === playNextQueue[0].id){
+        if( playNextQueue[0] && playNextQueue[0].id === currPlaying.id ){
             setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
-            // setQueue( queue => queue = [ ...queue.slice( 0, qIndex + 1 ), ...queue.slice( qIndex + 1 ) ])
         }
-    }, [ qIndex ])
+    },[ playNextQueue, currPlaying ])
+
     return(
         <>
             <PlayerHookContext.Provider value={ playerHookState }>
