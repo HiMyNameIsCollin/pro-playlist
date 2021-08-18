@@ -81,7 +81,7 @@ const Search = ({
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     
-    const { overlay, scrollPosition, dashboardRef } = useContext( DbHookContext )
+    const { overlay, scrollPosition, selectOverlay, dashboardRef } = useContext( DbHookContext )
     
     const { all_categories, my_top_categories } = {...state}
 
@@ -93,7 +93,7 @@ const Search = ({
     }
 
     useEffect(() => {
-        finalizeRoute( 'get', routes.all_categories, null,{ fetchAll: true, limit: null }, 'limit=50') 
+        finalizeRoute( 'get', routes.all_categories, null,{ fetchAll: true, limit: null }, null, 'limit=50') 
     },[])
 
     useEffect(() => {
@@ -212,10 +212,10 @@ const Search = ({
     })
 
     const headerTransition = useTransition(activeSearchItem, {
-        from: { transform: `translateX(${100 * dir}%)`, position: 'fixed',  width: '100%' , zIndex: 3 },
-        update: {  position: 'fixed'},
-        enter: { transform: `translateX(${0 * dir}%)`, },
-        leave: { transform: `translateX(${-100 * dir}%)`, position: 'fixed', zIndex: 1},
+        from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: 3 , top: 0},
+        update: { position: 'fixed', top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 , config: { duration: .01 }},
+        enter: {  transform: `translateX(${0 * dir }%)` },
+        leave: { transform: `translateX(${-100 * dir }%)`},
     })
 
     const headerTransition2 = useTransition(activeSearchItem, {
@@ -273,9 +273,9 @@ const Search = ({
         {
             headerTransition(( props, item )=> (
 
-                item.type === 'artist' ||
+                (item.type === 'artist' ||
                 item.type === 'playlist' ||
-                item.type === 'album' &&
+                item.type === 'album') &&
                 <FixedHeader style={ props } type={'search'} transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
                 
             ))

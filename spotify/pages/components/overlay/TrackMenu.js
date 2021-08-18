@@ -6,7 +6,7 @@ import { DbHookContext } from '../Dashboard'
 
 const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track }) => {
 
-    const { overlay, setOverlay, setPlayNextQueue, toBeManaged, setToBeManaged, setMessageOverlay, setSelectOverlay,  } = useContext( DbHookContext )
+    const { overlay, setOverlay, setPlayNextQueue, toBeManaged, setToBeManaged, setMessageOverlay, setSelectOverlay, playerSize, setPlayerSize } = useContext( DbHookContext )
 
     const copyToClip = () => {
         console.log(track)
@@ -20,9 +20,14 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
 
     const viewArtist = (e) => {
         e.stopPropagation()
+        let delay = 250
+        if( playerSize === 'large' ) {
+            setPlayerSize('small')
+            delay = 500
+        }
         if( track.artists.length === 1 ){
             setOverlay( {} )
-            setTimeout(() => setActiveItem( track.artists[0] ) , 250 )
+            setTimeout(() => setActiveItem( track.artists[0] ) , delay )
         } else {
             let oClone = { ...overlay}
             oClone.data = { artists: track.artists }
@@ -34,7 +39,12 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
     const viewAlbum = ( e ) => {
         e.stopPropagation()
         setOverlay( {} )
-        setTimeout(() => setActiveItem( track.album ), 250)
+        let delay = 250
+        if( playerSize === 'large' ) {
+            setPlayerSize('small')
+            delay = 500
+        }
+        setTimeout(() => setActiveItem( track.album ), delay)
     }
 
     const handleAddToQueue = () => {
@@ -57,9 +67,10 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
 
     const handleAddToPlaylist = (e) => {
         e.stopPropagation()
+        if( playerSize === 'large' ) setPlayerSize('small')
+        const overlay = { type:'playlists', page: 'home', data: [track] }
         setOverlay( {} )
-        setTimeout(() => setSelectOverlay( {type:'playlists', page: 'home', data: [track] }), 500)
-        
+        setSelectOverlay( arr => arr = [ ...arr, overlay ] )        
     }
 
     return(

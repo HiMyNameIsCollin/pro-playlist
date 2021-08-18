@@ -104,7 +104,7 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
                 let itemsRoute = routes.items.substr( 0, routes.items.length - 6 )
                 itemsRoute += data.id
                 itemsRoute += data.type === 'artist' ? '/albums' : '/tracks'
-                finalizeRoute( 'get', itemsRoute, data.id, null, 'limit=50' )
+                finalizeRoute( 'get', itemsRoute, data.id, null, null, 'limit=50' )
             }
         }
     },[ data ])

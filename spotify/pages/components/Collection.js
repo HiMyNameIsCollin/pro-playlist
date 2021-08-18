@@ -124,7 +124,6 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
     useEffect(() => {
         if( transitionComplete ) {
             thisComponentRef.current.classList.add('fadeIn')
-            setTransitionComplete(false)
             setMounted( true )
         }
     }, [ transitionComplete ])
@@ -201,13 +200,18 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             const market = user_info.country
             let seeds = getSeeds(available_genre_seeds, artists, tracks)
             const { seedGenres, seedArtists, seedTracks } = seeds
+            let args = []
+            if(seedGenres.length > 0) args.push( `seed_genres=${seedGenres.join()}` )
+            if( seedArtists.length > 0 ) args.push(`seed_artists=${seedArtists.join()}` )
+            if( seedTracks.length > 0 ) args.push( `seed_tracks=${seedTracks.join()}` )
             finalizeRoute( 'get',
             `${routes.recommendations}`, 
             null, 
+            null,
+            null,
             `seed_genres=${seedGenres.join()}`, 
             `seed_artists=${seedArtists.join()}`, 
-            `seed_tracks=${seedTracks.join()}`,
-            `market=${market}` )
+            `seed_tracks=${seedTracks.join()}`, )
 
         }
     }, [ collection, artists, tracks ])
@@ -237,7 +241,8 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             setActiveItem={ setActiveItem }
             setActiveHeader={ setActiveHeader }
             data={{collection, tracks, artists,}}
-            transitionComplete={ transitionComplete }/>
+            transitionComplete={ transitionComplete }
+            setTransitionComplete={ setTransitionComplete }/>
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             {
             type === 'album' && 

@@ -1,30 +1,43 @@
 
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useCallback, useRef } from 'react'
 import { useTransition, animated, useSpring } from 'react-spring'
 import useApiCall from '../hooks/useApiCall'
-import ItemMenu from './selectOverlay/ItemMenu'
-import { DbHookContext } from './Dashboard'
+import MenuCard from './selectOverlay/MenuCard'
+import { DbHookContext, DbFetchedContext } from './Dashboard'
 
-const SelectOverlay = ({ dbDispatch }) => {
+const SelectOverlay = ({ dbDispatch, style, menuData, position }) => {
     
     const API = 'https://api.spotify.com/'
+    const [ input, setInput ] = useState('')
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-    const { selectOverlay, setSelectOverlay, setMessageOverlay} = useContext( DbHookContext )
+    const { selectOverlay, setSelectOverlay, setMessageOverlay ,setActiveHomeItem, setActiveSearchItem} = useContext( DbHookContext )
 
+    const { user_info } = useContext( DbFetchedContext )
     const [ data , setData ] = useState( [] )
 
-    const alterPlaylistRoute = 'v1/playlists'
+    const newPlayListRef = useRef()
+
+    const newPlaylistInputRef = useCallback( node => {
+        if( node !== null ){
+            // node.focus()
+        }
+    },[])
+
+    const alterPlaylistRoute = 'v1/playlists/tracks'
     const allPlaylistsRoute = 'v1/me/playlists'
+    const newPlaylistRoute = `v1/users/${user_info.id}/playlists`
 
     useEffect(() => {
-        if( selectOverlay.type === 'playlists'){
-            finalizeRoute( 'get', allPlaylistsRoute, null, { fetchAll: true, limit: null }, 'limit=50' )
-        } else if( selectOverlay.type === 'albums'){
-            setData( selectOverlay.data )
-        } else if ( selectOverlay.type === 'recPlayed'){
-            setData( selectOverlay.data )
-        } else if( !selectOverlay.type ) setData([])
-    }, [ selectOverlay ])
+        if( menuData.type === 'playlists'){
+            finalizeRoute( 'get', allPlaylistsRoute, null, { fetchAll: true, limit: null }, null, 'limit=50' )
+        } else if( menuData.type === 'albums'){
+            setData( menuData.data )
+        } else if ( menuData.type === 'recPlayed'){
+            setData( menuData.data )
+        } else if ( menuData.type === 'newPlaylist'){
+        } else if( !menuData.type ) setData([])
+        
+    }, [])
 
     useEffect(() => {
         if(apiPayload){
@@ -32,53 +45,139 @@ const SelectOverlay = ({ dbDispatch }) => {
                 setData( apiPayload.items )
                 dbDispatch( apiPayload )
             } else if( apiPayload.method === 'post') {
-                const modified = data.find( x => x.id === apiPayload.id )
+                if( apiPayload.route === newPlaylistRoute ){
+                    finalizeRoute('post', `${ alterPlaylistRoute.slice( 0, 12 ) }/${apiPayload.id}/tracks`, apiPayload.id, null, null,  `uris=${selectOverlay[0].data[0].uri}` )
+                    console.log(apiPayload)
+                    newPlayListRef.current = apiPayload
+                }
+                if( apiPayload.route === alterPlaylistRoute ) {
+                    if(selectOverlay[0].page === 'home'){
+                        setTimeout(() => setActiveHomeItem(newPlayListRef.current) ,250)
+                    } else {
+                        setTimeout(() => setActiveSearchItem(newPlayListRef.current) ,250)
+                    }
+                    const close = setInterval(() => {
+                        if(selectOverlay[0]){
+                            handleClose()
+                        } else {
+                            clearInterval(close)
+                        }
+                    },100)
+                    
+                }
+                // const modified = data.find( x => x.id === apiPayload.id )
                 // setMessageOverlay({ message: `Added to ${ modified.name }`, active: true })
+            } else if( apiPayload.method === 'put'){
+                console.log( apiPayload )
             }
         }
     },[ apiPayload ])
 
 
     const handleClose = () => {
-        setSelectOverlay( {} )
+        setSelectOverlay( selectOverlay => selectOverlay = selectOverlay.slice(0, selectOverlay.length - 1) )
     }
 
     const handlePlaylist = ( playlist ) => {
-        const args = selectOverlay.data.map( item =>  item.uri )
-        finalizeRoute('post', `${alterPlaylistRoute}/${playlist.id}/tracks`, playlist.id, null,  `uris=${args[0]}`, ...args )
+        const args = menuData.map( it =>  it.uri )
+        finalizeRoute('post', `${alterPlaylistRoute.slice( 0, 12 ) }/${playlist.id}/tracks`, playlist.id, null, null,  `uris=${args[0]}`, ...args )
     }
 
-    const overlayTypeTrans = useTransition( selectOverlay, {
-        from: { transform: 'translateY(100%)' },
-        enter: { transform: 'translateY(0%)' },
-        leave: { transform: 'translateY(100%)'}
-    })
 
-    const activeOverlay = useSpring({
-        pointerEvents: selectOverlay.type ? 'auto' : 'none',
-        opacity: selectOverlay.type ? 1 : 0
+    const spawnPlaylistMenu = () => {
+        const menu = { type: 'newPlaylist' , page: menuData.page}
+        setSelectOverlay( arr => arr = [ ...arr, menu ])
+    }
+
+    const handleCreatePlaylist = (e) => {
+        e.preventDefault()
+        const body = {
+            "name": input !== '' ? input :  selectOverlay[0].data[0].name,
+            "description": "Description for playlist",
+            "public": true
+        }
+        finalizeRoute('post', newPlaylistRoute, null, null, body )
+    }
+
+    const shrink = useSpring({
+        transform: position === selectOverlay.length - 1 ? 'scaleX(1.00) scaleY(1.00)' : 'scaleX(0.90) scaleY(0.97)' ,
+        borderRadius: position === selectOverlay.length - 1 ? '0px' : '20px',
+        minHeight: position === selectOverlay.length - 1 ? '90vh' : '100vh'
     })
-    
 
     return(
-
-            <animated.div
-            style={ activeOverlay }
-            className='overlay'>
-            {
-                overlayTypeTrans(( props, item ) => (
-                    item.type &&
+        <animated.div
+        style={ style }
+        className='overlay'>
+            
+            <animated.div 
+            style={ shrink }
+            className={`selectOverlay `}>
+                <header className='selectOverlay__header '>
+                    <button className='selectOverlay__header__btn' onClick={ handleClose }> Cancel </button>
+                    <p className='selectOverlay__title'>
+                        {
+                            menuData.type === 'playlists' ? 
+                            'Add to playlist' :
+                            menuData.type === 'albums' ?
+                            'Releases' :
+                            menuData.type === 'recPlayed' ?
+                            'Recently played' :
+                            menuData.type ==='newPlaylist' &&
+                            'Create a playlist' 
+                        }
+                    </p>
+                </header>
+                <div className='selectOverlay__main'>
+                {
+                    menuData.type === 'newPlaylist' ?
+                    <form onSubmit={ handleCreatePlaylist } className='selectOverlay__newPlaylistForm'>
+                        <label forHtml='newPlaylistInput'> Give your playlist a name. </label>
+                        <input 
+                        onClick={ (e) => {
+                            e.target.select()
+                            e.target.focus()
+                        }}
+                        ref={ newPlaylistInputRef }
+                        onChange={ (e) => setInput( e.value )} 
+                        type='text' 
+                        name='newPlaylistInput' 
+                        value={ input !== '' ? input : `${ selectOverlay[0].data[0].name }` }/>
+                        <button onSubmit={ handleCreatePlaylist } className='selectOverlay__newBtn'> 
+                            Create 
+                        </button>
+                    </form> :
+                    <div className='selectOverlay__scroll'>
+                    {
+                        menuData.type === 'playlists' &&
+                        <>
+                        <button onClick={ spawnPlaylistMenu } className='selectOverlay__newBtn'> 
+                            New playlist 
+                        </button>
+                        <form className='selectOverlay__form searchOverlay__form'>
+                            <i className="fas fa-search"></i>
+                            <input type='text' placeholder='Search playlists'/>
+                        </form>
+                        </>
+                    }
+                    {
+                        menuData.type === 'playlists' ? 
+                        data.slice().filter( x => x.collaborative || x.owner.display_name === user_info.display_name).map(( item, i) => (
+                            <MenuCard item={ item } index={ i } type={ menuData.type } handlePlaylist={ handlePlaylist } />
+                        )) 
+                        :
+                        data.map( (item, i) => <MenuCard item={ item } index={ i } allData={ data } type={ menuData.type } /> )
+                    }
                     
-                    <ItemMenu 
-                    type={ item.type }
-                    handleClose={ handleClose }
-                    handlePlaylist={ handlePlaylist }
-                    page={ item.page }
-                    style={ props }
-                    items={ data }/>
-                ))
-            }
+                    </div>
+                }
+
+                </div>
             </animated.div>
+                
+           
+        
+        </animated.div>
        
     )
 }

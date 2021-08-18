@@ -30,6 +30,8 @@ const RecommendCard = ({ setActiveItem, data }) => {
             finalizeRoute('get', 
             `${ albumRoute }/${ data.id }/albums`,
             data.id,
+            null,
+            null,
             'include_groups=compilation,appears_on',
             'limit=5',
             `market=${ user_info.country }`)

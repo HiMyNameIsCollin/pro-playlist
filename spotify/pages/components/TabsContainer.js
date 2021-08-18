@@ -23,7 +23,8 @@ const TabsContainer = ({ items }) => {
     },[ items ])
 
     const handleSeeMore = () => {
-        setSelectOverlay({ page: 'home', type: 'recPlayed', data: data })
+        const item = { page: 'home', type: 'recPlayed', data: data }
+        setSelectOverlay( arr => arr = [ ...arr, item ])
     }
 
     return(

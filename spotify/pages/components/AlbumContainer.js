@@ -8,7 +8,8 @@ const AlbumContainer = ({ page, albums }) => {
     const { setSelectOverlay, setHideAll } = useContext( DbHookContext )
 
     const handleSeeMore = () => {
-        setSelectOverlay({ page: page, type: 'albums', data: albums })
+        const overlay = { page: page, type: 'albums', data: albums }
+        setSelectOverlay( arr => arr = [ ...arr, overlay])
         
     }
 

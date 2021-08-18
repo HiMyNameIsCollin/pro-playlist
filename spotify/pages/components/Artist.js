@@ -99,7 +99,6 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     useEffect(() => {
         if( transitionComplete ) {
             thisComponentRef.current.classList.add('fadeIn')
-            setTransitionComplete(false)
             setMounted( true )
         }
     }, [ transitionComplete ])
@@ -114,10 +113,10 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
         if( user_info.country ){
             const market = user_info.country
             const id = activeItem.id
-            finalizeRoute( 'get', `${routes.artist}/${id}`, id, null, `market=${market}` )
-            finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, id, null, `market=${market}` )
-            finalizeRoute( 'get', `${routes.artist}/${id}/albums`, id, { fetchAll: true, limit: null }, 'limit=50', `market=${market}`)
-            finalizeRoute( 'get', `${routes.artist}/${id}/related-artists`, id, null, 'limit=50', `market=${market}`)
+            finalizeRoute( 'get', `${routes.artist}/${id}`, id, null, null,`market=${market}` )
+            finalizeRoute( 'get', `${routes.artist}/${id}/top-tracks`, id, null, null, `market=${market}` )
+            finalizeRoute( 'get', `${routes.artist}/${id}/albums`, id, { fetchAll: true, limit: null }, null, 'limit=50', `market=${market}`)
+            finalizeRoute( 'get', `${routes.artist}/${id}/related-artists`, id, null, null, 'limit=50', `market=${market}`)
         }
     }, [ user_info])
 
@@ -138,7 +137,8 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
                 activeHeader={ activeHeader }
                 setActiveHeader={ setActiveHeader }
                 data={{ artist }} 
-                transitionComplete={ transitionComplete } />
+                transitionComplete={ transitionComplete } 
+                setTransitionComplete={ setTransitionComplete } />
             }
 
                 

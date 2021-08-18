@@ -7,7 +7,8 @@ import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 
-const CollectionHeader = ({ pageType, data, transitionComplete, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader }) => {
+const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionComplete, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader }) => {
+    const [ colors, setColors ] = useState( undefined )
     const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ backgroundImage, setBackgroundImage ] = useState(null)
@@ -15,23 +16,13 @@ const CollectionHeader = ({ pageType, data, transitionComplete, headerScrolled, 
 
     const { setOverlay, scrollPosition, } = useContext( DbHookContext )
 
-    const thisComponentImage = useCallback(node => {
-        if( node !== null && transitionComplete ) {
-            const image = node
-            const setColors = ( image ) => {
-                if( image.getBoundingClientRect().width > 0 ){
-                    const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
-                    setElementHeight(headerHeight)
-                    const colors = handleColorThief(image, 2)
-                    colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
-                } else {
-                    setTimeout( () => setColors( image ), 500 )
-                }
-            }
-            setColors(image)
-
+    useEffect(() => {
+        if(transitionComplete && colors ){
+            colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+            setTransitionComplete( false )
         }
-      }, [ transitionComplete ])
+    }, [ transitionComplete, colors ] )
+
 
     useLayoutEffect(() => {
         // const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
@@ -74,6 +65,13 @@ const CollectionHeader = ({ pageType, data, transitionComplete, headerScrolled, 
         }
     }
 
+    const finishMount = ( e ) => {
+        const theseColors = handleColorThief( e.target, 2 )
+        setColors( theseColors )
+        const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
+        setElementHeight(headerHeight)
+    }
+
     return(
             <header 
             ref={ thisHeaderRef }
@@ -95,7 +93,7 @@ const CollectionHeader = ({ pageType, data, transitionComplete, headerScrolled, 
                         <img
                         crossorigin='anonymous' 
                         // ON LOAD HERE ########################################
-                        ref={ thisComponentImage }
+                        onLoad={ finishMount }
                         className='collectionHeader__img' 
                         src={ whichPicture(collection.images, 'med') } />
                     </animated.div>

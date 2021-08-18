@@ -11,35 +11,30 @@ const routes = {
     followed_artists: 'v1/me/following'
 }
 
-const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader,  }) => {
+const ArtistHeader = ({ pageType, data, transitionComplete, setTransitionComplete, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader,  }) => {
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
 
-
     const { collection, artist, tracks } = { ...data }
+    const [ colors, setColors ] = useState( undefined )
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ followed, setFollowed ] = useState( false ) 
     const thisHeaderRef = useRef()
     const { scrollPosition } = useContext( DbHookContext )
     const { followed_artists } = useContext( DbFetchedContext )
 
-    
-    const thisComponentImage = useCallback(node => {
-        if( node !== null && transitionComplete ) {
-            const image = node
-            
-            const setColors = ( image ) => {
-                if( image.getBoundingClientRect().width > 0 ){
-                    const colors = handleColorThief(image, 2)
-                    colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
-                } else {
-                    setTimeout( () => setColors( image ), 500 )
-                }
-            }
-            setColors(image)
+    const getColors = ( e ) => {
+        const theseColors = handleColorThief( e.target, 2 )
+        setColors( theseColors )
+    }
+
+    useEffect(() => {
+        if(colors && transitionComplete ) {
+            setTransitionComplete(false)
+            colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
         }
-      }, [ transitionComplete ])
+    },[ transitionComplete, colors ])
 
     useEffect(() => {
         const following = followed_artists.find( x => x.name === artist.name )
@@ -54,7 +49,7 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
     },[])
 
     const handleFollow = () => {
-        // finalizeRoute('PUT', routes.followed_artists, artist.id, null, 'type=artist', `ids=${ artist.id }`)
+        // finalizeRoute('PUT', routes.followed_artists, artist.id, null, null, 'type=artist', `ids=${ artist.id }`)
         console.log( 'I dont think this route works... https://developer.spotify.com/console/put-following/?type=artist&ids=2CIMQHirSU0MQqyYHq0eOx%2C57dN52uHvrHOxijzpIgu3E%2C1vCWHaC5f2uS3yhpwWbIA6 doesnt work either')
     }
 
@@ -85,9 +80,9 @@ const ArtistHeader = ({ pageType, data, transitionComplete, headerScrolled, setH
             <div className={`headerBacking headerBacking--${pageType}`}></div>
                 <div className='artistHeader__imgContainer'>
                 <animated.img 
+                onLoad={ getColors }
                 style={{ objectPosition: imgSlide.to( t => `0% ${t}%` ) }}
                 crossOrigin='anonymous' 
-                ref={ thisComponentImage }
                 src={ whichPicture(artist.images, 'lrg') }
                 alt='Artist'/> 
                 <animated.p 

@@ -48,7 +48,7 @@ const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState
     }
 
     const hideForOverlay = ( ele ) => {
-        if(selectOverlay.type){
+        if(selectOverlay[0]){
             ele.style.opacity = 0 
         }else {
             ele.classList.add('transition')

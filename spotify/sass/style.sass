@@ -16,6 +16,7 @@ $bg__1--lg: url('../public/bglg.jpg')
 .transition
     transition: opacity 0.25s ease-in-out
 
+
 @mixin opacTransition
     opacity: 0
     transition: opacity .75s ease-in-out
@@ -177,9 +178,10 @@ button, input[type="submit"], input[type="reset"], input[type='text']
     cursor: pointer
     outline: inherit
     &:focus
-        background: none
         transform: none
         outline: none
+
+
 
 body
     background: $black
@@ -1037,7 +1039,6 @@ li
             font-size: 1rem
             padding: 0 .5rem
             height: 100%
-            user-select: initial
             width: 100%
             &::placeholder
                 color: $white
@@ -1776,22 +1777,37 @@ li
     &__title
         @include largeFirm
     &__main
-        padding: 1rem 0
+        display: flex
+        flex-direction: column
         position: relative
         min-height: 90vh
         height: auto
         overflow: auto
         min-width: 100%
+    &__newPlaylistForm
+        display: flex
+        flex-direction: column
+        justify-content: flex-start
+        gap: 1rem
+        height: 100%
+        margin-top: 4rem
+        label
+            @include largeFirm
+            margin-top: 40%
+            text-align: center
+
+        input
+            @include bigFirm
+            text-align: center
+            &::placeholder
+                color: $white
     &__scroll
         @include flexCol
-        padding: 3rem 1rem
+        padding: 4rem 1rem
         position: absolute
         top: 5
         height: auto
         width: 100%
-    &__form
-        
-.playlistMenu
     &__newBtn
         @include smallBold
         background: $white
@@ -1799,6 +1815,12 @@ li
         color: $black
         padding: 1rem 2rem
         margin: .5rem auto
+    &--shrink
+        min-height: 100vh
+        transform: scaleX(0.90) scaleY(0.97)
+
+        
+    
     
         
 @media only screen and (min-width: 768px)

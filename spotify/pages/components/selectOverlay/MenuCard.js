@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
 import { DbHookContext } from '../Dashboard'
-const MenuCard = ({ item, items, type, index, handlePlaylist }) => {
+const MenuCard = ({ item, allData, type, index, handlePlaylist }) => {
 
     const { setActiveHomeItem, setActiveManageItem, setActiveSearchItem, selectOverlay, setSelectOverlay, queue, qIndex, setQueue, setQIndex } = useContext( DbHookContext )
     const [ active, setActive ] = useState(false)
@@ -18,21 +18,21 @@ const MenuCard = ({ item, items, type, index, handlePlaylist }) => {
 
 
     const setActiveItem = (param) => {
-        if(selectOverlay.page === 'home'){
+        if(item.page === 'home'){
             setActiveHomeItem( param )
-        } else if( selectOverlay.page === 'search'){
+        } else if( item.page === 'search'){
             setActiveSearchItem( param )
-        } else if ( selectOverlay.page === 'manage'){
+        } else if ( item.page === 'manage'){
             setActiveManageItem( param )
         }
     }
 
     const menuAction = ( param ) => {
-        if( selectOverlay.type === 'playlists'){
+        if( type === 'playlists'){
             handlePlaylist( param )
-        } else if( selectOverlay.type === 'albums') {
+        } else if( type === 'albums') {
             setActiveItem( param )
-        } else if( selectOverlay.type === 'recPlayed'){
+        } else if( type === 'recPlayed'){
             handlePlayTrack( index )
         }
     }
@@ -41,18 +41,18 @@ const MenuCard = ({ item, items, type, index, handlePlaylist }) => {
         if( queue[ index ].id === item.id ){
             setQIndex( index )
         }else { 
-            setQueue( items )
+            setQueue( allData )
             setQIndex( index )
         }
     }
 
 
     const handleSelectItem = ( param ) => {
-        if( selectOverlay.type === 'recPlayed'){
+        if( type === 'recPlayed'){
             menuAction( param )
         }else {
             setTimeout(() => menuAction(param), 250)
-            setSelectOverlay({type: undefined, page: undefined})
+            setSelectOverlay( arr => arr = [ ...arr.slice(1) ])
         }
 
     }

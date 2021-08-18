@@ -25,7 +25,6 @@ button, input[type=submit], input[type=reset], input[type=text] {
   outline: inherit;
 }
 button:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=text]:focus {
-  background: none;
   transform: none;
   outline: none;
 }
@@ -1558,7 +1557,6 @@ li {
   font-size: 1rem;
   padding: 0 0.5rem;
   height: 100%;
-  user-select: initial;
   width: 100%;
 }
 @media only screen and (min-width: 768px) {
@@ -2799,23 +2797,56 @@ li {
   }
 }
 .selectOverlay__main {
-  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
   position: relative;
   min-height: 90vh;
   height: auto;
   overflow: auto;
   min-width: 100%;
 }
+.selectOverlay__newPlaylistForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1rem;
+  height: 100%;
+  margin-top: 4rem;
+}
+.selectOverlay__newPlaylistForm label {
+  font-weight: 500;
+  font-size: 1.2rem;
+  margin-top: 40%;
+  text-align: center;
+}
+@media only screen and (min-width: 768px) {
+  .selectOverlay__newPlaylistForm label {
+    font-size: 1.4rem;
+  }
+}
+.selectOverlay__newPlaylistForm input {
+  font-weight: 500;
+  font-size: 1.5rem;
+  text-align: center;
+}
+@media only screen and (min-width: 768px) {
+  .selectOverlay__newPlaylistForm input {
+    font-size: 2rem;
+  }
+}
+.selectOverlay__newPlaylistForm input::placeholder {
+  color: #FFFFFF;
+}
 .selectOverlay__scroll {
   display: flex;
   flex-direction: column;
-  padding: 3rem 1rem;
+  padding: 4rem 1rem;
   position: absolute;
   top: 5;
   height: auto;
   width: 100%;
 }
-.playlistMenu__newBtn {
+.selectOverlay__newBtn {
   font-weight: 700;
   font-size: 0.75rem;
   background: #FFFFFF;
@@ -2825,9 +2856,13 @@ li {
   margin: 0.5rem auto;
 }
 @media only screen and (min-width: 768px) {
-  .playlistMenu__newBtn {
+  .selectOverlay__newBtn {
     font-size: 1rem;
   }
+}
+.selectOverlay--shrink {
+  min-height: 100vh;
+  transform: scaleX(0.9) scaleY(0.97);
 }
 
 @media only screen and (min-width: 768px) {

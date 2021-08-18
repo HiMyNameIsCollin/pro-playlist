@@ -32,6 +32,7 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
             `${ route }`, 
             null, 
             null,
+            null,
             `q=${searchInput}`, 
             `type=album,artist,playlist,track` )
         } else {

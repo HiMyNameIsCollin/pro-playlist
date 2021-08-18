@@ -37,28 +37,15 @@ const QueueView = ({ handleTrackMenu, controls }) => {
 
     const handleRemove = () => {
         if( playNextQueueSelected.length > 0){
-            let arr = [] 
-            let arr2 = []
-            playNextQueue.forEach(( t, i ) => {
-                const thisTrack = playNextQueueSelected.find( x => x.id === t.id )
-                if( !thisTrack ){
-                    arr.push( t )
-                } else {
-                    arr2.push( t )
-                }
-            })
+            const arr = playNextQueue.filter( x => !playNextQueueSelected.includes(x) )
             setPlayNextQueue( arr )
             setPlayNextQueueSelected( [] )
 
         }
 
         if( queueViewSelected.length > 0 ) {
-            let arr = []
-            queue.slice( qIndex + 1).forEach(( t, i ) => {
-                const thisTrack = queueViewSelected.find( x => x.id === t.id )
-                if( !thisTrack ) arr.push(t)
-            })
-            setQueue( queue => queue = [ ...queue.slice(0, qIndex + 1), ...arr ])
+            const arr = queue.filter( x => !queueViewSelected.includes(x))
+            setQueue( arr )
             setQueueViewSelected( [] )
         }
     }
@@ -168,7 +155,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
                             <QueueTrack 
                             type='queue'
                             track={track} 
-                            index={ i }
+                            index={ qIndex + i }
                             trackSelected={ queueViewSelected }
                             setTrackSelected={ setQueueViewSelected }/>
                         )

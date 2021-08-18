@@ -75,7 +75,7 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
 
     const headerTransition = useTransition(activeHomeItem, {
         from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: 3 , top: 0},
-        update: { position: 'fixed', top: selectOverlay.type ? dashboardRef.current.scrollTop : 0 , config: { duration: .01 }},
+        update: { position: 'fixed', top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 , config: { duration: .01 }},
         enter: {  transform: `translateX(${0 * dir }%)` },
         leave: { transform: `translateX(${-100 * dir }%)`},
        

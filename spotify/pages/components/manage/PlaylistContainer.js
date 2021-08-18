@@ -16,7 +16,7 @@ const PlaylistContainer = ({ style, data, setData }) => {
     
     useEffect(() => {
         if( data.id !== 'default') {
-            finalizeRoute('get', data.tracks.href.substr( API.length ), data.id, null )
+            finalizeRoute('get', data.tracks.href.substr( API.length ), data.id, null , null,)
         }
     }, [ data ])
 

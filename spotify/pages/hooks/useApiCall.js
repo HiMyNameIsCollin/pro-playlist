@@ -32,7 +32,7 @@ const useApiCall = (url) => {
                 'Content-Type' : 'application/json',
                 authorization: `Bearer ${access_token}`,
             },
-            body: body && body
+            body: body ? JSON.stringify(body) : undefined
         })
         .then(data => data.json())
         .then(data => {
@@ -126,9 +126,8 @@ const useApiCall = (url) => {
         }
     }
 
-    const finalizeRoute = (method, route, requestID, fetchAll, ...args) => {
+    const finalizeRoute = (method, route, requestID, fetchAll, body,  ...args) => {
     let finalRoute = route
-    
     if(args.length > 0){
         args.forEach((arg, i) => {
             if( i === 0 ) {
@@ -139,7 +138,7 @@ const useApiCall = (url) => {
         })
     }
     
-    fetchApi( finalRoute, method , requestID, fetchAll)
+    fetchApi( finalRoute, method , requestID, fetchAll, body)
 }
 
     useEffect(() => {

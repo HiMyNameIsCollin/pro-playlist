@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
-import { useSpring, animated } from 'react-spring'
+import { useSpring, animated, useTransition } from 'react-spring'
 import { calcScroll } from '../../utils/calcScroll'
 import  useApiCall  from '../hooks/useApiCall'
 import Home from './Home'
@@ -184,7 +184,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ loaded, setLoaded ] = useState( false )
     const [ scrollPosition, setScrollPosition ] = useState(0)
     const [ overlay, setOverlay ] = useState({})
-    const [ selectOverlay, setSelectOverlay ] = useState( { type: undefined, page: undefined  })
+    const [ selectOverlay, setSelectOverlay ] = useState( [] )
     const [ messageOverlay, setMessageOverlay ] = useState( { message: '', active: false } )
     const [ hiddenUI, setHiddenUI ] = useState( false )
 // activeHeader contains the data from the active page required for certain headers to function
@@ -253,7 +253,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
         toBeManaged, 
         setToBeManaged,
         navHeight,
-        setNavHeight
+        setNavHeight,
+        playerSize,
+        setPlayerSize
     }
 
     const dbFetchedState = {
@@ -321,25 +323,24 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
 // API CALLS 
     useEffect(() => {
-        finalizeRoute('get', routes.user_info, null )
+        finalizeRoute('get', routes.user_info, null ,)
     },[])
 
 
     useEffect(() => {
         if(user_info.country){
             const market = user_info.country
-            finalizeRoute( 'get', routes.player_info, null, false, `market=${market}`)
-            finalizeRoute( 'get', routes.featured_playlists, null, false , `market=${market}`)
-            finalizeRoute( 'get', routes.new_releases, null, null, 'limit=20' , `market=${market}`)
-            finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, 'limit=50', `market=${market}` )
-            finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , 'limit=50', `market=${market}` )
-            finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, 'limit=50', `market=${market}` )
-            finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, 'limit=50' , `market=${market}`) 
-            finalizeRoute( 'get', routes.new_releases, null, null, `market=${market}` )
-            finalizeRoute( 'get', routes.available_genre_seeds, null, false, `market=${market}` )
+            finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
+            finalizeRoute( 'get', routes.featured_playlists, null, null, null, `market=${market}`)
+            finalizeRoute( 'get', routes.new_releases, null, null ,null, 'limit=20' , `market=${market}`)
+            finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, null,'limit=50', `market=${market}` )
+            finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , null, 'limit=50', `market=${market}` )
+            finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, null, 'limit=50', `market=${market}` )
+            finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, null, 'limit=50' , `market=${market}`) 
+            finalizeRoute( 'get', routes.available_genre_seeds, null, null, null, `market=${market}` )
             finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
             finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true, limit: null })
-            finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, 'type=artist')
+            finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, null, 'type=artist')
         }
     },[ user_info ])
 
@@ -467,24 +468,39 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
 
     const dbScale = useSpring({
-        borderRadius: selectOverlay.type ? '10px' : '0px',
-        overflow: selectOverlay.type ? 'hidden' : 'auto'
+        borderRadius: selectOverlay[0] ? '20px' : '0px',
+        overflow: selectOverlay[0] ? 'hidden' : 'auto',
+        config:{ delay: 500 }
+    })
+
+    const selectOverlayTrans = useTransition( selectOverlay.map( item => item), {
+        from: { transform: 'translateY(100%)' },
+        enter: item => async (next, cancel) => {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await next({ transform: 'translateY(0%)' })
+          },
+        leave: { transform: 'translateY(100%)'}
     })
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
         <DbFetchedContext.Provider value={ dbFetchedState }>
 
-            <SelectOverlay dbDispatch={ dispatch } />
+            {
+                selectOverlayTrans(( props, item, t, i ) => (
+                    <SelectOverlay dbDispatch={ dispatch } style={ props } menuData={item} position={ i } />
+                ))
+            }
+            
 
-            <Overlay setActiveSearchItem={ setActiveSearchItem }/>
+            <Overlay setActiveSearchItem={ setActiveSearchItem } />
             <MessageOverlay messageOverlay={ messageOverlay } setMessageOverlay={ setMessageOverlay } response={ apiPayload } />
 
             <animated.section
             style={ dbScale }
             ref={ dashboardRef }
             onScroll={ handleScroll }
-            className={ `dashboard ${selectOverlay.type && 'dashboard--shrink'}`}> 
+            className={ `dashboard ${selectOverlay[0] && 'dashboard--shrink'}`}> 
             {
                 
             }
