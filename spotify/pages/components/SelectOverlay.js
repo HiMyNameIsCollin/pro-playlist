@@ -5,7 +5,7 @@ import useApiCall from '../hooks/useApiCall'
 import MenuCard from './selectOverlay/MenuCard'
 import { DbHookContext, DbFetchedContext } from './Dashboard'
 
-const SelectOverlay = ({ dbDispatch, style, menuData, position }) => {
+const SelectOverlay = ({ dbDispatch, style, menuData, position, newPlaylistRef }) => {
     
     const API = 'https://api.spotify.com/'
     const [ input, setInput ] = useState('')
@@ -15,7 +15,8 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position }) => {
     const { user_info } = useContext( DbFetchedContext )
     const [ data , setData ] = useState( [] )
 
-    const newPlayListRef = useRef()
+    const currPageRef = useRef()
+    const setActiveItem = useRef()
 
     const newPlaylistInputRef = useCallback( node => {
         if( node !== null ){
@@ -26,6 +27,11 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position }) => {
     const alterPlaylistRoute = 'v1/playlists/tracks'
     const allPlaylistsRoute = 'v1/me/playlists'
     const newPlaylistRoute = `v1/users/${user_info.id}/playlists`
+
+    useEffect(() => {
+        currPageRef.current = menuData.page
+        menuData.page
+    },[])
 
     useEffect(() => {
         if( menuData.type === 'playlists'){
@@ -48,22 +54,10 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position }) => {
                 if( apiPayload.route === newPlaylistRoute ){
                     finalizeRoute('post', `${ alterPlaylistRoute.slice( 0, 12 ) }/${apiPayload.id}/tracks`, apiPayload.id, null, null,  `uris=${selectOverlay[0].data[0].uri}` )
                     console.log(apiPayload)
-                    newPlayListRef.current = apiPayload
+                    newPlaylistRef.current = apiPayload
                 }
                 if( apiPayload.route === alterPlaylistRoute ) {
-                    if(selectOverlay[0].page === 'home'){
-                        setTimeout(() => setActiveHomeItem(newPlayListRef.current) ,250)
-                    } else {
-                        setTimeout(() => setActiveSearchItem(newPlayListRef.current) ,250)
-                    }
-                    const close = setInterval(() => {
-                        if(selectOverlay[0]){
-                            handleClose()
-                        } else {
-                            clearInterval(close)
-                        }
-                    },100)
-                    
+                    handleClose()
                 }
                 // const modified = data.find( x => x.id === apiPayload.id )
                 // setMessageOverlay({ message: `Added to ${ modified.name }`, active: true })
@@ -72,6 +66,12 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position }) => {
             }
         }
     },[ apiPayload ])
+
+    useEffect(() => {
+        if ( selectOverlay.length > 0 && newPlaylistRef.current.id ){
+            setTimeout( handleClose, 500 )
+        }
+    },[ selectOverlay ])
 
 
     const handleClose = () => {
@@ -85,7 +85,7 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position }) => {
 
 
     const spawnPlaylistMenu = () => {
-        const menu = { type: 'newPlaylist' , page: menuData.page}
+        const menu = { type: 'newPlaylist' , page: menuData.page, data: menuData.data }
         setSelectOverlay( arr => arr = [ ...arr, menu ])
     }
 
@@ -100,9 +100,9 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position }) => {
     }
 
     const shrink = useSpring({
-        transform: position === selectOverlay.length - 1 ? 'scaleX(1.00) scaleY(1.00)' : 'scaleX(0.90) scaleY(0.97)' ,
-        borderRadius: position === selectOverlay.length - 1 ? '0px' : '20px',
-        minHeight: position === selectOverlay.length - 1 ? '90vh' : '100vh'
+        transform: position >= selectOverlay.length - 1 ? 'scaleX(1.00) scaleY(1.00)' : 'scaleX(0.90) scaleY(0.97)' ,
+        borderRadius: position >= selectOverlay.length - 1  ? '0px' : '20px',
+        minHeight: position >= selectOverlay.length - 1 ? '90vh' : '100vh'
     })
 
     return(
@@ -142,7 +142,7 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position }) => {
                         onChange={ (e) => setInput( e.value )} 
                         type='text' 
                         name='newPlaylistInput' 
-                        value={ input !== '' ? input : `${ selectOverlay[0].data[0].name }` }/>
+                        value={ input !== '' ? input : `${ menuData.data[0].name }` }/>
                         <button onSubmit={ handleCreatePlaylist } className='selectOverlay__newBtn'> 
                             Create 
                         </button>

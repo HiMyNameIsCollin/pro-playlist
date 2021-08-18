@@ -212,7 +212,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const searchPageHistoryRef = useRef( [] )
     const homePageHistoryRef = useRef( [] )
     const scrollRef = useRef( scrollPosition )
-    const firstMountRef = useRef()
+    
+    const newPlaylistRef = useRef( {} )
 
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists, my_liked_tracks } = { ...state }
 
@@ -466,6 +467,16 @@ const Dashboard = ({ setAuth, audioRef }) => {
             
     },[ dashboardState ])
 
+    useEffect(() => {
+        if( selectOverlay.length > 0 && newPlaylistRef.current.id ){
+            setTimeout(() => {
+                const playlist = { ...newPlaylistRef.current }
+                setActiveHomeItem( playlist )
+                newPlaylistRef.current = {} 
+            },1000)
+        }
+    },[ selectOverlay ])
+
 
     const dbScale = useSpring({
         borderRadius: selectOverlay[0] ? '20px' : '0px',
@@ -487,9 +498,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
         <DbFetchedContext.Provider value={ dbFetchedState }>
 
             {
-                selectOverlayTrans(( props, item, t, i ) => (
-                    <SelectOverlay dbDispatch={ dispatch } style={ props } menuData={item} position={ i } />
-                ))
+            selectOverlayTrans(( props, item, t, i ) => (
+                <SelectOverlay dbDispatch={ dispatch } style={ props } menuData={item} position={ i } newPlaylistRef={ newPlaylistRef }/>
+            ))
             }
             
 

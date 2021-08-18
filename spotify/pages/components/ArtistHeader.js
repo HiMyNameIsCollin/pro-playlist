@@ -11,7 +11,7 @@ const routes = {
     followed_artists: 'v1/me/following'
 }
 
-const ArtistHeader = ({ pageType, data, transitionComplete, setTransitionComplete, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader,  }) => {
+const ArtistHeader = ({ pageType, data, transitionComplete, setTransitionComplete, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader, parent }) => {
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
@@ -33,6 +33,8 @@ const ArtistHeader = ({ pageType, data, transitionComplete, setTransitionComplet
         if(colors && transitionComplete ) {
             setTransitionComplete(false)
             colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+            parent.classList.add('fadeIn')
+            parent.style.minHeight = '100vh'
         }
     },[ transitionComplete, colors ])
 

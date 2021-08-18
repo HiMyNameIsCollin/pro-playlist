@@ -56,7 +56,6 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
         },1000)
     }
 
-// If first track in Queue changes, grabs the full track info of the new first element in Queue array.
     useEffect(() => {
         if( queue[ qIndex ] && queue[ qIndex ].id !== currPlaying.id ){
             getTrack( queue[ qIndex ] )
@@ -117,7 +116,10 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
 
     const handleQueue = () => {
         if( playNextQueue[0] ){
+            console.log(playNextQueue)
             setCurrPlaying( playNextQueue[0])
+            setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
+
         } else {
             if( repeat === 'none' ){
                 if( qIndex !== queue.length - 1){
@@ -189,11 +191,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
         leave: { transform: 'translateY(100%) '}
     })
 
-    useEffect(() => {
-        if( playNextQueue[0] && playNextQueue[0].id === currPlaying.id ){
-            setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
-        }
-    },[ playNextQueue, currPlaying ])
+
 
     return(
         <>
@@ -205,7 +203,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
                 ))
                 
                 }
-                <PlayerCollapsed navHeight={ navHeight } hiddenUI={ hiddenUI } />
+                <PlayerCollapsed playTrack={ playTrack } pauseTrack={ pauseTrack } navHeight={ navHeight } hiddenUI={ hiddenUI } />
             </PlayerHookContext.Provider>
             
         </>

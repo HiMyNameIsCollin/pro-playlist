@@ -107,7 +107,6 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
 
     const thisComponentRef = useRef() 
-    const [ mounted, setMounted ] = useState(false)
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
@@ -121,16 +120,6 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
         }
       }, [])
 
-    useEffect(() => {
-        if( transitionComplete ) {
-            thisComponentRef.current.classList.add('fadeIn')
-            setMounted( true )
-        }
-    }, [ transitionComplete ])
-
-    useEffect(() => {
-        if(mounted) thisComponentRef.current.style.minHeight = '100vh'
-    },[ mounted ])
 
 
     useEffect(() => {
@@ -172,14 +161,16 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
         }
         let { seedGenres, seedArtists, seedTracks } = seeds
         theseArtists.forEach(( artist, i ) => {
-            if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
-                artist.genres.forEach(( genre, j ) => {
-                    if(genreSeeds.includes( genre )){
-                        seedGenres.push( genre )
+            artist.genres.forEach(( genre, j ) => {
+                if(genreSeeds.includes( genre )){
+                    if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
+                    seedGenres.push( genre )
                     }
-                })
+                }
+            })
+            if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
                 seedArtists.push( artist.id )
-            } 
+            }
         })
         theseTracks.forEach( track => {
             if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
@@ -204,14 +195,13 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             if(seedGenres.length > 0) args.push( `seed_genres=${seedGenres.join()}` )
             if( seedArtists.length > 0 ) args.push(`seed_artists=${seedArtists.join()}` )
             if( seedTracks.length > 0 ) args.push( `seed_tracks=${seedTracks.join()}` )
+            
             finalizeRoute( 'get',
             `${routes.recommendations}`, 
             null, 
             null,
             null,
-            `seed_genres=${seedGenres.join()}`, 
-            `seed_artists=${seedArtists.join()}`, 
-            `seed_tracks=${seedTracks.join()}`, )
+            ...args )
 
         }
     }, [ collection, artists, tracks ])
@@ -242,7 +232,8 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             setActiveHeader={ setActiveHeader }
             data={{collection, tracks, artists,}}
             transitionComplete={ transitionComplete }
-            setTransitionComplete={ setTransitionComplete }/>
+            setTransitionComplete={ setTransitionComplete }
+            parent={ thisComponentRef.current } />
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             {
             type === 'album' && 

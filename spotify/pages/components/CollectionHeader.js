@@ -7,7 +7,7 @@ import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 
-const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionComplete, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader }) => {
+const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionComplete, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader, parent }) => {
     const [ colors, setColors ] = useState( undefined )
     const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
@@ -18,8 +18,11 @@ const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionCom
 
     useEffect(() => {
         if(transitionComplete && colors ){
-            colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+            colors.forEach((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
             setTransitionComplete( false )
+            parent.classList.add('fadeIn')
+            parent.style.minHeight = '100vh'
+            
         }
     }, [ transitionComplete, colors ] )
 

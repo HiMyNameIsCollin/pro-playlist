@@ -97,19 +97,6 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
       }, [])
 
     useEffect(() => {
-        if( transitionComplete ) {
-            thisComponentRef.current.classList.add('fadeIn')
-            setMounted( true )
-        }
-    }, [ transitionComplete ])
-
-    useEffect(() => {
-        if(mounted) thisComponentRef.current.style.minHeight = '100vh'
-    },[ mounted ])
-
-
-
-    useEffect(() => {
         if( user_info.country ){
             const market = user_info.country
             const id = activeItem.id
@@ -138,7 +125,8 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
                 setActiveHeader={ setActiveHeader }
                 data={{ artist }} 
                 transitionComplete={ transitionComplete } 
-                setTransitionComplete={ setTransitionComplete } />
+                setTransitionComplete={ setTransitionComplete } 
+                parent={ thisComponentRef.current } />
             }
 
                 

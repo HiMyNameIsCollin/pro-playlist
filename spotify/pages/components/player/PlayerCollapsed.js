@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import { PlayerHookContext } from './Player'
 import { DbHookContext } from '../Dashboard'
 import { useSpring, animated } from 'react-spring'
-const PlayerCollapsed = ({ navHeight , hiddenUI }) => {
+const PlayerCollapsed = ({ navHeight , hiddenUI, playTrack, pauseTrack }) => {
 
     const trackMountedRef = useRef(false)
     const thisComponentRef = useRef()
@@ -11,15 +11,6 @@ const PlayerCollapsed = ({ navHeight , hiddenUI }) => {
     const { audioRef, selectOverlay, dashboardRef } = useContext( DbHookContext )
     const  { isPlaying, trackProgress, currPlaying, setIsPlaying } = useContext( PlayerHookContext )
     const [ trackMounted, setTrackMounted ] = useState( trackMountedRef.current )
-
-    const pressPlay = () => {
-        setIsPlaying( true )
-    }
-
-    const pressPause = () => {
-        setIsPlaying( false )
-    }
-
 
 // First song set will trigger the player entry animation.
     useEffect(() => {
@@ -82,8 +73,8 @@ const PlayerCollapsed = ({ navHeight , hiddenUI }) => {
                     />
                 {
                     isPlaying ?
-                    <i onClick={ pressPause } className="fas fa-pause playerCollapsed--playBtn"></i>:
-                    <i onClick={ pressPlay } className="fas fa-play playerCollapsed--playBtn"></i>
+                    <i onClick={ pauseTrack } className="fas fa-pause playerCollapsed--playBtn"></i>:
+                    <i onClick={ playTrack } className="fas fa-play playerCollapsed--playBtn"></i>
 
                 }
                 </>
