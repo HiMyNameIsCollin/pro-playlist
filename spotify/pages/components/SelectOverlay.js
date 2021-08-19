@@ -3,20 +3,24 @@ import { useState, useEffect, useContext, useCallback, useRef } from 'react'
 import { useTransition, animated, useSpring } from 'react-spring'
 import useApiCall from '../hooks/useApiCall'
 import MenuCard from './selectOverlay/MenuCard'
+import SearchForm from './search/SearchForm'
+import NewPlaylistForm from './selectOverlay/NewPlaylistForm'
 import { DbHookContext, DbFetchedContext } from './Dashboard'
 
 const SelectOverlay = ({ dbDispatch, style, menuData, position, newPlaylistRef }) => {
     
+    const searchInputDefault = 'Search for your playlists'
     const API = 'https://api.spotify.com/'
-    const [ input, setInput ] = useState('')
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const { selectOverlay, setSelectOverlay, setMessageOverlay ,setActiveHomeItem, setActiveSearchItem} = useContext( DbHookContext )
 
-    const { user_info } = useContext( DbFetchedContext )
     const [ data , setData ] = useState( [] )
+    const [ searchInput, setSearchInput ] = useState( searchInputDefault )
+    
+    const { user_info } = useContext( DbFetchedContext )
 
-    const currPageRef = useRef()
-    const setActiveItem = useRef()
+    const lastPlaylistEditedRef = useRef( {} )
+
 
     const newPlaylistInputRef = useCallback( node => {
         if( node !== null ){
@@ -26,12 +30,6 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position, newPlaylistRef }
 
     const alterPlaylistRoute = 'v1/playlists/tracks'
     const allPlaylistsRoute = 'v1/me/playlists'
-    const newPlaylistRoute = `v1/users/${user_info.id}/playlists`
-
-    useEffect(() => {
-        currPageRef.current = menuData.page
-        menuData.page
-    },[])
 
     useEffect(() => {
         if( menuData.type === 'playlists'){
@@ -51,16 +49,12 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position, newPlaylistRef }
                 setData( apiPayload.items )
                 dbDispatch( apiPayload )
             } else if( apiPayload.method === 'post') {
-                if( apiPayload.route === newPlaylistRoute ){
-                    finalizeRoute('post', `${ alterPlaylistRoute.slice( 0, 12 ) }/${apiPayload.id}/tracks`, apiPayload.id, null, null,  `uris=${selectOverlay[0].data[0].uri}` )
-                    console.log(apiPayload)
-                    newPlaylistRef.current = apiPayload
-                }
                 if( apiPayload.route === alterPlaylistRoute ) {
                     handleClose()
+                    const playlist = { ...lastPlaylistEditedRef.current }
+                    setMessageOverlay( messages => messages = [ ...messages, `${playlist.track} added to ${playlist.playlist}`])
+                    lastPlaylistEditedRef.current = {} 
                 }
-                // const modified = data.find( x => x.id === apiPayload.id )
-                // setMessageOverlay({ message: `Added to ${ modified.name }`, active: true })
             } else if( apiPayload.method === 'put'){
                 console.log( apiPayload )
             }
@@ -79,24 +73,14 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position, newPlaylistRef }
     }
 
     const handlePlaylist = ( playlist ) => {
-        const args = menuData.map( it =>  it.uri )
-        finalizeRoute('post', `${alterPlaylistRoute.slice( 0, 12 ) }/${playlist.id}/tracks`, playlist.id, null, null,  `uris=${args[0]}`, ...args )
+        lastPlaylistEditedRef.current = { playlist: playlist.name, track: menuData.data[0].name }
+        const args = menuData.data.map( it =>  it.uri )
+        finalizeRoute('post', `${alterPlaylistRoute.slice( 0, 12 ) }/${playlist.id}/tracks`, playlist.id, null, null,  `uris=${args[0]}`, ...args )        
     }
-
 
     const spawnPlaylistMenu = () => {
         const menu = { type: 'newPlaylist' , page: menuData.page, data: menuData.data }
         setSelectOverlay( arr => arr = [ ...arr, menu ])
-    }
-
-    const handleCreatePlaylist = (e) => {
-        e.preventDefault()
-        const body = {
-            "name": input !== '' ? input :  selectOverlay[0].data[0].name,
-            "description": "Description for playlist",
-            "public": true
-        }
-        finalizeRoute('post', newPlaylistRoute, null, null, body )
     }
 
     const shrink = useSpring({
@@ -131,22 +115,8 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position, newPlaylistRef }
                 <div className='selectOverlay__main'>
                 {
                     menuData.type === 'newPlaylist' ?
-                    <form onSubmit={ handleCreatePlaylist } className='selectOverlay__newPlaylistForm'>
-                        <label forHtml='newPlaylistInput'> Give your playlist a name. </label>
-                        <input 
-                        onClick={ (e) => {
-                            e.target.select()
-                            e.target.focus()
-                        }}
-                        ref={ newPlaylistInputRef }
-                        onChange={ (e) => setInput( e.value )} 
-                        type='text' 
-                        name='newPlaylistInput' 
-                        value={ input !== '' ? input : `${ menuData.data[0].name }` }/>
-                        <button onSubmit={ handleCreatePlaylist } className='selectOverlay__newBtn'> 
-                            Create 
-                        </button>
-                    </form> :
+                    <NewPlaylistForm menuData={ menuData }  newPlaylistRef={ newPlaylistRef } handleClose={ handleClose } />
+                    :
                     <div className='selectOverlay__scroll'>
                     {
                         menuData.type === 'playlists' &&
@@ -154,10 +124,7 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position, newPlaylistRef }
                         <button onClick={ spawnPlaylistMenu } className='selectOverlay__newBtn'> 
                             New playlist 
                         </button>
-                        <form className='selectOverlay__form searchOverlay__form'>
-                            <i className="fas fa-search"></i>
-                            <input type='text' placeholder='Search playlists'/>
-                        </form>
+                        <SearchForm searchInput={ searchInput } setSearchInput={ setSearchInput }/>
                         </>
                     }
                     {

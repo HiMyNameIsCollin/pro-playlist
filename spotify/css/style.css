@@ -1482,7 +1482,7 @@ li {
   display: flex;
   height: 100%;
   left: 0;
-  padding: 7rem 0 6.5rem 0;
+  padding: 6rem 0 6.5rem 0;
   position: fixed;
   top: 0;
   width: 100%;
@@ -1549,7 +1549,7 @@ li {
   z-index: -2;
 }
 .searchOverlay__form input {
-  font-weight: 500;
+  font-weight: 400;
   font-size: 0.85rem;
   background: none;
   border: none;
@@ -1558,6 +1558,7 @@ li {
   padding: 0 0.5rem;
   height: 100%;
   width: 100%;
+  user-select: auto;
 }
 @media only screen and (min-width: 768px) {
   .searchOverlay__form input {
@@ -1607,6 +1608,8 @@ li {
 }
 
 .searchResultsContainer {
+  display: flex;
+  flex-direction: column;
   height: 100%;
   overflow-y: auto;
   width: 100%;
@@ -1617,8 +1620,7 @@ li {
   display: grid;
   grid-template-columns: auto minmax(0, 100%) auto;
   grid-template-rows: 1fr 1fr;
-  margin: 0.5rem 0;
-  padding: 0 1rem;
+  padding: 0.5rem 0.5rem;
 }
 .resultCard i {
   grid-row: 1/3;
@@ -2828,6 +2830,7 @@ li {
   font-weight: 500;
   font-size: 1.5rem;
   text-align: center;
+  user-select: auto;
 }
 @media only screen and (min-width: 768px) {
   .selectOverlay__newPlaylistForm input {

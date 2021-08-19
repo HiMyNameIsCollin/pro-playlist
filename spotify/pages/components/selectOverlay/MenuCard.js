@@ -28,6 +28,7 @@ const MenuCard = ({ item, allData, type, index, handlePlaylist }) => {
     }
 
     const menuAction = ( param ) => {
+        console.log(param)
         if( type === 'playlists'){
             handlePlaylist( param )
         } else if( type === 'albums') {

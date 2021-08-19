@@ -10,11 +10,7 @@ const ResultCard = ({ data, setActiveItem }) => {
     const trackImageRef = useRef()
 
     const { setOverlay, setQueue, setQIndex} = useContext( DbHookContext )
-    const searchContext = useContext( SearchHookContext )
-    const manageContext = useContext( ManageHookContext )
-    // const setActiveItem = manageContext ? 
-    //                       manageContext.setActiveManageItem : 
-    //                       searchContext.setActiveSearchItem
+
     
     const handleTrackMenu = (e, selectedTrack ) => {
         e.stopPropagation()

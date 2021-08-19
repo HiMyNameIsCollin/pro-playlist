@@ -115,24 +115,27 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
     }, [ shuffle ])
 
     const handleQueue = () => {
-        if( playNextQueue[0] ){
-            console.log(playNextQueue)
-            setCurrPlaying( playNextQueue[0])
-            setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
-
-        } else {
-            if( repeat === 'none' ){
+        if( repeat === 'none' ){
+            if( playNextQueue[0] ){
+                setCurrPlaying( playNextQueue[0])
+                setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
+            } else {
                 if( qIndex !== queue.length - 1){
                     setQIndex( qIndex => qIndex = qIndex + 1 )
                 } else {
                     setTrackProgress( 0 )
                     setQIndex( 0 )
                 }
-            } else if ( repeat === 'one'){
-                let clone = { ...currPlaying }
-                setCurrPlaying( clone )
-            } else if ( repeat === 'all' ){
-                if( qIndex === queue.length ){
+            }
+        } else if ( repeat === 'one'){
+            let clone = { ...currPlaying }
+            setCurrPlaying( clone )
+        } else if ( repeat === 'all' ){
+            if( playNextQueue[0] ){
+                setCurrPlaying( playNextQueue[0])
+                setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
+            } else {
+                if( qIndex === queue.length - 1 ){
                     setTrackProgress( 0 )
                     setQIndex( 0 )
                 } else {
@@ -140,7 +143,6 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
                 }
             }
         }
-
     }
 
     const playTrack = () => {

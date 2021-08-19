@@ -1,29 +1,19 @@
-import { useEffect } from 'react'
-import { useSpring, animated } from 'react-spring'
+import { useEffect, useContext } from 'react'
+import { animated } from 'react-spring'
+import { DbHookContext } from './Dashboard'
+const MessageOverlay = ({ style, item  }) => {
 
-const MessageOverlay = ({ messageOverlay, setMessageOverlay  }) => {
-
+    const { setMessageOverlay } = useContext( DbHookContext )
     useEffect(() => {
-        if( messageOverlay.active ){
-            setTimeout(() => {
-                setMessageOverlay( { message: messageOverlay.message, active: false } )
-            }, 3000)
-            setTimeout(() => {
-                setMessageOverlay( { message: '', active: false } )
-            }, 3500)
-        }
-    },[ messageOverlay ])
-
-    const fadeIn = useSpring({
-        opacity: messageOverlay.active ? 1 : 0
-    })
+        setTimeout(() => setMessageOverlay( messages => messages = [ ...messages.slice(1) ]), 4000 )
+    }, [])
 
     return(
         <animated.div 
-        style={ fadeIn }
+        style={ style }
         className='messageOverlay'>
             <p>
-                { messageOverlay.message }
+                { item }
             </p>
         </animated.div>
     )

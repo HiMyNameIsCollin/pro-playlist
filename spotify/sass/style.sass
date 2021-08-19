@@ -997,7 +997,7 @@ li
     display: flex
     height: 100%
     left: 0
-    padding: 7rem 0 6.5rem 0
+    padding: 6rem 0 6.5rem 0
     position: fixed
     top: 0
     width: 100%
@@ -1032,7 +1032,7 @@ li
         width: auto
         min-width: calc(100% - 5rem)
         input
-            @include midFirm
+            @include midSkin
             background: none
             border: none
             color: $white
@@ -1040,6 +1040,7 @@ li
             padding: 0 .5rem
             height: 100%
             width: 100%
+            user-select: auto
             &::placeholder
                 color: $white
         i
@@ -1070,6 +1071,8 @@ li
             border: $lightGreen
             
 .searchResultsContainer
+    display: flex
+    flex-direction: column
     height: 100%
     overflow-y: auto
     width: 100%
@@ -1082,8 +1085,7 @@ li
     display: grid
     grid-template-columns: auto minmax( 0, 100%) auto
     grid-template-rows: 1fr 1fr
-    margin: .5rem 0
-    padding: 0 1rem
+    padding: .5rem .5rem
     i
         grid-row: 1/3
     &__name
@@ -1795,10 +1797,11 @@ li
             @include largeFirm
             margin-top: 40%
             text-align: center
-
+            
         input
             @include bigFirm
             text-align: center
+            user-select: auto
             &::placeholder
                 color: $white
     &__scroll

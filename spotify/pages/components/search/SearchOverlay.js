@@ -1,15 +1,16 @@
-import { useState, useEffect, useRef, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useSpring, animated, useTransition } from 'react-spring'
 import SearchFilters from './SearchFilters'
 import SearchResults from './SearchResults'
 import useApiCall from '../../hooks/useApiCall'
 import { DbHookContext } from '../Dashboard'
+import SearchForm from './SearchForm'
 
 const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) => {
 
     const API = 'https://api.spotify.com/'
     const route = 'v1/search'
-    const [ searchInput, setSearchInput ] = useState('')
+    const [ searchInput, setSearchInput ] = useState('Search')
     const [ activeFilter, setActiveFilter ] = useState( 'Top' )
 
     const [ artistResults, setArtistResults ] = useState([])
@@ -17,17 +18,16 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
     const [ playlistResults, setPlaylistResults ] = useState([])
     const [ trackResults, setTrackResults ] = useState([])
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-    const searchBarRef = useRef()
+
 
     const { hiddenUI, setHiddenUI } = useContext( DbHookContext )
 
     useEffect(() => {
         if( hiddenUI ) setHiddenUI( false )
-        searchBarRef.current.focus()
     },[])
 
     useEffect(() => {
-        if(searchInput !== ''){
+        if(searchInput.length > 0 && searchInput !== 'Search'){
             finalizeRoute('get', 
             `${ route }`, 
             null, 
@@ -36,38 +36,29 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
             `q=${searchInput}`, 
             `type=album,artist,playlist,track` )
         } else {
-            if( artistResults.length ) setArtistResults( [] )
-            if( albumResults.length ) setAlbumResults( [] )
-            if( playlistResults.length ) setPlaylistResults( [] )
-            if( trackResults.length ) setTrackResults( [] )
+            if( artistResults[0] ) setArtistResults( [] )
+            if( albumResults[0] ) setAlbumResults( [] )
+            if( playlistResults[0] ) setPlaylistResults( [] )
+            if( trackResults[0] ) setTrackResults( [] )
         }
     },[ searchInput ])
 
     useEffect(() => {
-        if( apiPayload ){
+        if( apiPayload && searchInput.length > 0 ){
             if( apiPayload.artists ) setArtistResults( apiPayload.artists.items )
             if( apiPayload.albums ) setAlbumResults( apiPayload.albums.items )
             if( apiPayload.playlists ) setPlaylistResults( apiPayload.playlists.items )
             if( apiPayload.tracks ) setTrackResults( apiPayload.tracks.items.sort(( a, b ) => b.popularity - a.popularity) )
         }
-    }, [ apiPayload ])
+    }, [ apiPayload, searchInput ])
 
-    // const overlaySelectTrans = useTransition( {
 
-    // })
-    
-    // const overlayExit = useSpring({
-    //     transform: activeItem.type ? 'translateX(-100%)': 'translateX(0%)'
-    // })
 
     return(
         <animated.div style={ style } className='searchOverlay'>
             
             <header className='searchOverlay__header'>
-                <form className='searchOverlay__form'>
-                    <i className="fas fa-search"></i>
-                    <input ref={ searchBarRef } onChange={ (e) => setSearchInput( e.target.value ) } type='text' placeholder='Search'/>
-                </form>
+                <SearchForm searchInput={ searchInput } setSearchInput={ setSearchInput } autoFocus={ true } />
                 <button className='searchOverlay__header__button' onClick={ () => setSearchState('default')}> Cancel </button>
                 {
                 searchInput.length !== 0 &&
@@ -75,19 +66,7 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
                 }
             </header>
 
-            {
-            !artistResults.length &&
-            !albumResults.length &&
-            !playlistResults.length &&
-            !trackResults.length ?
-            <div className='searchOverlay__defaultMsg'>
-                <p>
-                    Find what you love
-                </p>
-                <p>
-                    Search for artists, tracks, playlists and albums.
-                </p>
-            </div> :
+            
             <SearchResults
             activeFilter={ activeFilter }
             searchInput={ searchInput }
@@ -96,7 +75,7 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
             trackResults={ trackResults }
             playlistResults={ playlistResults }
             setActiveItem={ setActiveItem } />
-            }
+            
 
         </animated.div>
     )

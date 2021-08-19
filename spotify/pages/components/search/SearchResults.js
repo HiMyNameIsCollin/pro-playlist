@@ -18,6 +18,8 @@ const SearchResults = ({ setActiveItem, activeFilter, searchInput, artistResults
             } else {
                 setPersonalResult( {} )
             }
+        } else {
+            setPersonalResult( {} )
         }
     }, [ artistResults ])
 
@@ -27,19 +29,36 @@ const SearchResults = ({ setActiveItem, activeFilter, searchInput, artistResults
         if( activeFilter === 'Albums') setResults( albumResults )
         if( activeFilter === 'Playlists') setResults( playlistResults )
         if( activeFilter === 'Tracks') setResults( trackResults )
-        if( searchInput === '' ) setResults( [] )
+        if( searchInput.length < 1  ) setResults( [] )
     }, [ activeFilter, searchInput ])
 
 
     return(
         <div className='searchResultsContainer'>
             {
-            personalResult.images && activeFilter === 'Top' &&
-            <RecommendCard setActiveItem={ setActiveItem } data={ personalResult } />    
+                albumResults[0] || artistResults[0] || trackResults[0] || playlistResults[0] ?
+                <>
+                {
+                personalResult.images && activeFilter === 'Top' &&
+                <RecommendCard setActiveItem={ setActiveItem } data={ personalResult } />    
+                }
+                {
+                results.map( res => <ResultCard  setActiveItem={ setActiveItem } data={ res } />)
+                }
+                
+                </>
+                :
+                <div className='searchOverlay__defaultMsg'>
+                    <p>
+                        Find what you love
+                    </p>
+                    <p>
+                        Search for artists, tracks, playlists and albums.
+                    </p>
+                </div>
             }
-            {
-            results.map( res => <ResultCard  setActiveItem={ setActiveItem } data={ res } />)
-            }
+            
+            
         </div>
     )
 }

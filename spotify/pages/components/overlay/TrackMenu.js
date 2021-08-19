@@ -48,7 +48,7 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
     }
 
     const handleAddToQueue = () => {
-        setMessageOverlay({ message: `${track.name} added to queue`, active: true })
+        setMessageOverlay( message => message = [ ...message, `${track.name} added to queue`] )
         let trackClone = { ...track }
         trackClone['context'] = {
             name: 'Now playing',
@@ -60,7 +60,7 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
     }
 
     const handleAddToManager = () => {
-        setMessageOverlay({ message: `${track.name} added to manager`, active: true })
+        setMessageOverlay( message => message = [ ...message, `${track.name} added to manager`] )
         setOverlay( {} )
         setToBeManaged( track ) 
     }
@@ -70,7 +70,7 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
         if( playerSize === 'large' ) setPlayerSize('small')
         const overlay = { type:'playlists', page: 'home', data: [track] }
         setOverlay( {} )
-        setSelectOverlay( arr => arr = [ ...arr, overlay ] )        
+        setTimeout(() => setSelectOverlay( arr => arr = [ ...arr, overlay ] ), 500 )     
     }
 
     return(

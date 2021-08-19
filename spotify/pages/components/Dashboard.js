@@ -185,7 +185,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ scrollPosition, setScrollPosition ] = useState(0)
     const [ overlay, setOverlay ] = useState({})
     const [ selectOverlay, setSelectOverlay ] = useState( [] )
-    const [ messageOverlay, setMessageOverlay ] = useState( { message: '', active: false } )
+    const [ messageOverlay, setMessageOverlay ] = useState( [] )
     const [ hiddenUI, setHiddenUI ] = useState( false )
 // activeHeader contains the data from the active page required for certain headers to function
     const [ queue, setQueue ] = useState( [] )
@@ -468,12 +468,18 @@ const Dashboard = ({ setAuth, audioRef }) => {
     },[ dashboardState ])
 
     useEffect(() => {
-        if( selectOverlay.length > 0 && newPlaylistRef.current.id ){
+        if( selectOverlay.length === 0  && newPlaylistRef.current.id ){
             setTimeout(() => {
                 const playlist = { ...newPlaylistRef.current }
-                setActiveHomeItem( playlist )
+                if( playlist.page === 'home'){
+                    setActiveHomeItem( playlist )
+                } else if( playlist.page === 'search'){
+                    setActiveSearchItem( playlist )
+                } else if( playlist.page === 'manage'){
+                    setActiveManageItem( playlist )
+                }
                 newPlaylistRef.current = {} 
-            },1000)
+            },500)
         }
     },[ selectOverlay ])
 
@@ -484,13 +490,19 @@ const Dashboard = ({ setAuth, audioRef }) => {
         config:{ delay: 500 }
     })
 
-    const selectOverlayTrans = useTransition( selectOverlay.map( item => item), {
+    const selectOverlayTrans = useTransition( selectOverlay.map( item => item ), {
         from: { transform: 'translateY(100%)' },
         enter: item => async (next, cancel) => {
             await new Promise(resolve => setTimeout(resolve, 500));
             await next({ transform: 'translateY(0%)' })
           },
         leave: { transform: 'translateY(100%)'}
+    })
+
+    const messageOverlayTrans = useTransition( messageOverlay.map( item => item ),{
+        from: { transform: 'scale(0.00) ', opacity: 1},
+        enter: { transform: 'scale(1.00) '},
+        leave: { opacity: 0}
     })
 
     return(
@@ -502,10 +514,13 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 <SelectOverlay dbDispatch={ dispatch } style={ props } menuData={item} position={ i } newPlaylistRef={ newPlaylistRef }/>
             ))
             }
-            
+            {
+            messageOverlayTrans(( props, item, t, i ) => (
+                <MessageOverlay style={ props } item={ item }/>
+            ))
+            }
 
             <Overlay setActiveSearchItem={ setActiveSearchItem } />
-            <MessageOverlay messageOverlay={ messageOverlay } setMessageOverlay={ setMessageOverlay } response={ apiPayload } />
 
             <animated.section
             style={ dbScale }
