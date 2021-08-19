@@ -40,13 +40,12 @@ const NewPlaylistForm = ({ menuData, newPlaylistRef, handleClose }) => {
     return(
         <form onSubmit={ handleCreatePlaylist } className='selectOverlay__newPlaylistForm'>
             <label forHtml='newPlaylistInput'> Give your playlist a name. </label>
-            <input 
+            <textarea 
             onClick={ (e) => {
                 e.target.select()
             }}
             ref={ newPlaylistInputRef }
             onChange={ (e) => setInput( e.value )} 
-            type='text' 
             name='newPlaylistInput' 
             value={ input }/>
             <button onSubmit={ handleCreatePlaylist } className='selectOverlay__newBtn'> 

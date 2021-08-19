@@ -15,7 +15,7 @@
   user-select: none;
 }
 
-button, input[type=submit], input[type=reset], input[type=text] {
+button, input[type=submit], input[type=reset], input[type=text], textarea {
   background: none;
   color: inherit;
   border: none;
@@ -24,7 +24,7 @@ button, input[type=submit], input[type=reset], input[type=text] {
   cursor: pointer;
   outline: inherit;
 }
-button:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=text]:focus {
+button:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=text]:focus, textarea:focus {
   transform: none;
   outline: none;
 }
@@ -1086,9 +1086,9 @@ li {
   opacity: 0.75;
   z-index: 1;
 }
-@media only screen and (min-width: 1024px) {
+@media only screen and (max-width: 640px) {
   .artistHeader__imgContainer {
-    padding-top: 30rem;
+    padding-top: 70%;
   }
 }
 .artistHeader__title {
@@ -2826,18 +2826,20 @@ li {
     font-size: 1.4rem;
   }
 }
-.selectOverlay__newPlaylistForm input {
+.selectOverlay__newPlaylistForm textarea {
   font-weight: 500;
   font-size: 1.5rem;
   text-align: center;
   user-select: auto;
+  padding: 0 1rem;
+  max-width: 100%;
 }
 @media only screen and (min-width: 768px) {
-  .selectOverlay__newPlaylistForm input {
+  .selectOverlay__newPlaylistForm textarea {
     font-size: 2rem;
   }
 }
-.selectOverlay__newPlaylistForm input::placeholder {
+.selectOverlay__newPlaylistForm textarea::placeholder {
   color: #FFFFFF;
 }
 .selectOverlay__scroll {

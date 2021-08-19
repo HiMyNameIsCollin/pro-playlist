@@ -212,6 +212,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const searchPageHistoryRef = useRef( [] )
     const homePageHistoryRef = useRef( [] )
     const scrollRef = useRef( scrollPosition )
+    const dashboardNavRef = useRef()
     
     const newPlaylistRef = useRef( {} )
 
@@ -391,22 +392,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
     }, [ activeManageItem ])
 
     useEffect(() => {
-        let hideMe = true
-        if( activeManageItem.type ){
-            if( dashboardState !== 'manage'){
-                if(scrollPosition <= scrollRef.current && scrollPosition < 98) {
-                    hideMe = false
-                } else {
-                    hideMe = true
-                }
-                if (scrollPosition < 1){
-                    hideMe = false
-                }
-            }else { 
-                hideMe = true
-            }
-        }else {
-            if(scrollPosition <= scrollRef.current && scrollPosition < 98 ) {
+        if( dashboardNavRef.current === dashboardState ){
+            let hideMe = true
+            if(scrollPosition <= scrollRef.current && scrollPosition < 98) {
                 hideMe = false
             } else {
                 hideMe = true
@@ -414,11 +402,12 @@ const Dashboard = ({ setAuth, audioRef }) => {
             if (scrollPosition < 1){
                 hideMe = false
             }
+            setHiddenUI( hideMe )
+            scrollRef.current = scrollPosition
+        } else {
+            dashboardNavRef.current = dashboardState
         }
-
-        setHiddenUI( hideMe )
-        scrollRef.current = scrollPosition
-    }, [ scrollPosition, activeManageItem, dashboardState ])
+    }, [ scrollPosition ])
 
     useEffect(() => {
         const homePage = document.getElementById('homePage')

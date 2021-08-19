@@ -8,7 +8,7 @@ const PlayerCollapsed = ({ navHeight , hiddenUI, playTrack, pauseTrack }) => {
     const trackMountedRef = useRef(false)
     const thisComponentRef = useRef()
 
-    const { audioRef, selectOverlay, dashboardRef } = useContext( DbHookContext )
+    const { audioRef, selectOverlay, dashboardRef, activeManageItem, dashboardState } = useContext( DbHookContext )
     const  { isPlaying, trackProgress, currPlaying, setIsPlaying } = useContext( PlayerHookContext )
     const [ trackMounted, setTrackMounted ] = useState( trackMountedRef.current )
 
@@ -25,7 +25,7 @@ const PlayerCollapsed = ({ navHeight , hiddenUI, playTrack, pauseTrack }) => {
         to: {
             bottom: trackMounted ? '0rem' : '-4rem',
             opacity: trackMounted ? 1 : 0,
-            transform: navHeight && hiddenUI ? 'translateY(0px)' : `translateY(-${ navHeight ? navHeight: 0 }px)` ,
+            transform: navHeight && ((activeManageItem.type && dashboardState ==='manage') ||  hiddenUI )? 'translateY(0px)' : `translateY(-${ navHeight ? navHeight: 0 }px)` ,
         }
     })
 

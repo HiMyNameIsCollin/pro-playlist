@@ -89,6 +89,18 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position, newPlaylistRef }
         minHeight: position >= selectOverlay.length - 1 ? '90vh' : '100vh'
     })
 
+    const filterCB = (x) => {
+        if(x.collaborative || x.owner.display_name === user_info.display_name){
+            if( searchInput.length > 0 && searchInput !== searchInputDefault){
+                if( x.name.substr(0, searchInput.length ).toLowerCase() === searchInput.toLowerCase() ){
+                    return x
+                }
+            } else {
+                return x
+            }
+        }
+    }
+
     return(
         <animated.div
         style={ style }
@@ -125,14 +137,18 @@ const SelectOverlay = ({ dbDispatch, style, menuData, position, newPlaylistRef }
                             New playlist 
                         </button>
                         <SearchForm searchInput={ searchInput } setSearchInput={ setSearchInput }/>
+                        {
+                        data.filter(( x ) => filterCB(x) ).length !== 0 ?
+                        data.filter(( x ) => filterCB(x) ).map(( item, i) => (
+                            <MenuCard item={ item } index={ i } type={ menuData.type } handlePlaylist={ handlePlaylist } />
+                        )) :
+                        <p style={{ textAlign: 'center', padding: '1rem' }}> Nothing matches your query </p>
+                        }
                         </>
                     }
                     {
-                        menuData.type === 'playlists' ? 
-                        data.slice().filter( x => x.collaborative || x.owner.display_name === user_info.display_name).map(( item, i) => (
-                            <MenuCard item={ item } index={ i } type={ menuData.type } handlePlaylist={ handlePlaylist } />
-                        )) 
-                        :
+                         
+                        menuData.type === 'recPlayed' || menuData.type === 'albums' &&
                         data.map( (item, i) => <MenuCard item={ item } index={ i } allData={ data } type={ menuData.type } /> )
                     }
                     

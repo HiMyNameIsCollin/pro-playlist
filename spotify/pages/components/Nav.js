@@ -6,7 +6,7 @@ import { DbHookContext } from './Dashboard'
 
 const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState, setDashboardState , pageScrollRef, activeHomeItem, activeSearchItem, setActiveHomeItem, setActiveSearchItem, scrollPosition, setNavHeight }) => {
 
-    const { selectOverlay , dashboardRef, navHeight, transMinHeight} = useContext( DbHookContext )
+    const { selectOverlay, dashboardRef, navHeight, transMinHeight, activeManageItem} = useContext( DbHookContext )
 
     const thisComponentRef = useCallback( node => {
         if( node !== null){
@@ -65,7 +65,7 @@ const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState
     }, [ selectOverlay ])
 
     const {hideNav} = useSpring({
-        to:{ hideNav: hiddenUI ? 100 : 0 }
+        to:{ hideNav: hiddenUI || (activeManageItem.type && dashboardState ==='manage' ) ? 100 : 0 }
     })
 
 

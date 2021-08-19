@@ -19,7 +19,7 @@ const AlbumContainer = ({ page, albums }) => {
                 Popular releases 
             </p>
             {
-            albums.slice(0, 5).map( item => <Album  item={ item } />)
+            albums.slice(0, 5).map(( item, i ) => <Album key={ i } item={ item } />)
             }
             
             <button onClick={ handleSeeMore } className='albumContainer__btn'> See discography </button>

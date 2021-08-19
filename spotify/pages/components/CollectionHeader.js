@@ -36,6 +36,7 @@ const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionCom
         return () => {
             setBackgroundImage(null)
             setHeaderScrolled( 0 )
+            setColors( undefined )
         }
     }, [])
 

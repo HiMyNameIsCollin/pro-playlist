@@ -169,7 +169,7 @@ $bg__1--lg: url('../public/bglg.jpg')
     user-select: none
 
 
-button, input[type="submit"], input[type="reset"], input[type='text']
+button, input[type="submit"], input[type="reset"], input[type='text'], textarea
     background: none
     color: inherit
     border: none
@@ -799,9 +799,9 @@ li
             @include scrimGradient($black ,'to top')
             opacity: .75
             z-index: 1       
-        @media only screen and (min-width: 1024px)
-            padding-top: 30rem  
-        
+         
+        @media only screen and ( max-width: 640px )
+            padding-top: 70%
     &__title
         color: $white
         padding: 1rem
@@ -1797,11 +1797,12 @@ li
             @include largeFirm
             margin-top: 40%
             text-align: center
-            
-        input
+        textarea
             @include bigFirm
             text-align: center
             user-select: auto
+            padding: 0 1rem 
+            max-width: 100%
             &::placeholder
                 color: $white
     &__scroll
