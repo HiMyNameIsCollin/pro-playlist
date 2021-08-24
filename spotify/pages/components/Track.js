@@ -11,7 +11,7 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
     const [ liked, setLiked ] = useState( false )
     const trackImageRef = useRef()
 
-    const { queue, setQueue, activeItem ,setActiveHomeItem, audioRef, qIndex, setQIndex, setOverlay } = useContext( DbHookContext )
+    const { queue, setQueue, activeItem ,setActiveHomeItem, audioRef, qIndex, setQIndex, setOverlay, sortContainerOpen, dashboardState, sortBar, setSortBar } = useContext( DbHookContext )
     const { my_liked_tracks } = useContext( DbFetchedContext )
     const playerContext = useContext( type === 'playerCollapsed' ? PlayerHookContext : '' )
     
@@ -153,7 +153,7 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
         }
 
         {
-            track.album && track.album.images &&
+            track.album && track.album.images && type !== 'playerCollapsed' &&
             <div className='track__imgContainer'>
                 <img
                 ref={ trackImageRef }
@@ -162,6 +162,31 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
                 alt='Album' 
                 src={ whichPicture( track.album.images, 'sm') }/>
             </div>
+        }
+        {
+            type === 'playerCollapsed' ?
+            ( !sortBar && sortContainerOpen && dashboardState  === 'manage') ?
+            <div
+            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}} 
+            className='track__imgContainer'>
+                <button
+                className='sortContainer__close' 
+                onClick={ (e) => {
+                    e.stopPropagation()
+                    setSortBar(true) 
+                }} >
+                    <i className="fas fa-chevron-left"></i>
+                </button>
+            </div> :
+            <div className='track__imgContainer'>
+                <img
+                ref={ trackImageRef }
+                crossorigin='anonymous'
+                onLoad={ (e) => trackLoaded(e, 2) }
+                alt='Album' 
+                src={ whichPicture( track.album.images, 'sm') }/>
+            </div> :
+            null
         }
         
             <p className='track__title'>

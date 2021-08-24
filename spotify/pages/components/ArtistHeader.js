@@ -85,7 +85,7 @@ const ArtistHeader = ({ pageType, data, transitionComplete, setTransitionComplet
                 onLoad={ getColors }
                 style={{ objectPosition: imgSlide.to( t => `0% ${t}%` ) }}
                 crossOrigin='anonymous' 
-                src={ whichPicture(artist.images, 'lrg') }
+                src={ artist.images.length > 0 ? whichPicture(artist.images, 'lrg') : '//logo.clearbit.com/spotify.com' }
                 alt='Artist'/> 
                 <animated.p 
                 className='artistHeader__title'

@@ -1,6 +1,7 @@
 import { whichPicture } from '../../../utils/whichPicture'
 import { useState, useEffect, useContext } from 'react'
 import { ManageHookContext } from './Manage'
+import Image from 'next/image'
 
 const ManageCard = ({ item, listType }) => {
 
@@ -21,10 +22,20 @@ const ManageCard = ({ item, listType }) => {
     return(
         <div onClick={ () => setActiveManageItem( item ) } className={ `mngCard mngCard--${listType} mngCard--${item.type}` }>
             <div className={ `mngCard__imgContainer mngCard__imgContainer--${listType} mngCard__imgContainer--${item.type} `}>
-                <img
-                loading='lazy'
-                alt='Liked tracks playlist cover' 
-                src={ image } />
+                {
+                    image ?
+                    <img
+                    loading='lazy'
+                    alt='Collection Cover' 
+                    src={ image } /> :
+                    <Image
+                    loading='lazy'
+                    alt='Liked tracks'
+                    layout='fill'
+                    objectFit='contain'
+                    src='/Spotify_Icon_RGB_Green.png'/>
+                }
+                
             </div>
             
             <div className={ `mngCard__meta mngCard__meta--${listType}`}>

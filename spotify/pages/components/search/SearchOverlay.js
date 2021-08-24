@@ -27,6 +27,7 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
     },[])
 
     useEffect(() => {
+        console.log( searchInput )
         if(searchInput.length > 0 && searchInput !== 'Search'){
             finalizeRoute('get', 
             `${ route }`, 
@@ -68,6 +69,7 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
 
             
             <SearchResults
+            payload={ apiPayload }
             activeFilter={ activeFilter }
             searchInput={ searchInput }
             albumResults={ albumResults }

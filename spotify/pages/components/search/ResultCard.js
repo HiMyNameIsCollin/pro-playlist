@@ -1,17 +1,26 @@
-import { useEffect, useContext, useRef } from 'react'
+import { useEffect, useState, useContext, useRef } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
 import { handleColorThief } from '../../../utils/handleColorThief'
 import { DbHookContext } from '../Dashboard'
 import { SearchHookContext } from './Search'
 import { ManageHookContext } from '../manage/Manage'
+import Image from 'next/image'
 
 const ResultCard = ({ data, setActiveItem }) => {
 
+    const [ active, setActive ] = useState(false)
+
     const trackImageRef = useRef()
 
-    const { setOverlay, setQueue, setQIndex} = useContext( DbHookContext )
+    const { setOverlay, setQueue, setQIndex, queue, qIndex } = useContext( DbHookContext )
 
     
+    useEffect(() => {
+        if( queue[ qIndex ].id === data.id ){
+            setActive( true )
+        } else if( active ) setActive( false )
+    },[ queue, qIndex, data ])
+
     const handleTrackMenu = (e, selectedTrack ) => {
         e.stopPropagation()
         if(!selectedTrack.images){
@@ -45,22 +54,22 @@ const ResultCard = ({ data, setActiveItem }) => {
     }
 
     return(
-        <div className={`resultCard ${data.type==='artist' && 'resultCard--artist'}`} 
+        <div className={`resultCard ${data.type==='artist' && 'resultCard--artist'} ${ active && 'resultCard--active' }`} 
             onClick={ handleSearchSelection }>
             <div className='resultCard__imgContainer'>
                 {
-                data.images &&
+                data.images && data.images.length > 0 || data.album && data.album.images.length > 0 ?
                 <img
                 crossorigin='anonymous' 
                 ref={ trackImageRef } 
-                src={ whichPicture( data.images, 'sm') } />
-                }
-                {
-                data.album && data.album.images &&
-                <img
-                crossorigin='anonymous'  
-                ref={ trackImageRef } 
-                src={ whichPicture( data.album.images, 'sm') } />
+                src={ whichPicture( data.images ? data.images : data.album.images, 'sm') } />
+                :
+                <Image
+                loading='lazy'
+                alt='Liked tracks'
+                layout='fill'
+                objectFit='contain'
+                src='/Spotify_Icon_RGB_Green.png'/>
                 }
                 
             </div>

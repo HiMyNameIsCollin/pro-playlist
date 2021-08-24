@@ -7,6 +7,7 @@ import Slider from '../Slider'
 import { ManageHookContext } from './Manage'
 import { DbFetchedContext } from '../Dashboard'
 import { Droppable } from 'react-beautiful-dnd'
+import Image from 'next/image'
 const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
 
     const routes = {
@@ -144,7 +145,17 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
             data.type !== 'sortPlaylist' &&
             <>
             <div className={`activeItem__imgContainer activeItem__imgContainer--${ orientation }`}>
-                <img src={ image } alt={ `${data.name} image`} />
+                {
+                    image ?
+                    <img src={ image } alt={ `${data.name} image`} /> :
+                    <Image
+                    loading='lazy'
+                    alt={ `${data.name} image`}
+                    layout='fill'
+                    objectFit='contain'
+                    src='/Spotify_Icon_RGB_Green.png'/>
+                }
+                
             </div>
             <div className={`activeItem__meta activeItem__meta--${ orientation }`}>
                 <p className='activeItem__title'> { data.name } </p>

@@ -3,6 +3,7 @@ import { whichPicture } from "../../utils/whichPicture"
 import { capital } from '../../utils/capital'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
+import Image from 'next/image'
 const Album = ({ item }) => {
 
     const { setActiveHomeItem, setHiddenUI, location } = useContext( DbHookContext )
@@ -18,11 +19,20 @@ const Album = ({ item }) => {
     return(
         <div className='albumCard' onClick={ handleActiveItem }>
             <div className='albumCard__imgContainer'>
+            {
+                item.images ?
                 <img
                 height='64px'
                 width='64px'
                 alt='Album art' 
-                src={ whichPicture( item.images, 'sm' )}/>
+                src={ whichPicture( item.images, 'sm' )}/> :
+                <Image
+                loading='lazy'
+                alt='Liked tracks'
+                layout='fill'
+                objectFit='contain'
+                src='/Spotify_Icon_RGB_Green.png'/>
+            }
             </div>
             <p className='albumCard__title'> {item.name } </p>
             <div className='albumCard__meta'>

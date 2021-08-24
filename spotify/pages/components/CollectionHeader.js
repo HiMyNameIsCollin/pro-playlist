@@ -6,6 +6,7 @@ import { handleColorThief } from '../../utils/handleColorThief'
 import { calcScroll } from '../../utils/calcScroll'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
+import Image from 'next/image'
 
 const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionComplete, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader, parent }) => {
     const [ colors, setColors ] = useState( undefined )
@@ -30,7 +31,7 @@ const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionCom
     useLayoutEffect(() => {
         // const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
         // setElementHeight(headerHeight)
-        const img = whichPicture(collection.images, 'lrg')
+        const img = collection.images && collection.images.length > 0 ? whichPicture(collection.images, 'lrg') : '//logo.clearbit.com/spotify.com'
         setBackgroundImage( img )
         setActiveHeader( {data : collection.name} )
         return () => {
@@ -70,6 +71,7 @@ const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionCom
     }
 
     const finishMount = ( e ) => {
+        console.log( e.target )
         const theseColors = handleColorThief( e.target, 2 )
         setColors( theseColors )
         const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
@@ -94,12 +96,22 @@ const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionCom
                         transform: moveDown.to( moveDown => `translateY(${ moveDown }%)`)
                     }}
                     className='collectionHeader__imgTransform'>
+                    {
+                        collection.images && collection.images.length > 0 ?
                         <img
                         crossorigin='anonymous' 
                         // ON LOAD HERE ########################################
                         onLoad={ finishMount }
                         className='collectionHeader__img' 
-                        src={ whichPicture(collection.images, 'med') } />
+                        src={ whichPicture(collection.images, 'med') } /> 
+                        :
+                        <img
+                        crossorigin='anonymous' 
+                        // ON LOAD HERE ########################################
+                        onLoad={ finishMount }
+                        className='collectionHeader__img' 
+                        src='//logo.clearbit.com/spotify.com' /> 
+                    }
                     </animated.div>
                 </animated.div> 
 

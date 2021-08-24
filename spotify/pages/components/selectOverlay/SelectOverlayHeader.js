@@ -1,7 +1,8 @@
 import { useContext } from 'react'
+import useApiCall from '../../hooks/useApiCall'
 import { DbHookContext } from '../Dashboard'
 
-const SelectOverlayHeader = ({ data  }) => {
+const SelectOverlayHeader = ({ menuData  }) => {
 
     const { selectOverlay, setSelectOverlay } = useContext( DbHookContext )
 
@@ -14,14 +15,16 @@ const SelectOverlayHeader = ({ data  }) => {
             <button className='selectOverlay__header__btn' onClick={ handleClose }> Cancel </button>
             <p className='selectOverlay__title'>
             {
-                data.type === 'playlists' ? 
+                menuData.type === 'playlists' ? 
                 'Add to playlist' :
-                data.type === 'albums' ?
+                menuData.type === 'albums' ?
                 'Releases' :
-                data.type === 'recPlayed' ?
+                menuData.type === 'recPlayed' ?
                 'Recently played' :
-                data.type ==='newPlaylist' &&
-                'Create a playlist' 
+                menuData.type ==='newPlaylist' ?
+                'Create a playlist' :
+                menuData.type === 'trackRecommendations' &&
+                'Add tracks'
             }
             </p>
         </header>

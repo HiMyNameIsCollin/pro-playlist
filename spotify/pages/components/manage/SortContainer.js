@@ -2,7 +2,7 @@ import { useState, useEffect, useContext, useCallback, useRef } from 'react'
 import { animated, useTransition, useSpring } from 'react-spring'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-import { DbFetchedContext } from '../Dashboard'
+import { DbFetchedContext, DbHookContext } from '../Dashboard'
 import { ManageHookContext } from './Manage'
 import useApiCall from '../../hooks/useApiCall'
 import ActiveItem from './ActiveItem'
@@ -29,6 +29,7 @@ const SortContainer = ({ style, setActiveItem,  }) => {
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const { activeManageItem, setActiveManageItem,} = useContext( ManageHookContext )
+    const { sortBar, setSortBar } = useContext( DbHookContext )
     const { my_playlists, user_info } = useContext( DbFetchedContext )
     const [ activePlaylistItem, setActivePlaylistItem ] = useState({})
     const [ dragging, setDragging ] = useState( false )
@@ -43,6 +44,11 @@ const SortContainer = ({ style, setActiveItem,  }) => {
         }
       }, []);
 
+      useEffect(() => {
+          setSortBar( true )
+          return () => setSortBar( false )
+      },[])
+
     useEffect(() => {
         if(activeManageItem.type){
             if( !activePlaylistItem.type) setActivePlaylistItem({ type:'sortPlaylist', id:'playlistSort', items: my_playlists.slice().filter( x => x.owner.display_name === user_info.display_name || x.collaborative ) })
@@ -55,6 +61,10 @@ const SortContainer = ({ style, setActiveItem,  }) => {
         setActivePlaylistItem( {} )
         setActiveManageItem( {} )
     }
+
+    const sortBarTrans = useSpring({
+        transform: sortBar ? 'translateY(0%)' : 'translateY(100%)'
+    })
 
     const activeItemTrans = useTransition( activeManageItem, {
         initial: { transform: 'translateY( 100% )', minHeight: (height - resizePos), marginTop: 'auto', width: '100%' } ,
@@ -83,7 +93,13 @@ const SortContainer = ({ style, setActiveItem,  }) => {
         setDragging( undefined )
         console.log(e)
         if( e.destination){
-            const id = breakDownId( e.destination.droppableId )
+            if( e.destination.droppableId === e.source.droppableId ){
+                
+                handleReorder( e.source.index, e.destination.index )
+            } else {
+                const destination = e.destination.droppableId.split('--')
+                console.log(destination)
+            }
         }
          
     }
@@ -95,13 +111,12 @@ const SortContainer = ({ style, setActiveItem,  }) => {
         setDragging( e )
     } 
 
+    const handleReorder = () => {
+
+    }
+
     return(  
         <animated.div style={ style } className='sortContainer'>
-        <div className='sortContainer__close'>
-            <button onClick={ handleCloseSortContainer } c>
-                <i className="fas fa-chevron-left"></i>
-            </button>
-        </div>
        
         <DragDropContext 
         onDragStart={ dragStart }
@@ -130,6 +145,18 @@ const SortContainer = ({ style, setActiveItem,  }) => {
         }
             </div>
         </DragDropContext>
+        <animated.div style={ sortBarTrans } className='sortContainer__controls'>
+            <button
+            className='sortContainer__close' 
+            onClick={ handleCloseSortContainer } c>
+                <i className="fas fa-chevron-left"></i>
+                <span> Cancel </span>
+            </button>
+            <button onClick={ () => setSortBar( false )}>
+                <i className="fas fa-music"></i>
+                <span> Player </span>
+            </button>
+        </animated.div>
         </animated.div>
     )
 }

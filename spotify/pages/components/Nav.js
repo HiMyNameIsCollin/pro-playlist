@@ -4,9 +4,9 @@ import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 
 
-const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState, setDashboardState , pageScrollRef, activeHomeItem, activeSearchItem, setActiveHomeItem, setActiveSearchItem, scrollPosition, setNavHeight }) => {
+const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState, setDashboardState , pageScrollRef, activeHomeItem, activeSearchItem, setActiveHomeItem, setActiveSearchItem, scrollPosition }) => {
 
-    const { selectOverlay, dashboardRef, navHeight, transMinHeight, activeManageItem} = useContext( DbHookContext )
+    const { selectOverlay, dashboardRef, navHeight, setNavHeight, transMinHeight, activeManageItem} = useContext( DbHookContext )
 
     const thisComponentRef = useCallback( node => {
         if( node !== null){
@@ -35,15 +35,27 @@ const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState
             const scroll = Math.round( height * ( scrollPosition / 100 ) )
             pageScrollRef.current[`${dashboardState}`] = scroll
             setDashboardState(page)
-            
-            
         } else {
-            if( page === 'home' && activeHomeItem.type ){
-                setActiveHomeItem( {} )
-            } else if ( page === 'search' && activeSearchItem.type  ){
-                setActiveSearchItem( {} )
+            const scrollTop = {
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
             }
-            
+            if( page === 'home' ){
+                if(activeHomeItem.type){
+                    setActiveHomeItem( {} )
+                } else {
+                    dashboardRef.current.scroll(scrollTop)
+                }
+            } else if ( page === 'search' ){
+                if( activeSearchItem.type ){
+                    setActiveSearchItem( {} )
+                } else {
+                    dashboardRef.current.scroll(scrollTop)
+                }
+            } else {
+                dashboardRef.current.scroll(scrollTop)
+            }
         }
     }
 

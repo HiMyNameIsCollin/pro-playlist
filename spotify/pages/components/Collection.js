@@ -177,8 +177,11 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
                 seedTracks.push( track.id )
             }
         })
-
-        return seeds
+        let args = []
+        if(seedGenres.length > 0) args.push( `seed_genres=${seedGenres.join()}` )
+        if( seedArtists.length > 0 ) args.push(`seed_artists=${seedArtists.join()}` )
+        if( seedTracks.length > 0 ) args.push( `seed_tracks=${seedTracks.join()}` )
+        return args
     }
     
     useEffect(() => {
@@ -188,20 +191,13 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             tracks[0] && 
             !recommendations[0] &&
             user_info.country ){
-            const market = user_info.country
             let seeds = getSeeds(available_genre_seeds, artists, tracks)
-            const { seedGenres, seedArtists, seedTracks } = seeds
-            let args = []
-            if(seedGenres.length > 0) args.push( `seed_genres=${seedGenres.join()}` )
-            if( seedArtists.length > 0 ) args.push(`seed_artists=${seedArtists.join()}` )
-            if( seedTracks.length > 0 ) args.push( `seed_tracks=${seedTracks.join()}` )
-            
             finalizeRoute( 'get',
             `${routes.recommendations}`, 
             null, 
             null,
             null,
-            ...args )
+            ...seeds )
 
         }
     }, [ collection, artists, tracks ])

@@ -28,7 +28,7 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     const sortFilters = [ 'Recently added', 'Alphabetical', 'Creator' ]
     const { user_info, my_albums, my_playlists, followed_artists, my_liked_tracks, recently_played } = useContext( DbFetchedContext )
-    const { dashboardState, sortContainerOpen, setSortContainerOpen } = useContext( DbHookContext )
+    const { dashboardState, sortContainerOpen, setSortContainerOpen, selectOverlay, setSelectOverlay, dashboardRef } = useContext( DbHookContext )
     const manageHookState = {
         activeManageItem,
         setActiveManageItem
@@ -89,8 +89,9 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     }, [ sort ])
 
     const createPlaylist = ( playlist, callback ) => {
+        const images = playlist.items[0].album ? playlist.items[0].album.images : playlist.items[0].images
         playlist['owner'] = { display_name: user_info.display_name}
-        playlist['images'] = playlist.items[0].album.images
+        playlist['images'] = images
         playlist['type'] = 'playlist'
         callback( playlist )
     }
@@ -131,13 +132,11 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
         setData( sorted )
     }
 
-    const fadeTrans = {
+    const manageTrans = useTransition( sortContainerOpen, {
         from: { opacity: 0 },
         enter: { opacity: 1 },
-        leave: { opacity: 0 }
-    }
-
-    const manageTrans = useTransition( sortContainerOpen, fadeTrans)
+        leave:  { opacity: 0 }
+    })
     const fadeOut = useSpring({
         opacity: sortContainerOpen ? 0 : 1
     })
@@ -152,44 +151,38 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
         initial: { opacity: 0 },
         from: { opacity: 0, transform: 'translateX(0%)' },
         enter: { opacity: 1 },
-        leave: { opacity: 0 }
+        leave: item => !activeManageItem.type ? { opacity: 0 } : { transform: 'translateX(-100%' }
     })
 
+    const newPlaylistMenu = () => {
+        const menu = { type: 'newPlaylist' , page: 'manage', data: undefined }
+        setSelectOverlay( arr => arr = [ ...arr, menu, ])
+    }
 
     return(
         <ManageHookContext.Provider value={ manageHookState }>
             {
-                overlayTrans(( props, item) => (
-                    item === 'search' &&
-                    <SearchOverlay style={ props } setActiveItem={ setActiveManageItem } searchState={ manageState } setSearchState={ setManageState } />
-
-                ))
-            }
-            {
                 manageTrans(( props, item ) => (
-                    
                     item &&
                     <SortContainer style={ props } setSortContainerOpen={ setSortContainerOpen } /> 
-                    
-                    
                 ))
             }
             {
                 manageOverlayTrans(( props, item ) => (
                     item.type &&
-                    
                     <ManageOverlay 
                     sortFilters={ sortFilters } 
                     setSort={ setSort } 
                     data={ manageOverlay }
                     setData={ setManageOverlay }
                     style={ props } />
-
-                    
                 ))
             }
             <header 
-            style={{ display: dashboardState === 'manage' ? 'block': 'none'}}
+            style={{ 
+                display: dashboardState === 'manage' && manageState === 'default' ? 'block': 'none' ,
+                top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 
+            }}
             className='mngHeader'>
                 <div className='mngHeader__top'>
                     <div className='mngHeader__imgContainer'>
@@ -204,7 +197,9 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
                     <i 
                     onClick={ () => setManageState( 'search' ) }
                     className="fas fa-search"></i>
-                    <i className="fas fa-plus"></i>
+                    <i 
+                    onClick={ newPlaylistMenu }
+                    className="fas fa-plus"></i>
                 </div>
                 <ManageFilters 
                 activeFilter={ activeFilter } 
@@ -215,7 +210,14 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
             <animated.div style={ fadeOut } id='managePage' >
                 <div style={{ position: 'absolute' }} className={ `page page--manage`} >
                     
+                {
+                overlayTrans(( props, item) => (
+                    item === 'search' &&
+                    <SearchOverlay style={ props } setActiveItem={ setActiveManageItem } searchState={ manageState } setSearchState={ setManageState } />
 
+                ))
+                }
+                
                     <ManageLibrary 
                     transitionComplete={ transitionComplete }
                     setTransitionComplete={ setTransitionComplete }

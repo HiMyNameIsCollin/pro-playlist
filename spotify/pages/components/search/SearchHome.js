@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useRef, useContext } from 'react'
 import { animated } from 'react-spring'
-import { DbHookContext } from '../Dashboard'
+import { DbHookContext, DbFetchedContext } from '../Dashboard'
 
 import BrowseContainer from '../BrowseContainer'
 const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, setTransitionComplete }) => {
@@ -8,6 +8,9 @@ const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, 
     const thisComponentRef = useRef() 
 
     const [ mounted, setMounted ] = useState(false)
+
+    const { activeHomeItem } = useContext( DbHookContext )
+    const { my_top_categories } = useContext( DbFetchedContext )
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
@@ -44,9 +47,9 @@ const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, 
             type='BcSearch'
             message='My top genres' 
             data={ 
-                state.my_top_categories.length % 2 !== 0  ?
-                state.my_top_categories.slice( 0, state.my_top_categories.length - 1 ) :
-                state.my_top_categories
+                my_top_categories.length % 2 !== 0  ?
+                my_top_categories.slice( 0, state.my_top_categories.length - 1 ) :
+                my_top_categories
             }/>
             <BrowseContainer
             message='Browse all' 

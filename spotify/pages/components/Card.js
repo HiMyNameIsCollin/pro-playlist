@@ -3,6 +3,7 @@ import { whichPicture } from '../../utils/whichPicture'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
 import { ManageHookContext } from './manage/Manage'
+import Image from 'next/image'
 
 const Card = ({ type, item, setActiveItem }) => {
 
@@ -35,18 +36,31 @@ const Card = ({ type, item, setActiveItem }) => {
         onClick={ setCurrentSelection } 
         className={`card card--${type} card--${item.type}` }>
             <div className='card__imgContainer'>
-                <img 
-                loading='lazy'
-                src={ 
-                    item.images ? 
-                    whichPicture(item.images, 'med') :
-                    item.album && item.album.images ?
-                    whichPicture(item.album.images, 'med') :
-                    item.icons ?
-                    item.icons[0].url:
-                    null 
+                {
+                   item.images && item.images.length > 0 || 
+                   item.album && item.album.images.length > 0 ||
+                   item.icons && item.icons.length > 0 ?
+                   <img 
+                   loading='lazy'
+                   src={ 
+                       item.images ? 
+                       whichPicture(item.images, 'med') :
+                       item.album && item.album.images ?
+                       whichPicture(item.album.images, 'med') :
+                       item.icons ?
+                       item.icons[0].url:
+                       null 
+                   }
+                   alt='Track art'/>
+                   :
+                   <Image
+                    loading='lazy'
+                    alt='Liked tracks'
+                    layout='fill'
+                    objectFit='contain'
+                    src='/Spotify_Icon_RGB_Green.png'/>
                 }
-                    alt='Track art'/>
+                
             </div>
             {
                 item.name &&

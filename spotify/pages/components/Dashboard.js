@@ -30,7 +30,8 @@ const initialState = {
     my_top_artists: [],
     all_categories: [],
     available_genre_seeds: [],
-    followed_artists: []
+    followed_artists: [],
+    my_top_categories: []
 }
 
 const routes = {   
@@ -49,6 +50,10 @@ const routes = {
     new_releases: 'v1/browse/new-releases',
     available_genre_seeds: 'v1/recommendations/available-genre-seeds',
     followed_artists: 'v1/me/following',
+    // My reducer is based off a set 'Route' string attached during the fetch process,
+    // I set the top genre state with a makeshift 'my_top_genres' "route". 
+    // Hopefully Spotify adds a top genres route eventually :(
+    my_top_categories: 'categories',
 }
 
 
@@ -60,6 +65,12 @@ const initialPageScroll = {
 }
 const Dashboard = ({ setAuth, audioRef }) => {
 
+
+    const stopDupes = ( state, items ) => {
+        const intersection = items.filter(({ id: id1 }) => !state.some(({ id: id2 }) => id2 === id1 ) )
+        const result = [ ...state, ...intersection ]
+        return result
+    }
 
     const reducer = (state, action) => {
         let route
@@ -91,14 +102,14 @@ const Dashboard = ({ setAuth, audioRef }) => {
                     })
                     return{
                         ...state,
-                        my_liked_tracks: [ ...state.my_liked_tracks, ...cleanedUp ]
+                        my_liked_tracks: stopDupes(state.my_liked_tracks, cleanedUp)
                     }
                 }
             case routes.my_playlists:
                 if(method === 'get'){
                     return{
                         ...state,
-                        my_playlists: [ ...state.my_playlists, ...action.items ]
+                        my_playlists: stopDupes(state.my_playlists, action.items)
                     }
                 } else if( method === 'put'){
                     
@@ -111,65 +122,71 @@ const Dashboard = ({ setAuth, audioRef }) => {
                     })
                     return{
                         ...state,
-                        my_albums: [...state.my_albums, ...cleanedUp]
+                        my_albums: stopDupes(state.my_albums, cleanedUp)
                     }
                 }
             case routes.recently_played:
                 if(method === 'get'){
                     return{
                         ...state,
-                        recently_played: [...state.recently_played, ...action.items]
+                        recently_played: stopDupes(state.recently_played, action.items)
                     }
                 }             
             case routes.new_releases:
                 if(method === 'get'){
                     return{
                         ...state,
-                        new_releases: [...state.new_releases, ...action.albums.items]
+                        new_releases: stopDupes(state.new_releases, action.albums.items)
                     }
                 }
             case routes.featured_playlists:
                 if(method === 'get'){
                     return{
                         ...state,
-                        featured_playlists: [ ...state.featured_playlists, ...action.playlists.items]
+                        featured_playlists: stopDupes(state.featured_playlists, action.playlists.items)
                     }  
                 }  
             case routes.recommendations:
                 if(method === 'get'){
                     return{
                         ...state,
-                        recommendations: [...state.recommendations, ...action.items]
+                        recommendations: stopDupes(state.recommendations, action.items)
                     }
                 }
             case routes.available_genre_seeds:
                 if(method === 'get'){
                     return{
                         ...state,
-                        available_genre_seeds: [...state.available_genre_seeds, ...action.genres ]
+                        available_genre_seeds: stopDupes(state.available_genre_seeds, action.genres)
                     }
                 }
             case routes.my_top_tracks:
                 if(method === 'get'){
                     return{
                         ...state,
-                        my_top_tracks: [...state.my_top_tracks, ...action.items]
+                        my_top_tracks: stopDupes(state.my_top_tracks, action.items)
                     }
                 }
             case routes.my_top_artists:
                 if(method === 'get'){
                     return{
                         ...state,
-                        my_top_artists: [...state.my_top_artists, ...action.items]
+                        my_top_artists: stopDupes(state.my_top_artists, action.items)
                     }
                 } 
             case routes.followed_artists:
                 if(method === 'get'){
                     return{
                         ...state,
-                        followed_artists: [ ...state.followed_artists, ...action.artists.items ]
+                        followed_artists: stopDupes(state.followed_artists, action.artists.items )
                     }
         
+                }
+            case routes.my_top_categories:
+                // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
+                return{
+                    ...state,
+                    my_top_categories: action.items
                 }
                 
             default:
@@ -196,6 +213,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ searchState, setSearchState ] = useState('default')
     const [ manageState, setManageState ] = useState( 'default')
     const [ sortContainerOpen, setSortContainerOpen ] = useState( false )
+    const [ sortBar, setSortBar ] = useState( false )
     const [ activeSearchItem, setActiveSearchItem ] = useState( {} )
     const [ activeHomeItem, setActiveHomeItem ] = useState( {} ) 
     const [ activeManageItem, setActiveManageItem ] = useState( {} ) 
@@ -215,8 +233,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const dashboardNavRef = useRef()
     
     const newPlaylistRef = useRef( {} )
+    const trackForPlaylistRef = useRef( {} )
 
-    const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists, my_liked_tracks } = { ...state }
+    const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists, my_liked_tracks, my_top_categories } = { ...state }
 
 // Context set up //////////////////////////////////////////////////
 
@@ -257,7 +276,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
         navHeight,
         setNavHeight,
         playerSize,
-        setPlayerSize
+        setPlayerSize,
+        sortBar,
+        setSortBar
     }
 
     const dbFetchedState = {
@@ -274,7 +295,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
         my_top_artists, 
         all_categories, 
         available_genre_seeds, 
-        followed_artists
+        followed_artists,
+        my_top_categories
     }
 
 // Set last played track on account as active track
@@ -386,15 +408,24 @@ const Dashboard = ({ setAuth, audioRef }) => {
     useEffect(() => {
         if(activeManageItem.type){
             setSortContainerOpen( true )
+            if(manageState !== 'default' ){
+                setManageState('default')
+            }
         } else {
             setSortContainerOpen( false )
         }
     }, [ activeManageItem ])
 
     useEffect(() => {
+        if( dashboardState === 'manage' && activeManageItem.type){
+            if( !sortContainerOpen ) setSortContainerOpen( true )
+        }
+    }, [ dashboardState ])
+
+    useEffect(() => {
         if( dashboardNavRef.current === dashboardState ){
             let hideMe = true
-            if(scrollPosition <= scrollRef.current && scrollPosition < 98) {
+            if(scrollPosition <= scrollRef.current || scrollPosition > 98) {
                 hideMe = false
             } else {
                 hideMe = true
@@ -458,6 +489,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
     useEffect(() => {
         if( selectOverlay.length === 0  && newPlaylistRef.current.id ){
+            // Redirects to newly created playlist after SelectOverlay closes
             setTimeout(() => {
                 const playlist = { ...newPlaylistRef.current }
                 if( playlist.page === 'home'){
@@ -479,19 +511,20 @@ const Dashboard = ({ setAuth, audioRef }) => {
         config:{ delay: 500 }
     })
 
-    const selectOverlayTrans = useTransition( selectOverlay.map( item => item ), {
-        from: { transform: 'translateY(100%)' },
-        enter: item => async (next, cancel) => {
-            await new Promise(resolve => setTimeout(resolve, 500));
-            await next({ transform: 'translateY(0%)' })
-          },
-        leave: { transform: 'translateY(100%)'}
-    })
-
     const messageOverlayTrans = useTransition( messageOverlay.map( item => item ),{
         from: { transform: 'scale(0.00) ', opacity: 1},
         enter: { transform: 'scale(1.00) '},
         leave: { opacity: 0}
+    })
+
+    const selectOverlayTrans = useTransition( selectOverlay.length > 0, {
+        from: { opacity: 0 },
+        enter: { opacity: 1 },
+        leave: item => async (next, cancel) => {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await next({ opacity: 0 })
+          },
+
     })
 
     return(
@@ -499,8 +532,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
         <DbFetchedContext.Provider value={ dbFetchedState }>
 
             {
-            selectOverlayTrans(( props, item, t, i ) => (
-                <SelectOverlay dbDispatch={ dispatch } style={ props } menuData={item} position={ i } newPlaylistRef={ newPlaylistRef }/>
+            selectOverlayTrans(( props, item) => (
+                item &&
+                <SelectOverlay dbDispatch={ dispatch } style={ props } newPlaylistRef={ newPlaylistRef } trackForPlaylistRef={ trackForPlaylistRef }/>
             ))
             }
             {
@@ -535,7 +569,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 my_top_artists={ state.my_top_artists } 
                 available_genre_seeds={ state.available_genre_seeds }
                 searchPageHistoryRef={ searchPageHistoryRef }
-                currActiveSearchRef={ currActiveSearchRef } />
+                currActiveSearchRef={ currActiveSearchRef }
+                dbDispatch={ dispatch } />
 
                 <Manage 
                 activeManageItem={ activeManageItem } 
@@ -565,8 +600,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 setActiveHomeItem={ setActiveHomeItem }
                 setActiveSearchItem={ setActiveSearchItem }
                 dashboardState={ dashboardState }
-                setDashboardState={ setDashboardState }
-                setNavHeight={ setNavHeight } />
+                setDashboardState={ setDashboardState } />
             </animated.section>
                 
         </DbFetchedContext.Provider>

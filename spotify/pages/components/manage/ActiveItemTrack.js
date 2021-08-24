@@ -51,7 +51,7 @@ const ActiveItemTrack = ({ track, orientation, index, selectedItems, setSelected
                         {...provided.draggableProps} 
                         {...provided.dragHandleProps}
                         className={ `activeItemTrack `} >
-                            <div > 
+                            <div className='activeItemTrack__meta'> 
                                 <p className='activeItemTrack__title'>
                                     { thisTrack.name }
                                 </p>

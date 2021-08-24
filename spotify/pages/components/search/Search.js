@@ -12,7 +12,7 @@ import Showcase from '../Showcase'
 import SearchOverlay from './SearchOverlay'
 import Loading from '../Loading'
 
-import { DbHookContext } from '../Dashboard'
+import { DbHookContext, DbFetchedContext } from '../Dashboard'
 
 
 const initialState = {
@@ -24,10 +24,8 @@ const initialState = {
 const routes = {
     all_categories: 'v1/browse/categories',
     search: 'v1/search',
-    // My reducer is based off a set 'Route' string attached during the fetch process,
-    // I set the top genre state with a makeshift 'my_top_genres' "route". 
-    // Hopefully Spotify adds a top genres route eventually :(
-    my_top_categories: 'categories',
+    
+
 }
 
 const reducer = ( state, action ) => {
@@ -47,12 +45,7 @@ const reducer = ( state, action ) => {
                 }
             }               
         
-        case routes.my_top_categories:
-            // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
-            return{
-                ...state,
-                my_top_categories: action.items
-            }
+        
         default:
             console.log(action)
             break         
@@ -72,7 +65,8 @@ const Search = ({
     searchState,
     setSearchState, 
     activeSearchItem, 
-    setActiveSearchItem }) => {
+    setActiveSearchItem,
+    dbDispatch }) => {
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
@@ -82,8 +76,8 @@ const Search = ({
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     
     const { overlay, scrollPosition, selectOverlay, dashboardRef } = useContext( DbHookContext )
-    
-    const { all_categories, my_top_categories } = {...state}
+    const { my_top_categories } = useContext( DbFetchedContext )
+    const { all_categories } = {...state}
 
     const searchHookState ={
         searchState, 
@@ -110,7 +104,7 @@ const Search = ({
                 route: 'categories',
                 items: sortedCats
             }
-            dispatch(payload)
+            dbDispatch(payload)
         }
     },[my_top_artists, all_categories])
 
@@ -238,7 +232,7 @@ const Search = ({
         initial: { opacity: 0 },
         from: { opacity: 0, transform: 'translateX(0%)' },
         enter: { opacity: 1 },
-        leave: item => activeSearchItem.type ? { transform: 'translateX(-100%' } : { opacity: 0 }
+        leave: item => !activeSearchItem.type || activeSearchItem.type === 'showcase' ? { opacity: 0 } : { transform: 'translateX(-100%' }
     })
 
     return(

@@ -10,7 +10,7 @@ import { checkTime } from '../../utils/checkTime'
 
 const Welcome = ({transition, transitionComplete, setTransitionComplete, setTransMinHeight }) => {
 
-    const { setActiveItem, } = useContext( DbHookContext )
+    const { activeHomeItem, setActiveHomeItem, } = useContext( DbHookContext )
     const { recently_played, new_releases, featured_playlists, my_top_artists , my_playlists} = useContext( DbFetchedContext )
 
     const thisComponentRef = useRef() 
@@ -30,7 +30,7 @@ const Welcome = ({transition, transitionComplete, setTransitionComplete, setTran
       }, [])
 
     useEffect(() => {
-        if( transitionComplete ) {
+        if( transitionComplete && !activeHomeItem.type ) {
             thisComponentRef.current.classList.add('fadeIn')
             setTransitionComplete(false)
             setMounted( true )
@@ -60,19 +60,19 @@ const Welcome = ({transition, transitionComplete, setTransitionComplete, setTran
             <Slider 
             message='New Releases' 
             items={ new_releases }
-            setActiveItem={ setActiveItem } />
+            setActiveItem={ setActiveHomeItem } />
             <Slider 
             message='Featured playlists' 
             items={ featured_playlists }
-            setActiveItem={ setActiveItem } /> 
+            setActiveItem={ setActiveHomeItem } /> 
             <Slider
             message='Favorite artists'
             items={ my_top_artists }
-            setActiveItem={ setActiveItem }/>
+            setActiveItem={ setActiveHomeItem }/>
             <Slider 
             message='Favorite playlists'
             items={ my_playlists }
-            setActiveItem={ setActiveItem }/>
+            setActiveItem={ setActiveHomeItem }/>
         </animated.div>
     )
 }

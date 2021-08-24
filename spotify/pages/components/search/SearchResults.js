@@ -4,11 +4,12 @@ import ResultCard from './ResultCard'
 import { DbFetchedContext } from '../Dashboard'
 
 
-const SearchResults = ({ setActiveItem, activeFilter, searchInput, artistResults, albumResults, trackResults, playlistResults }) => {
+const SearchResults = ({ setActiveItem, activeFilter, searchInput, artistResults, albumResults, trackResults, playlistResults, payload}) => {
 
     const [ personalResult, setPersonalResult ] = useState( {} )
     const [ results, setResults ] = useState( [] )
-    const { my_top_artists, my_top_tracks, followed_artists } = useContext( DbFetchedContext )
+    const { my_top_artists, my_top_tracks, followed_artists, currPlaying } = useContext( DbFetchedContext )
+
 
     useEffect(() => {
         if(artistResults.length > 0){
@@ -30,7 +31,7 @@ const SearchResults = ({ setActiveItem, activeFilter, searchInput, artistResults
         if( activeFilter === 'Playlists') setResults( playlistResults )
         if( activeFilter === 'Tracks') setResults( trackResults )
         if( searchInput.length < 1  ) setResults( [] )
-    }, [ activeFilter, searchInput ])
+    }, [ activeFilter, searchInput, payload ])
 
 
     return(
