@@ -2829,11 +2829,25 @@ li {
 .selectOverlay__scroll {
   display: flex;
   flex-direction: column;
-  padding: 0 1rem;
+  padding: 0.5rem 1rem;
   position: absolute;
   top: 5;
   height: auto;
   width: 100%;
+}
+.selectOverlay__newBtn {
+  font-weight: 700;
+  font-size: 0.75rem;
+  background: #FFFFFF;
+  border-radius: 20px;
+  color: #191414;
+  padding: 1rem 2rem;
+  margin: 0.5rem auto;
+}
+@media only screen and (min-width: 768px) {
+  .selectOverlay__newBtn {
+    font-size: 1rem;
+  }
 }
 
 .newPlaylistForm {

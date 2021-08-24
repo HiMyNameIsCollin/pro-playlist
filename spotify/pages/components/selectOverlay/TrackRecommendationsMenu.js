@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, useRef } from 'react'
 import { useSpring, animated } from 'react-spring'
 import SelectOverlayHeader from './SelectOverlayHeader'
 import MenuCard from './MenuCard'
@@ -7,31 +7,37 @@ import useApiCall from '../../hooks/useApiCall'
 
 const TrackRecommendationsMenu = ({ menuData, pos }) => {
 
-    const recommendationsRoute = 'v1/recommendations'
+   
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-    const { selectOverlay } = useContext( DbHookContext )
+    const { selectOverlay, setMessageOverlay } = useContext( DbHookContext )
     const { my_liked_tracks, my_top_tracks, available_genre_seeds, my_top_artists } = useContext( DbFetchedContext )
+    const alteredPlaylistRef = useRef( {} )
+    const tracksAddedRef = useRef( [] )
 
-    const [ menuState, setMenuState ] = useState( 0 )
+    const addToPlaylistRoute = 'v1/playlists/tracks'
+    const recommendationsRoute = 'v1/recommendations'
 
     const [ tracks, setTracks ] = useState([])
-    const [ suggested, setSuggested ] = useState( [] )
-    const [ genre1, setGenre1 ] = useState( [] )
-    const [ genre2, setGenre2 ] = useState( [] )
-    const [ genre3, setGenre3 ] = useState( [] )
-    const [ genre4, setGenre4 ] = useState( [] )
 
     useEffect(() => {
-        if( apiPayload ) setTracks( apiPayload.tracks )
+        if( apiPayload ) {
+            if( apiPayload.route === recommendationsRoute){
+                setTracks( apiPayload.tracks )
+            } else if( apiPayload.route === addToPlaylistRoute ){
+                const { track, playlist } = alteredPlaylistRef.current
+                setMessageOverlay( m => m = [ ...m, `${track} added to ${ playlist }`])
+                alteredPlaylistRef.current = {}
+            }
+        }
     }, [ apiPayload ])
 
     useEffect(() => {
         if( !menuData.data ){
             getTracks( [...my_liked_tracks, ...my_top_tracks ], my_top_artists )
         } else {
-            getTracks( data )
+            getTracks( menuData.data )
         }
     },[])
 
@@ -79,7 +85,11 @@ const TrackRecommendationsMenu = ({ menuData, pos }) => {
     //     finalizeRoute('post', `${addToPlaylistRoute.slice( 0, 12 ) }/${playlist.id}/tracks`, playlist.id, null, null,  `uris=${args[0]}`, ...args.slice( 1 ) )        
     // }
 
- 
+    const handleAddToPlaylist = ( item ) => {
+        alteredPlaylistRef.current = { track: item.name, playlist: menuData.context.name }
+        tracksAddedRef.current = [...tracksAddedRef.current, item.id ]
+        finalizeRoute('post', `${ addToPlaylistRoute.substr(0, 12) }/${ menuData.context.id }/tracks`, menuData.context.id, null, null, `uris=${ item.uri }`)
+    }
 
     const shrink = useSpring({
         transform: pos >= selectOverlay.length - 1 ? 'scaleX(1.00) scaleY(1.00)' : 'scaleX(0.90) scaleY(0.97)' ,
@@ -95,7 +105,7 @@ const TrackRecommendationsMenu = ({ menuData, pos }) => {
                 <div className='selectOverlay__scroll'>
                 {
                     tracks.map( ( track, i ) => (
-                        
+                        !tracksAddedRef.current.includes( track.id ) &&
                         <MenuCard 
                         item={ track } 
                         index={ i } 
@@ -103,6 +113,7 @@ const TrackRecommendationsMenu = ({ menuData, pos }) => {
                         type={ menuData.type } 
                         tracks={ tracks }
                         menuData={ menuData }
+                        handleAddToPlaylist= { handleAddToPlaylist }
                         />
                     ))
                 }

@@ -2,10 +2,9 @@ import { useContext, useState, useEffect } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
 import { DbHookContext } from '../Dashboard'
 import Image from 'next/image'
-const MenuCard = ({ item , type, page, index, tracks, soFunctions , menuData }) => {
+const MenuCard = ({ item , type, page, index, allData, soFunctions , menuData, handleAddToPlaylist }) => {
 
     const { setActiveHomeItem, setActiveManageItem, setActiveSearchItem, selectOverlay, setSelectOverlay, queue, qIndex, setQueue, setQIndex } = useContext( DbHookContext )
-    const { handleAddToPlaylist } = soFunctions
     
     const [ active, setActive ] = useState(false)
 
@@ -32,7 +31,7 @@ const MenuCard = ({ item , type, page, index, tracks, soFunctions , menuData }) 
 
     const menuAction = ( param ) => {
         if( type === 'playlists' ){
-            addToPlaylist( param )
+            handleAddToPlaylist( param )
         } else if( type === 'albums') {
             setActiveItem( param )
         } else if( type === 'recPlayed'){
@@ -46,7 +45,7 @@ const MenuCard = ({ item , type, page, index, tracks, soFunctions , menuData }) 
         if( queue[ index ].id === item.id ){
             setQIndex( index )
         }else { 
-            setQueue( tracks )
+            setQueue( allData )
             setQIndex( index )
         }
     }
@@ -63,7 +62,7 @@ const MenuCard = ({ item , type, page, index, tracks, soFunctions , menuData }) 
 
     const handlePlaylist = ( e ) => {
         e.stopPropagation()
-        handleAddToPlaylist( menuData, item )
+        handleAddToPlaylist( item )
     }
 
     return(

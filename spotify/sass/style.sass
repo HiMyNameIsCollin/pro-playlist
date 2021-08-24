@@ -1812,11 +1812,18 @@ li
         min-width: 100%
     &__scroll
         @include flexCol
-        padding: 0 1rem
+        padding: .5rem 1rem
         position: absolute
         top: 5
         height: auto
         width: 100%
+    &__newBtn
+        @include smallBold
+        background: $white
+        border-radius: 20px
+        color: $black
+        padding: 1rem 2rem
+        margin: .5rem auto
 
 .newPlaylistForm
     display: flex

@@ -489,6 +489,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
     useEffect(() => {
         if( selectOverlay.length === 0  && newPlaylistRef.current.id ){
+            console.log(123)
             // Redirects to newly created playlist after SelectOverlay closes
             setTimeout(() => {
                 const playlist = { ...newPlaylistRef.current }

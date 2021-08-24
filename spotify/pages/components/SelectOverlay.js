@@ -3,6 +3,7 @@ import { useTransition, animated, useSpring } from 'react-spring'
 import useApiCall from '../hooks/useApiCall'
 import TrackRecommendationsMenu from './selectOverlay/TrackRecommendationsMenu'
 import NewPlaylistForm from './selectOverlay/NewPlaylistForm'
+import ItemSelect from './selectOverlay/ItemSelect'
 import { DbHookContext, DbFetchedContext } from './Dashboard'
 
 const SelectOverlay = ({ style, newPlaylistRef}) => {
@@ -13,7 +14,6 @@ const SelectOverlay = ({ style, newPlaylistRef}) => {
     const { selectOverlay, setSelectOverlay, setMessageOverlay }  = useContext( DbHookContext )
     const { my_liked_tracks, my_top_tracks, available_genre_seeds, my_top_artists, user_info } = useContext( DbFetchedContext )
 
-    const newPlaylistRoute = `v1/users/${user_info.id}/playlists`
     const addToPlaylistRoute = 'v1/playlists/tracks'
 
     
@@ -34,9 +34,11 @@ const SelectOverlay = ({ style, newPlaylistRef}) => {
                 <animated.div style={ props } className='selectOverlay__menuContainer'>
                 {
                     item.type === 'newPlaylist' ?
-                    <NewPlaylistForm menuData={ item } pos={ i } /> :
-                    item.type === 'trackRecommendations' &&
-                    <TrackRecommendationsMenu  menuData={ item } pos={ i } />
+                    <NewPlaylistForm menuData={ item } pos={ i } newPlaylistRef={ newPlaylistRef } /> :
+                    item.type === 'trackRecommendations' ?
+                    <TrackRecommendationsMenu  menuData={ item } pos={ i } newPlaylistRef={ newPlaylistRef }/> :
+                    (item.type === 'playlists' || item.type === 'albums' || item.type === 'recPlayed') &&
+                    <ItemSelect menuData={ item } pos={ i } /> 
                 }
                 </animated.div>
                 
