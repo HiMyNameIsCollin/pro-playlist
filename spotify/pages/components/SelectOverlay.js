@@ -16,7 +16,6 @@ const SelectOverlay = ({ style, newPlaylistRef}) => {
 
     const addToPlaylistRoute = 'v1/playlists/tracks'
 
-    
 
     const menuTrans = useTransition( selectOverlay.map( item => item ), {
         from: { transform: 'translateY(100%)' },

@@ -7,7 +7,6 @@ const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
 
     const resizeBarRef = useCallback(node => {
         if (node !== null) {
-            console.log(node)
             setHeight( node.getBoundingClientRect().height )
         }
       }, []);

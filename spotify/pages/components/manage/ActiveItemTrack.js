@@ -1,77 +1,95 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import { createPortal } from 'react-dom'
+import { useSpring, animated } from 'react-spring'
+import { whichPicture } from '../../../utils/whichPicture'
+import useApiCall from '../../hooks/useApiCall'
 
-const ActiveItemTrack = ({ track, orientation, index, selectedItems, setSelectedItems }) => {
 
-    const [ selected, setSelected ] = useState(false)
+const ActiveItemTrack = ({track, index, dragId , dragging, added, clickLoc, setClickLoc, originalItemsRef }) => {
 
-    const thisTrack = track.id ? track : track.track
 
+    const API = 'https://api.spotify.com/'
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const [ active, setActive ] = useState( added )
+    const [ thisTrack, setThisTrack ] = useState( {} )
+    
     useEffect(() => {
-        if( selectedItems.includes( thisTrack.id )){
-            setSelected( true )
-        } else {
-            setSelected( false )
+        if( !originalItemsRef.current.includes( track.id )){
+            originalItemsRef.current.push( dragId.replace(`--${ index }`, '') )
         }
-    }, [ selectedItems ])
+        
+    },[])
 
-    const handleSelection = () => {
-        const trackId = thisTrack.id
-        if( selected ){
-            setSelectedItems( items => items = items.filter( x=> x !== trackId ))
-        } else {
-            setSelectedItems( items => items = [ ...items, trackId ])
-        }
+    const whereIClick = ( e ) => {
+        setClickLoc( e.clientX - (window.innerWidth / 5) )
     }
 
-    const optionalPortal = (styles, element) => {
-        const _dragEl = document.getElementById('draggable')
-        if(styles.position === 'fixed') {
-          return createPortal(
-            element,
-            _dragEl,
-          );
+    useEffect(() => {
+        if( dragging === dragId ){
+            setActive( true )
+        } else {
+            if( active ) setActive( false )
         }
-        return element;
-      }
-      
+    }, [ dragging ])
+
+
+     
+    const { maxWidth, transform }  = useSpring({
+        maxWidth: active ? '0%' : '100%' 
+    })
+
+    const activeItem = useSpring({
+        left:  active ? clickLoc : 0 ,
+        background: active ? '#191414' : '#212121' ,
+        color: active ? '#1DB954' : '#FFFFFF' ,
+        border: active ? 'solid #1DB954 1px' : 'solid #212121 0px' ,
+        borderRadius: active ? '10px' : '0px',
+        maxWidth: active ? window.innerWidth / 4 : window.innerWidth 
+    })
+
+
 
     return(
         <Draggable 
-            key={ `${ orientation }--${thisTrack.id}--${index}` } 
-            draggableId={ `${ orientation }--${thisTrack.id}--${index}`} 
+            key={ dragId } 
+            draggableId={ dragId } 
             index={ index }>
                 {( provided, snapshot ) => (
-                    optionalPortal( provided.draggableProps.style, (
-                        <li
-                        key={ `${ orientation }--${thisTrack.id}--${index}` } 
-                        ref={provided.innerRef} 
-                        style={ provided.draggableStyle }
-                        {...provided.draggableProps} 
-                        {...provided.dragHandleProps}
-                        className={ `activeItemTrack `} >
-                            <div className='activeItemTrack__meta'> 
+                    <li
+                    className='activeItemTrackContainer'
+                    key={ dragId } 
+                    ref={provided.innerRef} 
+                    onPointerDown={ whereIClick }
+                    {...provided.draggableProps} 
+                    {...provided.dragHandleProps}
+                    style={ provided.draggableProps.style } >
+                        <animated.div 
+                        style={ activeItem }
+                        className={ `activeItemTrack`}>
+                            <div
+                            className='activeItemTrack__imgContainer' >
+                                
+                                <img 
+                                loading='lazy'
+                                src={ whichPicture( track.images ) } /> 
+                            </div>
+                            <animated.div style={ maxWidth } className='activeItemTrack__meta'> 
                                 <p className='activeItemTrack__title'>
-                                    { thisTrack.name }
+                                    { track.name }
                                 </p>
                                 <p className='activeItemTrack__info'>
                                 {                    
-                                    thisTrack.artists.map(( artist, i ) => i === thisTrack.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
+                                    track.artists && track.artists.map(( artist, i ) => i === track.artists.length -1 ? `${artist.name}` : `${artist.name}, ` )
                                 }
         
                                 </p>
-                            </div>
-                            {
-                                selected &&
-                                <button
-                                onPointerUp={ handleSelection } 
-                                className={`activeItemTrack__btn activeItemTrack__btn--active`}><i className="fas fa-check"></i></button>
-                            }
-                            <i className="fas fa-bars"></i>
+                            </animated.div>
                             
-                        </li>
-                    ))
+                            <i className="fas fa-bars" />
+                        </animated.div>
+                        
+                    </li>
                 )}
             
         </Draggable>

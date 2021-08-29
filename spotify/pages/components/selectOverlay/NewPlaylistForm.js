@@ -8,7 +8,7 @@ const NewPlaylistForm = ({  menuData, pos, newPlaylistRef }) => {
 
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-    const { selectOverlay, setSelectOverlay } = useContext( DbHookContext )
+    const { selectOverlay, setSelectOverlay, refresh } = useContext( DbHookContext )
 
     const { user_info, my_top_tracks, my_liked_tracks } = useContext( DbFetchedContext )
 
@@ -25,6 +25,7 @@ const NewPlaylistForm = ({  menuData, pos, newPlaylistRef }) => {
         if( apiPayload ){
             if( apiPayload.route === newPlaylistRoute ){
                 newPlaylistRef.current = { ...apiPayload, page: menuData.page }
+                refresh('my_playlists')
                 if(menuData.data){
                     finalizeRoute('post', `${ addToPlaylistRoute.substr(0, 12) }/${ apiPayload.id }/tracks`, apiPayload.id, null, null, `uris=${ menuData.data[0].uri }`)
                     
@@ -38,7 +39,7 @@ const NewPlaylistForm = ({  menuData, pos, newPlaylistRef }) => {
     },[ apiPayload ])
 
     useEffect(() => {
-        if ( selectOverlay.length > 0 && newPlaylistRef.current.id ){
+        if ( selectOverlay.length === 1  && newPlaylistRef.current.id ){
             setTimeout( handleClose, 500 )
         }
     },[ selectOverlay ])

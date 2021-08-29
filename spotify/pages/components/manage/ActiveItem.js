@@ -8,7 +8,7 @@ import { ManageHookContext } from './Manage'
 import { DbFetchedContext } from '../Dashboard'
 import { Droppable } from 'react-beautiful-dnd'
 import Image from 'next/image'
-const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
+const ActiveItem = ({ orientation, dragging, style, data, setActiveItem, items, setItems, clickLoc, setClickLoc, originalItemsRef }) => {
 
     const routes = {
         artist: 'v1/artists',
@@ -18,49 +18,15 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
         'v1/playlists/tracks' :
         'v1/artists/albums'
     }
-    const initialState = {
-        items: [],
-        artist: {}
-    }
-    
-    const reducer = ( state, action ) => {
-        let route
-        let method
-        if(action){
-            route = action.route
-            method = action.method
-        }
-        switch(route) {
-            case routes.artist:
-                if( method === 'get'){
-                    return{
-                        ...state,
-                        artist: action
-                    }
-                }
-            case routes.items:
-                if( method==='get'){
-                    return{
-                        ...state,
-                        items: [ ...state.items, ...action.items ]
-                    }
-                }
-        }
-    }
+
     
     const API = 'https://api.spotify.com/'
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-    const [ state, dispatch ] = useReducer(reducer, initialState)
     const currentActiveItemRef = useRef({})
     const [ selectedItems, setSelectedItems ] = useState( [] )
     const [ image, setImage ] = useState()
     const [ disabled, setDisabled ] = useState( false )
-    const { items, artist } = { ...state }
     const { user_info } = useContext( DbFetchedContext )
-
-    useEffect(() => {
-        if(artist.images) setImage( whichPicture( artist.images, 'sm' ) )
-    }, [ artist ])
 
     useEffect(() => {
         if(data.type !== 'sortPlaylist'  ){
@@ -74,15 +40,27 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
     }, [data])
 
     useEffect(() => {
+        if(apiPayload) {
+            if( apiPayload.route === routes.artist ){
+                setImage( whichPicture( apiPayload.images, 'sm' ))
+            } else if ( apiPayload.route === routes.items ){
+                let payloadItems 
+                if( apiPayload.items[0].track ){
+                    payloadItems = apiPayload.items.map( item => item.track)
+                } else {
+                    payloadItems = apiPayload.items
+                }
+                setItems( payloadItems )
+                originalItemsRef.current = payloadItems.map(( item, i ) => `${ orientation }--${ item.id ? item.id : item.track.id }` )
+            }
+        }
+    }, [ apiPayload ])
+
+    useEffect(() => {
         if( data.id ){
             if( currentActiveItemRef.current ){
                 if( data.id !== currentActiveItemRef.current.id ){
-                    const payload = {
-                        items: [],
-                        route: routes.items,
-                        method: 'get'
-                    }
-                    dispatch(payload)        
+                    setItems( [] )     
                 }
             } else {
                 currentActiveItemRef.current = data
@@ -95,12 +73,14 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
     useEffect(() => {
         if(data.type){
             if( Array.isArray( data.items ) ){
-                const payload = {
-                    items: data.items,
-                    route: routes.items,
-                    method: 'get'
+                let theseItems
+                if( data.items[0].track){
+                    theseItems = data.items.map( item => item.track)
+                } else {
+                    theseItems = data.items
                 }
-                dispatch(payload)
+                setItems(theseItems)
+                originalItemsRef.current = theseItems.map( ( item, i ) => `${ orientation }--${ item.id ? item.id : item.track.id }` )
             }else {
                 let itemsRoute = routes.items.substr( 0, routes.items.length - 6 )
                 itemsRoute += data.id
@@ -111,22 +91,14 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
     },[ data ])
 
     useEffect(() => {
-        if(apiPayload) dispatch(apiPayload)
-    }, [ apiPayload ])
-
-    useEffect(() => {
-        if( dragging ){
-            if(( data.id === '1' || data.id === '2' ) &&
-            dragging.source.droppableId !== orientation ){
-                setDisabled(true)
-            }
-            if(( !data.collaborative || data.owner && data.owner.display_name === user_info.display_name ) && orientation === 'bottom'){
-                setDisabled(true)
-            }
+        if( dragging && orientation === 'bottom' ){
+            if(( data.id === '1' || data.id === '2' ) ) setDisabled( true )
+            if( !data.collaborative && 
+                data.owner &&
+                data.owner.display_name !== user_info.display_name ||
+                data.type !== 'playlist') setDisabled( true )
         }else {
-           
             setDisabled( false )
-            
         }
     }, [ dragging ])
 
@@ -150,7 +122,7 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
                     <img src={ image } alt={ `${data.name} image`} /> :
                     <Image
                     loading='lazy'
-                    alt={ `${data.name} image`}
+                    alt={ `Spotify logo placeholder`}
                     layout='fill'
                     objectFit='contain'
                     src='/Spotify_Icon_RGB_Green.png'/>
@@ -200,15 +172,34 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem }) => {
                         { provided => (
                             <ul className={ `activeItem__itemContainer__scroll activeItem__itemContainer__scroll--${ orientation } `} {...provided.droppableProps} ref={provided.innerRef}>
                             {
-                                items.map(( item, i ) => (
+                                items.map(( item, i ) => {
+                                    if( item.type !== 'album' ){
+                                        if( data.type === 'album'){
+                                            item['images'] = data.images
+                                        }
+                                        if(!item.images){
+                                            item['images'] = item.album.images
+                                        }
+                                    }
+                                    
+                                    
+                                    return(
                                     <ActiveItemTrack 
+                                    images={ data.type !== 'playlist' ? data.images : undefined}
+                                    added={ !originalItemsRef.current.includes( `${ orientation }--${ item.id }` ) ? true : false }
                                     orientation={ orientation }
                                     track={ item } 
-                                    key={ `${ orientation }--${item.id}--${i}` } 
+                                    dragging={ dragging }
+                                    key={ `${ orientation }--${ item.id }--${i}` } 
+                                    dragId={ `${ orientation }--${ item.id  }--${i}` }
                                     index={ i }
-                                    selectedItems={ selectedItems }
-                                    setSelectedItems={ setSelectedItems }/>
-                                ))
+                                    originalItemsRef={ originalItemsRef }
+                                    clickLoc={ clickLoc }
+                                    setClickLoc={ setClickLoc }/>
+                                    )
+                                })
+                                    
+                                
                             }
                             {provided.placeholder}
                             </ul>

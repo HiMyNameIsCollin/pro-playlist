@@ -191,6 +191,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 
             default:
                 console.log(action)
+                return state
                 break         
         }
     }
@@ -237,67 +238,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists, my_liked_tracks, my_top_categories } = { ...state }
 
-// Context set up //////////////////////////////////////////////////
 
-    const dbHookState = {
-        audioRef,
-        homePageHistoryRef,
-        searchPageHistoryRef,
-        activeHomeItem, 
-        setActiveHomeItem, 
-        activeSearchItem, 
-        setActiveSearchItem, 
-        activeManageItem,
-        setActiveManageItem,
-        sortContainerOpen, 
-        setSortContainerOpen,
-        messageOverlay,
-        setMessageOverlay,
-        selectOverlay,
-        setSelectOverlay,
-        overlay, 
-        setOverlay,  
-        scrollPosition, 
-        queue,
-        setQueue,
-        qIndex,
-        setQIndex,
-        playNextQueue,
-        setPlayNextQueue,
-        hiddenUI,
-        setHiddenUI,
-        loaded, 
-        setLoaded,
-        setAuth,
-        dashboardRef,
-        dashboardState,
-        toBeManaged, 
-        setToBeManaged,
-        navHeight,
-        setNavHeight,
-        playerSize,
-        setPlayerSize,
-        sortBar,
-        setSortBar
-    }
-
-    const dbFetchedState = {
-        user_info,
-        player_info,
-        my_liked_tracks,
-        my_top_genres,
-        my_playlists, 
-        featured_playlists, 
-        new_releases, 
-        my_albums, 
-        recently_played, 
-        my_top_tracks, 
-        my_top_artists, 
-        all_categories, 
-        available_genre_seeds, 
-        followed_artists,
-        my_top_categories
-    }
 
 // Set last played track on account as active track
     useEffect(() => {
@@ -352,21 +293,49 @@ const Dashboard = ({ setAuth, audioRef }) => {
 
 
     useEffect(() => {
-        if(user_info.country){
-            const market = user_info.country
-            finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
-            finalizeRoute( 'get', routes.featured_playlists, null, null, null, `market=${market}`)
-            finalizeRoute( 'get', routes.new_releases, null, null ,null, 'limit=20' , `market=${market}`)
-            finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, null,'limit=50', `market=${market}` )
-            finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , null, 'limit=50', `market=${market}` )
-            finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, null, 'limit=50', `market=${market}` )
-            finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, null, 'limit=50' , `market=${market}`) 
-            finalizeRoute( 'get', routes.available_genre_seeds, null, null, null, `market=${market}` )
-            finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
-            finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true, limit: null })
-            finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, null, 'type=artist')
+        if( user_info.country ){
+            firstFetch()
         }
     },[ user_info ])
+
+
+    const firstFetch = () => {
+        const market = user_info.country
+        finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
+        finalizeRoute( 'get', routes.featured_playlists, null, null, null, `market=${market}`)
+        finalizeRoute( 'get', routes.new_releases, null, null ,null, 'limit=20' , `market=${market}`)
+        finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, null,'limit=50', `market=${market}` )
+        finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , null, 'limit=50', `market=${market}` )
+        finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, null, 'limit=50', `market=${market}` )
+        finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, null, 'limit=50' , `market=${market}`) 
+        finalizeRoute( 'get', routes.available_genre_seeds, null, null, null, `market=${market}` )
+        finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
+        finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true, limit: null })
+        finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, null, 'type=artist')
+    }
+
+    const refresh = ( cmd ) => {
+        const market = user_info.country
+        switch( cmd ){
+            case cmd === 'all':
+                finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
+                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , null, 'limit=50', `market=${market}` )
+                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, null, 'limit=50', `market=${market}` )
+                finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, null, 'limit=50' , `market=${market}`) 
+                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, null, 'type=artist')
+            case cmd === 'player_info':
+                finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
+            case cmd === 'my_albums':
+                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , null, 'limit=50', `market=${market}` )
+            case cmd === 'my_playlists':
+                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, null, 'limit=50', `market=${market}` )
+            case cmd === 'followed_artists':
+                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, null, 'type=artist')
+
+        }
+            
+        
+    }
 
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
@@ -519,14 +488,78 @@ const Dashboard = ({ setAuth, audioRef }) => {
     })
 
     const selectOverlayTrans = useTransition( selectOverlay.length > 0, {
-        from: { opacity: 0 },
-        enter: { opacity: 1 },
+        from: { opacity: 0, pointerEvents: 'none' },
+        enter: { opacity: 1, pointerEvents: 'auto' },
         leave: item => async (next, cancel) => {
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await next({ pointerEvents: 'none' })
+            await new Promise(resolve => setTimeout( resolve, 500 ))
             await next({ opacity: 0 })
           },
 
     })
+
+    // Context set up //////////////////////////////////////////////////
+
+    const dbHookState = {
+        audioRef,
+        homePageHistoryRef,
+        searchPageHistoryRef,
+        activeHomeItem, 
+        setActiveHomeItem, 
+        activeSearchItem, 
+        setActiveSearchItem, 
+        activeManageItem,
+        setActiveManageItem,
+        sortContainerOpen, 
+        setSortContainerOpen,
+        messageOverlay,
+        setMessageOverlay,
+        selectOverlay,
+        setSelectOverlay,
+        overlay, 
+        setOverlay,  
+        scrollPosition, 
+        queue,
+        setQueue,
+        qIndex,
+        setQIndex,
+        playNextQueue,
+        setPlayNextQueue,
+        hiddenUI,
+        setHiddenUI,
+        loaded, 
+        setLoaded,
+        setAuth,
+        dashboardRef,
+        dashboardState,
+        toBeManaged, 
+        setToBeManaged,
+        navHeight,
+        setNavHeight,
+        playerSize,
+        setPlayerSize,
+        sortBar,
+        setSortBar,
+        refresh
+    }
+
+    const dbFetchedState = {
+        user_info,
+        player_info,
+        my_liked_tracks,
+        my_top_genres,
+        my_playlists, 
+        featured_playlists, 
+        new_releases, 
+        my_albums, 
+        recently_played, 
+        my_top_tracks, 
+        my_top_artists, 
+        all_categories, 
+        available_genre_seeds, 
+        followed_artists,
+        my_top_categories
+    }
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -535,7 +568,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
             {
             selectOverlayTrans(( props, item) => (
                 item &&
-                <SelectOverlay dbDispatch={ dispatch } style={ props } newPlaylistRef={ newPlaylistRef } trackForPlaylistRef={ trackForPlaylistRef }/>
+                <SelectOverlay style={ props } newPlaylistRef={ newPlaylistRef } trackForPlaylistRef={ trackForPlaylistRef }/>
             ))
             }
             {
@@ -551,9 +584,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
             ref={ dashboardRef }
             onScroll={ handleScroll }
             className={ `dashboard ${selectOverlay[0] && 'dashboard--shrink'}`}> 
-            {
-                
-            }
+            
                 <Home
                 transMinHeight={ homeTransMinHeight }
                 setTransMinHeight={ setHomeTransMinHeight }

@@ -1515,11 +1515,12 @@ li
     width: 100%
     z-index: 5
     &__controls
+        background: $black
         bottom: 0
         display: flex
         min-height: 3.6rem
         max-height: 3.6rem
-        position: absolute
+        position: fixed
         width: 100%
         button
             @include flexCol
@@ -1535,7 +1536,7 @@ li
     &__relative
         @include flexCol
         position: relative
-        max-height: 100%
+        max-height: calc( 100% - 3.6rem)
         width: 100%
     &__resize
         @include pseudo
@@ -1563,14 +1564,16 @@ li
     color: $white
     display: grid
     grid-template-rows: auto 1fr
-    grid-template-columns: 3rem calc(100% - 3rem)
+    grid-template-columns: auto 1fr
     min-height: 50%
     overflow: hidden
+    position: absolute
     width: 100%
     &--disabled
         @include pseudo
         overflow: hidden
         pointer-events: none
+        margin-top: auto
         &::before
             @include scrimGradient( $black, 'to bottom')
             pointer-events: none
@@ -1582,21 +1585,23 @@ li
             z-index: 1
     &--top
         grid-template-rows: 1fr auto
-        grid-template-columns: calc(100% - 3rem) 3rem
+        grid-template-columns: 1fr auto
     &__imgContainer
         background: $black
         grid-column: 1/2
         grid-row: 1/2
-        margin: .5rem 0
         position: relative
+        margin: .5rem
+        min-height: 3rem
+        max-height: 3rem
+        width: 3rem
+        max-width: 3rem
         img
             display: block
-            position: absolute
-            max-height: 3rem
             max-width: 100%
         &--top
             grid-column: 2/3
-            grid-row: 2/3
+            grid-row: 2/3 
 
     &__meta
         background: $black
@@ -1648,43 +1653,48 @@ li
         &--top
             grid-row: 1/2
 
-#draggable
-    
-    position: absolute
-    pointer-events: none
-    height: 100%
-    width: 100%
-    li
-        background: $black
-        color: $green
-        border-top: solid 1px $green
-        border-bottom: solid 1px $green
-    
 
 .activeItemTrack
     align-items: center
+    justify-content: flex-end
     display: flex
     padding: 1rem .5rem
+    position: relative
+    max-width: 100%
+    &__imgContainer
+        display: flex
+        min-height: 3rem
+        width: 3rem
+        img
+            margin: auto
+            max-width: 100%
     &__meta
-        max-width: calc(100% - 2rem)
+        padding: 0 .5rem
+        max-width: calc(100% - 5rem)
     &__title
         @include midFirm
         @include ellipsis
     &__info
         @include smallSkin
         @include ellipsis
-
         color: $lightGrey
     i
         margin: auto 0 auto auto
         font-size: 1.5rem
-    &__btn
-        display: none
-        margin: 0 0 0 auto
-        &--active
-            display: inline-block
-            i
-                color: $green
+  
+
+
+@keyframes maxWidthSm
+    0%
+        max-width: 100%
+    100%
+        max-width: 6rem
+
+@keyframes maxWidthLrg
+    0%
+        max-width: 6rem
+    100%
+        max-width: 100%
 
 .mngOverlay
     @include pseudo

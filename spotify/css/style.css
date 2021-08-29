@@ -2302,11 +2302,12 @@ li {
   z-index: 5;
 }
 .sortContainer__controls {
+  background: #191414;
   bottom: 0;
   display: flex;
   min-height: 3.6rem;
   max-height: 3.6rem;
-  position: absolute;
+  position: fixed;
   width: 100%;
 }
 .sortContainer__controls button {
@@ -2332,7 +2333,7 @@ li {
   display: flex;
   flex-direction: column;
   position: relative;
-  max-height: 100%;
+  max-height: calc( 100% - 3.6rem);
   width: 100%;
 }
 .sortContainer__resize {
@@ -2383,9 +2384,10 @@ li {
   color: #FFFFFF;
   display: grid;
   grid-template-rows: auto 1fr;
-  grid-template-columns: 3rem calc(100% - 3rem);
+  grid-template-columns: auto 1fr;
   min-height: 50%;
   overflow: hidden;
+  position: absolute;
   width: 100%;
 }
 .activeItem--disabled {
@@ -2394,6 +2396,7 @@ li {
   z-index: 1;
   overflow: hidden;
   pointer-events: none;
+  margin-top: auto;
 }
 .activeItem--disabled::before {
   content: "";
@@ -2426,19 +2429,21 @@ li {
 }
 .activeItem--top {
   grid-template-rows: 1fr auto;
-  grid-template-columns: calc(100% - 3rem) 3rem;
+  grid-template-columns: 1fr auto;
 }
 .activeItem__imgContainer {
   background: #191414;
   grid-column: 1/2;
   grid-row: 1/2;
-  margin: 0.5rem 0;
   position: relative;
+  margin: 0.5rem;
+  min-height: 3rem;
+  max-height: 3rem;
+  width: 3rem;
+  max-width: 3rem;
 }
 .activeItem__imgContainer img {
   display: block;
-  position: absolute;
-  max-height: 3rem;
   max-width: 100%;
 }
 .activeItem__imgContainer--top {
@@ -2522,26 +2527,26 @@ li {
   grid-row: 1/2;
 }
 
-#draggable {
-  position: absolute;
-  pointer-events: none;
-  height: 100%;
-  width: 100%;
-}
-#draggable li {
-  background: #191414;
-  color: #1DB954;
-  border-top: solid 1px #1DB954;
-  border-bottom: solid 1px #1DB954;
-}
-
 .activeItemTrack {
   align-items: center;
+  justify-content: flex-end;
   display: flex;
   padding: 1rem 0.5rem;
+  position: relative;
+  max-width: 100%;
+}
+.activeItemTrack__imgContainer {
+  display: flex;
+  min-height: 3rem;
+  width: 3rem;
+}
+.activeItemTrack__imgContainer img {
+  margin: auto;
+  max-width: 100%;
 }
 .activeItemTrack__meta {
-  max-width: calc(100% - 2rem);
+  padding: 0 0.5rem;
+  max-width: calc(100% - 5rem);
 }
 .activeItemTrack__title {
   font-weight: 500;
@@ -2572,17 +2577,23 @@ li {
   margin: auto 0 auto auto;
   font-size: 1.5rem;
 }
-.activeItemTrack__btn {
-  display: none;
-  margin: 0 0 0 auto;
-}
-.activeItemTrack__btn--active {
-  display: inline-block;
-}
-.activeItemTrack__btn--active i {
-  color: #1DB954;
-}
 
+@keyframes maxWidthSm {
+  0% {
+    max-width: 100%;
+  }
+  100% {
+    max-width: 6rem;
+  }
+}
+@keyframes maxWidthLrg {
+  0% {
+    max-width: 6rem;
+  }
+  100% {
+    max-width: 100%;
+  }
+}
 .mngOverlay {
   position: relative;
   overflow: hidden;
