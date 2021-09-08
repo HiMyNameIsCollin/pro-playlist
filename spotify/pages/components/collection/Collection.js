@@ -1,21 +1,19 @@
 
 import { useCallback, useRef, useEffect, useState, useReducer, useContext } from 'react'
 import { animated } from 'react-spring'
-import  useApiCall  from '../hooks/useApiCall'
-import { whichPicture } from '../../utils/whichPicture'
+import  useApiCall  from '../../hooks/useApiCall'
 import CollectionHeader from './CollectionHeader'
 import CollectionMeta from './CollectionMeta'
-import TracksContainer from './TracksContainer'
-import Slider from './Slider'
-import Loading from './Loading'
-import { DbHookContext } from './Dashboard'
-import { DbFetchedContext } from './Dashboard'
-import { SearchHookContext } from './search/Search'
+import TracksContainer from '../TracksContainer'
+import Slider from '../Slider'
+import { getSeeds } from '../../../utils/getSeeds'
+import { DbHookContext, DbFetchedContext } from '../Dashboard'
+import { SearchHookContext } from '../search/Search'
+import { SearchPageSettingsContext } from '../search/Search'
+import { HomePageSettingsContext } from '../Home'
 
-
-const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComplete, transition, type, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader, }) => {
+const Collection = ({ style, type, page, data }) => {
     
-
     const initialState = {
         collection: {},
         tracks: [],
@@ -46,7 +44,6 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
                     collection: action
                 }
             case routes.playlist :
-                console.log(action)
                 return{
                     ...state,
                     collection: action
@@ -62,7 +59,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
                 return{
                     ...state, 
                     collection: newState.collection,
-                    artists: state.artists ? [...state.artists, action ] : [action]
+                    artists: state.artists = [...state.artists, action ] 
                 }
             case routes.user :
                 return{
@@ -80,7 +77,7 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
                 // const allSongs = songs.filter( x => x.preview_url)
                 return{
                     ...state,
-                    tracks: songs
+                    tracks: state.tracks = [ ...state.tracks, ...songs ]
                 }
             case routes.recommendations :
                 const recommendations = action.tracks.map(track => track.album)
@@ -89,24 +86,25 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
                     recommendations: recommendations
                 }
             default:
-                console.log(action)
+                return state
                 break
         }
     }
 
     // ENV VARIABLE FOR API?
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( )
     const [ state , dispatch ] = useReducer(reducer, initialState)
-    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem, dashboardRef  } = useContext( DbHookContext )
+    
+    const { setOverlay, activeHomeItem, setActiveHomeItem, selectOverlay, setSelectOverlay, dashboardRef } = useContext( DbHookContext )
     const { available_genre_seeds, user_info } = useContext( DbFetchedContext )
     const searchContext = useContext( SearchHookContext )
-    const { collection, artists, tracks, recommendations } = {...state}
-
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
-
+    const { setTransMinHeight, transitionComplete } = useContext( page==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
+    
+    const { collection, artists, tracks, recommendations } = {...state}
     const thisComponentRef = useRef() 
+    const selectedTrackRef = useRef()
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
@@ -120,10 +118,9 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
         }
       }, [])
 
-
-
     useEffect(() => {
-        let id = activeItem.id
+        let id = data.id
+        if( data.selectedTrack ) selectedTrackRef.current = activeItem.selectedTrack
         finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, id)
     }, [])
 
@@ -143,47 +140,15 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
         if(apiPayload) dispatch( apiPayload )
     }, [apiPayload])
 
-
     useEffect(() => {
-        if( collection.id && !tracks[0]){
+        if( collection.id && !selectOverlay[ 0 ]) {
             let tracksRoute = routes.tracks.substr( 0, routes.tracks.length - 6 )
             tracksRoute += `${collection.id}`
             tracksRoute += '/tracks'
-            finalizeRoute( 'get', tracksRoute , collection.id)
+            finalizeRoute( 'get', tracksRoute , collection.id, {fetchAll: true}, null, 'limit=50')
         } 
-    }, [ collection ])
+    }, [ collection, selectOverlay ])
 
-    const getSeeds = ( genreSeeds , theseArtists, theseTracks ) => {
-        let seeds = {
-            seedGenres: [],
-            seedArtists: [],
-            seedTracks: []
-        }
-        let { seedGenres, seedArtists, seedTracks } = seeds
-        theseArtists.forEach(( artist, i ) => {
-            artist.genres.forEach(( genre, j ) => {
-                if(genreSeeds.includes( genre )){
-                    if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
-                    seedGenres.push( genre )
-                    }
-                }
-            })
-            if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
-                seedArtists.push( artist.id )
-            }
-        })
-        theseTracks.forEach( track => {
-            if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
-                seedTracks.push( track.id )
-            }
-        })
-        let args = []
-        if(seedGenres.length > 0) args.push( `seed_genres=${seedGenres.join()}` )
-        if( seedArtists.length > 0 ) args.push(`seed_artists=${seedArtists.join()}` )
-        if( seedTracks.length > 0 ) args.push( `seed_tracks=${seedTracks.join()}` )
-        return args
-    }
-    
     useEffect(() => {
         if( type === 'album' && 
             collection.id && 
@@ -192,43 +157,38 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
             !recommendations[0] &&
             user_info.country ){
             let seeds = getSeeds(available_genre_seeds, artists, tracks)
-            finalizeRoute( 'get',
-            `${routes.recommendations}`, 
-            null, 
-            null,
-            null,
-            ...seeds )
+            finalizeRoute( 'get', `${routes.recommendations}`,  null, null,  null, ...seeds )
 
         }
     }, [ collection, artists, tracks ])
 
     useEffect(() => {
-        if( activeItem.selectedTrack ){
-            const ele = document.querySelector(`[data-trackId='${activeItem.selectedTrack}']`)
+        if( selectedTrackRef.current && !transitionComplete ){
+            const ele = document.querySelector(`[data-trackId='${ selectedTrackRef.current }']`)
             if(ele){
                 const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
-                window.scroll(0, thisFar)
+                dashboardRef.current.scrollTo({ left: 0, top: thisFar, behavior: 'smooth' })
             }
         }
-    },[ tracks ])
+    },[ transitionComplete ])
+
+    const handleGetRecommendationsBtn = () => {
+        const overlay = { page: searchContext? 'search' : 'home', type: 'trackRecommendations', data: tracks, context: collection }
+        setSelectOverlay( arr => arr = [ ...arr, overlay])
+    }
 
     return(
         <animated.div
         ref={ thisComponent } 
-        style={ transition } 
+        style={ style } 
         className={ `page page--collection collection` }>
         {
             collection.id&&
             <>
             <CollectionHeader
             pageType={ searchContext ? 'search' : 'home'}
-            headerScrolled={ headerScrolled }
-            setHeaderScrolled={ setHeaderScrolled }
             setActiveItem={ setActiveItem }
-            setActiveHeader={ setActiveHeader }
             data={{collection, tracks, artists,}}
-            transitionComplete={ transitionComplete }
-            setTransitionComplete={ setTransitionComplete }
             parent={ thisComponentRef.current } />
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             {
@@ -241,7 +201,13 @@ const Collection = ({ setTransMinHeight, transitionComplete, setTransitionComple
                 </section>
                 </>
             }
-            </>
+            {
+            type === 'playlist' && user_info.display_name === collection.owner.display_name && 
+                <button onClick={ handleGetRecommendationsBtn } className='collection__addBtn'>
+                    Get recommendations
+                </button>
+            }
+            </>            
         }
         </animated.div>
     )

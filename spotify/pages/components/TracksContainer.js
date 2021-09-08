@@ -3,11 +3,11 @@ import { whichPicture } from '../../utils/whichPicture'
 import { useState , useEffect, useContext } from 'react'
 import { DbHookContext } from './Dashboard'
 
-const TracksContainer = ({ type, data , setOverlay }) => {
+const TracksContainer = ({ type, data }) => {
 
     const { collection, tracks } = { ...data }
     const [ mounted, setMounted ] = useState(false)
-
+    const { setOverlay } = useContext( DbHookContext )
     useEffect(() => {
         setMounted(true)
     },[])

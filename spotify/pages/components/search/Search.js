@@ -1,83 +1,34 @@
-import { useState, useEffect, useReducer, useRef, useContext, createContext } from 'react'
+import { useState, useEffect, useContext, createContext } from 'react'
 import { capital } from '../../../utils/capital'
 import { useTransition, animated } from 'react-spring'
-import  useApiCall  from '../../hooks/useApiCall'
-
 import SearchHeader from './SearchHeader'
 import FixedHeader from '../FixedHeader'
-import Artist from '../Artist'
-import Collection from '../Collection'
+import Artist from '../artist/Artist'
+import Collection from '../collection/Collection'
 import SearchHome from './SearchHome'
 import Showcase from '../Showcase'
 import SearchOverlay from './SearchOverlay'
-import Loading from '../Loading'
 
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
 
-
-const initialState = {
-    all_categories: [],
-    search: {},
-    my_top_categories: [],
-}
-
-const routes = {
-    all_categories: 'v1/browse/categories',
-    search: 'v1/search',
-    
-
-}
-
-const reducer = ( state, action ) => {
-    let route
-    let method
-    if(action){
-        route = action.route
-        method = action.method
-    }
-    switch(route) {
-        case routes.all_categories:
-            if(method === 'get'){
-                action.categories.items.map(t => t['type'] = 'category')
-                return{
-                    ...state,
-                    all_categories: [ ...state.all_categories, ...action.categories.items ]
-                }
-            }               
-        
-        
-        default:
-            console.log(action)
-            break         
-    }
-
-}
-
+export const SearchPageSettingsContext = createContext()
 export const SearchHookContext = createContext()
 
 const Search = ({  
     transMinHeight,
     setTransMinHeight,
-    my_top_artists, 
-    available_genre_seeds, 
     searchPageHistoryRef, 
     currActiveSearchRef,
     searchState,
     setSearchState, 
-    activeSearchItem, 
-    setActiveSearchItem,
     dbDispatch }) => {
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
 
-    const [ state, dispatch ] = useReducer( reducer , initialState )
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     
-    const { overlay, scrollPosition, selectOverlay, dashboardRef } = useContext( DbHookContext )
-    const { my_top_categories } = useContext( DbFetchedContext )
-    const { all_categories } = {...state}
+    const { scrollPosition, selectOverlay, dashboardRef, activeSearchItem, setActiveSearchItem, } = useContext( DbHookContext )
+    const { all_categories, my_top_artists, available_genre_seeds,  } = useContext( DbFetchedContext )
 
     const searchHookState ={
         searchState, 
@@ -86,13 +37,22 @@ const Search = ({
         setActiveSearchItem,
     }
 
-    useEffect(() => {
-        finalizeRoute( 'get', routes.all_categories, null,{ fetchAll: true, limit: null }, null, 'limit=50') 
-    },[])
+    const searchPageSettingsState = {
+        headerScrolled,
+        setHeaderScrolled,
+        transitionComplete,
+        setTransitionComplete,
+        activeHeader, 
+        setActiveHeader,
+        transMinHeight,
+        setTransMinHeight
+    }
 
     useEffect(() => {
-        if( apiPayload ) dispatch(apiPayload)
-    }, [ apiPayload ])
+        if( transitionComplete && (!activeSearchItem.type || activeSearchItem.type === 'category' )){
+            setTransitionComplete( false )
+        }
+    },[ transitionComplete ])
 
     // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
@@ -107,8 +67,6 @@ const Search = ({
             dbDispatch(payload)
         }
     },[my_top_artists, all_categories])
-
-
 
     const calcCategories = ( artists ) => {
        let categories = {}
@@ -158,7 +116,6 @@ const Search = ({
     1
     : 
     1
-    
 
     useEffect(() => {
         if( activeSearchItem.id ){
@@ -174,7 +131,6 @@ const Search = ({
         currActiveSearchRef.current = activeSearchItem
     },[ activeSearchItem ])
 
-
     useEffect(() => {
         if( transitionComplete &&
             searchPageHistoryRef.current.length > 0 && 
@@ -182,7 +138,7 @@ const Search = ({
             const lastItem = searchPageHistoryRef.current.pop()
             dashboardRef.current.scroll({
                 left: 0,
-                top: lastItem.scroll - 160,
+                top: lastItem.scroll - ( window.innerHeight / 2 ),
                 behavior: 'auto'
             })
         }else {
@@ -219,13 +175,11 @@ const Search = ({
         leave: { transform: `translateX(${-100 * dir }%)`,  position: 'fixed', zIndex: 1},
     })
     
-
     const mainTransition = useTransition(activeSearchItem, {
         from: { transform: `'translateX(${ 0 * dir }%)'`, position: 'absolute', minHeight: transMinHeight, width: '100%' , zIndex: 2},
         update: {  position: 'absolute'},
         enter: { transform: `'translateX(${ 0 * dir }%)'`, },
         leave: { transform: `'translateX(${ -20 * dir }%)'`, position: 'absolute', zIndex: 1},
-        onRest: () => setTransitionComplete(true)
     })
 
     const overlayTrans = useTransition( searchState , {
@@ -239,104 +193,78 @@ const Search = ({
         <SearchHookContext.Provider value={ searchHookState }>   
 
         <div id='searchPage' style={{ position: 'relative'}} >
-        {
-            overlayTrans(( props, item ) => (
-                item === 'search' &&
-                <SearchOverlay 
-                setActiveItem={ setActiveSearchItem } 
-                style={ props } 
-                searchState={ searchState } 
-                setSearchState={ setSearchState }/>
-                
-            ))
-        }
-        {
-            headerTransition2(( props, item ) => (
-                <animated.div style={ props }>
+            {
+                overlayTrans(( props, item ) => (
+                    item === 'search' &&
+                    <SearchOverlay 
+                    setActiveItem={ setActiveSearchItem } 
+                    style={ props } 
+                    searchState={ searchState } 
+                    setSearchState={ setSearchState }/>
+                    
+                ))
+            }
+            {
+                headerTransition2(( props, item ) => (
+                    <animated.div style={ props }>
                     {
                         !item.type &&
-                        <SearchHeader searchState={ searchState } setSearchState={ setSearchState } /> 
+                        <SearchHeader /> 
                     }
                     {
                         item.type === 'category' &&
-                        <SearchHeader searchState={ searchState } setSearchState={ setSearchState }/> 
+                        <SearchHeader /> 
                     }
-                </animated.div>
-            ))
-        } 
-        {
-            headerTransition(( props, item )=> (
-
-                (item.type === 'artist' ||
-                item.type === 'playlist' ||
-                item.type === 'album') &&
-                <FixedHeader style={ props } type={'search'} transitionComplete={ transitionComplete } headerScrolled={ headerScrolled } activeHeader={ activeHeader } />
-                
-            ))
-        }
-        {
-            mainTransition((props, item) => (
-                
-                !item.type  &&
-                <SearchHome 
-                state={ state }
-                setTransMinHeight={ setTransMinHeight }
-                transitionComplete={ transitionComplete }
-                setTransitionComplete={ setTransitionComplete }
-                transition={ props } />
+                    </animated.div>
+                ))
+            } 
             
-            ))
-        }
-        {
-            pageTransition((props, item) => (
-                
-                    
+            <SearchPageSettingsContext.Provider value={ searchPageSettingsState } >
+            {
+                headerTransition(( props, item )=> (
+                    (item.type === 'artist' ||
+                    item.type === 'playlist' ||
+                    item.type === 'album') &&
+                    <FixedHeader style={ props } page={'search'} />
+                ))
+            }
+            {
+                mainTransition((props, item) => (
+                    !item.type  &&
+                    <SearchHome 
+                    style={ props } />
+                ))
+            }
+            {
+                pageTransition((props, item) => (   
                 item.type === 'category' ?
                 <Showcase
-                setTransMinHeight={ setTransMinHeight }
-                transitionComplete={ transitionComplete }
-                setTransitionComplete={ setTransitionComplete }
-                transition={ props } 
-                data={ activeSearchItem } /> 
+                style={ props } 
+                data={ item } /> 
                 :
-                item.type === 'playlist' ?
-                <Collection 
-                setTransMinHeight={ setTransMinHeight }
-                transitionComplete={ transitionComplete }
-                setTransitionComplete={ setTransitionComplete }
-                transition={ props } 
-                activeHeader={ activeHeader }
-                setActiveHeader={ setActiveHeader }
-                headerScrolled={ headerScrolled }
-                setHeaderScrolled={ setHeaderScrolled }
-                type='playlist' />
+                item.type === 'artist' ?
+                <Artist 
+                style={ props }
+                page='search'
+                data={ item }  />
                 :
                 item.type === 'album' ?
-                <Collection 
-                setTransMinHeight={ setTransMinHeight }
-                transitionComplete={ transitionComplete }
-                setTransitionComplete={ setTransitionComplete }
-                transition={ props } 
-                activeHeader={ activeHeader }
-                setActiveHeader={ setActiveHeader }
-                headerScrolled={ headerScrolled }
-                setHeaderScrolled={ setHeaderScrolled }
-                type='album' /> 
+                <Collection
+                style={ props }
+                type='album'
+                page='search' 
+                data={ item } />
                 :
-                item.type === 'artist' &&
-                <Artist 
-                setTransMinHeight={ setTransMinHeight }
-                transitionComplete={ transitionComplete }
-                setTransitionComplete={ setTransitionComplete }
-                transition={ props } 
-                type='artist'
-                activeHeader={ activeHeader }
-                setActiveHeader={ setActiveHeader }
-                headerScrolled={ headerScrolled }
-                setHeaderScrolled={ setHeaderScrolled } /> 
-                    
-        ))
-        }
+                item.type === 'playlist' &&
+                <Collection
+                style={ props }
+                type='playlist'
+                page='search' 
+                data={ item } />
+                ))
+                }
+            </SearchPageSettingsContext.Provider>
+            
         </div>    
 
         

@@ -1,16 +1,15 @@
-import { useCallback, useEffect, useState, useRef, useContext } from 'react'
+import { useCallback, useEffect, useRef, useContext } from 'react'
 import { animated } from 'react-spring'
-import { DbHookContext, DbFetchedContext } from '../Dashboard'
-
 import BrowseContainer from '../BrowseContainer'
-const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, setTransitionComplete }) => {
+import { DbFetchedContext } from '../Dashboard'
+import { SearchPageSettingsContext } from './Search'
+
+const SearchHome = ({ style, }) => {
 
     const thisComponentRef = useRef() 
 
-    const [ mounted, setMounted ] = useState(false)
-
-    const { activeHomeItem } = useContext( DbHookContext )
-    const { my_top_categories } = useContext( DbFetchedContext )
+    const { my_top_categories , all_categories } = useContext( DbFetchedContext )
+    const { setTransMinHeight, transitionComplete, setTransitionComplete } = useContext( SearchPageSettingsContext )
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
@@ -27,34 +26,26 @@ const SearchHome = ({ state, transition, setTransMinHeight, transitionComplete, 
     useEffect(() => {
         if( transitionComplete ) {
             thisComponentRef.current.classList.add('fadeIn')
+            thisComponentRef.current.style.minHeight = '100vh'
             setTransitionComplete(false)
-            setMounted( true )
         }
     }, [ transitionComplete ])
 
-    useEffect(() => {
-        if(mounted) thisComponentRef.current.style.minHeight = '100vh'
-    },[ mounted ])
-
-
-
     return(
         <animated.div 
-        style={transition}
+        style={ style }
         ref={ thisComponent }
         className={ `page page--search ` }>
             <BrowseContainer 
-            type='BcSearch'
             message='My top genres' 
             data={ 
                 my_top_categories.length % 2 !== 0  ?
-                my_top_categories.slice( 0, state.my_top_categories.length - 1 ) :
+                my_top_categories.slice( 0, my_top_categories.length - 1 ) :
                 my_top_categories
             }/>
             <BrowseContainer
             message='Browse all' 
-            type='BcSearch'
-            data={ state.all_categories }/> 
+            data={ all_categories }/> 
         </animated.div> 
     )
 

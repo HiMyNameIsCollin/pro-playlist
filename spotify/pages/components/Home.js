@@ -1,20 +1,31 @@
-import { Switch, Route } from 'react-router-dom'
-import { useState, useEffect, useReducer, useContext, useRef} from 'react'
-import { animated, useTransition } from 'react-spring'
+import { useState, useEffect, createContext, useContext, useRef} from 'react'
+import { useTransition } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 import Welcome from './Welcome'
-import Artist from './Artist'
-import Collection from './Collection'
+import Artist from './artist/Artist'
+import Collection from './collection/Collection'
 import FixedHeader from './FixedHeader'
+
+export const HomePageSettingsContext = createContext()
 
 const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
 
-    const { homeHeaderScrolled, setHomeHeaderScrolled, activeHomeItem, homePageHistoryRef, hiddenUI, setAuth, scrollPosition, dashboardRef, selectOverlay} = useContext(DbHookContext)
+    const { activeHomeItem, homePageHistoryRef, scrollPosition, dashboardRef, selectOverlay} = useContext(DbHookContext)
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
-    const [ mounted, setMounted ] = useState( false )
     const thisComponentRef = useRef()
+
+    const homePageSettingsState = {
+        headerScrolled,
+        setHeaderScrolled,
+        transitionComplete,
+        setTransitionComplete,
+        activeHeader, 
+        setActiveHeader,
+        transMinHeight,
+        setTransMinHeight
+    }
 
     const dir = homePageHistoryRef.current.length > 0  ?
     activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id || 
@@ -46,7 +57,7 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
             const lastItem = homePageHistoryRef.current.pop()
             dashboardRef.current.scroll({
                 left: 0,
-                top: lastItem.scroll - 160 ,
+                top: lastItem.scroll - ( window.innerHeight / 2 ) ,
                 behavior: 'auto'
             })
         } else {
@@ -60,17 +71,12 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
         }
     },[ activeHomeItem, transitionComplete ])
 
-    useEffect(() => {
-        setMounted(true)
-    },[])
-    
     const pageTransition = useTransition(activeHomeItem, {
-        from: { transform: `translateX(${100 * dir}%)`, position: 'absolute',  width: '100%' , zIndex: 2 },
-        enter: { transform: `translateX(${0 * dir}%)`, minHeight: transMinHeight},
+        from: { transform: `translateX(${100 * dir}%)`, minHeight: transMinHeight , position: 'absolute',  width: '100%' , zIndex: 2 },
+        enter: { transform: `translateX(${0 * dir}%)`},
         update: {  position: 'absolute', },
         leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
         onRest: () => setTransitionComplete(true)
-        
     })
 
     const headerTransition = useTransition(activeHomeItem, {
@@ -78,15 +84,14 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
         update: { position: 'fixed', top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 , config: { duration: .01 }},
         enter: {  transform: `translateX(${0 * dir }%)` },
         leave: { transform: `translateX(${-100 * dir }%)`},
-       
+
     })
 
     const mainTransition = useTransition(activeHomeItem, {
-        from: { transform: `translateX(${0 * dir }%)`, position: 'absolute', width: '100%'},
-        enter: { transform: `translateX(${0 * dir }%)`, minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight,},
+        from: { transform: `translateX(${0 * dir }%)`, minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight, position: 'absolute', width: '100%'},
+        enter: { transform: `translateX(${0 * dir }%)`},
         update: {  position: 'absolute', },
         leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute'},
-        onRest: () => setTransitionComplete(true)
     })
 
 
@@ -94,67 +99,48 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
         <div
         ref={ thisComponentRef }
         id='homePage'>
+
+        <HomePageSettingsContext.Provider value={ homePageSettingsState }>
         {
-        headerTransition(( props, item ) => (
-            item.type &&
-            <FixedHeader 
-            style={ props }
-            type={ 'home' } 
-            transitionComplete={ transitionComplete } 
-            headerScrolled={ headerScrolled } 
-            activeHeader={ activeHeader } />
-
-        ))
-        }
-
-
-        {
-        mainTransition(( props, item) => (
-            !item.type && 
-            <Welcome transition={ props } transitionComplete={ transitionComplete } setTransitionComplete={ setTransitionComplete } setTransMinHeight={ setTransMinHeight } />
-            
-        ))
+            headerTransition(( props, item ) => (
+                item.type &&
+                <FixedHeader 
+                style={ props }
+                page={ 'home' } />
+            ))
         }
         {
-        pageTransition(( props, item) => (
-            item.type === 'artist' ?
-            <Artist 
-            setTransMinHeight={ setTransMinHeight }
-            transitionComplete={ transitionComplete }
-            setTransitionComplete={ setTransitionComplete }
-            transition={ props }
-            activeHeader={ activeHeader }
-            setActiveHeader={ setActiveHeader }
-            headerScrolled={ headerScrolled }
-            setHeaderScrolled={ setHeaderScrolled}/>
-            :
-            item.type === 'album' ?
-            <Collection
-            setTransMinHeight={ setTransMinHeight }
-            transitionComplete={ transitionComplete }
-            setTransitionComplete={ setTransitionComplete }
-            transition={ props }
-            activeHeader={ activeHeader }
-            setActiveHeader={ setActiveHeader }
-            headerScrolled={ headerScrolled }
-            setHeaderScrolled={ setHeaderScrolled}
-            type='album' />
-            :
-            item.type === 'playlist' &&
-            <Collection
-            setTransMinHeight={ setTransMinHeight }
-            transitionComplete={ transitionComplete }
-            setTransitionComplete={ setTransitionComplete }
-            transition={ props }
-            activeHeader={ activeHeader }
-            setActiveHeader={ setActiveHeader }
-            headerScrolled={ headerScrolled }
-            setHeaderScrolled={ setHeaderScrolled}
-            type='playlist' />
+            mainTransition(( props, item) => (
+                !item.type && 
+                <Welcome style={ props } />
                 
+            ))
+            }
+            {
+            pageTransition(( props, item) => (
+                item.type === 'artist' ?
+                <Artist 
+                style={ props }
+                data={ item } 
+                page='home' />
+                :
+                item.type === 'album' ?
+                <Collection
+                style={ props }
+                type='album'
+                page='home'
+                data={ item } />
+                :
+                item.type === 'playlist' &&
+                <Collection
+                style={ props }
+                type='playlist' 
+                page='home' 
+                data={ item } />
+                    
         ))
         }
-        
+        </HomePageSettingsContext.Provider>
         </div>
     )
 

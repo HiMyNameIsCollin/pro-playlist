@@ -1,12 +1,10 @@
 import { useContext, useState, useEffect, useCallback} from 'react'
-import { Link } from 'react-router-dom'
 import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 
+const Nav = ({homeTransMinHeight, searchTransMinHeight, pageScrollRef, }) => {
 
-const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState, setDashboardState , pageScrollRef, activeHomeItem, activeSearchItem, setActiveHomeItem, setActiveSearchItem, scrollPosition }) => {
-
-    const { selectOverlay, dashboardRef, navHeight, setNavHeight, transMinHeight, activeManageItem} = useContext( DbHookContext )
+    const { selectOverlay, dashboardRef, dashboardState, setDashboardState, setNavHeight, hiddenUI, activeHomeItem, activeSearchItem, setActiveHomeItem, setActiveSearchItem , activeManageItem, scrollPosition} = useContext( DbHookContext )
 
     const thisComponentRef = useCallback( node => {
         if( node !== null){
@@ -19,15 +17,6 @@ const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState
             return () => ro.disconnect()
         }
     },[])
-
-    // useEffect(() => {
-    //     if( selectOverlay.type ){
-
-    //         thisComponentRef.current.style.bottom = dashboardRef.current.scrollTop + window.innerHeight - thisComponentRef.current.offsetHeight
-    //     } else {
-    //         thisComponentRef.current.style.bottom = 0
-    //     }
-    // }, [ selectOverlay ])
 
     const handleDashboardState = ( page ) => {
         if( dashboardState !== page ){
@@ -45,16 +34,16 @@ const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState
                 if(activeHomeItem.type){
                     setActiveHomeItem( {} )
                 } else {
-                    dashboardRef.current.scroll(scrollTop)
+                    dashboardRef.current.scrollTo(scrollTop)
                 }
             } else if ( page === 'search' ){
                 if( activeSearchItem.type ){
                     setActiveSearchItem( {} )
                 } else {
-                    dashboardRef.current.scroll(scrollTop)
+                    dashboardRef.current.scrollTo(scrollTop)
                 }
             } else {
-                dashboardRef.current.scroll(scrollTop)
+                dashboardRef.current.scrollTo(scrollTop)
             }
         }
     }
@@ -79,7 +68,6 @@ const Nav = ({homeTransMinHeight, searchTransMinHeight, hiddenUI, dashboardState
     const {hideNav} = useSpring({
         to:{ hideNav: hiddenUI || (activeManageItem.type && dashboardState ==='manage' ) ? 100 : 0 }
     })
-
 
     return(
         <animated.nav 

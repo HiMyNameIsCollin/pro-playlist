@@ -10,9 +10,10 @@ import ResizeBar from './ResizeBar'
 
 const SortContainer = ({ style, setActiveItem,  }) => {
 
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-    const { sortBar, setSortBar } = useContext( DbHookContext )
+    const route = 'v1/playlists/tracks'
+
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
+    const { sortBar, setSortBar, setMessageOverlay, refresh } = useContext( DbHookContext )
     const { my_playlists, user_info } = useContext( DbFetchedContext )
     const { activeManageItem, setActiveManageItem,} = useContext( ManageHookContext )
     const [ activePlaylistItem, setActivePlaylistItem ] = useState({})
@@ -21,28 +22,38 @@ const SortContainer = ({ style, setActiveItem,  }) => {
     const [ topItems , setTopItems ] = useState( [] )
 
     const [ dragging, setDragging ] = useState( false )
-    const [ height, setHeight ] = useState()
+    const [ height, setHeight ] = useState( window.innerHeight )
     const [ resizePos, setResizePos ] = useState(0)
     const [ clickLoc, setClickLoc ] = useState( 0 )
-    const originalBottomItemsRef = useRef()
-    const originalTopItemsRef = useRef()
+    const originalBottomItemsRef = useRef( [] )
+    const originalTopItemsRef = useRef( [] )
 
 
     const sortContainerRef = useCallback(node => {
-        if (node !== null) {
+        if ( node ) {
             setHeight( node.getBoundingClientRect().height )
         }
+        return () => setHeight( 0 )
       }, []);
 
       useEffect(() => {
           setSortBar( true )
-          return () => setSortBar( false )
+          return () => {
+            refresh('my_playlists')  
+            setSortBar( false )
+          }
       },[])
+
+      useEffect(() => {
+        if( apiPayload ) {
+            console.log( apiPayload )
+        }
+      },[ apiPayload ])
 
     useEffect(() => {
         if(activeManageItem.type){
             //  Default setting for the playlist menu. Renders slider that to display all playlists.
-            if( !activePlaylistItem.type) setActivePlaylistItem({ type:'sortPlaylist', id:'playlistSort', items: my_playlists.slice().filter( x => x.owner.display_name === user_info.display_name || x.collaborative ) })
+            if( !activePlaylistItem.type) setActivePlaylistItem({ type:'sortPlaylist', id:'playlistSort', items: my_playlists.slice().filter( x => (x.owner.display_name === user_info.display_name || x.collaborative) && x.id !== activeManageItem.id ) })
         } else {
             setActivePlaylistItem( {} )
         }
@@ -50,24 +61,21 @@ const SortContainer = ({ style, setActiveItem,  }) => {
 
 
     const sortBarTrans = useSpring({
-        transform: sortBar ? 'translateY(0%)' : 'translateY(100%)'
+        transform: sortBar && activeManageItem.type ? 'translateY(0%)' : 'translateY(100%)'
     })
 
     const activeItemTrans = useTransition( activeManageItem, {
-        initial: { bottom: 0 - window.innerHeight, minHeight: (height - resizePos) } ,
-        from: { bottom: 0 - window.innerHeight, minHeight: (height - resizePos) },
-        update: { minHeight: (height - resizePos) } ,
-        enter: { bottom: 0 , minHeight: (height - resizePos)  },
-        leave: { bottom: 0 - window.innerHeight, minHeight: (height - resizePos) },
-
+        from: { bottom: 0 - window.innerHeight, minHeight: (height ? height : window.innerHeight )- (resizePos ? resizePos : window.innerHeight / 2) },
+        update: { minHeight: ((height ? height : window.innerHeight )- ( resizePos ? resizePos : window.innerHeight / 2 )) } ,
+        enter: { bottom: 0 , minHeight: (height ? height : window.innerHeight )- (resizePos ? resizePos : window.innerHeight / 2 )   },
+        leave: { bottom: 0 - window.innerHeight, minHeight: (height ? height : window.innerHeight )- (resizePos ? resizePos : window.innerHeight / 2 )  },
     })
 
     const playlistTrans = useTransition( activePlaylistItem, {
-        initial: { top: 0 - window.innerHeight, minHeight: resizePos },
-        from: {  top: 0 - window.innerHeight, minHeight: resizePos},
-        update: { minHeight: resizePos } ,
-        enter: {  top: 0 ,   minHeight: resizePos },
-        leave: {  top: 0 - window.innerHeight, minHeight: resizePos,}
+        from: {  top: 0 - window.innerHeight, minHeight: resizePos ? resizePos : window.innerHeight / 2},
+        update: { minHeight: resizePos ? resizePos : window.innerHeight / 2 } ,
+        enter: {  top: 0 ,   minHeight: resizePos  ? resizePos : window.innerHeight / 2 },
+        leave: {  top: 0 - window.innerHeight, minHeight: resizePos ? resizePos : window.innerHeight / 2,}
     })
 
     const handleCloseSortContainer = () => {
@@ -82,85 +90,102 @@ const SortContainer = ({ style, setActiveItem,  }) => {
         
     } 
 
-    const dragEnd = (e) => {
-        setDragging( undefined )
-        if( e.destination){
-            const destination = e.destination.droppableId.split('--')
-            if( e.destination.droppableId === e.source.droppableId ){
-                if( destination[0] === 'top'){
-                    const result = moveIndex( e.source.index, e.destination.index , topItems.slice())
-                    originalTopItemsRef.current = originalTopItemsRef.current.filter( x => x !== `top--${result[ e.destination.index].id }`)
-                    console.log( result)
-                    setTopItems( result )
-                }else if( destination[0] === 'bottom' ){
-                    if( activeManageItem.type === 'playlist' &&
-                        (activeManageItem.collaborative ||
-                        activeManageItem.owner.display_name === user_info.display_name  )){
-                            const result = moveIndex( e.source.index, e.destination.index, bottomItems.slice() )
-                            originalBottomItemsRef.current = originalBottomItemsRef.current.filter( x => x !== `bottom--${result[ e.destination.index].id }`)
-
-                            setBottomItems( result )
-                    }
-                }
-            } else {
-                if( destination[0] === 'top'){
-                    const result = moveIndexBetween( e.source.index, bottomItems.slice() , e.destination.index , topItems.slice() )
-                    setTopItems( result[1] )
-                    if( activeManageItem.type === 'playlist' &&
-                        (activeManageItem.collaborative ||
-                        activeManageItem.owner.display_name === user_info.display_name  )){
-                        setBottomItems( result[0] )
-                    }
-                    
-                }else if( destination[0] === 'bottom' ){
-                    if( activeManageItem.type === 'playlist' &&
-                        (activeManageItem.collaborative ||
-                        activeManageItem.owner.display_name === user_info.display_name  )){
-                            const result = moveIndexBetween( e.source.index, topItems.slice() , e.destination.index , bottomItems.slice() )
-                            setTopItems( result[0] )
-                            setBottomItems( result[1])
-
-                    }
-                } else if( destination[0] === 'playlist'){
-                    if( activeManageItem.type === 'playlist' &&
-                        (activeManageItem.collaborative ||
-                        activeManageItem.owner.display_name === user_info.display_name  )){
-                            const result = removeItem( e.source.index, bottomItems.slice() )
-                            console.log( result )
-                            setBottomItems( result )
-                    }
-                }
-            }
-        }
-         
-    }
-
-    const removeItem = ( from, arr ) => {
-        const item = arr.splice( from, 1 )[0]
-        return arr
-    }
-
-    const moveIndexBetween = ( from, arr1, to, arr2 ) => {
-        const item = arr1.splice( from, 1 )[0]
-        arr2.splice( to, 0, item )
-        return [ arr1, arr2 ]
-    }
-
-    const moveIndex = ( from, to, arr ) => {
-        const item = arr.splice( from, 1 )[0]
-        arr.splice( to, 0, item)
-        return arr
-    }
-
     const dragUpdate = (e) => {
+        console.log( e.destination )
     }
 
     const dragStart = (e) => {
         setDragging( e.draggableId )
     } 
 
-    const handleReorder = () => {
 
+    const dragEnd = (e) => {
+        setDragging( undefined )
+        if( e.destination){
+            const dest = e.destination.droppableId.split('--')
+            if( e.source.droppableId === e.destination.droppableId ) {
+                const collection = dest[0] === 'top' ? activePlaylistItem : activeManageItem
+                const tracks = dest[0] === 'top' ? topItems : bottomItems
+                const setItemsFunc = dest[0] === 'top' ? setTopItems : setBottomItems
+                const result = moveIndex( e.source.index, e.destination.index , { collection, tracks: tracks.slice() })
+                if( dest[0] === 'top' ){
+                    originalTopItemsRef.current = originalTopItemsRef.current.filter( x => x !== `top--${result[ e.destination.index].id }`)
+                }else {
+                    originalBottomItemsRef.current = originalBottomItemsRef.current.filter( x => x !== `bottom--${result[ e.destination.index].id }`)
+                }
+                setItemsFunc( result )
+            } else {
+                const destPlaylist = dest[0] === 'top' ? activePlaylistItem : activeManageItem
+                const destTracks = dest[0] === 'top' ? topItems : bottomItems
+                const sourcePlaylist = dest[0] === 'top' ? activeManageItem : activePlaylistItem
+                const sourceTracks = dest[0] === 'top' ? bottomItems : topItems
+                const result = moveIndexBetween( e.source.index, { collection: sourcePlaylist, tracks: sourceTracks.slice() }, e.destination.index, { collection: destPlaylist, tracks: destTracks.slice() })
+                if( dest[0] === 'top' ){
+                    originalBottomItemsRef.current = originalBottomItemsRef.current.filter( x => x !== `bottom--${ bottomItems[ e.source.index].id }`)
+                    setTopItems( result.dest )
+                    setBottomItems( result.source )
+                } else {
+                    originalTopItemsRef.current = originalTopItemsRef.current.filter( x => x !== `top--${topItems[ e.source.index ].id }`)
+                    setBottomItems( result.dest )
+                    setTopItems( result.source )
+                }
+                const message = `${ result.dest[ e.destination.index ].name } added to ${ destPlaylist.name }`
+                setMessageOverlay( m => m = [ ...m, message ])
+            }
+        }
+    }
+
+    const moveIndexBetween = ( from, source, to, dest ) => {
+        const removedResult = removeItem( from, source )
+        dest.tracks.splice(to, 0, removedResult.item )
+        const uris = dest.tracks.map(( item, i ) => item.uri ? item.uri : item.track.uri )
+        const body = {
+            "uris": uris, 
+        }
+        finalizeRoute('put', `${ route.substr( 0, 12 ) }/${ dest.collection.id }/tracks`, dest.collection.id, null, body, )
+        return { dest: dest.tracks, source: removedResult.tracks}
+    }
+
+
+    const removeItem = ( from, data ) => {
+        const { collection, tracks } = data
+        let result
+        let item
+        if( verifyDrop( collection ) ){
+            item = tracks.splice( from, 1 )[0]
+            result = { tracks: tracks, item: item }
+            const body = {
+                "tracks": [{ "uri": `${item.uri ? item.uri : item.track.uri }` } ]
+            }
+            finalizeRoute('delete', `${route.substr(0, 12)}/${collection.id}/tracks`, collection.id, null, body)
+        } else{
+            item = { ...tracks[from] }
+            result = { tracks: tracks, item: item }
+        }
+        return result 
+    }
+
+    const verifyDrop = ( collection ) => {
+        if( collection.type === 'playlist' &&
+        collection.id !== 1 && collection.id !== 2 &&
+        (collection.collaborative || collection.owner.display_name === user_info.display_name) ){
+            return true
+        } else {
+            return false
+        }
+    }
+
+    const moveIndex = ( from, to, data ) => {
+        const { collection, tracks } = data
+        const body = {
+            "range_start": from,
+            "insert_before": to,
+            "range_length": 1
+        }
+        finalizeRoute('put', `${route.substr( 0, 12 )}/${collection.id}/tracks`, null, null, body )
+        const item = tracks.splice( from, 1 )[0]
+        tracks.splice( to, 0, item)
+        return tracks
     }
 
     return(  
@@ -217,7 +242,7 @@ const SortContainer = ({ style, setActiveItem,  }) => {
         <animated.div style={ sortBarTrans } className='sortContainer__controls'>
             <button
             className='sortContainer__close' 
-            onClick={ handleCloseSortContainer } c>
+            onClick={ handleCloseSortContainer }>
                 <i className="fas fa-chevron-left"></i>
                 <span> Back </span>
             </button>

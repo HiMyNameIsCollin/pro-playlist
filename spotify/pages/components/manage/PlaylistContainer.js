@@ -9,10 +9,9 @@ import ActiveItem from './ActiveItem'
 
 const PlaylistContainer = ({ style, data, setData }) => {
 
-
     const [ tracks, setTracks ] = useState( [] )
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
     
     useEffect(() => {
         if( data.id !== 'default') {

@@ -55,7 +55,7 @@ const Card = ({ type, item, setActiveItem }) => {
                    :
                    <Image
                     loading='lazy'
-                    alt='Liked tracks'
+                    alt=''
                     layout='fill'
                     objectFit='contain'
                     src='/Spotify_Icon_RGB_Green.png'/>

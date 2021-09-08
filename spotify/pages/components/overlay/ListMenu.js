@@ -20,7 +20,7 @@ const ListMenu = ({ setActiveItem, transition, calledFrom, page, artists }) => {
         <p className='trackMenu__title'> Select an artist </p>
         {
             artists.map( (a, i) => {
-                return <button onClick={ (e) => handleViewArtist( e, a )  }> <span> { a.name } </span> <i class="fas fa-arrow-right"></i></button>
+                return <button key={ i } onClick={ (e) => handleViewArtist( e, a )  }> <span> { a.name } </span> <i className="fas fa-arrow-right"></i></button>
             })
         }
         </animated.div>

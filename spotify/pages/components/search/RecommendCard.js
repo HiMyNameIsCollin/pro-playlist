@@ -12,8 +12,8 @@ const RecommendCard = ({ setActiveItem, data }) => {
     const [ appearsOn, setAppearsOn ] = useState([])
     
     const albumRoute = 'v1/artists'
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
 
     const searchContext = useContext( SearchHookContext )
     const manageContext = useContext( ManageHookContext )

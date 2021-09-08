@@ -1,7 +1,6 @@
 import Head from 'next/head'
 
 import Container from './components/Container'
-import { BrowserRouter as Router } from 'react-router-dom';
 
 const Index = () => {
 
@@ -16,9 +15,9 @@ const Index = () => {
         <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/font-awesome-line-awesome/css/all.min.css"/>
         
       </Head>
-      <Router>
+    
         <Container />    
-      </Router>
+      
     </div>
   )
 }

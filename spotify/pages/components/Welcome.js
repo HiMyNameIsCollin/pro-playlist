@@ -7,15 +7,15 @@ import { DbHookContext } from './Dashboard'
 import { DbFetchedContext } from './Dashboard'
 import { checkTime } from '../../utils/checkTime'
 
+import { HomePageSettingsContext } from './Home'
 
-const Welcome = ({transition, transitionComplete, setTransitionComplete, setTransMinHeight }) => {
+const Welcome = ({ style }) => {
 
     const { activeHomeItem, setActiveHomeItem, } = useContext( DbHookContext )
     const { recently_played, new_releases, featured_playlists, my_top_artists , my_playlists} = useContext( DbFetchedContext )
 
+    const { transitionComplete, setTransitionComplete, setTransMinHeight } = useContext( HomePageSettingsContext )
     const thisComponentRef = useRef() 
-
-    const [ mounted, setMounted ] = useState(false)
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
@@ -33,28 +33,33 @@ const Welcome = ({transition, transitionComplete, setTransitionComplete, setTran
         if( transitionComplete && !activeHomeItem.type ) {
             thisComponentRef.current.classList.add('fadeIn')
             setTransitionComplete(false)
-            setMounted( true )
+            thisComponentRef.current.style.minHeight = '100vh'
         }
     }, [ transitionComplete ])
 
-    useEffect(() => {
-        if(mounted) thisComponentRef.current.style.minHeight = '100vh'
-    },[ mounted ])
+    const handleLogout = () => {
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+        localStorage.removeItem( 'token_expiry' )
+        window.location.reload(false)
+    }
 
     return(
         <animated.div
-        style={ transition }
+        style={ style }
         ref={ thisComponent } 
         className='page page--welcome '>
-            
+            <div onClick={ handleLogout }
+                className='welcome__logo'>
+                    <Image  src='/Spotify_Icon_RGB_White.png' alt='' height='32px' width='32px'/>
+                    <p> Log out </p>
+                </div>      
             <header className='welcomeHeader'>
                 <h1 className='welcomeHeader__title'>{ checkTime() < 12 ? 
                     'Good morning' : checkTime() < 18 ? 
                     'Good afternoon' : checkTime() < 24 ? 
                     'Good evening' : null } </h1>
-                <div className='welcomeHeader__logo'>
-                    <Image  src='/Spotify_Icon_RGB_White.png' alt='' height='32px' width='32px'/>
-                </div>      
+                
             </header>
             <TabsContainer items={ recently_played }  />
             <Slider 

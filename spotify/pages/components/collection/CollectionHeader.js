@@ -1,49 +1,65 @@
 import { useSpring, animated } from 'react-spring'
 import { useLayoutEffect, useEffect, useState, useRef, useContext, useCallback } from 'react'
-import { capital } from '../../utils/capital'
-import { whichPicture } from '../../utils/whichPicture'
-import { handleColorThief } from '../../utils/handleColorThief'
-import { calcScroll } from '../../utils/calcScroll'
-import { DbHookContext } from './Dashboard'
-import { SearchHookContext } from './search/Search'
-import Image from 'next/image'
+import { capital } from '../../../utils/capital'
+import { whichPicture } from '../../../utils/whichPicture'
+import { handleColorThief } from '../../../utils/handleColorThief'
+import { calcScroll } from '../../../utils/calcScroll'
+import { DbHookContext } from '../Dashboard'
+import { SearchPageSettingsContext } from '../search/Search'
+import { HomePageSettingsContext } from '../Home'
 
-const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionComplete, headerScrolled, setHeaderScrolled, setActiveItem, setActiveHeader, parent }) => {
+const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
     const [ colors, setColors ] = useState( undefined )
-    const { collection, artists, tracks } = { ...data }
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ backgroundImage, setBackgroundImage ] = useState(null)
-    const thisHeaderRef = useRef()
+    const [ mainImage, setMainImage ] = useState( undefined )
+    
+    const transitionCompleteRef = useRef()
 
+    const { collection, artists, tracks } = { ...data }
     const { setOverlay, scrollPosition, } = useContext( DbHookContext )
 
-    useEffect(() => {
-        if(transitionComplete && colors ){
-            colors.forEach((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
-            setTransitionComplete( false )
-            parent.classList.add('fadeIn')
-            parent.style.minHeight = '100vh'
-            
-        }
-    }, [ transitionComplete, colors ] )
+    const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled } = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
 
+    const thisHeaderRef = useCallback( node => {
+        if( node ){
+            const ro = new ResizeObserver( entries => {
+                if( node.offsetHeight > 0 ) setElementHeight( node.offsetHeight )
+            })
+            ro.observe( node )
+            return () => ro.disconnect()
+        }
+    })
 
     useLayoutEffect(() => {
-        // const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
-        // setElementHeight(headerHeight)
-        const img = collection.images && collection.images.length > 0 ? whichPicture(collection.images, 'lrg') : '//logo.clearbit.com/spotify.com'
-        setBackgroundImage( img )
+        const bigImg = collection.images && collection.images[0] ? whichPicture(collection.images, 'lrg') : '//logo.clearbit.com/spotify.com'
+        const img = collection.images && collection.images[0] ? whichPicture( collection.images, 'med' ) : '//logo.clearbit.com/spotify.com'
+        setBackgroundImage( bigImg )
+        setMainImage( img )
         setActiveHeader( {data : collection.name} )
-        return () => {
-            setBackgroundImage(null)
-            setHeaderScrolled( 0 )
-            setColors( undefined )
-        }
+        // return () => {
+        //     setBackgroundImage(null)
+        //     setHeaderScrolled( 0 )
+        //     setColors( undefined )
+        //     transitionCompleteRef.current = false 
+        // }
     }, [])
 
     useEffect(() => {
+        if(transitionComplete ) {
+            transitionCompleteRef.current = true 
+        }
+        if( colors && transitionCompleteRef.current ){
+            parent.classList.add('fadeIn')
+            parent.style.minHeight = '100vh'
+            colors.forEach((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+            setTransitionComplete( false )
+        }
+    }, [ transitionComplete, colors ] )
+
+    useEffect(() => {
         const percent = calcScroll( elementHeight )
-        setHeaderScrolled( percent <= 100 ? percent : 100 )
+        setHeaderScrolled( percent < 100 ? percent : 100 )
     }, [scrollPosition , elementHeight])
 
     const {scaleDown, fadeOut, moveDown} = useSpring({
@@ -71,11 +87,8 @@ const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionCom
     }
 
     const finishMount = ( e ) => {
-        console.log( e.target )
         const theseColors = handleColorThief( e.target, 2 )
         setColors( theseColors )
-        const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
-        setElementHeight(headerHeight)
     }
 
     return(
@@ -97,21 +110,16 @@ const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionCom
                     }}
                     className='collectionHeader__imgTransform'>
                     {
-                        collection.images && collection.images.length > 0 ?
+                        mainImage && 
                         <img
-                        crossorigin='anonymous' 
-                        // ON LOAD HERE ########################################
+                        crossOrigin='anonymous' 
                         onLoad={ finishMount }
-                        className='collectionHeader__img' 
-                        src={ whichPicture(collection.images, 'med') } /> 
-                        :
-                        <img
-                        crossorigin='anonymous' 
                         // ON LOAD HERE ########################################
-                        onLoad={ finishMount }
                         className='collectionHeader__img' 
-                        src='//logo.clearbit.com/spotify.com' /> 
+                        src={ mainImage } /> 
                     }
+                        
+                       
                     </animated.div>
                 </animated.div> 
 
@@ -156,7 +164,6 @@ const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionCom
                 }}
                 className='collectionHeader__info'>
                     <span>
-                        {/* Ternary operators determine if this is a playlist or an album. */}
                         { collection.type === 'playlist' ? `${collection.followers.total} followers` : capital( collection.album_type ) }  
                     </span>
                     {
@@ -170,14 +177,9 @@ const CollectionHeader = ({ pageType, data, transitionComplete, setTransitionCom
                             { collection.release_date.substr(0,4) }
                             </span>
                         </> 
-
                     }
-                    
                 </animated.div>  
-
             </header>
-        
-
     )   
 }
 

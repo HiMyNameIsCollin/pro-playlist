@@ -1,14 +1,14 @@
 import { useState, useEffect, useContext } from 'react'
-import { useSpring, animated, useTransition } from 'react-spring'
+import { animated } from 'react-spring'
+import SearchForm from './SearchForm'
+
 import SearchFilters from './SearchFilters'
 import SearchResults from './SearchResults'
 import useApiCall from '../../hooks/useApiCall'
 import { DbHookContext } from '../Dashboard'
-import SearchForm from './SearchForm'
 
-const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) => {
+const SearchOverlay = ({ style, setActiveItem, searchState, setSearchState }) => {
 
-    const API = 'https://api.spotify.com/'
     const route = 'v1/search'
     const [ searchInput, setSearchInput ] = useState('Search')
     const [ activeFilter, setActiveFilter ] = useState( 'Top' )
@@ -17,8 +17,7 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
     const [ albumResults, setAlbumResults ] = useState([])
     const [ playlistResults, setPlaylistResults ] = useState([])
     const [ trackResults, setTrackResults ] = useState([])
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
-
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall()
 
     const { hiddenUI, setHiddenUI } = useContext( DbHookContext )
 
@@ -27,7 +26,6 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
     },[])
 
     useEffect(() => {
-        console.log( searchInput )
         if(searchInput.length > 0 && searchInput !== 'Search'){
             finalizeRoute('get', 
             `${ route }`, 
@@ -60,7 +58,7 @@ const SearchOverlay = ({  setActiveItem, style, searchState, setSearchState  }) 
             
             <header className='searchOverlay__header'>
                 <SearchForm searchInput={ searchInput } setSearchInput={ setSearchInput } autoFocus={ true } />
-                <button className='searchOverlay__header__button' onClick={ () => setSearchState('default')}> Cancel </button>
+                <button className='searchOverlay__header__button' onClick={ () => setSearchState('default')}> Back </button>
                 {
                 searchInput.length !== 0 &&
                 <SearchFilters activeFilter={ activeFilter } setActiveFilter={ setActiveFilter }/>

@@ -54,13 +54,6 @@ const QueueView = ({ handleTrackMenu, controls }) => {
         setPlayNextQueue( [] )
     }
     
-    const dragStart = () =>{
-
-    }
-
-    const dragUpdate = (e) => {
-        console.log(e)
-    }
 
     const dragEnd = (e) => {
         if( e.destination && e.source ){
@@ -108,9 +101,8 @@ const QueueView = ({ handleTrackMenu, controls }) => {
             track={ currPlaying }/>
 
             <DragDropContext
-            onDragStart={ dragStart }
-            onDragUpdate={ dragUpdate }
-            onDragEnd={ dragEnd } >>
+
+            onDragEnd={ dragEnd } >
                 <Droppable droppableId={'playNext'}>
                 { provided => (
                     
@@ -128,6 +120,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
                                         <QueueTrack 
                                         type='playNext'
                                         track={track}
+                                        key={ i }
                                         index={ i }
                                         trackSelected={ playNextQueueSelected } 
                                         setTrackSelected={ setPlayNextQueueSelected }
@@ -155,6 +148,7 @@ const QueueView = ({ handleTrackMenu, controls }) => {
                             <QueueTrack 
                             type='queue'
                             track={track} 
+                            key={ i }
                             index={ qIndex + i }
                             trackSelected={ queueViewSelected }
                             setTrackSelected={ setQueueViewSelected }/>

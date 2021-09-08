@@ -1,16 +1,12 @@
 import { useState, useEffect, useCallback, useRef, useContext } from 'react'
 import { useTransition, animated, useSpring } from 'react-spring'
-import useApiCall from '../hooks/useApiCall'
-import TrackRecommendationsMenu from './selectOverlay/TrackRecommendationsMenu'
-import NewPlaylistForm from './selectOverlay/NewPlaylistForm'
-import ItemSelect from './selectOverlay/ItemSelect'
-import { DbHookContext, DbFetchedContext } from './Dashboard'
+import TrackRecommendationsMenu from './TrackRecommendationsMenu'
+import NewPlaylistForm from './NewPlaylistForm'
+import ItemSelect from './ItemSelect'
+import { DbHookContext, DbFetchedContext } from '../Dashboard'
 
 const SelectOverlay = ({ style, newPlaylistRef}) => {
 
-
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
     const { selectOverlay, setSelectOverlay, setMessageOverlay }  = useContext( DbHookContext )
     const { my_liked_tracks, my_top_tracks, available_genre_seeds, my_top_artists, user_info } = useContext( DbFetchedContext )
 

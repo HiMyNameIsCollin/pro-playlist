@@ -1,18 +1,18 @@
 import { useContext } from 'react'
-import useApiCall from '../../hooks/useApiCall'
 import { DbHookContext } from '../Dashboard'
 
 const SelectOverlayHeader = ({ menuData  }) => {
 
-    const { selectOverlay, setSelectOverlay } = useContext( DbHookContext )
+    const { selectOverlay, setSelectOverlay, refresh } = useContext( DbHookContext )
 
     const handleClose = () => {
+        refresh( 'my_playlists' )
         setSelectOverlay( selectOverlay => selectOverlay = selectOverlay.slice(0, selectOverlay.length - 1) )
     }
 
     return(
         <header className='selectOverlay__header '>
-            <button className='selectOverlay__header__btn' onClick={ handleClose }> Cancel </button>
+            <button className='selectOverlay__header__btn' onClick={ handleClose }> Back </button>
             <p className='selectOverlay__title'>
             {
                 menuData.type === 'playlists' ? 

@@ -1,5 +1,5 @@
-import { calculateTotalDuration } from '../../utils/calculateTotalDuration'
-import { whichPicture } from '../../utils/whichPicture'
+import { calculateTotalDuration } from '../../../utils/calculateTotalDuration'
+import { whichPicture } from '../../../utils/whichPicture'
 const CollectionMeta = ({data, setActiveItem }) => {
 
     const { collection, artists, tracks } = {...data}

@@ -3,21 +3,19 @@ import { animated } from 'react-spring'
 import BrowseContainer from './BrowseContainer'
 import  useApiCall  from '../hooks/useApiCall'
 import { DbHookContext } from './Dashboard'
+import { SearchPageSettingsContext } from './search/Search'
 
 const routes = {
-    all_categories: 'v1/browse/categories', // id/playlists
+    all_categories: 'v1/browse/categories',
     search: 'v1/search',
 }
-const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransitionComplete, data }) => {
+const Showcase = ({ style, data }) => {
 
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
-    const { activeSearchItem, setActiveSearchItem } = useContext( DbHookContext)
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall()
     const [ categoryResults, setCategoryResults ] = useState( [] )
-    
-    const thisComponentRef = useRef() 
+    const { setTransMinHeight, transitionComplete, setTransitionComplete, } = useContext( SearchPageSettingsContext )
 
-    const [ mounted, setMounted ] = useState(false)
+    const thisComponentRef = useRef() 
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
@@ -35,20 +33,14 @@ const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransi
         if( transitionComplete ) {
             thisComponentRef.current.classList.add('fadeIn')
             setTransitionComplete(false)
-            setMounted( true )
+            thisComponentRef.current.style.minHeight = '100vh'
         }
     }, [ transitionComplete ])
 
     useEffect(() => {
-        if(mounted) thisComponentRef.current.style.minHeight = '100vh'
-    },[ mounted ])
-
-
-    useEffect(() => {
-        if( data.type === 'category'){
+        if( data.id ){
             finalizeRoute('get', `${ routes.all_categories }/${data.id}/playlists`, data.id )
         }
-        
     },[])
 
     const sortPlaylists = ( items ) => {
@@ -65,7 +57,6 @@ const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransi
                 })
             }
         })
-        console.log(arr)
         return arr
     }
 
@@ -102,7 +93,7 @@ const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransi
 
     return(
         <animated.div
-        style={ transition }
+        style={ style }
         ref={ thisComponent } 
         className='page page--search showcase'>
             <p className='showcase__title'> { data.name }</p>
@@ -111,7 +102,6 @@ const Showcase = ({ transition, setTransMinHeight, transitionComplete, setTransi
             if( cat.playlists.length > 0 ){
                 return(
                     <BrowseContainer
-                    type='BcShowcase'
                     message={ cat.message }
                     data={ cat.playlists }
                     />

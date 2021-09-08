@@ -18,8 +18,8 @@ const TabsContainer = ({ items }) => {
             taggedItem = item.track
             return taggedItem 
         })
-        const sorted = taggedItems.sort(( a, b ) => b.played_at - a.played_at )
-        setData(sorted)
+        const sortedByTime = taggedItems.sort(( a, b ) => b.played_at - a.played_at )
+        setData(sortedByTime)
     },[ items ])
 
     const handleSeeMore = () => {
@@ -38,9 +38,20 @@ const TabsContainer = ({ items }) => {
                 </span>
             </div>
             {
+                window.innerWidth < 640 ?
                 data.slice(0, 6).map(( item, i ) => {
                    return <Tab item={ item } key={ i }/>
-                })
+                }) 
+                :
+                window.innerWidth > 640 && window.innerWidth < 1024 ?
+                data.slice(0, 9).map(( item, i ) => {
+                    return <Tab item={ item } key={ i }/>
+                }) 
+                :
+                window.innerWidth >= 1024 &&
+                data.slice(0, 12).map(( item, i ) => {
+                    return <Tab item={ item } key={ i }/>
+                 })
             }
         </section>
     )

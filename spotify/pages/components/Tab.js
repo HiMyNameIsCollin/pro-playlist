@@ -4,14 +4,7 @@ import { DbHookContext } from './Dashboard'
 
 const Tab = ({ item }) => {
 
-    const { queue, setQueue, setActiveHomeItem } = useContext( DbHookContext )
-    
-    const playTrack = ( track, arr, func ) =>{
-        // Adds track to Queue. Callback func is 'setQueue'
-        if(arr[0] && arr[0].id !== track.id) {
-            func( arr => arr = [track, ...arr.slice(1, arr.length-1)] )
-        }
-    }
+    const { setActiveHomeItem } = useContext( DbHookContext )
 
     const handleTab = () => {
         if( item.type === 'track'){

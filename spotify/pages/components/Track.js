@@ -138,7 +138,6 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
         type === 'queueView' ?
         null :
         playTrack(e, track )  }
-        // onTouchStart={ (e) => type !== 'playerCollapsed' ? playTrack(e, track, queue, setQueue) : console.log(track) }
         className={
             `track 
             track--${ collectionType ? collectionType : type }
@@ -153,40 +152,45 @@ const Track = ({ type, trackIndex, collectionType , track, trackMounted, setTrac
         }
 
         {
-            track.album && track.album.images && type !== 'playerCollapsed' &&
+            track.album && track.album.images &&
             <div className='track__imgContainer'>
-                <img
-                ref={ trackImageRef }
-                crossorigin='anonymous'
-                onLoad={ (e) => trackLoaded(e, 2) }
-                alt='Album' 
-                src={ whichPicture( track.album.images, 'sm') }/>
+                {
+                    type !== 'playerCollapsed' ?
+                    <img
+                    ref={ trackImageRef }
+                    crossOrigin='anonymous'
+                    alt='Album' 
+                    src={ whichPicture( track.album.images, 'sm') }/>
+                    :
+                    ( !sortBar && sortContainerOpen && dashboardState  === 'manage') 
+                    ?
+                    <>
+                        <img
+                        ref={ trackImageRef }
+                        crossOrigin='anonymous'
+                        onLoad={ (e) => trackLoaded(e, 2) }
+                        style={{ opacity: 0, position: 'absolute', pointerEvents: 'none' }}
+                        alt='Album' 
+                        src={ whichPicture( track.album.images, 'sm') }/>
+                        <button
+                        className='sortContainer__close' 
+                        onClick={ (e) => {
+                            e.stopPropagation()
+                            setSortBar(true) 
+                        }} >
+                            <i className="fas fa-chevron-left"></i>
+                        </button>
+                    </> :
+                    <img
+                    ref={ trackImageRef }
+                    crossOrigin='anonymous'
+                    onLoad={ (e) => trackLoaded(e, 2) }
+                    alt='Album' 
+                    src={ whichPicture( track.album.images, 'sm') }/>
+
+                }
             </div>
-        }
-        {
-            type === 'playerCollapsed' ?
-            ( !sortBar && sortContainerOpen && dashboardState  === 'manage') ?
-            <div
-            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}} 
-            className='track__imgContainer'>
-                <button
-                className='sortContainer__close' 
-                onClick={ (e) => {
-                    e.stopPropagation()
-                    setSortBar(true) 
-                }} >
-                    <i className="fas fa-chevron-left"></i>
-                </button>
-            </div> :
-            <div className='track__imgContainer'>
-                <img
-                ref={ trackImageRef }
-                crossorigin='anonymous'
-                onLoad={ (e) => trackLoaded(e, 2) }
-                alt='Album' 
-                src={ whichPicture( track.album.images, 'sm') }/>
-            </div> :
-            null
+
         }
         
             <p className='track__title'>

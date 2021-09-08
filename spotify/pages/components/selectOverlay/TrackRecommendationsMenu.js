@@ -3,14 +3,13 @@ import { useSpring, animated } from 'react-spring'
 import SelectOverlayHeader from './SelectOverlayHeader'
 import MenuCard from './MenuCard'
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
+import { getSeeds } from '../../../utils/getSeeds'
+
 import useApiCall from '../../hooks/useApiCall'
 
 const TrackRecommendationsMenu = ({ menuData, pos }) => {
 
-   
-
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall()
     const { selectOverlay, setMessageOverlay } = useContext( DbHookContext )
     const { my_liked_tracks, my_top_tracks, available_genre_seeds, my_top_artists } = useContext( DbFetchedContext )
     const alteredPlaylistRef = useRef( {} )
@@ -20,6 +19,7 @@ const TrackRecommendationsMenu = ({ menuData, pos }) => {
     const recommendationsRoute = 'v1/recommendations'
 
     const [ tracks, setTracks ] = useState([])
+    const [ revealed, setRevealed ] = useState( 10 )
 
     useEffect(() => {
         if( apiPayload ) {
@@ -33,64 +33,33 @@ const TrackRecommendationsMenu = ({ menuData, pos }) => {
         }
     }, [ apiPayload ])
 
-
-
     useEffect(() => {
-        if( !menuData.data ){
-            getTracks( [...my_liked_tracks, ...my_top_tracks ], my_top_artists )
+        if( menuData.data && menuData.data.length > 0 ){
+            getTracks( menuData.data, [] )
         } else {
-            getTracks( menuData.data )
+            getTracks( [...my_liked_tracks, ...my_top_tracks ], my_top_artists )
+
         }
     },[])
 
     const getTracks = ( tracks, artists ) => {
         const items = tracks.filter(({ id: id1 }) => tracks.filter(({ id: id2 }) =>  id1 === id2 ).length === 1 )
         const seeds = getSeeds( available_genre_seeds, artists, items )
-        finalizeRoute('get', `${ recommendationsRoute }`, null, null, null, ...seeds)
+        finalizeRoute('get', `${ recommendationsRoute }`, null, null, null, ...seeds, 'limit=50')
     }
-
-    const getSeeds = ( genres , theseArtists, theseTracks ) => {
-        let seeds = {
-            seedGenres: [],
-            seedArtists: [],
-            seedTracks: []
-        }
-        let { seedGenres, seedArtists, seedTracks } = seeds
-        theseArtists.forEach(( artist, i ) => {
-            artist.genres.forEach(( genre, j ) => {
-                if(genres.includes( genre )){
-                    if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
-                    seedGenres.push( genre )
-                    }
-                }
-            })
-            if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
-                seedArtists.push( artist.id )
-            }
-        })
-        theseTracks.forEach( track => {
-            if( seedGenres.length + seedArtists.length + seedTracks.length < 5){
-                seedTracks.push( track.id )
-            }
-        })
-        let args = []
-        if(seedGenres.length > 0) args.push( `seed_genres=${seedGenres.join()}` )
-        if( seedArtists.length > 0 ) args.push(`seed_artists=${seedArtists.join()}` )
-        if( seedTracks.length > 0 ) args.push( `seed_tracks=${seedTracks.join()}` )
-        return args
-    }
-
-    // const addToPlaylist = ( playlist ) => {
-    //     // this ref is for pop up message 
-    //     editedPlaylistRef.current = { playlist: playlist.name, track: menuData.data[0].name }
-    //     const args = menuData.data.map( it =>  it.uri )
-    //     finalizeRoute('post', `${addToPlaylistRoute.slice( 0, 12 ) }/${playlist.id}/tracks`, playlist.id, null, null,  `uris=${args[0]}`, ...args.slice( 1 ) )        
-    // }
 
     const handleAddToPlaylist = ( item ) => {
         alteredPlaylistRef.current = { track: item.name, playlist: menuData.context.name }
         tracksAddedRef.current = [...tracksAddedRef.current, item.id ]
         finalizeRoute('post', `${ addToPlaylistRoute.substr(0, 12) }/${ menuData.context.id }/tracks`, menuData.context.id, null, null, `uris=${ item.uri }`)
+    }
+
+    const handleReveal = ( e ) => {
+        const scrollHeight = e.target.scrollHeight 
+        if( e.target.scrollTop >= scrollHeight * .25  ) {
+            const toReveal = tracks.length - revealed 
+            setRevealed( toReveal < 10 && toReveal > 0 ? revealed + toReveal : revealed + 10 ) 
+        }
     }
 
     const shrink = useSpring({
@@ -102,15 +71,16 @@ const TrackRecommendationsMenu = ({ menuData, pos }) => {
     return(
         <animated.div style={ shrink } className={ `selectOverlay__menu `} >
             <SelectOverlayHeader menuData={ menuData } />
-            <div className='selectOverlay__main'>
+            <div onScroll={ handleReveal } className='selectOverlay__main'>
 
-                <div className='selectOverlay__scroll'>
+                <ul className='selectOverlay__scroll'>
                 {
-                    tracks.map( ( track, i ) => (
+                    tracks.slice( 0, revealed ).map( ( track, i ) => (
                         !tracksAddedRef.current.includes( track.id ) &&
                         <MenuCard 
                         item={ track } 
                         index={ i } 
+                        key={ i }
                         page={ menuData.page } 
                         type={ menuData.type } 
                         tracks={ tracks }
@@ -119,7 +89,7 @@ const TrackRecommendationsMenu = ({ menuData, pos }) => {
                         />
                     ))
                 }
-                </div>
+                </ul>
             </div>
         </animated.div>
     )

@@ -1,13 +1,14 @@
-import { useState, useEffect, useContext, useRef, useReducer } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { animated } from 'react-spring'
 import ActiveItemTrack from './ActiveItemTrack'
+import Slider from '../Slider'
 import useApiCall from '../../hooks/useApiCall'
 import { whichPicture } from '../../../utils/whichPicture'
-import Slider from '../Slider'
-import { ManageHookContext } from './Manage'
+import { stopDupesId } from '../../../utils/stopDupes'
 import { DbFetchedContext } from '../Dashboard'
 import { Droppable } from 'react-beautiful-dnd'
 import Image from 'next/image'
+
 const ActiveItem = ({ orientation, dragging, style, data, setActiveItem, items, setItems, clickLoc, setClickLoc, originalItemsRef }) => {
 
     const routes = {
@@ -19,21 +20,20 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem, items, 
         'v1/artists/albums'
     }
 
-    
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
     const currentActiveItemRef = useRef({})
-    const [ selectedItems, setSelectedItems ] = useState( [] )
+    const [ revealed, setRevealed ] = useState( 10 )
     const [ image, setImage ] = useState()
     const [ disabled, setDisabled ] = useState( false )
     const { user_info } = useContext( DbFetchedContext )
 
     useEffect(() => {
-        if(data.type !== 'sortPlaylist'  ){
+        if( data.images || data.href ){
             if( data.images ){
                 setImage( whichPicture( data.images, 'sm' ) )
             } else {
-                finalizeRoute( 'get', data.href.substring( API.length ), data.id, null ) 
+                const api = 'https://api.spotify.com/'
+                finalizeRoute( 'get', data.href.substring( api.length ), data.id, {fetchAll: true }, null,  'limit=50' ) 
             }
         }
         
@@ -45,13 +45,24 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem, items, 
                 setImage( whichPicture( apiPayload.images, 'sm' ))
             } else if ( apiPayload.route === routes.items ){
                 let payloadItems 
-                if( apiPayload.items[0].track ){
+                if( apiPayload.items[0] && apiPayload.items[0].track ){
                     payloadItems = apiPayload.items.map( item => item.track)
                 } else {
                     payloadItems = apiPayload.items
                 }
-                setItems( payloadItems )
-                originalItemsRef.current = payloadItems.map(( item, i ) => `${ orientation }--${ item.id ? item.id : item.track.id }` )
+                let result = []
+                if( data.type !== 'artist' ){
+                    result = [ ...items, ...payloadItems ]
+                } else {
+                    result = [...items, ...payloadItems].reduce(( acc, val ) =>{
+                        const found = acc.find( x => x.name === val.name )
+                        if( !found ) acc.push( val )
+                        return acc
+                    },[])
+                }
+                setItems( result )
+                const ids = result.map(( item, i ) => `${ orientation }--${ item.id }` )
+                originalItemsRef.current = [ ...originalItemsRef.current , ...ids ]
             }
         }
     }, [ apiPayload ])
@@ -79,31 +90,45 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem, items, 
                 } else {
                     theseItems = data.items
                 }
-                setItems(theseItems)
-                originalItemsRef.current = theseItems.map( ( item, i ) => `${ orientation }--${ item.id ? item.id : item.track.id }` )
+                setItems( theseItems )
+                originalItemsRef.current = theseItems.map( ( item, i ) => `${ orientation }--${ item.id }` )
             }else {
                 let itemsRoute = routes.items.substr( 0, routes.items.length - 6 )
                 itemsRoute += data.id
                 itemsRoute += data.type === 'artist' ? '/albums' : '/tracks'
-                finalizeRoute( 'get', itemsRoute, data.id, null, null, 'limit=50' )
+                finalizeRoute( 'get', itemsRoute, data.id, { fetchAll: true }, null, 'limit=50', 'include_groups=album,single' )
             }
         }
     },[ data ])
 
     useEffect(() => {
-        if( dragging && orientation === 'bottom' ){
-            if(( data.id === '1' || data.id === '2' ) ) setDisabled( true )
-            if( !data.collaborative && 
-                data.owner &&
-                data.owner.display_name !== user_info.display_name ||
-                data.type !== 'playlist') setDisabled( true )
+        if( dragging ) {
+            if( orientation === 'bottom' ){
+                if(( data.id === '1' || data.id === '2' ) ) setDisabled( true )
+                if( !data.collaborative && 
+                    data.owner &&
+                    data.owner.display_name !== user_info.display_name ||
+                    data.type !== 'playlist') setDisabled( true )
+            } else {
+                if( data.type === 'sortPlaylist'){
+                    setDisabled( true )
+                }
+            }
         }else {
             setDisabled( false )
         }
+        
     }, [ dragging ])
 
-    return(
+    const handleReveal = ( e ) => {
+        const scrollHeight = e.target.scrollHeight 
+        if( e.target.scrollTop >= scrollHeight * .25  ) {
+            const toReveal = items.length - revealed 
+            setRevealed( toReveal < 10 && toReveal > 0 ? revealed + toReveal : revealed + 10 ) 
+        }
+    }
 
+    return(
         <animated.div style={ style } className={`activeItem activeItem--${ orientation } ${ disabled && `activeItem--disabled`}`}>
         {
             data.type === 'sortPlaylist' &&
@@ -149,7 +174,7 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem, items, 
                 <span> 
                     { items.length } 
                     {
-                        data.type === ' artist' ?
+                        data.type === 'artist' ?
                         items.length > 1 ? ' releases' : ' release'  :
                         items.length > 1 ? ' tracks' : ' track'  
                     }
@@ -159,6 +184,7 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem, items, 
                 </div>
             </div>
             <div 
+            onScroll={ handleReveal } 
             className={`activeItem__itemContainer activeItem__itemContainer--${ orientation }`}>
                 {
                     data.type === 'artist' ?
@@ -172,7 +198,7 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem, items, 
                         { provided => (
                             <ul className={ `activeItem__itemContainer__scroll activeItem__itemContainer__scroll--${ orientation } `} {...provided.droppableProps} ref={provided.innerRef}>
                             {
-                                items.map(( item, i ) => {
+                                items.slice(0, revealed ).map(( item, i ) => {
                                     if( item.type !== 'album' ){
                                         if( data.type === 'album'){
                                             item['images'] = data.images
@@ -181,12 +207,12 @@ const ActiveItem = ({ orientation, dragging, style, data, setActiveItem, items, 
                                             item['images'] = item.album.images
                                         }
                                     }
-                                    
+                                    const added = !originalItemsRef.current.includes( `${ orientation }--${ item.id }` ) ? true : false 
                                     
                                     return(
                                     <ActiveItemTrack 
                                     images={ data.type !== 'playlist' ? data.images : undefined}
-                                    added={ !originalItemsRef.current.includes( `${ orientation }--${ item.id }` ) ? true : false }
+                                    added={ added }
                                     orientation={ orientation }
                                     track={ item } 
                                     dragging={ dragging }

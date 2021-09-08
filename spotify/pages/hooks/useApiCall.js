@@ -2,15 +2,15 @@ import { useState, useEffect, useRef } from 'react'
 import useFetchToken from './useFetchToken'
 import { checkToken, refreshToken } from '../../utils/tokenTools'
 
-const useApiCall = (url) => {
-    // const [fetchQueue, setFetchQueue] = useState([])
+const useApiCall = () => {
+
+    const url = 'https://api.spotify.com/'
+    
     const [apiError, setApiError] = useState(false)
     const [apiIsPending, setApiPending] = useState(false)
     const [apiPayload, setApiPayload] = useState(null)
-    const host = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/'
-    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken(host)
-    const thisCallRef = useRef()
-    const timesCalledRef = useRef(0)
+    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken( location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/' )
+    const thisCallRef = useRef( [] )
 
     const fetchApi = ( route, method, requestID, config, body,  ) => {
         const errorHandling = (err) => {
@@ -22,7 +22,7 @@ const useApiCall = (url) => {
                 refreshToken( refresh_token, setTokenBody )
             }
         }
-        thisCallRef.current = ({ route, method, body, requestID})
+        thisCallRef.current = [ ...thisCallRef.current, { route, method, requestID, config, body, } ]
         setApiPending(true)
         setApiError(false)
         const access_token = localStorage.getItem('access_token')
@@ -44,16 +44,14 @@ const useApiCall = (url) => {
                 if(method !== 'get'){
                     data['id'] = data.id ? data.id : requestID 
                 }
-                if( config && config.fetchAll && 
-                (timesCalledRef.current < config.limit || !config.limit)){
+                if( config && config.fetchAll ){
                     const next = fetchNext( data, requestID )
                     if( next ){
                         finalizeRoute( data.method, next.substr( url.length ), requestID, config )
-                        timesCalledRef.current++
                     } 
 
                 }
-                
+                thisCallRef.current = thisCallRef.current.filter( x => x.route !== route )
                 setApiPayload(data)
                 setApiPending(false)
             }
@@ -137,14 +135,15 @@ const useApiCall = (url) => {
             }
         })
     }
-    
     fetchApi( finalRoute, method , requestID, fetchAll, body)
 }
 
     useEffect(() => {
         if(tokenFetchComplete){
-            const { route, method, body } = thisCallRef.current
-            fetchApi( route, method, body )
+            thisCallRef.current.forEach( call => {
+                fetchApi( call.route, call.method, call.requestID, call.config, call.body )
+            })
+            thisCallRef.current = []
             setTokenFetchComplete(false)
         } 
     },[ tokenFetchComplete ])

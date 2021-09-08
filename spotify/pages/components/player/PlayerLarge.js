@@ -4,7 +4,7 @@ import PlayingView from './PlayingView'
 import useApiCall from '../../hooks/useApiCall'
 import { PlayerHookContext } from './Player'
 import { DbHookContext } from '../Dashboard'
-import { useSpring, animated } from 'react-spring'
+import { animated } from 'react-spring'
 
 const PlayerLarge = ({ style, controls }) => {
 
@@ -12,8 +12,8 @@ const PlayerLarge = ({ style, controls }) => {
     const  { setActiveHomeItem, setOverlay } = useContext( DbHookContext )
     const [ currPlayingContext, setCurrPlayingContext ] = useState( {} )
     const [ queueView, setQueueView ] = useState( false )
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
 
     useEffect(() => {
         if( apiPayload ) setCurrPlayingContext( apiPayload )
@@ -21,7 +21,8 @@ const PlayerLarge = ({ style, controls }) => {
 
     useEffect(() => {
         if( currPlaying.context &&  currPlaying.context.href ){
-            finalizeRoute( 'get', currPlaying.context.href.slice(API.length), currPlaying.context.href.slice(-22) )
+            const api = 'https://api.spotify.com/'
+            finalizeRoute( 'get', currPlaying.context.href.slice( api.length ), currPlaying.context.href.slice(-22) )
         } else {
             // For search 
             const context = {

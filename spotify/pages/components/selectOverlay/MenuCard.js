@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect, useRef } from 'react'
 import { whichPicture } from '../../../utils/whichPicture'
 import { DbHookContext } from '../Dashboard'
 import Image from 'next/image'
@@ -7,6 +7,7 @@ const MenuCard = ({ item , type, page, index, allData, soFunctions , menuData, h
     const { setActiveHomeItem, setActiveManageItem, setActiveSearchItem, selectOverlay, setSelectOverlay, queue, qIndex, setQueue, setQIndex } = useContext( DbHookContext )
     
     const [ active, setActive ] = useState(false)
+    const addedRef = useRef( false )
 
     useEffect(() => {
         if( type === 'recPlayed' || type ==='trackRecommendations'){
@@ -62,21 +63,23 @@ const MenuCard = ({ item , type, page, index, allData, soFunctions , menuData, h
 
     const handlePlaylist = ( e ) => {
         e.stopPropagation()
-        handleAddToPlaylist( item )
+        if( !addedRef.current ) {
+            addedRef.current = true 
+            handleAddToPlaylist( item )
+
+        }
     }
 
     return(
-        <div 
+        <li 
         className={ `albumCard`} onClick={ () => handleSelectItem( item ) }>
             <div className='albumCard__imgContainer'>
             {
                 item.images && item.images.length > 0 || item.album && item.album.images.length > 0 ?
                 <img
-                height='64px'
-                width='64px'
                 alt='Album art' 
                 loading='lazy'
-                src={ whichPicture( item.images ? item.images : item.album.images , 'sm' )}/>
+                src={ whichPicture( item.images ? item.images : item.album.images , window.innerWidth >= 768 ? 'med' : 'sm' )}/>
                 :
                 <Image
                 loading='lazy'
@@ -100,8 +103,8 @@ const MenuCard = ({ item , type, page, index, allData, soFunctions , menuData, h
                 {
                     type !== 'playlists' &&
                     item.artists.map(( artist, i)  => {
-                        if( i < item.artists.length - 1) return <span> {`${ artist.name }, `} </span> 
-                        return <span> {artist.name} </span> 
+                        if( i < item.artists.length - 1) return <span key={ i }> {`${ artist.name }, `} </span> 
+                        return <span key={ i }> {artist.name} </span> 
 
                     })
                 }
@@ -114,7 +117,7 @@ const MenuCard = ({ item , type, page, index, allData, soFunctions , menuData, h
                 </button>
             }
             
-        </div> 
+        </li> 
     )
 }
 

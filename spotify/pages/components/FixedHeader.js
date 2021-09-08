@@ -2,27 +2,23 @@ import { useState, useEffect, useContext, useRef } from 'react'
 import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from './Dashboard'
 import { SearchHookContext } from './search/Search'
+import { SearchPageSettingsContext } from './search/Search'
+import { HomePageSettingsContext } from './Home'
 
-const FixedHeader = ({ style, transitionComplete, type, activeHeader, headerScrolled }) => {
+const FixedHeader = ({ style, page, }) => {
+
     const [ mounted, setMounted ] = useState(false)
-    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef, selectOverlay, dashboardRef } = useContext( DbHookContext )
+
+    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext ) 
     const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
-    
+    const { transitionComplete, activeHeader, headerScrolled } = useContext( page === 'search' ? SearchPageSettingsContext : HomePageSettingsContext )
+    const setActiveItem = page === 'home' ? setActiveHomeItem : setActiveSearchItem
     const thisComponentRef = useRef()
 
     useEffect(() => {
         if( transitionComplete ) setMounted( true )
     }, [ transitionComplete ])
-
-    // useEffect(() => {
-    //     if( dashboardState !== type) {
-    //         setMounted(false)
-    //     } else {
-    //         setMounted( true)
-    //     }
-    // }, [ dashboardState ])
-
 
     const { fadeIn, textScroll, btnMove} = useSpring({
         fadeIn: (mounted) ? `${ 0 + ( headerScrolled * 0.01 )}`: `0` ,
@@ -30,19 +26,17 @@ const FixedHeader = ({ style, transitionComplete, type, activeHeader, headerScro
         btnMove: (mounted) ? `${ 50 -( headerScrolled / 2 )}` : `0`,
     })
 
-
     const handleBackBtn = () => {
-        if( type === 'home' ){
+        if( page === 'home' ){
             homePageHistoryRef.current.length > 0 ?
-            setActiveHomeItem( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem  ):
-            setActiveHomeItem( {} )
-        } else if ( type === 'search' ){
+            setActiveItem( homePageHistoryRef.current[ homePageHistoryRef.current.length - 1 ].activeItem  ):
+            setActiveItem( {} )
+        } else if ( page === 'search' ){
             searchPageHistoryRef.current.length > 0 ?
-            setActiveSearchItem( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem ) :
-            setActiveHomeItem( {} )
+            setActiveItem( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem ) :
+            setActiveItem( {} )
         }
     }
-
 
     return(
         <animated.header style={{ 
@@ -50,7 +44,7 @@ const FixedHeader = ({ style, transitionComplete, type, activeHeader, headerScro
             transform: style.transform.to( x => x),
             width: style.width.to( w => w ),
             top: style.top.to( t => t )
-            }} ref={ thisComponentRef } className={`fixedHeader fixedHeader--${type}`}>
+            }} ref={ thisComponentRef } className={`fixedHeader fixedHeader--${page}`}>
         <animated.button
             onClick={ handleBackBtn }
             style={{

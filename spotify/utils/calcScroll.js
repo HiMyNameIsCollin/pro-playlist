@@ -7,6 +7,6 @@ export const calcScroll = (eleHeight) => {
     const height =  mainScroll.clientHeight
     const scrollHeight = eleHeight ? eleHeight : mainScroll.scrollHeight - height
     const scrollTop = mainScroll.scrollTop
-    const percent = Math.floor(scrollTop / scrollHeight * 100)
+    const percent = scrollTop / scrollHeight * 100
     return percent
 }

@@ -1,22 +1,17 @@
-import { useState, useEffect, useReducer , useRef, useCallback, useContext} from 'react'
+import { useEffect, useReducer , useRef, useCallback, useContext } from 'react'
 import { animated } from 'react-spring'
-import TracksContainer from './TracksContainer'
-import Loading from './Loading'
-import AlbumContainer from './AlbumContainer'
+import TracksContainer from '../TracksContainer'
+import AlbumContainer from '../AlbumContainer'
 import ArtistHeader from './ArtistHeader'
-import Slider from './Slider'
-import useApiCall from '../hooks/useApiCall'
-import { DbHookContext } from './Dashboard'
-import { DbFetchedContext } from './Dashboard'
-import { SearchHookContext } from './search/Search'
-const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, transition, headerScrolled, setHeaderScrolled, activeHeader, setActiveHeader }) => {
+import Slider from '../Slider'
+import useApiCall from '../../hooks/useApiCall'
+import { stopDupesId, stopDupesName } from '../../../utils/stopDupes'
+import { DbHookContext, DbFetchedContext } from '../Dashboard'
+import { SearchHookContext } from '../search/Search'
+import { SearchPageSettingsContext } from '../search/Search'
+import { HomePageSettingsContext } from '../Home'
 
-
-    const {  overlay, setOverlay, activeHomeItem, setActiveHomeItem, setSearchOverlay } = useContext( DbHookContext )
-    const { user_info } = useContext( DbFetchedContext )
-    const searchContext = useContext( SearchHookContext )
-    const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
-    const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
+const Artist = ({ style, page }) => {
 
     const initialState = {
         artist: {},
@@ -65,24 +60,33 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
                     related_artists: action.artists
                 }
             case routes.albums:
+                const arr = stopDupesId(state.albums, action.items, 'name')
                 return {
                     ...state,
-                    albums: [ ...state.albums, ...action.items ]
+                    albums: arr.reduce(( acc, val ) => {
+                       const found = acc.find( x => x.name === val.name )
+                       if( !found ) acc = [ ... acc, val ]
+                       return acc
+                    },[]).filter( x => x.album_type === 'single' || x.album_group !== 'appears_on')
                 }
             default: 
-                console.log(action)
+                return state
                 break
         }
     }
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
-    const [ state , dispatch ] = useReducer(reducer, initialState)
-
-    const { artist , top_tracks, albums, related_artists } = { ...state }
     
-    const thisComponentRef = useRef() 
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
+    const [ state , dispatch ] = useReducer(reducer, initialState)
+    const { user_info } = useContext( DbFetchedContext )
+    const { artist , top_tracks, albums, related_artists } = { ...state }
+    const { activeHomeItem, setActiveHomeItem } = useContext( DbHookContext )
+    const searchContext = useContext( SearchHookContext )
+    const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
+    const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
+    const { setTransMinHeight , transitionComplete } = useContext( page==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
 
-    const [ mounted, setMounted ] = useState(false)
+    const thisComponentRef = useRef() 
+    const firstMountRef = useRef() 
 
     const thisComponent = useCallback(node => {
         if (node !== null) {
@@ -108,35 +112,35 @@ const Artist = ({ setTransMinHeight, transitionComplete, setTransitionComplete, 
     }, [ user_info])
 
     useEffect(() => {
+        if( firstMountRef.current ){
+            if( !transitionComplete ){
+                thisComponentRef.current.classList.add('fadeIn')
+                thisComponentRef.current.style.minHeight = '100vh'
+            } 
+        } else {
+            if( transitionComplete ) firstMountRef.current = true 
+        }
+  }, [ transitionComplete ])
+
+    useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
     },[ apiPayload ])
 
-
-
     return(
-        <animated.div ref={ thisComponent } style={ transition } className={ `page page--artist artist ` }>
-            {
-                artist.id &&
-                <ArtistHeader 
-                pageType={ searchContext ? 'search' : 'home'}
-                headerScrolled={ headerScrolled }
-                setHeaderScrolled={ setHeaderScrolled }
-                activeHeader={ activeHeader }
-                setActiveHeader={ setActiveHeader }
-                data={{ artist }} 
-                transitionComplete={ transitionComplete } 
-                setTransitionComplete={ setTransitionComplete } 
-                parent={ thisComponentRef.current } />
-            }
+        <animated.div ref={ thisComponent } style={ style } className={ `page page--artist artist` }>
+        {
+            artist.id &&
+            <ArtistHeader 
+            pageType={ searchContext ? 'search' : 'home'}
+            data={{ artist }}  />
+        }
 
-                
-                <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks, artist: artist} } setOverlay={ setOverlay }/>
-                <AlbumContainer page={ searchContext ? 'search' : 'home' } albums={ albums } />
-                <Slider 
-                message='Fans also enjoy'
-                items={ related_artists }
-                setActiveItem={ setActiveItem } />
-        
+            <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks, artist: artist} }/>
+            <AlbumContainer page={ searchContext ? 'search' : 'home' } albums={ albums } />
+            <Slider 
+            message='Fans also enjoy'
+            items={ related_artists }
+            setActiveItem={ setActiveItem } />
         </animated.div>
     )
 }

@@ -8,11 +8,6 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
 
     const { overlay, setOverlay, setPlayNextQueue, toBeManaged, setToBeManaged, setMessageOverlay, setSelectOverlay, playerSize, setPlayerSize } = useContext( DbHookContext )
 
-    const copyToClip = () => {
-        console.log(track)
-        // ILL BE BACK FOR THIS ONCE I FIGURE IF I WANNA SHARE ON SPOTIFY OR MY APP
-    }
-
     const openSpotify = ( e , url ) => {
         e.stopPropagation()
         window.open( url )
@@ -77,10 +72,10 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
         <animated.div 
         style={ transition }
         className='trackMenu overlay__popup'>
-            <header className='trackMenu__header'>
+            <header className='trackMenu__header' >
                 <div className='trackMenu__imgContainer'>
                     <img
-                    src={ whichPicture( track.images, 'med' )}
+                    src={ whichPicture( track.images, `${ window.innerWidth >= 768 ? 'lrg' : 'med' }` )}
                     alt='Track art' 
                     />
                 </div>
@@ -97,10 +92,6 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
                 width='32px'/>
                 <span> View via Spotify </span>
             </button>
-            <button onClick={ () => copyToClip( track ) }>
-                <i className="fas fa-share-alt"></i> 
-                <span> Share </span>
-            </button>
        
             {
             type !== 'artist' &&
@@ -113,23 +104,24 @@ const TrackMenu = ({ setActiveItem, transition, calledFrom, page, type, track })
             {
             track.album && 
             <button onClick={ viewAlbum }>
-                <i className="far fa-eye"></i>
+                <i className="fas fa-record-vinyl"></i>
                 <span> View album </span>
             </button>
             }
             
             <button onClick={ handleAddToQueue }>
-                <i className="far fa-plus-square"></i>
+                <i className="fas fa-plus-square"></i>
                 <span> Add to queue </span>
             </button>
             <button onClick={ handleAddToManager }>
-                <i className="far fa-plus-square"></i>
+                <i className="fas fa-folder-plus"></i>
                 <span>Add track to Manager</span>
             </button>
             <button onClick={ handleAddToPlaylist }>
-                <i className="far fa-plus-square"></i>
+                <i className="fas fa-plus-circle"></i>
                 <span>Add track to playlist</span>
             </button>
+
         </animated.div>
     )
 } 

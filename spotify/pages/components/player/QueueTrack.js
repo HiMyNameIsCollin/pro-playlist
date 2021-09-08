@@ -31,8 +31,7 @@ const QueueTrack = ({ type, track, index, trackSelected, setTrackSelected }) => 
 
     const playTrack = (e) => {
         e.stopPropagation()
-        const index = queue.findIndex( x => x.id === track.id )
-        setQIndex( index )
+        setQIndex( index + 1 )
     }
 
     return(

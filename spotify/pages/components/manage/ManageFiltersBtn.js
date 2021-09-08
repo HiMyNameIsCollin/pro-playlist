@@ -1,16 +1,19 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useCallback, useContext } from 'react'
 import { animated, useSpring } from 'react-spring'
+import { DbHookContext } from '../Dashboard'
 
 const ManageFiltersBtn = ({ item, activeFilter, handleFilter }) => {
 
+    const [ mounted, setMounted ] = useState( false )
     const [ btnWidth, setBtnWidth ] = useState( undefined )
-    const btnRef = useRef()
 
-    useEffect(() => {
-        if( !btnWidth || btnWidth === 0){
-            setBtnWidth( btnRef.current.getBoundingClientRect().width )
-        }
-    })
+    const { dashboardState } = useContext( DbHookContext )
+
+    const btnRef = useCallback( node => {
+        if( node && !btnWidth ){
+            setBtnWidth( node.getBoundingClientRect().width )
+        }    
+    },[ dashboardState ])
 
 
     const { opacSwitch, peSwitch, toSwitch} = useSpring({
@@ -28,9 +31,13 @@ const ManageFiltersBtn = ({ item, activeFilter, handleFilter }) => {
         paddSwitch: !activeFilter ? '4px 16px' : activeFilter === item ? '4px 16px' : '0px 0px' ,
         margSwitch: !activeFilter ? '0px 8px' : activeFilter === item ? '0px 8px' : '0px 0px',
         widthSwitch: !activeFilter ? btnWidth : activeFilter === item ? btnWidth : 0 ,
+        config: {
+            precision: !mounted ? 1 : 0 
+        },
+        onRest: () => !mounted && setMounted( true ) 
     })
 
-    if( !btnWidth || btnWidth === 0 ){
+    if( !mounted ){
         return(
             <button 
             ref={ btnRef }

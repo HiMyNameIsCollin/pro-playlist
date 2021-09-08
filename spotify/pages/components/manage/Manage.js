@@ -11,24 +11,23 @@ import SearchOverlay from '../search/SearchOverlay'
 
 export const ManageHookContext = createContext()
 
-const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeManaged, manageState, setManageState }) => {
+const Manage = ({  toBeManaged, setToBeManaged, manageState, setManageState }) => {
 
     const manageContainerListTypeRef = useRef( 'bar' )
     const totalLikedSongsRef = useRef(0)
 
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall()
     const [ data, setData ] = useState( [] )
     const [ likedPlaylist, setLikedPlaylist ] = useState()
     const [ managerPlaylist, setManagerPlaylist ] = useState()
     const [ activeFilter, setActiveFilter ] = useState( undefined )
     const [ subFilter, setSubFilter ] = useState( false )
     const [ sort , setSort ] = useState( 'Alphabetical' )
-    const [ manageOverlay, setManageOverlay ] = useState( { type: undefined } )
+    const [ manageOverlay, setManageOverlay ] = useState( { } )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     const sortFilters = [ 'Recently added', 'Alphabetical', 'Creator' ]
     const { user_info, my_albums, my_playlists, followed_artists, my_liked_tracks, recently_played } = useContext( DbFetchedContext )
-    const { dashboardState, sortContainerOpen, setSortContainerOpen, selectOverlay, setSelectOverlay, dashboardRef } = useContext( DbHookContext )
+    const { dashboardState, sortContainerOpen, setSortContainerOpen, selectOverlay, setSelectOverlay, dashboardRef , activeManageItem, setActiveManageItem,} = useContext( DbHookContext )
     const manageHookState = {
         activeManageItem,
         setActiveManageItem
@@ -85,12 +84,13 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     }, [activeFilter, subFilter, sort, my_albums, my_playlists, followed_artists ])
 
     useEffect(() => {
-        if( manageOverlay.type ) setManageOverlay({ type: undefined })
+        if( manageOverlay.type ) setManageOverlay({})
     }, [ sort ])
 
     const createPlaylist = ( playlist, callback ) => {
         const images = playlist.items[0].album ? playlist.items[0].album.images : playlist.items[0].images
-        playlist['owner'] = { display_name: user_info.display_name}
+        playlist['collaborative'] = false
+        playlist['owner'] = { display_name: 'Pro playlist'}
         playlist['images'] = images
         playlist['type'] = 'playlist'
         callback( playlist )
@@ -142,9 +142,9 @@ const Manage = ({ activeManageItem, setActiveManageItem, toBeManaged, setToBeMan
     })
 
     const manageOverlayTrans = useTransition( manageOverlay, {
-        from: { transform: 'translate3d( 0, 100%, 0)' },
-        enter: { transform: 'translate3d( 0, 0%, 0)' },
-        leave: { transform: 'translate3d( 0, 100%, 0)' },
+        from: { opacity: 0, pointerEvents: 'none' },
+        enter: { opacity: 1, pointerEvents: 'auto' },
+        leave: { opacity: 0, pointerEvents: 'none' },
     })
 
     const overlayTrans = useTransition( manageState , {

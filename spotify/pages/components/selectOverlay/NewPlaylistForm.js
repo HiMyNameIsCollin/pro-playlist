@@ -6,8 +6,7 @@ import SelectOverlayHeader from './SelectOverlayHeader'
 
 const NewPlaylistForm = ({  menuData, pos, newPlaylistRef }) => {
 
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
     const { selectOverlay, setSelectOverlay, refresh } = useContext( DbHookContext )
 
     const { user_info, my_top_tracks, my_liked_tracks } = useContext( DbFetchedContext )
@@ -23,9 +22,9 @@ const NewPlaylistForm = ({  menuData, pos, newPlaylistRef }) => {
 
     useEffect(() => {
         if( apiPayload ){
+            refresh('my_playlists')
             if( apiPayload.route === newPlaylistRoute ){
                 newPlaylistRef.current = { ...apiPayload, page: menuData.page }
-                refresh('my_playlists')
                 if(menuData.data){
                     finalizeRoute('post', `${ addToPlaylistRoute.substr(0, 12) }/${ apiPayload.id }/tracks`, apiPayload.id, null, null, `uris=${ menuData.data[0].uri }`)
                     
@@ -79,7 +78,7 @@ const NewPlaylistForm = ({  menuData, pos, newPlaylistRef }) => {
                     e.target.select()
                 }}
                 ref={ newPlaylistInputRef }
-                onChange={ (e) => setInput( e.value )} 
+                onChange={ (e) => setInput( e.target.value )} 
                 name='newPlaylistFormInput' 
                 value={ input }/>
                 <button className='newPlaylistForm__newBtn'> 

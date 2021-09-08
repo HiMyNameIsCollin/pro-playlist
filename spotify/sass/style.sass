@@ -79,11 +79,20 @@ $bg__1--lg: url('../public/bglg.jpg')
     p
         @include midFirm
 
+@mixin btn1 
+    @include midFirm
+    border: solid $white 1px
+    border-radius: 25px
+    margin: 1rem auto
+    padding: .25rem 1rem
+
 @mixin bigBold 
     font-weight: 700
     font-size: 1.5rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 2rem
+    @media only screen and (min-width: 768px)
+        font-size: 2.5rem
 
 @mixin largeBold
     font-weight: 700
@@ -94,62 +103,83 @@ $bg__1--lg: url('../public/bglg.jpg')
 @mixin midBold
     font-weight: 700
     font-size: .85rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 1.2rem
+
+    @media only screen and (min-width: 768px)
+        font-size: 1.5rem
 
 @mixin smallBold
     font-weight: 700
     font-size: .75rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 1rem
+    @media only screen and (min-width: 768px)
+        font-size: 1.25rem
 
 @mixin bigFirm 
     font-weight: 500
     font-size: 1.5rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 2rem
+    @media only screen and (min-width: 768px)
+        font-size: 2.5rem
     
 @mixin largeFirm
     font-weight: 500
     font-size: 1.2rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 1.4rem
+    @media only screen and (min-width: 768px)
+        font-size: 1.6rem
 
 @mixin midFirm
     font-weight: 500
     font-size: .85rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 1.2rem
+    @media only screen and (min-width: 768px)
+        font-size: 1.55rem
 
 @mixin smallFirm
     font-weight: 500
     font-size: .75rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 1rem
+    @media only screen and (min-width: 768px)
+        font-size: 1.25rem
 
 @mixin bigSkin
     font-weight: 400
     font-size: 1.5rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 2rem
+    @media only screen and (min-width: 768px)
+        font-size: 2.5rem
 
 @mixin largeSkin
     font-weight: 400
     font-size: 1.2rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 1.4rem
+    @media only screen and (min-width: 768px)
+        font-size: 1.6rem
 
 @mixin midSkin
     font-weight: 400
     font-size: .85rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 1.2rem
+    @media only screen and (min-width: 768px)
+        font-size: 1.55rem
 
 @mixin smallSkin
     font-weight: 400
     font-size: .75rem
-    @media only screen and (min-width: 768px)
+    @media only screen and (min-width: 640px)
         font-size: 1rem
+    @media only screen and (min-width: 768px)
+        font-size: 1.25rem
 
 @mixin ellipsis
     overflow: hidden
@@ -183,13 +213,15 @@ button, input[type="submit"], input[type="reset"], input[type='text'], textarea
 
 
 
+
 body
     background: $black
+    color: $white
     font-family: 'Rubik', sans-serif
-    min-height: 100vh
     max-height: 100vh
     max-width: 100%
     overflow: hidden
+
 a
     color: inherit
     text-decoration: none
@@ -210,19 +242,22 @@ li
     pointer-events: none
 
 .container
-    position: relative
+    height: 100%
+    overflow: hidden
+    width: 100vw
 
 .dashboard
     @include pseudo
     @include flexCol
-    min-height: 100vh
-    max-height: 100vh
+    min-height: 100%
+    max-height: 100%
     overflow: auto
     overflow-x: hidden
     transform-origin: 50% bottom
     transition: all 0.25s ease-in-out
     margin: auto
     width: 100%
+
     &::before
         background: $darkGrey
         opacity: 0.9
@@ -236,7 +271,7 @@ li
     scroll-behavior: smooth
     -webkit-scroll-behavior: smooth
 
-.nav, .tab, .sortMenu
+.tab, .sortMenu
     @include pseudo
     &::before
         @include scrimGradient($grey, '135deg')
@@ -248,6 +283,7 @@ li
 .login
     display: flex
     &__card
+        @include bigFirm
         @include shadowA
         background: $darkGrey
         border: $black 2px solid
@@ -255,32 +291,39 @@ li
         margin: auto
         padding: 2rem
         position: relative
+        @media only screen and (min-width: 768px)
+            padding: 6rem
     &__brand
         margin: 2rem 0 4rem 0
         position: relative
+        text-align: center
         &::before
+            @include largeFirm
             content: 'Unofficial'
             left: 0rem
             top: -1.25rem
             font-size: 1rem
             position: absolute
         &::after
+            @include largeFirm
             content: 'By Collin Stone'
             right: 0rem
             bottom: -1.25rem
             font-size: 1rem
             position: absolute
     &__icon
-        background: inherit
-        border-radius: 50%
+        display: flex
         margin: auto
         position: absolute
         top: -2rem
-        left: calc((100% - 64px) / 2)
-        width: 4rem
-        img
-            object-fit: cover
+        left: 0
+        width: 100%
+        div
+            margin: auto !important
+        @media only screen and (min-width: 768px)
+            top: -4rem
     &__btn
+        @include largeBold
         border: solid 1px $green solid
         border-radius: 40px
         background: $green
@@ -289,13 +332,15 @@ li
         display: block
         font-weight: 600
         margin: 0 auto 2rem auto
-        padding: 1rem 
+        padding: 2rem 
         width: 100%
         -webkit-appearance: none
         &:focus
             background: $green
             border: $lightGreen
             outline: none
+        @media only screen and (min-width: 768px)
+            @include bigBold
     p
         color: $white
         font-weight: 700
@@ -304,58 +349,54 @@ li
     &__logo
         background: $darkGrey
         margin: auto
-        min-height: 64px
+        height: auto
         position: relative
-        width: 192px
- 
+        padding-top: 30%
+        width: 100%
+
 .page
     @include pseudo
     background: $black
-    color: $white
+    display: flex
+    flex-direction: column
     min-height: 100vh
     min-width: 100vw
     max-width: 100%
     z-index: 2
+    &--artist, &--collection, &--welcome
+        padding: 0 0 7rem 0
+    &--search
+        padding: 8rem 0
+    &--manage
+        padding: 7rem 0rem
     &--artist, &--collection, &--welcome, &--search
         &::before
             background: $black
             opacity: 1
             transition: opacity .75s ease-in-out
             z-index: 3
-    &--welcome
-        padding: 0 0 min(20vh, 8rem) 0 
-        will-change: transform
-        &::after
-            @include scrimGradient( $green, '135deg')
-            top: 0
-            left: 0
-            opacity: 0.25
-            z-index: -1
-    &--manage
-        padding: 7rem 0
-    &--collection
-        padding: 0 0 8rem 0
-        will-change: transform
-    &--artist        
-        padding: 0 0 8rem 0
-        will-change: transform
-
-    &--search
-        padding: 9rem 0 
- 
+    @media only screen and ( min-width: 640px )
+        &--search
+            padding: 9rem 0
+    @media only screen and ( min-width: 768px )
+        &--artist, &--collection, &--welcome
+            padding: 0 0 9rem 0
+        &--search
+            padding: 11rem 0 9rem 0
+        &--manage
+            padding: 9rem 0
 .fadeIn
     &::before
         opacity: 0
         pointer-events: none
 
 #homePage, #searchPage, #managePage
-    display: none
     max-width: 100vw
 .showcase
     color: $white
     &__title
-        @include largeFirm
-        padding: 0 1rem
+        @include bigFirm
+        padding: 1rem 1rem 0 1rem
 
 .collection
     @include smallSkin
@@ -375,6 +416,8 @@ li
             padding: 1rem 0 0 0 
     &__copyright
         padding: 0 1rem
+    &__addBtn
+        @include btn1
 
 .trackContainer
     opacity: 0
@@ -395,10 +438,7 @@ li
         padding: .5rem 0
     &__btn
         @include smallBold
-        border: solid $white 1px
-        border-radius: 25px
-        margin: 1rem auto
-        padding: .25rem 1rem
+        @include btn1
     &--active
         opacity: 1
 
@@ -438,6 +478,12 @@ li
             font-size: .8rem
     button
         grid-row: 1/3
+    @media only screen and (min-width: 768px)
+        grid-template-columns: 128px 1fr auto
+        padding: 1rem 0
+        &__imgContainer
+            max-height: 128px
+            max-width: 128px
   
 .track
     align-items: center
@@ -445,19 +491,25 @@ li
     justify-content: flex-start
     display: grid
     grid-template-rows: auto auto
-    grid-template-columns: auto auto minmax( 0, 100%) auto auto
+    grid-template-columns: auto 3rem  minmax( 0, 100%) auto auto
     padding: .5rem 1rem
+    @media only screen and ( min-width: 768px )
+        grid-template-columns: auto 5rem minmax( 0, 100%) auto auto
     &__imgContainer
+        display: flex
+        position: relative
         grid-column: 2/3
         grid-row: 1/3
-        height: 3rem
-        width: 3rem
+        height: 100%
+        width: 100%
         img
             height: 100%
             width: 100%
         button
+            margin: auto
             i
                 font-size: 1.5rem
+
     &__title, &__info
         @include ellipsis
         grid-column: 3/4
@@ -497,13 +549,18 @@ li
         padding: 0
         min-width: calc(100% - 4rem)
         max-width: calc(100% - 4rem)
-    
-        .track__imgContainer
-            height: 3.5rem
-            width: 3.5rem
+
         @media only screen and (min-width: 768px)
+            padding: 1rem .5rem
             .track__title
                 @include smallFirm
+        .track__imgContainer
+            height: 3rem
+            margin: 0 .25rem
+            width: 3rem
+            @media only screen and (min-width: 768px)
+                height: 4rem
+                width: 4rem
         
             
 
@@ -636,6 +693,7 @@ li
         color: $white
         position: sticky
         padding: 1rem
+        z-index: 2
     .controls
         background: $black
         bottom: 0
@@ -748,13 +806,14 @@ li
 .playerCollapsed
     @include pseudo
     align-items: center
-    background: $darkGrey
+    background: linear-gradient(to bottom, var(--currentTrackColor1) 0%, var(--currentTrackColor0)), linear-gradient(to right, var(--currentTrackColor1), var(--currentTrackColor0)) 
+    border-radius: 5px
     bottom: 0
     display: flex
     flex-wrap: wrap
-    left: 0
+    left: .5rem
     position: fixed
-    width: 100%
+    width: calc( 100% - 1rem )
     z-index: 5
     &__bar
         background: $grey
@@ -771,13 +830,30 @@ li
         height: 100%
         &::before
             @include scrimGradient($grey, 'to right')
-    &::before
-        @include scrimGradient( $grey, '135deg')
-        opacity: .7
     &--playBtn
         color: $white
         margin-left: auto
         padding: .75rem 1rem
+    &__activate
+        @include pseudo
+        color: $green
+        display: flex
+        height: 100%
+        position: absolute
+        text-align: center
+        width: 100%
+        p
+            @include midFirm
+            margin: auto
+        &::before
+            background: $black
+            opacity: 0.7
+    &::before
+        @include scrimGradient($black, 'to bottom')
+        opacity: 1
+    &::after
+        @include scrimGradient($black, 'to top')
+        opacity: 1
 
 
 
@@ -955,17 +1031,25 @@ li
 .welcomeHeader
     align-items: center
     display: flex
-    padding: 2rem 1rem 0 1rem
+    padding: 0 1rem 0 1rem
     width: 100%
     &__title
+        @include bigBold
         margin: auto auto auto 0
-    &__logo
-        max-height: 32px
-        max-width: 32px
+
+.welcome__logo
+    align-items: center
+    justify-content: center
+    display: flex
+    flex-direction: column
+    padding: 1rem
+    margin-left: auto
+    p
+        @include smallFirm
+        white-space: nowrap
       
         
 .searchHeader
-    @include pseudo
     background: $black
     display: flex
     flex-wrap: wrap
@@ -976,9 +1060,6 @@ li
     width: 100%
     will-change: transform
     z-index: 3
-    &::before
-        @include scrimGradient($grey, '135deg')
-        opacity: .7
     &__title
         @include sectionTitle
         @include bigBold
@@ -1129,6 +1210,7 @@ li
        .resultCard__name
            color: $green 
 .nav
+    background: $black
     display: flex
     justify-content: center
     position: fixed
@@ -1190,17 +1272,25 @@ li
         padding: 0 .5rem
         -webkit-line-clamp: 2
         -webkit-box-orient: vertical
-        @media only screen and (min-width: 768px)
-            @include smallFirm
     &__image
         height: 3rem
-        min-width: 3rem
+        width: 100%
         max-width: 3rem
         img
             height: 100%
             object-fit: cover
             width: 100%
-
+    @media only screen and (min-width: 640px)
+        margin: 0.5rem 0
+        width: calc( 33% - 1rem )
+        &__image
+            height: 3.5rem 
+            max-width: 3.5rem
+    @media only screen and ( min-width: 1024px)
+        width: calc( 25% - 1rem )
+        &__image
+            height: 4rem 
+            max-width: 4rem
 
 .slider
     &__title
@@ -1213,13 +1303,18 @@ li
         padding: 0 0 .5rem 0
         position: relative
         width: auto
+        li
+            margin: 0 .5rem
+        li:nth-of-type(1)
+            margin-left: 1rem
+        li:last-nth-of-type(1)
+            margin-right: 1rem
         
 
 .browseContainer
     justify-content: space-between
     display: grid
-    grid-template-columns: repeat( auto-fill, Min( calc(50vw - 1.5rem), 12rem))
-    grid-gap: 1rem
+    grid-template-columns: repeat( auto-fill, calc( 50vw - 1.25rem ))
     padding: 1rem
     &__title
         @include largeFirm
@@ -1230,7 +1325,6 @@ li
 .card
     color: $white
     height: 100%
-    // max-height: 12rem
     position: relative
     &__title
         @include midFirm
@@ -1250,19 +1344,22 @@ li
             width: 100%
     &__meta
         @include smallSkin
-    
-    &--homeSlider
+    &--slider
         flex: 0 0 auto
-        margin: 0 .5rem
-        width: Min(30vw, 8rem)
-        &:nth-of-type(1)
-            margin-left: 1rem
-        &:nth-last-of-type(1)
-            margin-right: 1rem
-    &--BcSearch, &--BcShowcase
+        margin: 0
+        width: Min(30vw, 12rem)
+    &--bc
         min-height: auto
         max-height: 100%
+        margin: .5rem 0
         .card__imgContainer
+            border-radius: 10px
+            padding-top: 56.25%
+            img
+                object-position: center 40%
+                object-fit: cover
+        @media only screen and ( min-width: 768px )
+            margin: 1rem 0
     &--artist
         text-align: center
         border-radius: 50%
@@ -1337,15 +1434,19 @@ li
 
 .trackMenu, .listMenu
     overflow-y: auto
-    padding: 0 1rem
+    padding: 2rem 1rem 
     &__imgContainer
-        margin: auto
-        padding: 2rem 1rem 1rem 1rem
-        width: 200px
+        position: relative
+        width: max( 200px, 50vw )
+        margin: 0 auto auto auto
         img
+            display: block
             height: auto
             max-width: 100%
+            margin: auto
+        
     &__header
+        margin: auto 
         text-align: center
         width: 100%
     &__title
@@ -1397,6 +1498,7 @@ li
             height: 100%
             max-width: 100%
     &__title
+        @include bigBold
         padding: 0 1rem
         
 .mngLibrary
@@ -1417,6 +1519,7 @@ li
             font-size: .8rem
     &__btn
         @include smallFirm
+        
         background: inherit
         border: solid $white 1px
         border-radius: 25px
@@ -1505,6 +1608,7 @@ li
             min-width: 100%
 
 .sortContainer
+    background: $black
     min-height: 100vh
     min-height: -webkit-fill-available
     position: fixed
@@ -1514,6 +1618,7 @@ li
     padding-bottom: 3.6rem
     width: 100%
     z-index: 5
+
     &__controls
         background: $black
         bottom: 0
@@ -1532,11 +1637,9 @@ li
             i
                 font-size: 1.5rem
                 margin: .25rem 0
-        
     &__relative
         @include flexCol
         position: relative
-        max-height: calc( 100% - 3.6rem)
         width: 100%
     &__resize
         @include pseudo
@@ -1551,7 +1654,6 @@ li
             border: solid transparent 1px
             opacity: 0
             transition: all .75s ease-in-out
-
         &--active
             &::before
                 background: $green
@@ -1559,6 +1661,7 @@ li
                 height: 2px
                 top: calc((100% - 2px) / 2)
                 opacity: 1
+
 .activeItem
     background: $black
     color: $white
@@ -1577,6 +1680,7 @@ li
         &::before
             @include scrimGradient( $black, 'to bottom')
             pointer-events: none
+            opacity: 0.75
             z-index: 1
         &::after
             background: $black
@@ -1591,7 +1695,7 @@ li
         grid-column: 1/2
         grid-row: 1/2
         position: relative
-        margin: .5rem
+        margin: auto .5rem
         min-height: 3rem
         max-height: 3rem
         width: 3rem
@@ -1610,6 +1714,7 @@ li
         padding: 0 .5rem
         margin:.5rem 0
         text-align: end
+        overflow: hidden
         width: 100%
         &--bottom
             div
@@ -1653,6 +1758,9 @@ li
         &--top
             grid-row: 1/2
 
+.activeItemTrackContainer
+    display: inline !important
+    width: auto !important
 
 .activeItemTrack
     align-items: center
@@ -1681,7 +1789,8 @@ li
     i
         margin: auto 0 auto auto
         font-size: 1.5rem
-  
+    @media only screen and (max-height: 800px)
+        padding: .5rem
 
 
 @keyframes maxWidthSm
@@ -1780,6 +1889,7 @@ li
         border-bottom-right-radius: 0
         border-bottom-left-radius: 0
         color: $white
+        display: flex
         margin-top: auto
         min-height: 85vh
         max-height: 85vh
@@ -1815,9 +1925,8 @@ li
         display: flex
         flex-direction: column
         position: relative
-        margin: 4rem 0
-        min-height: 90vh
-        height: auto
+        margin: 4rem 0 0 0
+        min-height: 100%
         overflow: auto
         min-width: 100%
     &__scroll
@@ -1841,7 +1950,7 @@ li
     justify-content: flex-start
     gap: 1rem
     height: 100%
-    margin-top: 4rem
+    margin: auto
     label
         @include largeFirm
         margin-top: 40%
@@ -1864,7 +1973,4 @@ li
     
     
         
-@media only screen and (min-width: 768px)
-    .login
-        padding: 4rem 4rem 2rem 4rem
 

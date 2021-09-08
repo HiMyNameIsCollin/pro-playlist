@@ -8,7 +8,7 @@ import  useApiCall  from '../../hooks/useApiCall'
 export const PlayerHookContext = createContext()
 
 const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
-    const API = 'https://api.spotify.com/'
+
     const { queue , setQueue, playNextQueue, setPlayNextQueue, audioRef, qIndex, setQIndex } = useContext( DbHookContext )
 
     const [ currPlaying, setCurrPlaying ] = useState( {} )
@@ -36,7 +36,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
         
     }
 
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(API)
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
     const getTrack_route = 'v1/tracks'
 
     
@@ -120,7 +120,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
                 setCurrPlaying( playNextQueue[0])
                 setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
             } else {
-                if( qIndex !== queue.length - 1){
+                if( qIndex !== queue.length ){
                     setQIndex( qIndex => qIndex = qIndex + 1 )
                 } else {
                     setTrackProgress( 0 )
@@ -135,7 +135,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
                 setCurrPlaying( playNextQueue[0])
                 setPlayNextQueue( playNextQueue => playNextQueue = [ ...playNextQueue.slice(1) ] )
             } else {
-                if( qIndex === queue.length - 1 ){
+                if( qIndex === queue.length ){
                     setTrackProgress( 0 )
                     setQIndex( 0 )
                 } else {
@@ -188,9 +188,9 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
         
     }
     const largePlayerTrans = useTransition(playerSize,{
-        from: { transform: 'translateY(100%) '},
-        enter: { transform: 'translateY(0%) '} ,
-        leave: { transform: 'translateY(100%) '}
+        from: { transform: 'translateY(100%)', opacity: 0 },
+        enter: { transform: 'translateY(0%)' , opacity: 1 } ,
+        leave: { transform: 'translateY(100%)' , opacity: 0 }
     })
 
 
@@ -205,7 +205,7 @@ const Player = ({ hiddenUI, playerSize, setPlayerSize, navHeight }) => {
                 ))
                 
                 }
-                <PlayerCollapsed playTrack={ playTrack } pauseTrack={ pauseTrack } navHeight={ navHeight } hiddenUI={ hiddenUI } />
+                <PlayerCollapsed playTrack={ playTrack } pauseTrack={ pauseTrack } navHeight={ navHeight } hiddenUI={ hiddenUI } controls={ controls } />
             </PlayerHookContext.Provider>
             
         </>

@@ -1,20 +1,19 @@
 import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
 import { useSpring, animated, useTransition } from 'react-spring'
 import { calcScroll } from '../../utils/calcScroll'
-import  useApiCall  from '../hooks/useApiCall'
+import { stopDupesId } from '../../utils/stopDupes'
+import useApiCall from '../hooks/useApiCall'
 import Home from './Home'
 import Manage from './manage/Manage'
 import Search from './search/Search'
-
-import Overlay from './Overlay'
+import Overlay from './overlay/Overlay'
 import MessageOverlay from './MessageOverlay'
-import SelectOverlay from './SelectOverlay'
+import SelectOverlay from './selectOverlay/SelectOverlay'
 import Nav from './Nav'
 import Player from './player/Player'
 
 export const DbHookContext = createContext()
 export const DbFetchedContext = createContext()
-
 
 const initialState = {
     user_info: {},
@@ -56,21 +55,12 @@ const routes = {
     my_top_categories: 'categories',
 }
 
-
-
 const initialPageScroll = {
     home: 0,
     search: 0,
     manage: 0
 }
-const Dashboard = ({ setAuth, audioRef }) => {
-
-
-    const stopDupes = ( state, items ) => {
-        const intersection = items.filter(({ id: id1 }) => !state.some(({ id: id2 }) => id2 === id1 ) )
-        const result = [ ...state, ...intersection ]
-        return result
-    }
+const Dashboard = ({ setLoaded, audioRef }) => {
 
     const reducer = (state, action) => {
         let route
@@ -81,106 +71,87 @@ const Dashboard = ({ setAuth, audioRef }) => {
         }
         switch(route) {
             case routes.user_info:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        user_info: action
-                    }
+                return{
+                    ...state,
+                    user_info: action
                 }
             case routes.player_info:
-                if(method==='get'){
-                    return{
-                        ...state,
-                        player_info: action
-                    }
+                return{
+                    ...state,
+                    player_info: action
                 }
             case routes.my_liked_tracks: 
-                if(method === 'get'){
-                    const cleanedUp = action.items.map( item => {
-                        item.track['added_at'] = item.added_at
-                        return item.track
-                    })
-                    return{
-                        ...state,
-                        my_liked_tracks: stopDupes(state.my_liked_tracks, cleanedUp)
-                    }
+                const likedTracks = action.items.map( item => {
+                    item.track['added_at'] = item.added_at
+                    return item.track
+                })
+                return{
+                    ...state,
+                    my_liked_tracks: stopDupesId( state.my_liked_tracks, likedTracks )
                 }
             case routes.my_playlists:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        my_playlists: stopDupes(state.my_playlists, action.items)
-                    }
-                } else if( method === 'put'){
-                    
+                return{
+                    ...state,
+                    my_playlists: stopDupesId(state.my_playlists, action.items)
                 }
+                
             case routes.my_albums:
-                if(method === 'get'){
-                    const cleanedUp = action.items.map( item => {
-                        item.album['added_at'] = item.added_at
-                        return item.album
-                    })
-                    return{
-                        ...state,
-                        my_albums: stopDupes(state.my_albums, cleanedUp)
-                    }
+                const cleanedUp = action.items.map( item => {
+                    item.album['added_at'] = item.added_at
+                    return item.album
+                })
+                return{
+                    ...state,
+                    my_albums: stopDupesId(state.my_albums, cleanedUp)
                 }
             case routes.recently_played:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        recently_played: stopDupes(state.recently_played, action.items)
-                    }
-                }             
+                return{
+                    ...state,
+                    recently_played: state.recently_played = [ ...state.recently_played, ...action.items ]
+                }
             case routes.new_releases:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        new_releases: stopDupes(state.new_releases, action.albums.items)
-                    }
+                return{
+                    ...state,
+                    new_releases: stopDupesId(state.new_releases, action.albums.items)
                 }
             case routes.featured_playlists:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        featured_playlists: stopDupes(state.featured_playlists, action.playlists.items)
-                    }  
+                return{
+                    ...state,
+                    featured_playlists: stopDupesId(state.featured_playlists, action.playlists.items)
                 }  
             case routes.recommendations:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        recommendations: stopDupes(state.recommendations, action.items)
-                    }
+                return{
+                    ...state,
+                    recommendations: stopDupesId(state.recommendations, action.items)
                 }
             case routes.available_genre_seeds:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        available_genre_seeds: stopDupes(state.available_genre_seeds, action.genres)
-                    }
+                return{
+                    ...state,
+                    available_genre_seeds: stopDupesId(state.available_genre_seeds, action.genres)
                 }
             case routes.my_top_tracks:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        my_top_tracks: stopDupes(state.my_top_tracks, action.items)
-                    }
+                return{
+                    ...state,
+                    my_top_tracks: stopDupesId(state.my_top_tracks, action.items)
                 }
             case routes.my_top_artists:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        my_top_artists: stopDupes(state.my_top_artists, action.items)
-                    }
-                } 
+                return{
+                    ...state,
+                    my_top_artists: stopDupesId(state.my_top_artists, action.items)
+                }
             case routes.followed_artists:
-                if(method === 'get'){
-                    return{
-                        ...state,
-                        followed_artists: stopDupes(state.followed_artists, action.artists.items )
-                    }
-        
+                return{
+                    ...state,
+                    followed_artists: stopDupesId(state.followed_artists, action.artists.items )
+                }
+            case routes.all_categories:
+                const items = action.categories.items.map(t => {
+                    t['type'] = 'category'
+                    return t
+                })
+                return {
+                    ...state,
+                    all_categories: stopDupesId( state.all_categories, items )
                 }
             case routes.my_top_categories:
                 // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
@@ -188,24 +159,19 @@ const Dashboard = ({ setAuth, audioRef }) => {
                     ...state,
                     my_top_categories: action.items
                 }
-                
             default:
                 console.log(action)
                 return state
                 break         
         }
     }
-    // ENV VARIABLE FOR API?
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall()
     const [ state, dispatch ] = useReducer(reducer, initialState)
-    const [ loaded, setLoaded ] = useState( false )
     const [ scrollPosition, setScrollPosition ] = useState(0)
     const [ overlay, setOverlay ] = useState({})
     const [ selectOverlay, setSelectOverlay ] = useState( [] )
     const [ messageOverlay, setMessageOverlay ] = useState( [] )
     const [ hiddenUI, setHiddenUI ] = useState( false )
-// activeHeader contains the data from the active page required for certain headers to function
     const [ queue, setQueue ] = useState( [] )
     const [ qIndex, setQIndex ] = useState()
     const [ playNextQueue, setPlayNextQueue ] = useState([])
@@ -223,7 +189,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const [ searchTransMinHeight, setSearchTransMinHeight ] = useState( 0 )
     const [ navHeight, setNavHeight ] = useState( undefined )
 
-
     const dashboardRef = useRef()
     const pageScrollRef = useRef( initialPageScroll )
     const currActiveHomeRef = useRef( {} )
@@ -234,11 +199,8 @@ const Dashboard = ({ setAuth, audioRef }) => {
     const dashboardNavRef = useRef()
     
     const newPlaylistRef = useRef( {} )
-    const trackForPlaylistRef = useRef( {} )
 
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists, my_liked_tracks, my_top_categories } = { ...state }
-
-
 
 // Set last played track on account as active track
     useEffect(() => {
@@ -276,7 +238,6 @@ const Dashboard = ({ setAuth, audioRef }) => {
         }
     }, [ activeHomeItem ])
 
-
 // HANDLE SCROLL PERCENTAGE 
 
     const handleScroll = () => {
@@ -291,50 +252,57 @@ const Dashboard = ({ setAuth, audioRef }) => {
         finalizeRoute('get', routes.user_info, null ,)
     },[])
 
-
     useEffect(() => {
         if( user_info.country ){
             firstFetch()
         }
     },[ user_info ])
 
+    useEffect(() => {
+        if( all_categories.length > 0 ){
+            setLoaded( true )
+        }
+    }, [ state ])
 
     const firstFetch = () => {
         const market = user_info.country
         finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
         finalizeRoute( 'get', routes.featured_playlists, null, null, null, `market=${market}`)
         finalizeRoute( 'get', routes.new_releases, null, null ,null, 'limit=20' , `market=${market}`)
-        finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true, limit: null }, null,'limit=50', `market=${market}` )
-        finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , null, 'limit=50', `market=${market}` )
-        finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, null, 'limit=50', `market=${market}` )
-        finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, null, 'limit=50' , `market=${market}`) 
+        finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true,  }, null,'limit=50' )
+        finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true,  } , null, 'limit=50', `market=${market}` )
+        finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true,  }, null, 'limit=50', `market=${market}` )
+        finalizeRoute( 'get', routes.recently_played, null, null, null, 'limit=50') 
         finalizeRoute( 'get', routes.available_genre_seeds, null, null, null, `market=${market}` )
-        finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true, limit: null } )
-        finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true, limit: null })
-        finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, null, 'type=artist')
+        finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true,  } )
+        finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true,  })
+        finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true,  }, null, 'type=artist')
+        finalizeRoute( 'get', routes.all_categories, null,{ fetchAll: true, limit: null }, null, 'limit=50') 
     }
 
     const refresh = ( cmd ) => {
         const market = user_info.country
-        switch( cmd ){
-            case cmd === 'all':
+        switch( String(cmd) ){
+            case 'all':
                 finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
-                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , null, 'limit=50', `market=${market}` )
-                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, null, 'limit=50', `market=${market}` )
-                finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true, limit: 4 }, null, 'limit=50' , `market=${market}`) 
-                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, null, 'type=artist')
-            case cmd === 'player_info':
+                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true  } , null, 'limit=50', `market=${market}` )
+                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true }, null, 'limit=50', `market=${market}` )
+                finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true }, null, 'limit=50' ) 
+                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
+                break
+            case 'player_info':
                 finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
-            case cmd === 'my_albums':
-                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true, limit: null } , null, 'limit=50', `market=${market}` )
-            case cmd === 'my_playlists':
-                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true, limit: null }, null, 'limit=50', `market=${market}` )
-            case cmd === 'followed_artists':
-                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true, limit: null }, null, 'type=artist')
-
+                break
+            case 'my_albums':
+                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true } , null, 'limit=50', `market=${market}` )
+                break
+            case 'my_playlists':
+                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true }, null, 'limit=50', `market=${market}` )
+                break    
+            case 'followed_artists':
+                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
+                break
         }
-            
-        
     }
 
     useEffect(() => {
@@ -342,9 +310,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
     },[apiPayload])
 //  END OF API CALLS 
  
-
-
-//  When overlay is open, makes the rest of the APP no clicky
+//  When overlays are open, makes the rest of the APP no clicky
     useLayoutEffect(() => {
         const db = dashboardRef.current
         if( overlay.type || playerSize === 'large' || sortContainerOpen ) {
@@ -402,6 +368,12 @@ const Dashboard = ({ setAuth, audioRef }) => {
             if (scrollPosition < 1){
                 hideMe = false
             }
+            if( hideMe ){
+                window.scrollTo(0, 100)
+
+            } else {
+                window.scrollTo(0, 0)
+            }
             setHiddenUI( hideMe )
             scrollRef.current = scrollPosition
         } else {
@@ -421,7 +393,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
             if( dashboardState === 'home' ) {
                 homePage.style.display = 'block'
                 dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.home - 160, 
+                    top: pageScrollRef.current.home - ( window.innerHeight / 2 ) , 
                     left: 0,
                     behavior: 'auto'
                 })
@@ -429,7 +401,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
             if( dashboardState === 'search' ) {
                 searchPage.style.display = 'block'
                 dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.search - 160, 
+                    top: pageScrollRef.current.search - ( window.innerHeight / 2 ) , 
                     left: 0,
                     behavior: 'auto'
                 })
@@ -437,28 +409,17 @@ const Dashboard = ({ setAuth, audioRef }) => {
             if( dashboardState === 'manage' ) {
                 managePage.style.display = 'block'
                 dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.manage - 160, 
+                    top: pageScrollRef.current.manage - ( window.innerHeight / 2 ), 
                     left: 0,
                     behavior: 'auto'
                 })
             }
-            
         }
-        // if( dashboardState === 'home' ) {
-        //     homePage.style.display = 'block'
-        //     dashboardRef.current.scroll({ 
-        //         top: pageScrollRef.current.home - 160, 
-        //         left: 0,
-        //         behavior: 'auto'
-        //     })
-        // }
-        // DASHBOARD STATE NEEDS TO BE SET AS DEPENDENCY ONCE IM DONE MANAGE PAGE
-            
     },[ dashboardState ])
 
     useEffect(() => {
         if( selectOverlay.length === 0  && newPlaylistRef.current.id ){
-            console.log(123)
+            refresh( 'my_playlists' )
             // Redirects to newly created playlist after SelectOverlay closes
             setTimeout(() => {
                 const playlist = { ...newPlaylistRef.current }
@@ -474,6 +435,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
         }
     },[ selectOverlay ])
 
+// DB TRANSITIONS
 
     const dbScale = useSpring({
         borderRadius: selectOverlay[0] ? '20px' : '0px',
@@ -496,6 +458,13 @@ const Dashboard = ({ setAuth, audioRef }) => {
             await next({ opacity: 0 })
           },
 
+    })
+
+    const overlayTrans = useTransition(overlay.type, {
+        initial: { opacity: 0 },
+        from: { opacity: 0 },
+        enter: { opacity: 1 } ,
+        leave: { opacity: 0 }
     })
 
     // Context set up //////////////////////////////////////////////////
@@ -527,11 +496,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
         setPlayNextQueue,
         hiddenUI,
         setHiddenUI,
-        loaded, 
-        setLoaded,
-        setAuth,
         dashboardRef,
         dashboardState,
+        setDashboardState,
         toBeManaged, 
         setToBeManaged,
         navHeight,
@@ -543,23 +510,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
         refresh
     }
 
-    const dbFetchedState = {
-        user_info,
-        player_info,
-        my_liked_tracks,
-        my_top_genres,
-        my_playlists, 
-        featured_playlists, 
-        new_releases, 
-        my_albums, 
-        recently_played, 
-        my_top_tracks, 
-        my_top_artists, 
-        all_categories, 
-        available_genre_seeds, 
-        followed_artists,
-        my_top_categories
-    }
+    const dbFetchedState = state
 
     return(
         <DbHookContext.Provider value={ dbHookState }>
@@ -568,7 +519,7 @@ const Dashboard = ({ setAuth, audioRef }) => {
             {
             selectOverlayTrans(( props, item) => (
                 item &&
-                <SelectOverlay style={ props } newPlaylistRef={ newPlaylistRef } trackForPlaylistRef={ trackForPlaylistRef }/>
+                <SelectOverlay style={ props } newPlaylistRef={ newPlaylistRef } />
             ))
             }
             {
@@ -576,8 +527,12 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 <MessageOverlay style={ props } item={ item }/>
             ))
             }
+            {
+            overlayTrans( props => (
+                <Overlay style={props}  />
 
-            <Overlay setActiveSearchItem={ setActiveSearchItem } />
+            ))
+            }
 
             <animated.section
             style={ dbScale }
@@ -594,19 +549,13 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 <Search
                 transMinHeight={ searchTransMinHeight }
                 setTransMinHeight={ setSearchTransMinHeight }
-                activeSearchItem={ activeSearchItem }
-                setActiveSearchItem={ setActiveSearchItem }
                 searchState={ searchState }
                 setSearchState={ setSearchState }
-                my_top_artists={ state.my_top_artists } 
-                available_genre_seeds={ state.available_genre_seeds }
                 searchPageHistoryRef={ searchPageHistoryRef }
                 currActiveSearchRef={ currActiveSearchRef }
                 dbDispatch={ dispatch } />
 
                 <Manage 
-                activeManageItem={ activeManageItem } 
-                setActiveManageItem={ setActiveManageItem }
                 toBeManaged={ toBeManaged }
                 setToBeManaged={ setToBeManaged }
                 manageState={ manageState }
@@ -619,20 +568,9 @@ const Dashboard = ({ setAuth, audioRef }) => {
                 navHeight={ navHeight } />
 
                 <Nav 
-                dashboardRef={ dashboardRef }
                 homeTransMinHeight={ homeTransMinHeight }
                 searchTransMinHeight={ searchTransMinHeight }
-                dashboardRef={ dashboardRef }
-                pageScrollRef= { pageScrollRef }
-                hiddenUI={ hiddenUI } 
-                scrollPosition={ scrollPosition }
-                activeHomeItem={ activeHomeItem }
-                activeSearchItem={ activeSearchItem }
-                activeManageItem={ activeManageItem }
-                setActiveHomeItem={ setActiveHomeItem }
-                setActiveSearchItem={ setActiveSearchItem }
-                dashboardState={ dashboardState }
-                setDashboardState={ setDashboardState } />
+                pageScrollRef= { pageScrollRef } />
             </animated.section>
                 
         </DbFetchedContext.Provider>

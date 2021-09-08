@@ -8,15 +8,12 @@ import useApiCall from '../../hooks/useApiCall'
 
 const ActiveItemTrack = ({track, index, dragId , dragging, added, clickLoc, setClickLoc, originalItemsRef }) => {
 
-
-    const API = 'https://api.spotify.com/'
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( API )
+    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
     const [ active, setActive ] = useState( added )
-    const [ thisTrack, setThisTrack ] = useState( {} )
     
     useEffect(() => {
-        if( !originalItemsRef.current.includes( track.id )){
-            originalItemsRef.current.push( dragId.replace(`--${ index }`, '') )
+        if( !originalItemsRef.current.includes( dragId.substr( 0, dragId.length - index.toString().length - 2 ) ) ){
+            originalItemsRef.current.push(  dragId.substr( 0, dragId.length - index.toString().length - 2  ) )
         }
         
     },[])
