@@ -17,9 +17,9 @@ const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
     const transitionCompleteRef = useRef()
 
     const { collection, artists, tracks } = { ...data }
-    const { setOverlay, scrollPosition, } = useContext( DbHookContext )
+    const { setOverlay, scrollPosition, setActiveManageItem, setDashboardState, } = useContext( DbHookContext )
 
-    const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled } = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
+    const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled ,handleScrollHistory} = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
 
     const thisHeaderRef = useCallback( node => {
         if( node ){
@@ -36,7 +36,6 @@ const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
         const img = collection.images && collection.images[0] ? whichPicture( collection.images, 'med' ) : '//logo.clearbit.com/spotify.com'
         setBackgroundImage( bigImg )
         setMainImage( img )
-        setActiveHeader( {data : collection.name} )
         // return () => {
         //     setBackgroundImage(null)
         //     setHeaderScrolled( 0 )
@@ -50,6 +49,8 @@ const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
             transitionCompleteRef.current = true 
         }
         if( colors && transitionCompleteRef.current ){
+            handleScrollHistory()
+            setActiveHeader( {data : collection.name} )
             parent.classList.add('fadeIn')
             parent.style.minHeight = '100vh'
             colors.forEach((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
@@ -91,95 +92,101 @@ const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
         setColors( theseColors )
     }
 
+    const handleMngBtn = () => {
+        setActiveManageItem( collection )
+        setTimeout( () => setDashboardState('manage'), 250 )
+    }
+
     return(
-            <header 
-            ref={ thisHeaderRef }
-            className={`collectionHeader`}>
-                <div className={`headerBacking headerBacking--${pageType}`} 
-                style={{backgroundImage: `url(${backgroundImage})`}}></div>
-                
-                <animated.div
-                    style={{
-                        transform: scaleDown.to( scaleDown => `scale(${scaleDown}) `),
-                        opacity: fadeOut.to( fadeOut => fadeOut )
-                    }} 
-                    className='collectionHeader__imgContainer'>
-                    <animated.div 
-                    style={{
-                        transform: moveDown.to( moveDown => `translateY(${ moveDown }%)`)
-                    }}
-                    className='collectionHeader__imgTransform'>
-                    {
-                        mainImage && 
-                        <img
-                        crossOrigin='anonymous' 
-                        onLoad={ finishMount }
-                        // ON LOAD HERE ########################################
-                        className='collectionHeader__img' 
-                        src={ mainImage } /> 
-                    }
-                        
-                       
-                    </animated.div>
-                </animated.div> 
-
-                <animated.p
-                className='collectionHeader__title' 
+        <header 
+        ref={ thisHeaderRef }
+        className={`collectionHeader`}>
+            <div className={`headerBacking headerBacking--${pageType}`} 
+            style={{backgroundImage: `url(${backgroundImage})`}}></div>
+            
+            <animated.div
                 style={{
-                    opacity: fadeOut.to( fadeOut => fadeOut ),                  
-                }}> 
-                { collection.name } 
-                </animated.p>
-                
-                <animated.div
-                    style={{
-                        opacity: fadeOut.to( fadeOut => fadeOut ),
-                    }} 
-                    className='collectionHeader__artists'>
-                {
-                    artists &&
-                    artists.length === 1 ?
-                    <img
-                    height='32px'
-                    width='32px' 
-                    src={ whichPicture(artists[0].images, 'sm' ) } 
-                    alt='Artist' /> :
-                    null
-                }
-                    <p onClick={
-                        (e) => handleViewArtist(e) }>
-                        { artists.map((artist, i) =>  (
-                            i !== artists.length - 1 ? 
-                            `${ artist.name ? artist.name : artist.display_name }, ` : 
-                            `${ artist.name ? artist.name : artist.display_name }` 
-                        ))
-                        }
-                        </p>
-
-                </animated.div> 
-
+                    transform: scaleDown.to( scaleDown => `scale(${scaleDown}) `),
+                    opacity: fadeOut.to( fadeOut => fadeOut )
+                }} 
+                className='collectionHeader__imgContainer'>
                 <animated.div 
                 style={{
-                    opacity: fadeOut.to( fadeOut => fadeOut )
+                    transform: moveDown.to( moveDown => `translateY(${ moveDown }%)`)
                 }}
-                className='collectionHeader__info'>
-                    <span>
-                        { collection.type === 'playlist' ? `${collection.followers.total} followers` : capital( collection.album_type ) }  
-                    </span>
-                    {
-                        collection.type ==='playlist' ?
-                        <p> 
-                            { collection.description }
-                        </p> :
-                        <>
-                            <i className="fas fa-dot-circle"></i>
-                            <span>
-                            { collection.release_date.substr(0,4) }
-                            </span>
-                        </> 
+                className='collectionHeader__imgTransform'>
+                {
+                    mainImage && 
+                    <img
+                    crossOrigin='anonymous' 
+                    onLoad={ finishMount }
+                    // ON LOAD HERE ########################################
+                    className='collectionHeader__img' 
+                    src={ mainImage } /> 
+                }
+                </animated.div>
+            </animated.div> 
+
+            <animated.p
+            className='collectionHeader__title' 
+            style={{
+                opacity: fadeOut.to( fadeOut => fadeOut ),                  
+            }}> 
+            { collection.name } 
+            </animated.p>
+            
+            <animated.div
+                style={{
+                    opacity: fadeOut.to( fadeOut => fadeOut ),
+                }} 
+                className='collectionHeader__artists'>
+            {
+                artists &&
+                artists.length === 1 ?
+                <img
+                height='32px'
+                width='32px' 
+                src={ whichPicture(artists[0].images, 'sm' ) } 
+                alt='Artist' /> :
+                null
+            }
+                <p onClick={
+                    (e) => handleViewArtist(e) }>
+                    { artists.map((artist, i) =>  (
+                        i !== artists.length - 1 ? 
+                        `${ artist.name ? artist.name : artist.display_name }, ` : 
+                        `${ artist.name ? artist.name : artist.display_name }` 
+                    ))
                     }
-                </animated.div>  
-            </header>
+                    </p>
+
+            </animated.div> 
+
+            <animated.div 
+            style={{
+                opacity: fadeOut.to( fadeOut => fadeOut )
+            }}
+            className='collectionHeader__info'>
+                <span>
+                    { collection.type === 'playlist' ? `${collection.followers.total} followers` : capital( collection.album_type ) }  
+                </span>
+                {
+                    collection.type ==='playlist' ?
+                    <p> 
+                        { collection.description }
+                    </p> :
+                    <>
+                        <i className="fas fa-dot-circle"></i>
+                        <span>
+                        { collection.release_date.substr(0,4) }
+                        </span>
+                    </> 
+                }
+                <button onClick={ handleMngBtn } className='openMngBtn'>
+                    Open in manager
+                </button>   
+            </animated.div>  
+        </header>
     )   
 }
 

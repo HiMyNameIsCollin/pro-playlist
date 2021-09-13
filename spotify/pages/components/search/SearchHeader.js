@@ -10,11 +10,12 @@ const SearchHeader = () => {
 
     useEffect(() => setMounted(true), [])
 
-    const { searchState, setSearchState } = useContext( SearchHookContext )
-    const { hiddenUI } = useContext( DbHookContext )
+    const { searchState, setSearchState} = useContext( SearchHookContext )
+    const { hiddenUI, selectOverlay, dashboardRef  } = useContext( DbHookContext )
     const hideHeader = useSpring({
         transform: !hiddenUI && mounted && searchState !== 'search' ? 'translateY(0rem)' : 'translateY(-4rem)',
-        top: mounted ? '0rem' : '-7rem'
+        top: mounted ? selectOverlay[0] ? dashboardRef.current.scrollTop : 0 : -7 * 16
+        
     })
     return(
         <animated.header style={hideHeader} className='searchHeader'>

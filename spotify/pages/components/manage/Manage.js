@@ -178,36 +178,37 @@ const Manage = ({  toBeManaged, setToBeManaged, manageState, setManageState }) =
                     style={ props } />
                 ))
             }
-            <header 
-            style={{ 
-                display: dashboardState === 'manage' && manageState === 'default' ? 'block': 'none' ,
-                top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 
-            }}
-            className='mngHeader'>
-                <div className='mngHeader__top'>
-                    <div className='mngHeader__imgContainer'>
-                    {
-                    user_info.images &&
-                    <img src={ user_info.images[0].url } alt={ `${ user_info.display_name }'s profile photo `} />
-                    }
-                    </div>
-                    <h1 className='mngHeader__title'>
-                        Manage
-                    </h1>
-                    <i 
-                    onClick={ () => setManageState( 'search' ) }
-                    className="fas fa-search"></i>
-                    <i 
-                    onClick={ newPlaylistMenu }
-                    className="fas fa-plus"></i>
-                </div>
-                <ManageFilters 
-                activeFilter={ activeFilter } 
-                setActiveFilter={ setActiveFilter } 
-                subFilter={ subFilter } 
-                setSubFilter={ setSubFilter }/>
-            </header>
+            
             <animated.div style={ fadeOut } id='managePage' >
+                <header 
+                style={{ 
+                    display: dashboardState === 'manage' && manageState === 'default' ? 'block': 'none' ,
+                    top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 
+                }}
+                className='mngHeader'>
+                    <div className='mngHeader__top'>
+                        <div className='mngHeader__imgContainer'>
+                        {
+                        user_info.images &&
+                        <img src={ user_info.images[0].url } alt={ `${ user_info.display_name }'s profile photo `} />
+                        }
+                        </div>
+                        <h1 className='mngHeader__title'>
+                            Manage
+                        </h1>
+                        <i 
+                        onClick={ () => setManageState( 'search' ) }
+                        className="fas fa-search"></i>
+                        <i 
+                        onClick={ newPlaylistMenu }
+                        className="fas fa-plus"></i>
+                    </div>
+                    <ManageFilters 
+                    activeFilter={ activeFilter } 
+                    setActiveFilter={ setActiveFilter } 
+                    subFilter={ subFilter } 
+                    setSubFilter={ setSubFilter }/>
+                </header>
                 <div style={{ position: 'absolute' }} className={ `page page--manage`} >
                     
                 {

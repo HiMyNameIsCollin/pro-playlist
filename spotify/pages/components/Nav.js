@@ -4,7 +4,7 @@ import { DbHookContext } from './Dashboard'
 
 const Nav = ({homeTransMinHeight, searchTransMinHeight, pageScrollRef, }) => {
 
-    const { selectOverlay, dashboardRef, dashboardState, setDashboardState, setNavHeight, hiddenUI, activeHomeItem, activeSearchItem, setActiveHomeItem, setActiveSearchItem , activeManageItem, scrollPosition} = useContext( DbHookContext )
+    const { selectOverlay, dashboardRef, dashboardState, setDashboardState, setNavHeight, hiddenUI, activeHomeItem, activeSearchItem, setActiveHomeItem, setActiveSearchItem , activeManageItem, scrollPosition, } = useContext( DbHookContext )
 
     const thisComponentRef = useCallback( node => {
         if( node !== null){
@@ -33,12 +33,14 @@ const Nav = ({homeTransMinHeight, searchTransMinHeight, pageScrollRef, }) => {
             if( page === 'home' ){
                 if(activeHomeItem.type){
                     setActiveHomeItem( {} )
+
                 } else {
                     dashboardRef.current.scrollTo(scrollTop)
                 }
             } else if ( page === 'search' ){
                 if( activeSearchItem.type ){
                     setActiveSearchItem( {} )
+
                 } else {
                     dashboardRef.current.scrollTo(scrollTop)
                 }

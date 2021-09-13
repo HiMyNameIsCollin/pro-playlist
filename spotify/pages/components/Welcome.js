@@ -3,6 +3,8 @@ import { animated, useSpring } from 'react-spring'
 import Image from 'next/image'
 import Slider from './Slider'
 import TabsContainer from './TabsContainer'
+import Banner from './banner/Banner'
+
 import { DbHookContext } from './Dashboard'
 import { DbFetchedContext } from './Dashboard'
 import { checkTime } from '../../utils/checkTime'
@@ -49,18 +51,19 @@ const Welcome = ({ style }) => {
         style={ style }
         ref={ thisComponent } 
         className='page page--welcome '>
-            <div onClick={ handleLogout }
-                className='welcome__logo'>
-                    <Image  src='/Spotify_Icon_RGB_White.png' alt='' height='32px' width='32px'/>
-                    <p> Log out </p>
-                </div>      
+              
             <header className='welcomeHeader'>
                 <h1 className='welcomeHeader__title'>{ checkTime() < 12 ? 
                     'Good morning' : checkTime() < 18 ? 
                     'Good afternoon' : checkTime() < 24 ? 
                     'Good evening' : null } </h1>
-                
+                <div onClick={ handleLogout }
+                className='welcome__logo'>
+                    <Image  src='/Spotify_Icon_RGB_White.png' alt='' height='32px' width='32px'/>
+                    <p> Log out </p>
+                </div>    
             </header>
+            <Banner />
             <TabsContainer items={ recently_played }  />
             <Slider 
             message='New Releases' 

@@ -16,17 +16,6 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     const thisComponentRef = useRef()
 
-    const homePageSettingsState = {
-        headerScrolled,
-        setHeaderScrolled,
-        transitionComplete,
-        setTransitionComplete,
-        activeHeader, 
-        setActiveHeader,
-        transMinHeight,
-        setTransMinHeight
-    }
-
     const dir = homePageHistoryRef.current.length > 0  ?
     activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id || 
     !activeHomeItem.type ? 
@@ -50,9 +39,8 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
         currActiveHomeRef.current = activeHomeItem
     },[ activeHomeItem ])
 
-    useEffect(() => {
-        if( transitionComplete && 
-            homePageHistoryRef.current.length > 0 && 
+    const handleScrollHistory = () => {
+        if( homePageHistoryRef.current.length > 0 && 
             activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id){
             const lastItem = homePageHistoryRef.current.pop()
             dashboardRef.current.scroll({
@@ -61,39 +49,59 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
                 behavior: 'auto'
             })
         } else {
-            if(transitionComplete){
-                dashboardRef.current.scroll({
-                    left: 0,
-                    top: 0 ,
-                    behavior: 'auto'
-                })
-            }
+            dashboardRef.current.scroll({
+                left: 0,
+                top: 0 ,
+                behavior: 'auto'
+            })
         }
-    },[ activeHomeItem, transitionComplete ])
+    }
+
+    const homePageSettingsState = {
+        headerScrolled,
+        setHeaderScrolled,
+        transitionComplete,
+        setTransitionComplete,
+        activeHeader, 
+        setActiveHeader,
+        transMinHeight,
+        setTransMinHeight,
+        handleScrollHistory
+    }
+    
+    const zCounter = useRef( 1 )
+
+    useEffect(() => {
+        if( activeHomeItem.type ){
+            zCounter.current += 1
+        } else {
+            zCounter.current = 1
+        }
+    },[ activeHomeItem ])
 
     const pageTransition = useTransition(activeHomeItem, {
-        from: { transform: `translateX(${100 * dir}%)`, minHeight: transMinHeight , position: 'absolute',  width: '100%' , zIndex: 2 },
-        enter: { transform: `translateX(${0 * dir}%)`},
+        from: { transform: `translateX(${100 * dir}%)`, minHeight: transMinHeight , position: 'absolute', width: '100%' , zIndex: zCounter.current + 1 },
+        enter: { transform: `translateX(${0 * dir }%)`, delay: 250 , onRest: () => setTransitionComplete( true ) },
         update: {  position: 'absolute', },
-        leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
-        onRest: () => setTransitionComplete(true)
+        leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute' , zIndex: zCounter.current },
+        
     })
-
+    
     const headerTransition = useTransition(activeHomeItem, {
-        from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: 3 , top: 0},
+        from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: zCounter.current + 2 , top: 0},
         update: { position: 'fixed', top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 , config: { duration: .01 }},
-        enter: {  transform: `translateX(${0 * dir }%)` },
-        leave: { transform: `translateX(${-100 * dir }%)`},
-
+        enter: {  transform: `translateX(${0 * dir }%)`, delay: 250 },
+        leave: { transform: `translateX(${-20 * dir }%)`, zIndex: zCounter.current},
+        expires: 10000,
     })
 
     const mainTransition = useTransition(activeHomeItem, {
-        from: { transform: `translateX(${0 * dir }%)`, minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight, position: 'absolute', width: '100%'},
-        enter: { transform: `translateX(${0 * dir }%)`},
-        update: {  position: 'absolute', },
-        leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute'},
-    })
+        from: { transform: `translateX(${ 100 * dir}%)`, zIndex: zCounter.current + 1 , minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight, position: 'absolute', width: '100%'},
+        enter: { transform: `translateX(${0 * dir }%)`, delay: 250 , onRest: () => setTransitionComplete( true )  },
+        update: {  position: 'absolute', zIndex: !activeHomeItem.type && 1 },
+        leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute', zIndex: 1, },
 
+    })
 
     return(
         <div

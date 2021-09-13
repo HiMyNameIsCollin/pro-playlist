@@ -102,6 +102,7 @@ const Showcase = ({ style, data }) => {
             if( cat.playlists.length > 0 ){
                 return(
                     <BrowseContainer
+                    key={ i }
                     message={ cat.message }
                     data={ cat.playlists }
                     />

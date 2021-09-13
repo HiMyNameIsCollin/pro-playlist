@@ -77,7 +77,7 @@ const Collection = ({ style, type, page, data }) => {
                 // const allSongs = songs.filter( x => x.preview_url)
                 return{
                     ...state,
-                    tracks: state.tracks = [ ...state.tracks, ...songs ]
+                    tracks: state.tracks = data.type === 'playlist' ? songs : [ ...state.tracks, ...songs ]
                 }
             case routes.recommendations :
                 const recommendations = action.tracks.map(track => track.album)
@@ -100,7 +100,7 @@ const Collection = ({ style, type, page, data }) => {
     const searchContext = useContext( SearchHookContext )
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
-    const { setTransMinHeight, transitionComplete } = useContext( page==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
+    const { setTransMinHeight, transitionComplete ,} = useContext( page==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
     
     const { collection, artists, tracks, recommendations } = {...state}
     const thisComponentRef = useRef() 
@@ -182,6 +182,7 @@ const Collection = ({ style, type, page, data }) => {
         ref={ thisComponent } 
         style={ style } 
         className={ `page page--collection collection` }>
+  
         {
             collection.id&&
             <>
@@ -190,6 +191,7 @@ const Collection = ({ style, type, page, data }) => {
             setActiveItem={ setActiveItem }
             data={{collection, tracks, artists,}}
             parent={ thisComponentRef.current } />
+
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             {
             type === 'album' && 

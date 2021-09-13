@@ -176,7 +176,7 @@ const Search = ({
     })
     
     const mainTransition = useTransition(activeSearchItem, {
-        from: { transform: `'translateX(${ 0 * dir }%)'`, position: 'absolute', minHeight: transMinHeight, width: '100%' , zIndex: 2},
+        from: { transform: `'translateX(${ 0 * dir }%)'`, position: 'absolute', minHeight: transMinHeight,  width: '100%' , zIndex: 2},
         update: {  position: 'absolute'},
         enter: { transform: `'translateX(${ 0 * dir }%)'`, },
         leave: { transform: `'translateX(${ -20 * dir }%)'`, position: 'absolute', zIndex: 1},

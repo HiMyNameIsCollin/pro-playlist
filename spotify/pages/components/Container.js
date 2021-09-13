@@ -13,14 +13,32 @@ const Container = () => {
     const [ auth, setAuth ] = useState(false)
     const [ height, setHeight ] = useState()
     const [ loaded, setLoaded ] = useState( false )
+    const [ disabled, setDisabled ] = useState()
     const router = useRouter()    
 
     const redirect_uri = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://spotify-himynameiscollin.vercel.app/'
 
+    const isTouchDevice = () => {
+      return (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0));
+    }
     useEffect(() => {
+      const isTouch = isTouchDevice()
+      if( !isTouch && location.hostname !== 'localhost'){
+        setDisabled( true )
+        setLoaded( true )
+      } else {
+        setDisabled( false )
+      }
       setHeight( window.innerHeight )
       window.addEventListener( 'resize', () => {
-        setHeight( window.innerHeight)
+        const height = window.innerHeight > window.innerWidth ? window.innerHeight : window.innerWidth
+        setHeight( height )
+      })
+      window.addEventListener( 'orientationchange', (e) => {
+        const height = e.target.innerHeight > e.target.innerWidth ? e.target.innerHeight : e.target.innerWidth
+        setHeight( height )
       })
     }, [])
 
@@ -103,17 +121,18 @@ const Container = () => {
             <Loading style={ props }/>
           ))
         }
-        { 
-        auth ? 
-        <Dashboard 
-        audioRef={ audioRef } 
-        setLoaded={ setLoaded }/>  : 
-        loaded &&
-        <Login setTokenBody={ setTokenBody } initAudio={ initAudio }/>
+        {
+          disabled ?
+          <div>Disabled </div> 
+          :
+          auth ? 
+          <Dashboard 
+          audioRef={ audioRef } 
+          setLoaded={ setLoaded }/>  : 
+          loaded &&
+          <Login setTokenBody={ setTokenBody } initAudio={ initAudio }/>
         }
-       
 
-    
     </main>    
     )
 }

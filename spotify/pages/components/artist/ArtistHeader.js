@@ -7,6 +7,7 @@ import { DbHookContext } from '../Dashboard'
 import { DbFetchedContext } from '../Dashboard'
 import { SearchPageSettingsContext } from '../search/Search'
 import { HomePageSettingsContext } from '../Home'
+import useApiCall from '../../hooks/useApiCall'
 
 const ArtistHeader = ({ pageType, data }) => {
 
@@ -15,20 +16,21 @@ const ArtistHeader = ({ pageType, data }) => {
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ followed, setFollowed ] = useState( false ) 
     const thisHeaderRef = useRef()
+    const transitionCompleteRef = useRef() 
 
-    const { scrollPosition } = useContext( DbHookContext )
+    const { scrollPosition, setActiveManageItem, setDashboardState } = useContext( DbHookContext )
     const { followed_artists } = useContext( DbFetchedContext )
-    const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled } = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
-    
-    const getColors = ( e ) => {
-        const theseColors = handleColorThief( e.target, 2 )
-        setColors( theseColors )
-    }
+    const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled , handleScrollHistory} = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
+    const { finalizeRoute, apiPayload } = useApiCall()
 
     useEffect(() => {
-        if(colors && transitionComplete ) {
+        if(transitionComplete) transitionCompleteRef.current = true 
+        if(colors && transitionCompleteRef.current ) {
+            handleScrollHistory()
             setTransitionComplete(false)
             colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+            setActiveHeader( {data : artist.name} )
+
         }
     },[ transitionComplete, colors ])
 
@@ -41,13 +43,18 @@ const ArtistHeader = ({ pageType, data }) => {
         setHeaderScrolled( 0 )
         const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
         setElementHeight( headerHeight )
-        setActiveHeader({ data: artist.name })
     },[])
 
     const handleFollow = () => {
-        // finalizeRoute('PUT', routes.followed_artists, artist.id, null, null, 'type=artist', `ids=${ artist.id }`)
-        console.log( 'I dont think this route works... https://developer.spotify.com/console/put-following/?type=artist&ids=2CIMQHirSU0MQqyYHq0eOx%2C57dN52uHvrHOxijzpIgu3E%2C1vCWHaC5f2uS3yhpwWbIA6 doesnt work either')
+        const route = 'v1/me/following'
+        const body = { ids: [ artist.id ] }
+        const method = followed ? 'delete' : 'put'
+        finalizeRoute( method, route, null, null, body, 'type=artist', )
     }
+
+    useEffect(() => {
+        if( apiPayload ) console.log( apiPayload )
+    }, [ apiPayload ])
 
     useEffect(() => {
         const percent = calcScroll( elementHeight )
@@ -64,6 +71,16 @@ const ArtistHeader = ({ pageType, data }) => {
             precision: 1,
         }
     })
+
+    const getColors = ( e ) => {
+        const theseColors = handleColorThief( e.target, 2 )
+        setColors( theseColors )
+    }
+
+    const handleMngBtn = () => {
+        setActiveManageItem( artist )
+        setTimeout( () => setDashboardState('manage'), 250 )
+    }
 
     return(
         <header 
@@ -85,12 +102,21 @@ const ArtistHeader = ({ pageType, data }) => {
             </div>
             <div className='artistHeader__info'>
                 <p> { artist.followers.total } followers </p>
-                {
+
+                {/* {
                     followed ?
                     <button onClick={ handleFollow } className='artistHeader__info__btn artistHeader__info__btn--active'> Following </button> :
                     <button onClick={ handleFollow } className='artistHeader__info__btn'> Follow </button>
                 }
-                <i className="fas fa-ellipsis-h"></i>
+                <i className="fas fa-ellipsis-h"></i> */}
+                <button onClick={ handleMngBtn } className='openMngBtn'>
+                    Open in manager
+                </button>
+
+                {
+                    followed &&
+                    <p className='artistHeader__info__followed'> Followed </p>
+                }
             </div>
         </header>  
          

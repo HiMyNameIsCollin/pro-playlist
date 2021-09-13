@@ -8,8 +8,13 @@ const MessageOverlay = ({ style, item  }) => {
         setTimeout(() => setMessageOverlay( messages => messages = [ ...messages.slice(1) ]), 4000 )
     }, [])
 
+    const closeThisMessage = () => {
+        setMessageOverlay( m => m = m.filter( x => x !== item ) )
+    }
+
     return(
         <animated.div 
+        onClick={ closeThisMessage }
         style={ style }
         className='messageOverlay'>
             <p>

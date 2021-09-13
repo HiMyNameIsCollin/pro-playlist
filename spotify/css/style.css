@@ -295,8 +295,6 @@ li {
   overflow: hidden;
   z-index: 1;
   background: #191414;
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
   min-width: 100vw;
   max-width: 100%;
@@ -381,6 +379,8 @@ li {
 }
 
 .collection {
+  display: flex;
+  flex-direction: column;
   font-weight: 400;
   font-size: 0.75rem;
 }
@@ -624,21 +624,16 @@ li {
   justify-content: flex-start;
   display: grid;
   grid-template-rows: auto auto;
-  grid-template-columns: auto 3rem minmax(0, 100%) auto auto;
+  grid-template-columns: auto auto minmax(0, 100%) auto auto;
   padding: 0.5rem 1rem;
-}
-@media only screen and (min-width: 768px) {
-  .track {
-    grid-template-columns: auto 5rem minmax(0, 100%) auto auto;
-  }
 }
 .track__imgContainer {
   display: flex;
   position: relative;
   grid-column: 2/3;
   grid-row: 1/3;
-  height: 100%;
-  width: 100%;
+  height: 3rem;
+  width: 3rem;
 }
 .track__imgContainer img {
   height: 100%;
@@ -649,6 +644,12 @@ li {
 }
 .track__imgContainer button i {
   font-size: 1.5rem;
+}
+@media only screen and (min-width: 768px) {
+  .track__imgContainer {
+    min-height: 5rem;
+    min-width: 5rem;
+  }
 }
 .track__title, .track__info {
   overflow: hidden;
@@ -1414,6 +1415,8 @@ li {
   color: #b3b3b3;
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
   z-index: 1;
 }
 .artistHeader__info::before {
@@ -1444,36 +1447,46 @@ li {
     font-size: 1.25rem;
   }
 }
-.artistHeader__info p {
-  padding: 0.5rem 1rem;
-  width: 100%;
-}
-.artistHeader__info i, .artistHeader__info button {
-  padding: 0.25rem 0.5rem;
-  margin: 0 0 1rem 1rem;
-}
-.artistHeader__info__btn {
+.artistHeader__info__followed {
   font-weight: 500;
   font-size: 0.75rem;
-  border: solid #535353 1px;
-  border-radius: 5px;
+  color: #1DB954;
+  width: 100%;
 }
 @media only screen and (min-width: 640px) {
-  .artistHeader__info__btn {
+  .artistHeader__info__followed {
     font-size: 1rem;
   }
 }
 @media only screen and (min-width: 768px) {
-  .artistHeader__info__btn {
+  .artistHeader__info__followed {
     font-size: 1.25rem;
   }
 }
-.artistHeader__info__btn--active {
-  border-color: #1DB954;
-  color: #1DB954;
-}
 .artistHeader--active {
   opacity: 1;
+}
+
+.openMngBtn {
+  font-weight: 700;
+  font-size: 0.75rem;
+  background: #191414;
+  border: solid #1DB954 1px;
+  border-radius: 10px;
+  color: #1DB954;
+  display: block;
+  padding: 0.5rem;
+  margin-left: auto;
+}
+@media only screen and (min-width: 640px) {
+  .openMngBtn {
+    font-size: 1rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .openMngBtn {
+    font-size: 1.25rem;
+  }
 }
 
 .collectionHeader {
@@ -1520,7 +1533,9 @@ li {
 .collectionHeader__info {
   font-weight: 700;
   font-size: 0.75rem;
+  align-items: center;
   color: #b3b3b3;
+  justify-content: space-between;
   padding: 0 1rem;
 }
 @media only screen and (min-width: 640px) {
@@ -1532,6 +1547,9 @@ li {
   .collectionHeader__info {
     font-size: 1.25rem;
   }
+}
+.collectionHeader__info > * {
+  margin-bottom: 0.5rem;
 }
 .collectionHeader__info p {
   font-weight: 400;
@@ -1711,7 +1729,7 @@ li {
 .welcomeHeader {
   align-items: center;
   display: flex;
-  padding: 0 1rem 0 1rem;
+  padding: 1rem 1rem 0 1rem;
   width: 100%;
 }
 .welcomeHeader__title {
@@ -1735,7 +1753,6 @@ li {
   justify-content: center;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
   margin-left: auto;
 }
 .welcome__logo p {
@@ -2212,6 +2229,162 @@ li {
   }
 }
 
+.banner {
+  padding: 1rem;
+  width: 100%;
+  max-width: 768px;
+  margin: 0 auto;
+}
+.banner--disabled {
+  padding: 0;
+}
+
+.dynamicTitle {
+  align-items: center;
+  display: flex;
+  margin-bottom: 1rem;
+}
+.dynamicTitle__imgContainer {
+  background: white;
+  border-radius: 50%;
+  max-height: 3rem;
+  overflow: hidden;
+  width: 3rem;
+}
+.dynamicTitle__imgContainer img {
+  height: auto;
+  max-width: 100%;
+}
+.dynamicTitle__info {
+  padding: 0 1rem;
+}
+.dynamicTitle__info p:nth-of-type(1) {
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: #b3b3b3;
+}
+@media only screen and (min-width: 640px) {
+  .dynamicTitle__info p:nth-of-type(1) {
+    font-size: 1.2rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .dynamicTitle__info p:nth-of-type(1) {
+    font-size: 1.55rem;
+  }
+}
+.dynamicTitle__info p:nth-of-type(2) {
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+@media only screen and (min-width: 640px) {
+  .dynamicTitle__info p:nth-of-type(2) {
+    font-size: 1.4rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .dynamicTitle__info p:nth-of-type(2) {
+    font-size: 1.6rem;
+  }
+}
+
+.releaseCard {
+  background: #212121;
+  border-radius: 5px;
+  display: flex;
+}
+.releaseCard__imgContainer {
+  position: relative;
+  padding-top: 50%;
+  width: 50%;
+}
+.releaseCard__imgContainer img {
+  display: block;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+}
+.releaseCard__info {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 1rem;
+  width: 50%;
+}
+.releaseCard__info div {
+  margin: auto 0;
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+@media only screen and (min-width: 640px) {
+  .releaseCard__info div {
+    font-size: 1rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .releaseCard__info div {
+    font-size: 1.25rem;
+  }
+}
+.releaseCard__info div > * {
+  margin-bottom: 0.5rem;
+}
+.releaseCard__info div p {
+  font-weight: 500;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media only screen and (min-width: 640px) {
+  .releaseCard__info div p {
+    font-size: 1.2rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .releaseCard__info div p {
+    font-size: 1.55rem;
+  }
+}
+.releaseCard__info div i {
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+@media only screen and (min-width: 640px) {
+  .releaseCard__info div i {
+    font-size: 1rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .releaseCard__info div i {
+    font-size: 1.25rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .releaseCard__info {
+    padding: 1rem;
+  }
+}
+.releaseCard__playBtn {
+  background: #191414;
+  border-radius: 50%;
+  border: solid #FFFFFF 1px;
+  color: #FFFFFF;
+  font-size: 1rem;
+  margin: 0 1rem 0 auto;
+  padding: 0.5rem;
+}
+@media only screen and (min-width: 768px) {
+  .releaseCard__playBtn {
+    padding: 2rem;
+    font-size: 2rem;
+  }
+}
+.releaseCard__playBtn--active {
+  background: #1DB954;
+  border-color: #1ed764;
+}
+
 .slider__title {
   align-items: flex-end;
   color: #FFFFFF;
@@ -2267,6 +2440,7 @@ li {
   justify-content: space-between;
   display: grid;
   grid-template-columns: repeat(auto-fill, calc( 50vw - 1.25rem ));
+  grid-gap: 0.5rem;
   padding: 1rem;
 }
 .browseContainer__title {
@@ -2346,7 +2520,6 @@ li {
 .card--bc {
   min-height: auto;
   max-height: 100%;
-  margin: 0.5rem 0;
 }
 .card--bc .card__imgContainer {
   border-radius: 10px;
@@ -2783,7 +2956,7 @@ li {
   left: 0;
   padding-bottom: 3.6rem;
   width: 100%;
-  z-index: 5;
+  z-index: 9;
 }
 .sortContainer__controls {
   background: #191414;
@@ -3228,7 +3401,6 @@ li {
   bottom: 2rem;
   left: 0;
   padding: 0 1rem;
-  pointer-events: none;
   position: fixed;
   width: 100%;
   z-index: 12;

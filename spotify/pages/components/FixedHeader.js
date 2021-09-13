@@ -39,12 +39,7 @@ const FixedHeader = ({ style, page, }) => {
     }
 
     return(
-        <animated.header style={{ 
-            position: style.position.to( p => p ),
-            transform: style.transform.to( x => x),
-            width: style.width.to( w => w ),
-            top: style.top.to( t => t )
-            }} ref={ thisComponentRef } className={`fixedHeader fixedHeader--${page}`}>
+        <animated.header style={ style } ref={ thisComponentRef } className={`fixedHeader fixedHeader--${page}`}>
         <animated.button
             onClick={ handleBackBtn }
             style={{

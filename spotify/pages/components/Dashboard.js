@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer, useRef, useLayoutEffect, createContext } from 'react'
-import { useSpring, animated, useTransition } from 'react-spring'
+import { animated, useTransition } from 'react-spring'
 import { calcScroll } from '../../utils/calcScroll'
 import { stopDupesId } from '../../utils/stopDupes'
 import useApiCall from '../hooks/useApiCall'
@@ -30,7 +30,8 @@ const initialState = {
     all_categories: [],
     available_genre_seeds: [],
     followed_artists: [],
-    my_top_categories: []
+    my_top_categories: [],
+    generated_fields: []
 }
 
 const routes = {   
@@ -154,11 +155,16 @@ const Dashboard = ({ setLoaded, audioRef }) => {
                     all_categories: stopDupesId( state.all_categories, items )
                 }
             case routes.my_top_categories:
-                // NOT A REAL ROUTE CALL THEREFORE NO METHOD NEEDED
                 return{
                     ...state,
                     my_top_categories: action.items
                 }
+            case routes.generated_fields:
+                return{
+                    ...state,
+                    generated_fields: action
+                }
+
             default:
                 console.log(action)
                 return state
@@ -197,22 +203,16 @@ const Dashboard = ({ setLoaded, audioRef }) => {
     const homePageHistoryRef = useRef( [] )
     const scrollRef = useRef( scrollPosition )
     const dashboardNavRef = useRef()
-    
+    const myNewReleasesRef = useRef( [] )
+    const shrinkRef = useRef()
     const newPlaylistRef = useRef( {} )
 
-    const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists, my_liked_tracks, my_top_categories } = { ...state }
+    const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists, my_liked_tracks, my_top_categories, generated_fields } = { ...state }
 
 // Set last played track on account as active track
     useEffect(() => {
         if( !queue[0] ){
             let firstTracks = null
-            // if( player_info.item ){
-            //     firstTrack = player_info.item
-            //     firstTrack['context'] = {
-            //         href: player_info.context.href,
-            //         type: player_info.context.type
-            //     }
-            // }
             if( recently_played[0] ){
                 firstTracks = [ ...recently_played ]
                 firstTracks = firstTracks.map(( t ) => {
@@ -229,7 +229,6 @@ const Dashboard = ({ setLoaded, audioRef }) => {
                 setQueue( queue => queue = [ ...firstTracks ])
             }
         }
-        
 }, [ recently_played, player_info  ])
 
     useEffect(() => {
@@ -237,15 +236,6 @@ const Dashboard = ({ setLoaded, audioRef }) => {
             if( activeHomeItem.id ) setDashboardState( 'home' )
         }
     }, [ activeHomeItem ])
-
-// HANDLE SCROLL PERCENTAGE 
-
-    const handleScroll = () => {
-        if(dashboardRef.current){
-            const percent = calcScroll()
-            setScrollPosition( percent ? percent : 0)
-        }
-    }
 
 // API CALLS 
     useEffect(() => {
@@ -257,53 +247,6 @@ const Dashboard = ({ setLoaded, audioRef }) => {
             firstFetch()
         }
     },[ user_info ])
-
-    useEffect(() => {
-        if( all_categories.length > 0 ){
-            setLoaded( true )
-        }
-    }, [ state ])
-
-    const firstFetch = () => {
-        const market = user_info.country
-        finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
-        finalizeRoute( 'get', routes.featured_playlists, null, null, null, `market=${market}`)
-        finalizeRoute( 'get', routes.new_releases, null, null ,null, 'limit=20' , `market=${market}`)
-        finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true,  }, null,'limit=50' )
-        finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true,  } , null, 'limit=50', `market=${market}` )
-        finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true,  }, null, 'limit=50', `market=${market}` )
-        finalizeRoute( 'get', routes.recently_played, null, null, null, 'limit=50') 
-        finalizeRoute( 'get', routes.available_genre_seeds, null, null, null, `market=${market}` )
-        finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true,  } )
-        finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true,  })
-        finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true,  }, null, 'type=artist')
-        finalizeRoute( 'get', routes.all_categories, null,{ fetchAll: true, limit: null }, null, 'limit=50') 
-    }
-
-    const refresh = ( cmd ) => {
-        const market = user_info.country
-        switch( String(cmd) ){
-            case 'all':
-                finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
-                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true  } , null, 'limit=50', `market=${market}` )
-                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true }, null, 'limit=50', `market=${market}` )
-                finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true }, null, 'limit=50' ) 
-                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
-                break
-            case 'player_info':
-                finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
-                break
-            case 'my_albums':
-                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true } , null, 'limit=50', `market=${market}` )
-                break
-            case 'my_playlists':
-                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true }, null, 'limit=50', `market=${market}` )
-                break    
-            case 'followed_artists':
-                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
-                break
-        }
-    }
 
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
@@ -382,42 +325,6 @@ const Dashboard = ({ setLoaded, audioRef }) => {
     }, [ scrollPosition ])
 
     useEffect(() => {
-        const homePage = document.getElementById('homePage')
-        const searchPage = document.getElementById('searchPage')
-        const managePage = document.getElementById('managePage')
-        const pages = [ homePage, searchPage, managePage ]
-        if( homePage && searchPage && managePage ) {
-            pages.forEach( page => {
-                page.style.display = 'none'
-            })
-            if( dashboardState === 'home' ) {
-                homePage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.home - ( window.innerHeight / 2 ) , 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'search' ) {
-                searchPage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.search - ( window.innerHeight / 2 ) , 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-            if( dashboardState === 'manage' ) {
-                managePage.style.display = 'block'
-                dashboardRef.current.scroll({ 
-                    top: pageScrollRef.current.manage - ( window.innerHeight / 2 ), 
-                    left: 0,
-                    behavior: 'auto'
-                })
-            }
-        }
-    },[ dashboardState ])
-
-    useEffect(() => {
         if( selectOverlay.length === 0  && newPlaylistRef.current.id ){
             refresh( 'my_playlists' )
             // Redirects to newly created playlist after SelectOverlay closes
@@ -435,13 +342,87 @@ const Dashboard = ({ setLoaded, audioRef }) => {
         }
     },[ selectOverlay ])
 
-// DB TRANSITIONS
+    useEffect(() => {
+        if( all_categories.length > 0 ){
+            setLoaded( true )
+        }
+    }, [ all_categories ])
 
-    const dbScale = useSpring({
-        borderRadius: selectOverlay[0] ? '20px' : '0px',
-        overflow: selectOverlay[0] ? 'hidden' : 'auto',
-        config:{ delay: 500 }
-    })
+// HANDLE SCROLL PERCENTAGE 
+
+    const handleScroll = () => {
+        if(dashboardRef.current){
+            const percent = calcScroll()
+            setScrollPosition( percent ? percent : 0)
+        }
+    }
+
+    const firstFetch = () => {
+        const market = user_info.country
+        finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
+        finalizeRoute( 'get', routes.featured_playlists, null, null, null, `market=${market}`)
+        finalizeRoute( 'get', routes.new_releases, null, null ,null, 'limit=50' , `market=${market}`)
+        finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true,  }, null,'limit=50' )
+        finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true,  } , null, 'limit=50', `market=${market}` )
+        finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true,  }, null, 'limit=50', `market=${market}` )
+        finalizeRoute( 'get', routes.recently_played, null, null, null, 'limit=50') 
+        finalizeRoute( 'get', routes.available_genre_seeds, null, null, null, `market=${market}` )
+        finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true,  } )
+        finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true,  })
+        finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true,  }, null, 'type=artist')
+        finalizeRoute( 'get', routes.all_categories, null,{ fetchAll: true, limit: null }, null, 'limit=50') 
+    }
+
+    const refresh = ( cmd ) => {
+        const market = user_info.country
+        switch( String(cmd) ){
+            case 'all':
+                finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
+                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true  } , null, 'limit=50', `market=${market}` )
+                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true }, null, 'limit=50', `market=${market}` )
+                finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true }, null, 'limit=50' ) 
+                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
+                break
+            case 'player_info':
+                finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
+                break
+            case 'my_albums':
+                finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true } , null, 'limit=50', `market=${market}` )
+                break
+            case 'my_playlists':
+                finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true }, null, 'limit=50', `market=${market}` )
+                break    
+            case 'followed_artists':
+                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
+                break
+        }
+    }
+
+    const scrollPage = (e) => {
+        if( dashboardState === 'home' ) {
+            dashboardRef.current.scrollTo({ 
+                top: pageScrollRef.current.home - ( window.innerHeight / 2 ) , 
+                left: 0,
+                behavior: 'auto'
+            })
+        }
+        if( dashboardState === 'search' ) {
+            dashboardRef.current.scrollTo({ 
+                top: pageScrollRef.current.search - ( window.innerHeight / 2 ) , 
+                left: 0,
+                behavior: 'auto'
+            })
+        }
+        if( dashboardState === 'manage' ) {
+            dashboardRef.current.scrollTo({ 
+                top: pageScrollRef.current.manage - ( window.innerHeight / 2 ), 
+                left: 0,
+                behavior: 'auto'
+            })
+        }
+    }
+
+// DB TRANSITIONS
 
     const messageOverlayTrans = useTransition( messageOverlay.map( item => item ),{
         from: { transform: 'scale(0.00) ', opacity: 1},
@@ -467,12 +448,29 @@ const Dashboard = ({ setLoaded, audioRef }) => {
         leave: { opacity: 0 }
     })
 
+    const mainTrans = useTransition( dashboardState, {
+        from: { display: 'none' },
+        enter: item => async (next, cancel) => {
+            await next({ display: 'block' })
+            await next( () => scrollPage() )
+          },
+        // update: {
+        //         borderRadius: selectOverlay[0] ? '20px' : '0px',
+        //         transform: selectOverlay[0] ?  'scaleX(0.90) scaleY(0.97)' : 'scaleX(1.00) scaleY(1.00)' ,
+        //         minHeight: selectOverlay[0] ? '85vh' : '100vh' ,
+        //     },
+            
+        leave: { display: 'none'},
+        expires: false,
+    })
+
     // Context set up //////////////////////////////////////////////////
 
     const dbHookState = {
         audioRef,
         homePageHistoryRef,
         searchPageHistoryRef,
+        myNewReleasesRef,
         activeHomeItem, 
         setActiveHomeItem, 
         activeSearchItem, 
@@ -535,31 +533,42 @@ const Dashboard = ({ setLoaded, audioRef }) => {
             }
 
             <animated.section
-            style={ dbScale }
             ref={ dashboardRef }
             onScroll={ handleScroll }
-            className={ `dashboard ${selectOverlay[0] && 'dashboard--shrink'}`}> 
+            className={ `dashboard ${ selectOverlay[0] && 'dashboard--shrink'}`}> 
             
-                <Home
-                transMinHeight={ homeTransMinHeight }
-                setTransMinHeight={ setHomeTransMinHeight }
-                currActiveHomeRef={ currActiveHomeRef }
-                homePageHistoryRef={ homePageHistoryRef }/> 
-
-                <Search
-                transMinHeight={ searchTransMinHeight }
-                setTransMinHeight={ setSearchTransMinHeight }
-                searchState={ searchState }
-                setSearchState={ setSearchState }
-                searchPageHistoryRef={ searchPageHistoryRef }
-                currActiveSearchRef={ currActiveSearchRef }
-                dbDispatch={ dispatch } />
-
-                <Manage 
-                toBeManaged={ toBeManaged }
-                setToBeManaged={ setToBeManaged }
-                manageState={ manageState }
-                setManageState={ setManageState } />
+                {
+                    mainTrans((props, item) => (
+                        <animated.div ref={ shrinkRef } style={ props }>
+                        {
+                            item === 'home' ?
+                            <Home
+                            soShrink
+                            transMinHeight={ homeTransMinHeight }
+                            setTransMinHeight={ setHomeTransMinHeight }
+                            currActiveHomeRef={ currActiveHomeRef }
+                            homePageHistoryRef={ homePageHistoryRef }/> 
+                            :
+                            item === 'search' ?
+                            <Search
+                            transMinHeight={ searchTransMinHeight }
+                            setTransMinHeight={ setSearchTransMinHeight }
+                            searchState={ searchState }
+                            setSearchState={ setSearchState }
+                            searchPageHistoryRef={ searchPageHistoryRef }
+                            currActiveSearchRef={ currActiveSearchRef }
+                            dbDispatch={ dispatch } />
+                            :
+                            item === 'manage' &&
+                            <Manage 
+                            toBeManaged={ toBeManaged }
+                            setToBeManaged={ setToBeManaged }
+                            manageState={ manageState }
+                            setManageState={ setManageState } />
+                        }
+                        </animated.div> 
+                    ))
+                }
                 
                 <Player 
                 hiddenUI={ hiddenUI } 
