@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, createContext } from 'react'
+import { useState, useEffect, useContext, useRef, createContext } from 'react'
 import { capital } from '../../../utils/capital'
 import { useTransition, animated } from 'react-spring'
 import SearchHeader from './SearchHeader'
@@ -26,46 +26,34 @@ const Search = ({
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
+
     
-    const { scrollPosition, selectOverlay, dashboardRef, activeSearchItem, setActiveSearchItem, } = useContext( DbHookContext )
-    const { all_categories, my_top_artists, available_genre_seeds,  } = useContext( DbFetchedContext )
-
-    const searchHookState ={
-        searchState, 
-        setSearchState,
-        activeSearchItem,
-        setActiveSearchItem,
-    }
-
-    const searchPageSettingsState = {
-        headerScrolled,
-        setHeaderScrolled,
-        transitionComplete,
-        setTransitionComplete,
-        activeHeader, 
-        setActiveHeader,
-        transMinHeight,
-        setTransMinHeight
-    }
+    const { scrollPosition, selectOverlay, dashboardRef, activeSearchItem, setActiveSearchItem, hiddenUI } = useContext( DbHookContext )
+    const { all_categories, my_top_artists, available_genre_seeds, my_top_categories  } = useContext( DbFetchedContext )
 
     useEffect(() => {
-        if( transitionComplete && (!activeSearchItem.type || activeSearchItem.type === 'category' )){
-            setTransitionComplete( false )
+        if( (!activeSearchItem.type || activeSearchItem.type === 'category' )){
+            setTransitionComplete( true )
         }
-    },[ transitionComplete ])
+    },[])
 
     // CREATES A TOP GENRES ARRAY BECAUSE SPOTIFY WONT GIVE US A ROUTE FOR IT :(
     useEffect(() => {
-        if(my_top_artists.length > 0 && all_categories.length > 0) {
-            let topArtists = [...my_top_artists]
-            const categories = calcCategories(topArtists)
-            const sortedCats = sortCategories( categories )
-            const payload = {
-                route: 'categories',
-                items: sortedCats
+        let isMounted = true 
+        if( isMounted ){
+            if(my_top_artists.length > 0 && all_categories.length > 0 && my_top_categories.length === 0) {
+                let topArtists = [...my_top_artists]
+                const categories = calcCategories(topArtists)
+                const sortedCats = sortCategories( categories )
+                const payload = {
+                    route: 'categories',
+                    items: sortedCats
+                }
+                dbDispatch(payload)
             }
-            dbDispatch(payload)
         }
+        
+        return () => isMounted = false 
     },[my_top_artists, all_categories])
 
     const calcCategories = ( artists ) => {
@@ -118,7 +106,7 @@ const Search = ({
     1
 
     useEffect(() => {
-        if( activeSearchItem.id ){
+        if( activeSearchItem.type ){
             if( searchPageHistoryRef.current.length > 0 ){
                 if( currActiveSearchRef.current.selectedTrack) currActiveSearchRef.current.selectedTrack = false
                 if( searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1 ].activeItem.id !== activeSearchItem.id ){
@@ -131,9 +119,9 @@ const Search = ({
         currActiveSearchRef.current = activeSearchItem
     },[ activeSearchItem ])
 
-    useEffect(() => {
-        if( transitionComplete &&
-            searchPageHistoryRef.current.length > 0 && 
+
+    const handleScrollHistory = () => {
+        if( searchPageHistoryRef.current.length > 0 && 
             activeSearchItem.id === searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1].activeItem.id ){
             const lastItem = searchPageHistoryRef.current.pop()
             dashboardRef.current.scroll({
@@ -142,52 +130,120 @@ const Search = ({
                 behavior: 'auto'
             })
         }else {
-            if(transitionComplete){
-                dashboardRef.current.scroll({
-                    left: 0,
-                    top: 0 ,
-                    behavior: 'auto'
-                })
-            }
+            dashboardRef.current.scroll({
+                left: 0,
+                top: 0 ,
+                behavior: 'auto'
+            })
         }
-    },[ activeSearchItem, transitionComplete ]) 
+    }
+
+
+    const [ zCounter, setZCounter ] = useState( 2 )
+
+    const handleZ = () => {
+        if( activeSearchItem.type ){
+            setZCounter( z => z += 1 )
+        } else {
+            setZCounter(2)
+        }
+    }
 
     const pageTransition = useTransition(activeSearchItem, {
-        initial: { transform: `translateX(${100 * dir}%)`},
-        from: { transform: `translateX(${100 * dir}%)`, position: 'absolute',minHeight: transMinHeight, width: '100%' , zIndex: 2 },
-        update: {  position: 'absolute'},
-        enter: { transform: `translateX(${0 * dir}%)`, zIndex: 2},
-        leave: { transform: `translateX(${-20 * (dir === 1 ? 1 : -5)}%)`, position: 'absolute', zIndex: 1},
-        onRest: () => setTransitionComplete(true)
+        from: { transform: `translateX(${100 * dir}%)`,  position: 'absolute', width: '100%' ,top: 0 },
+        enter: { 
+        transform: `translateX(${0 * dir }%)`, 
+        zIndex: zCounter + 1  , 
+        minHeight: transMinHeight ,
+        pointerEvents: 'auto',
+        delay: 250 , 
+        onRest: () => {
+            if( activeSearchItem.type ){
+                setTransitionComplete( true )
+                handleZ()
+            }
+        }},
+        update: {  
+            zIndex: zCounter  ,
+        },
+        leave: { transform: `translateX(${-20 * dir }%)`, pointerEvents: 'none',  zIndex: 1,},
+        
     })
-
+    
     const headerTransition = useTransition(activeSearchItem, {
-        from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: 3 , top: 0},
-        update: { position: 'fixed', top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 , config: { duration: .01 }},
-        enter: {  transform: `translateX(${0 * dir }%)` },
-        leave: { transform: `translateX(${-100 * dir }%)`},
+        from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' ,top: 0, zIndex: zCounter + 2},
+        update: { top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 ,  config: { duration: .01 }},
+        enter: {  transform: `translateX(${0 * dir }%)`, pointerEvents: 'auto', delay: 250 },
+        leave: { transform: `translateX(${-20 * dir }%)`, pointerEvents: 'none', zIndex: zCounter },
+        expires: 10000,
     })
 
     const headerTransition2 = useTransition(activeSearchItem, {
-        from: { transform: `translateX(${0}%)`, position: 'fixed', width: '100%', zIndex: 3},
-        update: { position: 'fixed' },
-        enter: { transform: `translateX(${0}%)`, },
-        leave: { transform: `translateX(${-100 * dir }%)`,  position: 'fixed', zIndex: 1},
+        from: { transform: `translateY(${ -100 }%)`, position: 'fixed', width: '100%' ,top: 0, zIndex: zCounter + 2},
+        update: { 
+            top: !hiddenUI && searchState !== 'search' ? 0 : selectOverlay[0] ? dashboardRef.current.scrollTop : ( 4 * -16 - 8 ),
+            opacity: searchState === 'search' ? 0 : 1,
+            pointerEvents: searchState === 'search' ? 'none' : 'auto'
+        },
+        enter: {  transform: `translateY(${0}%)`, pointerEvents: 'auto', delay: 250 },
+        leave: { transform: `translateY(${-100 }%)`, pointerEvents: 'none', zIndex: zCounter + 2 },
     })
-    
+
     const mainTransition = useTransition(activeSearchItem, {
-        from: { transform: `'translateX(${ 0 * dir }%)'`, position: 'absolute', minHeight: transMinHeight,  width: '100%' , zIndex: 2},
-        update: {  position: 'absolute'},
-        enter: { transform: `'translateX(${ 0 * dir }%)'`, },
-        leave: { transform: `'translateX(${ -20 * dir }%)'`, position: 'absolute', zIndex: 1},
+        from: { transform: `translateX(${ (dir < 0 ? 100 : 0) * dir }%)`,  top: 0},
+        enter: { 
+            transform: `translateX(${0 * dir }%)`, 
+            minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight, 
+            position: 'absolute', 
+            pointerEvents: 'auto',
+            width: '100%',  
+            zIndex: zCounter + 1, 
+            delay: 250 , 
+            onRest: () => {
+                if( !activeSearchItem.type ){
+                    setTransitionComplete( true )
+                    handleZ()
+                }
+            }  
+        },
+        update: { 
+            zIndex: zCounter + 1 ,
+        },
+        leave: { transform: `translateX(${-20 * dir }%)`, pointerEvents: 'none', zIndex: 1, },
+
     })
 
     const overlayTrans = useTransition( searchState , {
         initial: { opacity: 0 },
-        from: { opacity: 0, transform: 'translateX(0%)' },
-        enter: { opacity: 1 },
-        leave: item => !activeSearchItem.type || activeSearchItem.type === 'showcase' ? { opacity: 0 } : { transform: 'translateX(-100%' }
+        from: { opacity: 0, transform: 'translateX(0%)', zIndex: zCounter + 2 },
+        enter: { opacity: 1, delay: 250 },
+        leave: item => async( next, cancel ) => {
+            if( !activeSearchItem.type || activeSearchItem.type === 'category' ){
+                await next( { opacity: 0 , delay: 250} )
+            }else {
+                await next( { transform: 'translateX(-100%)', delay: 250  })
+            }
+        }
     })
+
+    const searchHookState ={
+        searchState, 
+        setSearchState,
+        activeSearchItem,
+        setActiveSearchItem,
+    }
+
+    const searchPageSettingsState = {
+        headerScrolled,
+        setHeaderScrolled,
+        transitionComplete,
+        setTransitionComplete,
+        activeHeader, 
+        setActiveHeader,
+        transMinHeight,
+        setTransMinHeight,
+        handleScrollHistory
+    }
 
     return(
         <SearchHookContext.Provider value={ searchHookState }>   
@@ -204,22 +260,20 @@ const Search = ({
                     
                 ))
             }
-            {
-                headerTransition2(( props, item ) => (
-                    <animated.div style={ props }>
-                    {
-                        !item.type &&
-                        <SearchHeader /> 
-                    }
-                    {
-                        item.type === 'category' &&
-                        <SearchHeader /> 
-                    }
-                    </animated.div>
-                ))
-            } 
+            
             
             <SearchPageSettingsContext.Provider value={ searchPageSettingsState } >
+            {
+                headerTransition2(( props, item ) => (
+                    
+                        !item.type ?
+                        <SearchHeader style={ props } /> 
+                        :
+                        item.type === 'category' &&
+                        <SearchHeader  style={ props }/>
+                    
+                ))
+            } 
             {
                 headerTransition(( props, item )=> (
                     (item.type === 'artist' ||

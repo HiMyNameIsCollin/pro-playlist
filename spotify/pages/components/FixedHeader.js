@@ -17,7 +17,7 @@ const FixedHeader = ({ style, page, }) => {
     const thisComponentRef = useRef()
 
     useEffect(() => {
-        if( transitionComplete ) setMounted( true )
+        if( transitionComplete ) setTimeout(() => setMounted( true ), 1000)
     }, [ transitionComplete ])
 
     const { fadeIn, textScroll, btnMove} = useSpring({

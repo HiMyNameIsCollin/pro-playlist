@@ -1,6 +1,5 @@
 export default (req, res) => {
     const TOKENURL = 'https://accounts.spotify.com/api/token'
-    console.log(req.body)
     fetch(TOKENURL, {
         method: 'post',
         headers: {

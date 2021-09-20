@@ -16,7 +16,6 @@ export const checkToken = ( token_expiry ) => {
 }
 
 export const refreshToken = ( token, func ) => {
-    console.log('REFRESHING TOKEN')
     const initRefreshToken = (token) => {
         let body = 'grant_type=refresh_token'
         body += '&client_id=' + process.env.NEXT_PUBLIC_CLIENT_ID

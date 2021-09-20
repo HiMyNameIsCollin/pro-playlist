@@ -38,13 +38,11 @@ const TrackRecommendationsMenu = ({ menuData, pos }) => {
             getTracks( menuData.data, [] )
         } else {
             getTracks( [...my_liked_tracks, ...my_top_tracks ], my_top_artists )
-
         }
     },[])
 
     const getTracks = ( tracks, artists ) => {
-        const items = tracks.filter(({ id: id1 }) => tracks.filter(({ id: id2 }) =>  id1 === id2 ).length === 1 )
-        const seeds = getSeeds( available_genre_seeds, artists, items )
+        const seeds = getSeeds( available_genre_seeds, artists, tracks )
         finalizeRoute('get', `${ recommendationsRoute }`, null, null, null, ...seeds, 'limit=50')
     }
 

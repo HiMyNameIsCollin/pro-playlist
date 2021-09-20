@@ -1,22 +1,12 @@
-import { useEffect, useState,  } from "react";
+import { useContext } from "react";
 import { useSpring, animated } from 'react-spring'
 import ManageFiltersBtn from './ManageFiltersBtn'
 
-const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter }) =>  {
+import { ManageHookContext } from './Manage'
 
-    const [ showSubFilter, setShowSubFilter ] = useState( false )
+const ManageFilters = ({ activeFilter, setActiveFilter  }) =>  {
 
-    // useEffect(() => {
-    //     if(activeFilter === 'albums' || activeFilter === 'playlists'){
-    //         setShowSubFilter( true )
-    //     }else {
-    //         setShowSubFilter( false )
-    //     }
-    // },[ activeFilter ])
-
-    useEffect(() => {
-        if( activeFilter === undefined && subFilter ) setSubFilter( false )
-    },[])
+    const { manageState } = useContext( ManageHookContext )
 
     const filters = [
         'playlists', 'albums', 'artists'
@@ -36,20 +26,15 @@ const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter 
             closeMargSwitch: activeFilter ? '1px' : '0px',
             closeWidthSwitch: activeFilter ? '30px' : '0px',
             closePaddSwitch: activeFilter ? '8px' : '0px',
-            
         }
     })
 
-    // const { trSwitch, paddSwitch, zSwitch } = useSpring({
-    //     to:{
-    //         trSwitch: subFilter ? '-30' : '0',
-    //         paddSwitch: subFilter ? '32px': '16px',
-    //         zSwitch: subFilter ? 0 : 1
-    //     }
-    // })
+    const hideForOverlay = useSpring({
+        opacity: manageState === 'search' ? 0 : 1
+    })
 
     return(
-        <div className='mngFilters'>
+        <animated.div style={ hideForOverlay } className='mngFilters'>
             <animated.button
                 onClick={ () => setActiveFilter( undefined )}
                 style={{
@@ -66,22 +51,7 @@ const ManageFilters = ({ activeFilter, setActiveFilter, subFilter, setSubFilter 
                 <ManageFiltersBtn item={ item } key={ i } activeFilter={ activeFilter } handleFilter={ handleFilter } />
             ))
             }
-            {/* {
-                showSubFilter &&
-                <animated.button 
-                onClick={ () => setSubFilter(!subFilter)}
-                style={{ 
-                    margin: 0,
-                    paddingLeft: paddSwitch.to( z => z ),
-                    transform: trSwitch.to( z => `translateX(${z}%)`) ,
-                    zIndex: zSwitch.to( z => z )
-                }}
-                className={`manageFilters__btn ${ subFilter && 'manageFilters__btn--active'}`}>
-                Downloaded
-                </animated.button>
-            } */}
-        
-        </div>
+        </animated.div>
     )
 }
 

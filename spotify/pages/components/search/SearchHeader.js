@@ -1,31 +1,39 @@
 
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { useSpring, animated } from 'react-spring'
 import { DbHookContext } from '../Dashboard'
 import { SearchHookContext } from './Search'
+import { SearchPageSettingsContext } from './Search'
 
-const SearchHeader = () => {
+const SearchHeader = ({ style }) => {
 
     const [ mounted, setMounted ] = useState( false )
 
-    useEffect(() => setMounted(true), [])
-
-    const { searchState, setSearchState} = useContext( SearchHookContext )
+    const { searchState, setSearchState, activeSearchItem} = useContext( SearchHookContext )
     const { hiddenUI, selectOverlay, dashboardRef  } = useContext( DbHookContext )
-    const hideHeader = useSpring({
-        transform: !hiddenUI && mounted && searchState !== 'search' ? 'translateY(0rem)' : 'translateY(-4rem)',
-        top: mounted ? selectOverlay[0] ? dashboardRef.current.scrollTop : 0 : -7 * 16
-        
+    const { transitionComplete } = useContext( SearchPageSettingsContext )
+    const thisHeaderRef = useRef()
+
+    useEffect(() => setMounted(true), [])
+    useEffect(() => {
+        if( transitionComplete && !activeSearchItem.type ) {
+            thisHeaderRef.current.parentElement.style.zIndex = 4
+        }
+    }, [ transitionComplete ])
+
+    const morph = useSpring({
+        width: searchState === 'search' ? '90%' : '100%',
+        padding: searchState === 'search' ? '1rem' : '0.5rem'
     })
     return(
-        <animated.header style={hideHeader} className='searchHeader'>
+        <animated.header ref={ thisHeaderRef } style={style} className='searchHeader'>
             <p className='searchHeader__title'>
                 Search
             </p>
-            <div className='searchHeader__search' onClick={() => setSearchState('search') }>
+            <animated.div style={ morph } className='searchHeader__search' onClick={() => setSearchState('search') }>
                 <i className="fas fa-search"></i>
                 <input type='text' placeholder='Search for artists, songs, or podcasts'/>
-            </div>
+            </animated.div>
         </animated.header>
     )
 }

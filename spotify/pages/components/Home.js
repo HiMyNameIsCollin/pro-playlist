@@ -14,7 +14,6 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
     const [ headerScrolled, setHeaderScrolled ] = useState( 0 )
     const [ activeHeader, setActiveHeader ] = useState( {} )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
-    const thisComponentRef = useRef()
 
     const dir = homePageHistoryRef.current.length > 0  ?
     activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id || 
@@ -24,6 +23,12 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
     1
     : 
     1
+
+    useEffect(() => {
+        if( (!activeHomeItem.type )){
+            setTransitionComplete( true )
+        }
+    },[])
 
     useEffect(() => {
         if( activeHomeItem.id ){
@@ -68,50 +73,86 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
         setTransMinHeight,
         handleScrollHistory
     }
-    
-    const zCounter = useRef( 1 )
 
-    useEffect(() => {
+    const [ zCounter, setZCounter ] = useState( 2 )
+
+    const handleZ = () => {
         if( activeHomeItem.type ){
-            zCounter.current += 1
+            setZCounter( z => z += 1 )
         } else {
-            zCounter.current = 1
+            setZCounter(2)
         }
-    },[ activeHomeItem ])
+    }
 
     const pageTransition = useTransition(activeHomeItem, {
-        from: { transform: `translateX(${100 * dir}%)`, minHeight: transMinHeight , position: 'absolute', width: '100%' , zIndex: zCounter.current + 1 },
-        enter: { transform: `translateX(${0 * dir }%)`, delay: 250 , onRest: () => setTransitionComplete( true ) },
-        update: {  position: 'absolute', },
-        leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute' , zIndex: zCounter.current },
+        from: { transform: `translateX(${100 * dir}%)`,  position: 'absolute', width: '100%' ,top: 0 },
+        enter: { 
+        pointerEvents: 'auto',
+        transform: `translateX(${0 * dir }%)`, 
+        zIndex: zCounter + 1  , 
+        minHeight: transMinHeight ,
+        delay: 250 , 
+        onRest: () => {
+            if( activeHomeItem.type ){
+                setTransitionComplete( true )
+                handleZ()
+            }
+        }},
+        update: {  
+        zIndex: zCounter  ,
+        },
+        leave: { 
+            pointerEvents: 'none',
+            minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight,
+            transform: `translateX(${-20 * dir }%)`, 
+            zIndex: 1,
+        },
         
     })
     
     const headerTransition = useTransition(activeHomeItem, {
-        from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' , zIndex: zCounter.current + 2 , top: 0},
-        update: { position: 'fixed', top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 , config: { duration: .01 }},
-        enter: {  transform: `translateX(${0 * dir }%)`, delay: 250 },
-        leave: { transform: `translateX(${-20 * dir }%)`, zIndex: zCounter.current},
+        from: { transform: `translateX(${100 * dir }%)`, position: 'fixed', width: '100%' ,top: 0, zIndex: zCounter + 2},
+        update: { position: 'fixed', top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 ,  config: { duration: .01 }},
+        enter: {  transform: `translateX(${0 * dir }%)`, pointerEvents: 'auto' ,delay: 250 },
+        leave: { transform: `translateX(${-20 * dir }%)`,pointerEvents: 'none', zIndex: zCounter },
         expires: 10000,
     })
 
     const mainTransition = useTransition(activeHomeItem, {
-        from: { transform: `translateX(${ 100 * dir}%)`, zIndex: zCounter.current + 1 , minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight, position: 'absolute', width: '100%'},
-        enter: { transform: `translateX(${0 * dir }%)`, delay: 250 , onRest: () => setTransitionComplete( true )  },
-        update: {  position: 'absolute', zIndex: !activeHomeItem.type && 1 },
-        leave: { transform: `translateX(${-20 * dir }%)`, position: 'absolute', zIndex: 1, },
+        from: { transform: `translateX(${ (dir < 0 ? 100 : 0) * dir }%)`,  top: 0},
+        enter: { 
+        transform: `translateX(${0 * dir }%)`, 
+        minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight, 
+        position: 'absolute', 
+        pointerEvents: 'auto',
+        width: '100%',  
+        zIndex: zCounter + 1, 
+        delay: 250 , 
+        onRest: () => {
+            if( !activeHomeItem.type ){
+                setTransitionComplete( true )
+                handleZ()
+            }
+        }  
+        },
+        update: { 
+            zIndex: zCounter + 1 ,
+        },
+        leave: {
+            pointerEvents: 'none',
+            minHeight: transMinHeight < window.innerHeight ? window.innerHeight : transMinHeight, 
+            transform: `translateX(${-20 * dir }%)`, 
+            zIndex: 1, 
+        },
 
     })
 
     return(
-        <div
-        ref={ thisComponentRef }
-        id='homePage'>
-
+        <div id='homePage'>
         <HomePageSettingsContext.Provider value={ homePageSettingsState }>
         {
             headerTransition(( props, item ) => (
-                item.type &&
+                item.type && 
                 <FixedHeader 
                 style={ props }
                 page={ 'home' } />

@@ -7,7 +7,7 @@ const TracksContainer = ({ type, data }) => {
 
     const { collection, tracks } = { ...data }
     const [ mounted, setMounted ] = useState(false)
-    const { setOverlay } = useContext( DbHookContext )
+
     useEffect(() => {
         setMounted(true)
     },[])
@@ -15,7 +15,7 @@ const TracksContainer = ({ type, data }) => {
    
 
     return(
-        <section className={ `trackContainer trackContainer--${type} ${mounted && 'trackContainer--active'}`}>
+        <section className={ `trackContainer trackContainer--${type} `}>
         {
             type === 'artist' &&
             <p className='trackContainer__title'> Popular </p> 

@@ -10,9 +10,18 @@ const ManageFiltersBtn = ({ item, activeFilter, handleFilter }) => {
     const { dashboardState } = useContext( DbHookContext )
 
     const btnRef = useCallback( node => {
-        if( node && !btnWidth ){
-            setBtnWidth( node.getBoundingClientRect().width )
-        }    
+
+        if( node ){
+            const ro = new ResizeObserver( entries => {
+                if( node.getBoundingClientRect().width > 0 ) {
+                    setBtnWidth( node.getBoundingClientRect().width )
+                    setMounted( true )
+                }
+            })
+            ro.observe( node )
+            return () => ro.disconnect()
+        }
+
     },[ dashboardState ])
 
 

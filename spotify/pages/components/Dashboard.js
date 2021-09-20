@@ -61,7 +61,7 @@ const initialPageScroll = {
     search: 0,
     manage: 0
 }
-const Dashboard = ({ setLoaded, audioRef }) => {
+const Dashboard = ({ setLoaded, audioRef , height}) => {
 
     const reducer = (state, action) => {
         let route
@@ -166,7 +166,6 @@ const Dashboard = ({ setLoaded, audioRef }) => {
                 }
 
             default:
-                console.log(action)
                 return state
                 break         
         }
@@ -359,7 +358,7 @@ const Dashboard = ({ setLoaded, audioRef }) => {
 
     const firstFetch = () => {
         const market = user_info.country
-        finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
+        // finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
         finalizeRoute( 'get', routes.featured_playlists, null, null, null, `market=${market}`)
         finalizeRoute( 'get', routes.new_releases, null, null ,null, 'limit=50' , `market=${market}`)
         finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true,  }, null,'limit=50' )
@@ -377,7 +376,7 @@ const Dashboard = ({ setLoaded, audioRef }) => {
         const market = user_info.country
         switch( String(cmd) ){
             case 'all':
-                finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
+                // finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
                 finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true  } , null, 'limit=50', `market=${market}` )
                 finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true }, null, 'limit=50', `market=${market}` )
                 finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true }, null, 'limit=50' ) 
@@ -454,12 +453,6 @@ const Dashboard = ({ setLoaded, audioRef }) => {
             await next({ display: 'block' })
             await next( () => scrollPage() )
           },
-        // update: {
-        //         borderRadius: selectOverlay[0] ? '20px' : '0px',
-        //         transform: selectOverlay[0] ?  'scaleX(0.90) scaleY(0.97)' : 'scaleX(1.00) scaleY(1.00)' ,
-        //         minHeight: selectOverlay[0] ? '85vh' : '100vh' ,
-        //     },
-            
         leave: { display: 'none'},
         expires: false,
     })
@@ -533,6 +526,7 @@ const Dashboard = ({ setLoaded, audioRef }) => {
             }
 
             <animated.section
+            style={{ minHeight: height }}
             ref={ dashboardRef }
             onScroll={ handleScroll }
             className={ `dashboard ${ selectOverlay[0] && 'dashboard--shrink'}`}> 

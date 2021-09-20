@@ -85,13 +85,27 @@ const ItemSelect = ({ menuData, pos }) => {
                         {
                         data.filter(( x ) => filterCB(x) ).length !== 0 ?
                         data.filter(( x ) => filterCB(x) ).slice( 0, revealed ).map(( item, i) => (
-                            <MenuCard item={ item } index={ i } type={ menuData.type } page={ menuData.page} handleAddToPlaylist={ handleAddToPlaylist } />
+                            <MenuCard 
+                            key={ i }
+                            item={ item } 
+                            index={ i } 
+                            type={ menuData.type } 
+                            page={ menuData.page} 
+                            handleAddToPlaylist={ handleAddToPlaylist } />
                         )) :
                         <p style={{ textAlign: 'center', padding: '1rem' }}> Nothing matches your query </p>
                         }
                         </>
                         :
-                        data.slice( 0, revealed ).map( (item, i) => <MenuCard item={ item } index={ i} type={ menuData.type } page={ menuData.page} allData={ data }/>)
+                        data.slice( 0, revealed ).map( (item, i) => (
+                            <MenuCard 
+                            item={ item } 
+                            key={ i } 
+                            index={ i } 
+                            type={ menuData.type } 
+                            page={ menuData.page} 
+                            allData={ data }/>
+                        ))
                 }
                 </div>
             </div>

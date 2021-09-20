@@ -13,7 +13,7 @@ const Showcase = ({ style, data }) => {
 
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall()
     const [ categoryResults, setCategoryResults ] = useState( [] )
-    const { setTransMinHeight, transitionComplete, setTransitionComplete, } = useContext( SearchPageSettingsContext )
+    const { setTransMinHeight, transitionComplete, setTransitionComplete, handleScrollHistory } = useContext( SearchPageSettingsContext )
 
     const thisComponentRef = useRef() 
 
@@ -33,7 +33,8 @@ const Showcase = ({ style, data }) => {
         if( transitionComplete ) {
             thisComponentRef.current.classList.add('fadeIn')
             setTransitionComplete(false)
-            thisComponentRef.current.style.minHeight = '100vh'
+            handleScrollHistory()
+
         }
     }, [ transitionComplete ])
 

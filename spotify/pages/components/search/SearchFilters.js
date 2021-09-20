@@ -24,12 +24,12 @@ const FilterBtn = ({ name, activeFilter, setActiveFilter}) => {
 const SearchFilters = ({ activeFilter, setActiveFilter }) => {
 
     const filters = [
-        'Top', 'Artists', 'Albums', 'Tracks', 'Playlists', 'Genres & Moods'
+        'Top', 'Artists', 'Albums', 'Tracks', 'Playlists', 
     ]
     return(
         <div className='searchFilters'>
         {
-            filters.map((f, i) => <FilterBtn name={ f } activeFilter={ activeFilter } setActiveFilter={ setActiveFilter }/> )
+            filters.map((f, i) => <FilterBtn key={ i } name={ f } activeFilter={ activeFilter } setActiveFilter={ setActiveFilter }/> )
         }
         </div>
     )

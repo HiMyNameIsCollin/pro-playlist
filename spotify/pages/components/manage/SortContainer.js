@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext, useCallback, useRef } from 'react'
 import { animated, useTransition, useSpring } from 'react-spring'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
 import { DbFetchedContext, DbHookContext } from '../Dashboard'
 import { ManageHookContext } from './Manage'
 import useApiCall from '../../hooks/useApiCall'
@@ -13,7 +12,7 @@ const SortContainer = ({ style, setActiveItem,  }) => {
     const route = 'v1/playlists/tracks'
 
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
-    const { sortBar, setSortBar, setMessageOverlay, refresh } = useContext( DbHookContext )
+    const { sortBar, setSortBar, setMessageOverlay, refresh, navHeight } = useContext( DbHookContext )
     const { my_playlists, user_info } = useContext( DbFetchedContext )
     const { activeManageItem, setActiveManageItem,} = useContext( ManageHookContext )
     const [ activePlaylistItem, setActivePlaylistItem ] = useState({})
@@ -22,16 +21,21 @@ const SortContainer = ({ style, setActiveItem,  }) => {
     const [ topItems , setTopItems ] = useState( [] )
 
     const [ dragging, setDragging ] = useState( false )
-    const [ height, setHeight ] = useState( window.innerHeight )
+    const [ height, setHeight ] = useState( 0 )
     const [ resizePos, setResizePos ] = useState(0)
     const [ clickLoc, setClickLoc ] = useState( 0 )
     const originalBottomItemsRef = useRef( [] )
     const originalTopItemsRef = useRef( [] )
 
-
     const sortContainerRef = useCallback(node => {
         if ( node ) {
-            setHeight( node.getBoundingClientRect().height )
+            const ro = new ResizeObserver( entries => {
+                if( node.offsetHeight > 0 ) {
+                    setHeight( node.offsetHeight  )
+                }
+            })
+            ro.observe( node )
+            return () => ro.disconnect()
         }
         return () => setHeight( 0 )
       }, []);
@@ -44,12 +48,6 @@ const SortContainer = ({ style, setActiveItem,  }) => {
           }
       },[])
 
-      useEffect(() => {
-        if( apiPayload ) {
-            console.log( apiPayload )
-        }
-      },[ apiPayload ])
-
     useEffect(() => {
         if(activeManageItem.type){
             //  Default setting for the playlist menu. Renders slider that to display all playlists.
@@ -61,21 +59,23 @@ const SortContainer = ({ style, setActiveItem,  }) => {
 
 
     const sortBarTrans = useSpring({
-        transform: sortBar && activeManageItem.type ? 'translateY(0%)' : 'translateY(100%)'
+        transform: sortBar && activeManageItem.type ? 'translateY(0%)' : 'translateY(100%)',
+        minHeight: sortBar && activeManageItem.type ? navHeight : 0,
+        maxHeight: sortBar && activeManageItem.type ? navHeight : 0
     })
 
     const activeItemTrans = useTransition( activeManageItem, {
-        from: { bottom: 0 - window.innerHeight, minHeight: (height ? height : window.innerHeight )- (resizePos ? resizePos : window.innerHeight / 2) },
-        update: { minHeight: ((height ? height : window.innerHeight )- ( resizePos ? resizePos : window.innerHeight / 2 )) } ,
-        enter: { bottom: 0 , minHeight: (height ? height : window.innerHeight )- (resizePos ? resizePos : window.innerHeight / 2 )   },
-        leave: { bottom: 0 - window.innerHeight, minHeight: (height ? height : window.innerHeight )- (resizePos ? resizePos : window.innerHeight / 2 )  },
+        from: { bottom: 0 - height, minHeight: height - resizePos },
+        update: { minHeight: height - resizePos  } ,
+        enter: { bottom: 0 },
+        leave: { bottom: 0 - height, minHeight: height - resizePos  },
     })
 
     const playlistTrans = useTransition( activePlaylistItem, {
-        from: {  top: 0 - window.innerHeight, minHeight: resizePos ? resizePos : window.innerHeight / 2},
-        update: { minHeight: resizePos ? resizePos : window.innerHeight / 2 } ,
-        enter: {  top: 0 ,   minHeight: resizePos  ? resizePos : window.innerHeight / 2 },
-        leave: {  top: 0 - window.innerHeight, minHeight: resizePos ? resizePos : window.innerHeight / 2,}
+        from: {  top: 0 - height, minHeight: resizePos },
+        update: { minHeight: resizePos  } ,
+        enter: { top: 0 },
+        leave: {  top: 0 - height, minHeight: resizePos ,}
     })
 
     const handleCloseSortContainer = () => {
@@ -83,21 +83,9 @@ const SortContainer = ({ style, setActiveItem,  }) => {
         setActiveManageItem( {} )
     }
 
-    const breakDownId = (str) =>{
-        const split = '--'
-        const id = str.split('--')
-        return id
-        
-    } 
-
-    const dragUpdate = (e) => {
-        console.log( e.destination )
-    }
-
     const dragStart = (e) => {
         setDragging( e.draggableId )
-    } 
-
+    }
 
     const dragEnd = (e) => {
         setDragging( undefined )
@@ -146,7 +134,6 @@ const SortContainer = ({ style, setActiveItem,  }) => {
         return { dest: dest.tracks, source: removedResult.tracks}
     }
 
-
     const removeItem = ( from, data ) => {
         const { collection, tracks } = data
         let result
@@ -193,14 +180,12 @@ const SortContainer = ({ style, setActiveItem,  }) => {
        
         <DragDropContext 
         onDragStart={ dragStart }
-        onDragUpdate={ dragUpdate }
         onDragEnd={ dragEnd } >
             <div 
             ref={ sortContainerRef }
             className='sortContainer__relative'>
-                <div id="draggable"></div>
-
         {
+            resizePos > 0 &&
             playlistTrans(( props, item) => (
                 item.type &&
                 <ActiveItem 
@@ -217,11 +202,16 @@ const SortContainer = ({ style, setActiveItem,  }) => {
                 />
             ))
         }
+        {
+            height && 
             <ResizeBar 
             parentHeight={ height }
             resizePos={ resizePos } 
             setResizePos={ setResizePos } />
+        }
+            
         {
+        resizePos > 0 &&
         activeItemTrans(( props, item ) => (
             item.type &&
             <ActiveItem 

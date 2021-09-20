@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { animated } from 'react-spring'
 
-const Loading = ({ style }) => {
+const LoadingLogo = ({ style }) => {
 
     return(
         <animated.div 
@@ -426,4 +426,4 @@ const Loading = ({ style }) => {
     )
 }
 
-export default Loading
+export default LoadingLogo

@@ -2,12 +2,14 @@ import { useCallback, useEffect, useRef, useContext } from 'react'
 import { animated } from 'react-spring'
 import BrowseContainer from '../BrowseContainer'
 import { DbFetchedContext } from '../Dashboard'
+import { SearchHookContext } from './Search'
 import { SearchPageSettingsContext } from './Search'
 
 const SearchHome = ({ style, }) => {
 
     const thisComponentRef = useRef() 
 
+    const { activeSearchItem } = useContext( SearchHookContext )
     const { my_top_categories , all_categories } = useContext( DbFetchedContext )
     const { setTransMinHeight, transitionComplete, setTransitionComplete } = useContext( SearchPageSettingsContext )
 
@@ -26,10 +28,11 @@ const SearchHome = ({ style, }) => {
     useEffect(() => {
         if( transitionComplete ) {
             thisComponentRef.current.classList.add('fadeIn')
-            thisComponentRef.current.style.minHeight = '100vh'
             setTransitionComplete(false)
+            if( !activeSearchItem.type ) thisComponentRef.current.style.zIndex = 2 
         }
     }, [ transitionComplete ])
+
 
     return(
         <animated.div 

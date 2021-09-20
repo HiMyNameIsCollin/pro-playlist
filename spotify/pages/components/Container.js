@@ -3,7 +3,7 @@ import Dashboard from './Dashboard'
 import {useState, useEffect, useRef } from 'react'
 import { checkToken, refreshToken } from '../../utils/tokenTools'
 import useFetchToken from '../hooks/useFetchToken'
-import Loading from './Loading'
+import LoadingLogo from './LoadingLogo'
 import { useTransition } from 'react-spring'
 import { useRouter } from 'next/router'
 
@@ -13,33 +13,22 @@ const Container = () => {
     const [ auth, setAuth ] = useState(false)
     const [ height, setHeight ] = useState()
     const [ loaded, setLoaded ] = useState( false )
-    const [ disabled, setDisabled ] = useState()
     const router = useRouter()    
 
     const redirect_uri = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://spotify-himynameiscollin.vercel.app/'
 
-    const isTouchDevice = () => {
-      return (('ontouchstart' in window) ||
-        (navigator.maxTouchPoints > 0) ||
-        (navigator.msMaxTouchPoints > 0));
-    }
     useEffect(() => {
-      const isTouch = isTouchDevice()
-      if( !isTouch && location.hostname !== 'localhost'){
-        setDisabled( true )
-        setLoaded( true )
-      } else {
-        setDisabled( false )
+      let isMounted = true
+      if( isMounted ){
+        setHeight( window.innerHeight )
+        window.addEventListener( 'resize', () => {
+          setHeight( window.innerHeight )
+        })
+        window.addEventListener( 'orientationchange', () => {
+          setHeight( window.innerHeight )
+        })
       }
-      setHeight( window.innerHeight )
-      window.addEventListener( 'resize', () => {
-        const height = window.innerHeight > window.innerWidth ? window.innerHeight : window.innerWidth
-        setHeight( height )
-      })
-      window.addEventListener( 'orientationchange', (e) => {
-        const height = e.target.innerHeight > e.target.innerWidth ? e.target.innerHeight : e.target.innerWidth
-        setHeight( height )
-      })
+      return () => isMounted = false  
     }, [])
 
     useEffect(() => {
@@ -61,12 +50,9 @@ const Container = () => {
             } else {
               setLoaded( true )
             }
-         
         }      
       }
-      
       setTimeout( checkAuth, 250 )
-  
     },[ tokenFetchComplete ])
 
     const handleRedirect = () => {
@@ -107,33 +93,39 @@ const Container = () => {
     const loadingTrans = useTransition( loaded, {
       from: { opacity: 1 } ,
       enter: { opacity: 1 } ,
-      leave: { opacity: 0 } ,
-
+      leave: { opacity: 0, delay: 1000 } ,
     })
 
     return(
-    <main 
-    style={{ height: height }}
-    className='container'>
-        {
-          loadingTrans( ( props, item ) => (
-            !item &&
-            <Loading style={ props }/>
-          ))
-        }
-        {
-          disabled ?
-          <div>Disabled </div> 
-          :
-          auth ? 
-          <Dashboard 
-          audioRef={ audioRef } 
-          setLoaded={ setLoaded }/>  : 
-          loaded &&
-          <Login setTokenBody={ setTokenBody } initAudio={ initAudio }/>
-        }
+    <>
+      
+      <div className='orientation'>
+        <p> This project is designed for mobile devices in portrait orientation. </p> 
+      </div>
+      
+      <main 
+      style={{
+        minHeight: height, 
+      }}
+      className='container'>
+          {
+            loadingTrans( ( props, item ) => (
+              !item &&
+              <LoadingLogo style={ props }/>
+            ))
+          }
+          {
+            auth ? 
+            <Dashboard 
+            audioRef={ audioRef } 
+            setLoaded={ setLoaded }
+            height={ height } />  : 
+            loaded &&
+            <Login setTokenBody={ setTokenBody } initAudio={ initAudio }/>
+          }
 
-    </main>    
+      </main> 
+    </>   
     )
 }
 

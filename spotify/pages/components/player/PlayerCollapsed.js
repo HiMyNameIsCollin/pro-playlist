@@ -24,7 +24,7 @@ const PlayerCollapsed = ({ navHeight , hiddenUI, playTrack, pauseTrack, controls
 
     const { bottom, opacity, transform} = useSpring({
         to: {
-            bottom: !sortBar ? '0rem' : '-6rem',
+            bottom: !sortBar ? '0rem' : '-8rem',
             opacity: trackMounted ? 1 : 0,
             transform: trackMounted ? navHeight && ((activeManageItem.type && dashboardState ==='manage') ||  hiddenUI )? 'translateY(0px)' : `translateY(-${ navHeight ? navHeight - 1 : 0 }px)` : 'translateY(999px)' ,
         }

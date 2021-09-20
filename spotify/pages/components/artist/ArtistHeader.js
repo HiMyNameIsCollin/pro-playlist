@@ -9,7 +9,7 @@ import { SearchPageSettingsContext } from '../search/Search'
 import { HomePageSettingsContext } from '../Home'
 import useApiCall from '../../hooks/useApiCall'
 
-const ArtistHeader = ({ pageType, data }) => {
+const ArtistHeader = ({ pageType, data, setHeaderMounted }) => {
 
     const { collection, artist, tracks } = { ...data }
     const [ colors, setColors ] = useState( undefined )
@@ -17,21 +17,55 @@ const ArtistHeader = ({ pageType, data }) => {
     const [ followed, setFollowed ] = useState( false ) 
     const thisHeaderRef = useRef()
     const transitionCompleteRef = useRef() 
+    const headerImageRef = useRef()
+    const intervalRef = useRef( 0 )
 
     const { scrollPosition, setActiveManageItem, setDashboardState } = useContext( DbHookContext )
     const { followed_artists } = useContext( DbFetchedContext )
     const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled , handleScrollHistory} = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
-    const { finalizeRoute, apiPayload } = useApiCall()
+
+    const headerImageRefCb = useCallback( node => {
+        if( headerImageRef.current ){
+        }
+        if( node ){
+            headerImageRef.current = node 
+            waitForMount()
+        }
+    },[])
+
+    const waitForMount = () => {
+        const img = headerImageRef.current
+        const isLoaded = img.complete && img.naturalHeight !== 0
+        if( isLoaded ){
+            const theseColors = handleColorThief( img, 2 )
+            setColors( theseColors )
+        } else {
+            if(intervalRef.current <=5 ){
+                setTimeout( waitForMount, 1000 ) 
+                intervalRef.current += 1 
+            } else {
+                setHeaderMounted( 'error' )
+            }
+        }
+    }
 
     useEffect(() => {
-        if(transitionComplete) transitionCompleteRef.current = true 
+        if(transitionComplete) {
+            transitionCompleteRef.current = true 
+        }
         if(colors && transitionCompleteRef.current ) {
             handleScrollHistory()
-            setTransitionComplete(false)
-            colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
-            setActiveHeader( {data : artist.name} )
+
+            setTimeout(() => {
+                setTransitionComplete(false)
+                colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+                setActiveHeader( {data : artist.name} )
+                setHeaderMounted( true )
+            }, 1000)
 
         }
+
+        return () => setActiveHeader( {} )
     },[ transitionComplete, colors ])
 
     useEffect(() => {
@@ -40,21 +74,9 @@ const ArtistHeader = ({ pageType, data }) => {
     }, [ followed_artists ])
     
     useLayoutEffect(() => {
-        setHeaderScrolled( 0 )
         const headerHeight = thisHeaderRef.current.getBoundingClientRect().height
         setElementHeight( headerHeight )
     },[])
-
-    const handleFollow = () => {
-        const route = 'v1/me/following'
-        const body = { ids: [ artist.id ] }
-        const method = followed ? 'delete' : 'put'
-        finalizeRoute( method, route, null, null, body, 'type=artist', )
-    }
-
-    useEffect(() => {
-        if( apiPayload ) console.log( apiPayload )
-    }, [ apiPayload ])
 
     useEffect(() => {
         const percent = calcScroll( elementHeight )
@@ -72,11 +94,6 @@ const ArtistHeader = ({ pageType, data }) => {
         }
     })
 
-    const getColors = ( e ) => {
-        const theseColors = handleColorThief( e.target, 2 )
-        setColors( theseColors )
-    }
-
     const handleMngBtn = () => {
         setActiveManageItem( artist )
         setTimeout( () => setDashboardState('manage'), 250 )
@@ -89,7 +106,7 @@ const ArtistHeader = ({ pageType, data }) => {
             <div className={`headerBacking headerBacking--${pageType}`}></div>
                 <div className='artistHeader__imgContainer'>
                 <animated.img 
-                onLoad={ getColors }
+                ref={ headerImageRefCb }
                 style={{ objectPosition: imgSlide.to( t => `0% ${t}%` ) }}
                 crossOrigin='anonymous' 
                 src={ artist.images.length > 0 ? whichPicture(artist.images, 'lrg') : '//logo.clearbit.com/spotify.com' }

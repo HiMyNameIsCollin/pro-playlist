@@ -66,6 +66,28 @@ li {
   overflow: hidden;
   width: 100vw;
 }
+@media only screen and (min-width: 320px) and (max-width: 767px) and (orientation: landscape) {
+  .container {
+    display: none !important;
+  }
+}
+
+.orientation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  height: 100vh;
+  width: 100vw;
+}
+@media only screen and (min-width: 320px) and (max-width: 767px) and (orientation: landscape) {
+  .orientation {
+    opacity: 1;
+  }
+}
 
 .dashboard {
   position: relative;
@@ -245,7 +267,7 @@ li {
   display: block;
   font-weight: 600;
   margin: 0 auto 2rem auto;
-  padding: 2rem;
+  padding: 1rem 2rem;
   width: 100%;
   -webkit-appearance: none;
 }
@@ -340,7 +362,7 @@ li {
 }
 @media only screen and (min-width: 768px) {
   .page--artist, .page--collection, .page--welcome {
-    padding: 0 0 9rem 0;
+    padding: 0 0 11rem 0;
   }
   .page--search {
     padding: 11rem 0 9rem 0;
@@ -350,6 +372,9 @@ li {
   }
 }
 
+.fadeIn {
+  min-height: 100vh !important;
+}
 .fadeIn::before {
   opacity: 0;
   pointer-events: none;
@@ -457,10 +482,6 @@ li {
   }
 }
 
-.trackContainer {
-  opacity: 0;
-  transition: opacity 0.75s ease-in-out;
-}
 .trackContainer__title {
   font-weight: 500;
   font-size: 1.2rem;
@@ -477,9 +498,6 @@ li {
 }
 .trackContainer--artist .trackContainer__title {
   padding: 0.5rem 1rem;
-}
-.trackContainer--active {
-  opacity: 1;
 }
 
 .albumContainer {
@@ -762,7 +780,7 @@ li {
   position: fixed;
   display: flex;
   width: 100%;
-  z-index: 9;
+  z-index: 9998;
 }
 .playerLargeContainer::before {
   content: "";
@@ -1215,7 +1233,7 @@ li {
   left: 0.5rem;
   position: fixed;
   width: calc( 100% - 1rem );
-  z-index: 5;
+  z-index: 9997;
 }
 .playerCollapsed::before {
   content: "";
@@ -1403,6 +1421,7 @@ li {
 @media only screen and (min-width: 768px) {
   .artistHeader__title {
     bottom: 1rem;
+    line-height: initial;
   }
 }
 .artistHeader__info {
@@ -1659,7 +1678,7 @@ li {
   text-align: center;
   min-height: 3.5rem;
   width: 100%;
-  z-index: 8;
+  z-index: 9000;
 }
 @media only screen and (min-width: 640px) {
   .fixedHeader {
@@ -1675,7 +1694,7 @@ li {
   top: calc((100% - 1.75rem) /2 );
   left: 0.5rem;
   position: absolute;
-  z-index: 9;
+  z-index: 9000;
 }
 .fixedHeader__backBtn i {
   font-size: 1.5rem;
@@ -1783,6 +1802,11 @@ li {
   will-change: transform;
   z-index: 3;
 }
+@media only screen and (min-width: 768px) {
+  .searchHeader {
+    padding: 0rem 1rem;
+  }
+}
 .searchHeader__title {
   align-items: flex-end;
   color: #FFFFFF;
@@ -1859,7 +1883,11 @@ li {
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 4;
+}
+@media only screen and (min-width: 768px) {
+  .searchOverlay {
+    padding: 11rem 0;
+  }
 }
 .searchOverlay__defaultMsg {
   padding: 0 2rem;
@@ -1933,7 +1961,7 @@ li {
   border: none;
   color: #FFFFFF;
   font-size: 1rem;
-  padding: 0 0.5rem;
+  padding: 0.5rem;
   height: 100%;
   width: 100%;
   user-select: auto;
@@ -2081,7 +2109,7 @@ li {
   bottom: 0;
   left: 0;
   width: 100%;
-  z-index: 5;
+  z-index: 9995;
 }
 .nav__list {
   display: flex;
@@ -2119,6 +2147,11 @@ li {
 .nav__item button i {
   font-size: 1.5rem;
   margin: 0.25rem 0;
+}
+@media only screen and (min-width: 768px) {
+  .nav__item button i {
+    font-size: 2rem;
+  }
 }
 .nav__item--active button {
   color: #FFFFFF;
@@ -2558,14 +2591,94 @@ li {
   z-index: 11;
 }
 
-.touchStart {
-  background: #1DB954;
-  position: relative;
+.loadingBubbles {
+  align-items: center;
+  display: flex;
+  justify-content: center;
   position: fixed;
-  left: 0;
+  height: 100vh;
+  width: 100%;
+  background: #191414;
   top: 0;
-  min-height: 100vh;
-  min-width: 100vw;
+  left: 0;
+  z-index: 3;
+}
+.loadingBubbles span {
+  animation: bubbleLoad 1s ease-in-out alternate infinite;
+  background: #FFFFFF;
+  border-radius: 50%;
+  min-height: 1.5rem;
+  min-width: 1.5rem;
+  margin: 0 1rem 3rem 1rem;
+}
+.loadingBubbles span:nth-of-type(2) {
+  animation-delay: 0.33s;
+}
+.loadingBubbles span:nth-of-type(3) {
+  animation-delay: 0.66s;
+}
+@media only screen and (min-width: 768px) {
+  .loadingBubbles span {
+    min-height: 3rem;
+    min-width: 3rem;
+  }
+}
+
+@keyframes bubbleLoad {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.mountError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #191414;
+  color: #FFFFFF;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  z-index: 3;
+}
+.mountError p {
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+@media only screen and (min-width: 640px) {
+  .mountError p {
+    font-size: 2rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .mountError p {
+    font-size: 2.5rem;
+  }
+}
+.mountError button {
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: #FFFFFF;
+  color: #191414;
+  border-radius: 40px;
+  padding: 1rem 2rem;
+}
+@media only screen and (min-width: 640px) {
+  .mountError button {
+    font-size: 1.2rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .mountError button {
+    font-size: 1.5rem;
+  }
 }
 
 .overlay {
@@ -2578,7 +2691,7 @@ li {
   max-height: -webkit-fill-available;
   position: fixed;
   width: 100%;
-  z-index: 10;
+  z-index: 9998;
 }
 .overlay::before {
   content: "";
@@ -2724,7 +2837,7 @@ li {
   left: 0;
   position: fixed;
   width: 100%;
-  z-index: 3;
+  z-index: 9000;
 }
 .mngHeader__top {
   align-items: center;
@@ -2761,6 +2874,14 @@ li {
   .mngHeader__title {
     font-size: 2.5rem;
   }
+}
+.mngHeader__mockInput {
+  background: #535353 !important;
+  border-radius: 10px;
+  padding: 1rem !important;
+  top: 0.5rem;
+  right: 4rem;
+  position: absolute;
 }
 
 .mngLibrary {
@@ -2954,16 +3075,13 @@ li {
   display: flex;
   top: 0;
   left: 0;
-  padding-bottom: 3.6rem;
   width: 100%;
-  z-index: 9;
+  z-index: 9888;
 }
 .sortContainer__controls {
   background: #191414;
   bottom: 0;
   display: flex;
-  min-height: 3.6rem;
-  max-height: 3.6rem;
   position: fixed;
   width: 100%;
 }
@@ -2990,6 +3108,11 @@ li {
 .sortContainer__controls button i {
   font-size: 1.5rem;
   margin: 0.25rem 0;
+}
+@media only screen and (min-width: 768px) {
+  .sortContainer__controls button i {
+    font-size: 2rem;
+  }
 }
 .sortContainer__relative {
   display: flex;
@@ -3090,8 +3213,12 @@ li {
   z-index: 1;
 }
 .activeItem--top {
+  border-bottom: solid #1ed764 1px;
   grid-template-rows: 1fr auto;
   grid-template-columns: 1fr auto;
+}
+.activeItem--bottom {
+  border-top: solid #1ed764 1px;
 }
 .activeItem__imgContainer {
   background: #191414;
@@ -3297,7 +3424,7 @@ li {
   max-height: -webkit-fill-available;
   position: fixed;
   width: 100%;
-  z-index: 995;
+  z-index: 9996;
 }
 .mngOverlay::before {
   content: "";
@@ -3403,7 +3530,7 @@ li {
   padding: 0 1rem;
   position: fixed;
   width: 100%;
-  z-index: 12;
+  z-index: 9999;
 }
 .messageOverlay p {
   position: relative;

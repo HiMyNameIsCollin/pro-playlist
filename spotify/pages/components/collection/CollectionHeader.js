@@ -8,20 +8,22 @@ import { DbHookContext } from '../Dashboard'
 import { SearchPageSettingsContext } from '../search/Search'
 import { HomePageSettingsContext } from '../Home'
 
-const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
+const CollectionHeader = ({ pageType, data, setActiveItem, setHeaderMounted }) => {
     const [ colors, setColors ] = useState( undefined )
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ backgroundImage, setBackgroundImage ] = useState(null)
     const [ mainImage, setMainImage ] = useState( undefined )
-    
+
     const transitionCompleteRef = useRef()
+    const headerImageRef = useRef()
+    const intervalRef = useRef( 0 )
 
     const { collection, artists, tracks } = { ...data }
     const { setOverlay, scrollPosition, setActiveManageItem, setDashboardState, } = useContext( DbHookContext )
 
     const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled ,handleScrollHistory} = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
 
-    const thisHeaderRef = useCallback( node => {
+    const thisHeaderRefCb = useCallback( node => {
         if( node ){
             const ro = new ResizeObserver( entries => {
                 if( node.offsetHeight > 0 ) setElementHeight( node.offsetHeight )
@@ -29,32 +31,57 @@ const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
             ro.observe( node )
             return () => ro.disconnect()
         }
-    })
+    },[])
+
+    const headerImageRefCb = useCallback( node => {
+        if( headerImageRef.current ){
+        }
+        if( node ){
+            headerImageRef.current = node 
+            waitForMount()
+        }
+    },[])
+
+
+    const waitForMount = () => {
+        const img = headerImageRef.current
+        const isLoaded = img.complete && img.naturalHeight !== 0
+        if( isLoaded ){
+            const theseColors = handleColorThief( img, 2 )
+            setColors( theseColors )
+        } else {
+            if(intervalRef.current <=5 ){
+                setTimeout( waitForMount, 1000 ) 
+                intervalRef.current += 1 
+            } else {
+                setHeaderMounted( 'error' )
+            }
+        }
+    }
 
     useLayoutEffect(() => {
         const bigImg = collection.images && collection.images[0] ? whichPicture(collection.images, 'lrg') : '//logo.clearbit.com/spotify.com'
         const img = collection.images && collection.images[0] ? whichPicture( collection.images, 'med' ) : '//logo.clearbit.com/spotify.com'
         setBackgroundImage( bigImg )
         setMainImage( img )
-        // return () => {
-        //     setBackgroundImage(null)
-        //     setHeaderScrolled( 0 )
-        //     setColors( undefined )
-        //     transitionCompleteRef.current = false 
-        // }
+        return () => {
+            setActiveHeader( {} )
+        }
     }, [])
 
     useEffect(() => {
-        if(transitionComplete ) {
+        if(transitionComplete) {
             transitionCompleteRef.current = true 
         }
         if( colors && transitionCompleteRef.current ){
             handleScrollHistory()
-            setActiveHeader( {data : collection.name} )
-            parent.classList.add('fadeIn')
-            parent.style.minHeight = '100vh'
-            colors.forEach((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
-            setTransitionComplete( false )
+
+            setTimeout(() => {
+                setActiveHeader( {data : collection.name} )
+                colors.forEach((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
+                setHeaderMounted( true )
+                setTransitionComplete( false )
+            }, 1000)
         }
     }, [ transitionComplete, colors ] )
 
@@ -87,11 +114,6 @@ const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
         }
     }
 
-    const finishMount = ( e ) => {
-        const theseColors = handleColorThief( e.target, 2 )
-        setColors( theseColors )
-    }
-
     const handleMngBtn = () => {
         setActiveManageItem( collection )
         setTimeout( () => setDashboardState('manage'), 250 )
@@ -99,7 +121,7 @@ const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
 
     return(
         <header 
-        ref={ thisHeaderRef }
+        ref={ thisHeaderRefCb }
         className={`collectionHeader`}>
             <div className={`headerBacking headerBacking--${pageType}`} 
             style={{backgroundImage: `url(${backgroundImage})`}}></div>
@@ -119,7 +141,7 @@ const CollectionHeader = ({ pageType, data, setActiveItem, parent }) => {
                     mainImage && 
                     <img
                     crossOrigin='anonymous' 
-                    onLoad={ finishMount }
+                    ref={ headerImageRefCb }
                     // ON LOAD HERE ########################################
                     className='collectionHeader__img' 
                     src={ mainImage } /> 

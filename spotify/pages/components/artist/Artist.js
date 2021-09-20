@@ -1,9 +1,10 @@
-import { useEffect, useReducer , useRef, useCallback, useContext } from 'react'
+import { useEffect, useReducer , useState, useRef, useCallback, useContext } from 'react'
 import { animated } from 'react-spring'
 import TracksContainer from '../TracksContainer'
 import AlbumContainer from '../AlbumContainer'
 import ArtistHeader from './ArtistHeader'
 import Slider from '../Slider'
+import LoadingBubbles from '../LoadingBubbles'
 import useApiCall from '../../hooks/useApiCall'
 import { stopDupesId, stopDupesName } from '../../../utils/stopDupes'
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
@@ -44,7 +45,6 @@ const Artist = ({ style, page }) => {
                     artist: action
                 }
             case routes.top_tracks :
-                console.log(action)
                 return {
                     ...state,
                     top_tracks: action.tracks
@@ -77,9 +77,10 @@ const Artist = ({ style, page }) => {
     
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall(  )
     const [ state , dispatch ] = useReducer(reducer, initialState)
+    const [ headerMounted, setHeaderMounted ] = useState( undefined )
     const { user_info } = useContext( DbFetchedContext )
     const { artist , top_tracks, albums, related_artists } = { ...state }
-    const { activeHomeItem, setActiveHomeItem } = useContext( DbHookContext )
+    const { activeHomeItem, setActiveHomeItem, dashboardRef } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext )
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
@@ -95,7 +96,6 @@ const Artist = ({ style, page }) => {
             })
             ro.observe( node )
             thisComponentRef.current = node
-            
             return () => ro.disconnect()
         }
       }, [])
@@ -112,27 +112,39 @@ const Artist = ({ style, page }) => {
     }, [ user_info])
 
     useEffect(() => {
-        if( firstMountRef.current ){
-            if( !transitionComplete ){
-                thisComponentRef.current.classList.add('fadeIn')
-                thisComponentRef.current.style.minHeight = '100vh'
-            } 
-        } else {
-            if( transitionComplete ) firstMountRef.current = true 
-        }
-  }, [ transitionComplete ])
+        if( headerMounted ) thisComponentRef.current.classList.add('fadeIn')
+    }, [ headerMounted ])
 
     useEffect(() => {
         if(apiPayload) dispatch(apiPayload)
     },[ apiPayload ])
 
+    const handleGoBack = ( e ) => {
+        e.stopPropagation()
+        setActiveItem( {} )
+    }
+
     return(
         <animated.div ref={ thisComponent } style={ style } className={ `page page--artist artist` }>
+        {
+            !headerMounted ?
+            <LoadingBubbles /> :
+            headerMounted === 'error' &&
+            <div className='mountError' style={{ top: dashboardRef.current.scrollTop }}>
+                <p>
+                    Something went wrong
+                </p>
+                <button onClick={ handleGoBack }>
+                    Go back
+                </button>
+            </div>
+        }
         {
             artist.id &&
             <ArtistHeader 
             pageType={ searchContext ? 'search' : 'home'}
-            data={{ artist }}  />
+            data={{ artist }}  
+            setHeaderMounted={ setHeaderMounted }/>
         }
 
             <TracksContainer type='artist' data={ {collection: null, tracks: top_tracks, artist: artist} }/>

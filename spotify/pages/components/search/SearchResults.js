@@ -42,7 +42,7 @@ const SearchResults = ({ setActiveItem, activeFilter, searchInput, artistResults
                 <RecommendCard setActiveItem={ setActiveItem } data={ personalResult } />    
                 }
                 {
-                results.map( res => <ResultCard  setActiveItem={ setActiveItem } data={ res } />)
+                results.map(( res, i) => <ResultCard key={ i } setActiveItem={ setActiveItem } data={ res } />)
                 }
                 
                 </>

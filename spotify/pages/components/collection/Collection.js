@@ -6,6 +6,7 @@ import CollectionHeader from './CollectionHeader'
 import CollectionMeta from './CollectionMeta'
 import TracksContainer from '../TracksContainer'
 import Slider from '../Slider'
+import LoadingBubbles from '../LoadingBubbles'
 import { getSeeds } from '../../../utils/getSeeds'
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
 import { SearchHookContext } from '../search/Search'
@@ -77,7 +78,7 @@ const Collection = ({ style, type, page, data }) => {
                 // const allSongs = songs.filter( x => x.preview_url)
                 return{
                     ...state,
-                    tracks: state.tracks = data.type === 'playlist' ? songs : [ ...state.tracks, ...songs ]
+                    tracks: state.tracks = type === 'playlist' ? songs : [...state.tracks, ...songs]
                 }
             case routes.recommendations :
                 const recommendations = action.tracks.map(track => track.album)
@@ -92,9 +93,11 @@ const Collection = ({ style, type, page, data }) => {
     }
 
     // ENV VARIABLE FOR API?
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall( )
+    const { finalizeRoute , apiError, apiIsPending, apiPayload, setApiPayload  } = useApiCall( )
     const [ state , dispatch ] = useReducer(reducer, initialState)
     
+    const [ headerMounted, setHeaderMounted ] = useState( undefined )
+
     const { setOverlay, activeHomeItem, setActiveHomeItem, selectOverlay, setSelectOverlay, dashboardRef } = useContext( DbHookContext )
     const { available_genre_seeds, user_info } = useContext( DbFetchedContext )
     const searchContext = useContext( SearchHookContext )
@@ -119,6 +122,12 @@ const Collection = ({ style, type, page, data }) => {
       }, [])
 
     useEffect(() => {
+        if( headerMounted ){
+            thisComponentRef.current.classList.add('fadeIn')
+        }
+    },[ headerMounted ])
+
+    useEffect(() => {
         let id = data.id
         if( data.selectedTrack ) selectedTrackRef.current = activeItem.selectedTrack
         finalizeRoute( 'get', `${ type === 'album' ? routes.album : routes.playlist}/${id}`, id)
@@ -137,15 +146,19 @@ const Collection = ({ style, type, page, data }) => {
     }, [ collection ])
 
     useEffect(() => {
-        if(apiPayload) dispatch( apiPayload )
+        if(apiPayload) {
+            dispatch( apiPayload )
+        }
     }, [apiPayload])
 
     useEffect(() => {
-        if( collection.id && !selectOverlay[ 0 ]) {
+        if( collection.id && !selectOverlay[ 0 ] ) {
+
             let tracksRoute = routes.tracks.substr( 0, routes.tracks.length - 6 )
             tracksRoute += `${collection.id}`
             tracksRoute += '/tracks'
-            finalizeRoute( 'get', tracksRoute , collection.id, {fetchAll: true}, null, 'limit=50')
+            const limit = type === 'playlist' ? null : 'limit=50'
+            finalizeRoute( 'get', tracksRoute , collection.id, {fetchAll: true}, null, type )
         } 
     }, [ collection, selectOverlay ])
 
@@ -164,6 +177,7 @@ const Collection = ({ style, type, page, data }) => {
 
     useEffect(() => {
         if( selectedTrackRef.current && !transitionComplete ){
+            // Scrolls track into view if selected from home page tab
             const ele = document.querySelector(`[data-trackId='${ selectedTrackRef.current }']`)
             if(ele){
                 const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
@@ -177,12 +191,29 @@ const Collection = ({ style, type, page, data }) => {
         setSelectOverlay( arr => arr = [ ...arr, overlay])
     }
 
+    const handleGoBack = ( e ) => {
+        e.stopPropagation()
+        setActiveItem( {} )
+    }
+
     return(
         <animated.div
         ref={ thisComponent } 
         style={ style } 
         className={ `page page--collection collection` }>
-  
+        {
+            !headerMounted ?
+            <LoadingBubbles /> :
+            headerMounted === 'error' &&
+            <div style={{ top: dashboardRef.current.scrollTop }} className='mountError'>
+                <p>
+                    Something went wrong
+                </p>
+                <button onClick={ handleGoBack }>
+                    Go back
+                </button>
+            </div>
+        }
         {
             collection.id&&
             <>
@@ -190,7 +221,7 @@ const Collection = ({ style, type, page, data }) => {
             pageType={ searchContext ? 'search' : 'home'}
             setActiveItem={ setActiveItem }
             data={{collection, tracks, artists,}}
-            parent={ thisComponentRef.current } />
+            setHeaderMounted={ setHeaderMounted } />
 
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             {
@@ -211,6 +242,7 @@ const Collection = ({ style, type, page, data }) => {
             }
             </>            
         }
+        
         </animated.div>
     )
 }

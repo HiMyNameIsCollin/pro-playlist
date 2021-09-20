@@ -60,7 +60,7 @@ const ResultCard = ({ data, setActiveItem }) => {
                 {
                 data.images && data.images.length > 0 || data.album && data.album.images.length > 0 ?
                 <img
-                crossorigin='anonymous' 
+                crossOrigin='anonymous' 
                 ref={ trackImageRef } 
                 src={ whichPicture( data.images ? data.images : data.album.images, 'sm') } />
                 :
@@ -79,7 +79,7 @@ const ResultCard = ({ data, setActiveItem }) => {
             <span className='resultCard__type'> { data.type.charAt(0).toUpperCase() + data.type.slice(1) } </span>
             {
             data.type !== 'track' ?
-            <i class="fas fa-chevron-right"></i> 
+            <i className="fas fa-chevron-right"></i> 
             :
             <i className="fas fa-ellipsis-h track__menuBtn"
                 onClick={ (e) => handleTrackMenu(e, data ) }></i> 

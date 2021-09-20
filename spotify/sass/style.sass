@@ -217,7 +217,8 @@ body
     font-family: 'Rubik', sans-serif
     max-height: 100vh
     max-width: 100%
-    overflow: hidden
+    overflow: hidden   
+
 
 a
     color: inherit
@@ -242,6 +243,21 @@ li
     height: 100%
     overflow: hidden
     width: 100vw
+    @media only screen and (min-width: 320px) and (max-width: 767px) and (orientation: landscape) 
+        display: none !important
+
+.orientation
+    display: flex
+    justify-content: center
+    align-items: center
+    position: fixed
+    top: 0
+    left: 0
+    opacity: 0
+    height: 100vh
+    width: 100vw
+    @media only screen and (min-width: 320px) and (max-width: 767px) and (orientation: landscape) 
+        opacity: 1
 
 .dashboard
     @include pseudo
@@ -329,7 +345,7 @@ li
         display: block
         font-weight: 600
         margin: 0 auto 2rem auto
-        padding: 2rem 
+        padding: 1rem 2rem 
         width: 100%
         -webkit-appearance: none
         &:focus
@@ -376,12 +392,13 @@ li
             padding: 9rem 0
     @media only screen and ( min-width: 768px )
         &--artist, &--collection, &--welcome
-            padding: 0 0 9rem 0
+            padding: 0 0 11rem 0
         &--search
             padding: 11rem 0 9rem 0
         &--manage
             padding: 9rem 0
 .fadeIn
+    min-height: 100vh !important 
     &::before
         opacity: 0
         pointer-events: none
@@ -418,15 +435,13 @@ li
         @include btn1
 
 .trackContainer
-    opacity: 0
-    transition: opacity .75s ease-in-out
+
     &__title
         @include largeFirm
     &--artist
         .trackContainer__title
             padding: .5rem 1rem 
-    &--active
-        opacity: 1
+
 
 .albumContainer
     @include flexCol
@@ -572,7 +587,7 @@ li
     position: fixed
     display: flex
     width: 100%
-    z-index: 9
+    z-index: 9998
     i
         font-size: 1.5rem
     &__wrapper
@@ -813,7 +828,7 @@ li
     left: .5rem
     position: fixed
     width: calc( 100% - 1rem )
-    z-index: 5
+    z-index: 9997
     &__bar
         background: $grey
         display: flex
@@ -896,6 +911,7 @@ li
         z-index: 1
         @media only screen and (min-width: 768px)
             bottom: 1rem
+            line-height: initial
     &__info
         @include pseudo
         @include smallSkin
@@ -1004,12 +1020,12 @@ li
     text-align: center
     min-height: 3.5rem
     width: 100%
-    z-index: 8
+    z-index: 9000
     &__backBtn
         top: calc((100% - 1.75rem) /2 )
         left: .5rem
         position: absolute
-        z-index: 9
+        z-index: 9000
         i
             font-size: 1.5rem
     &__title
@@ -1064,6 +1080,8 @@ li
     width: 100%
     will-change: transform
     z-index: 3
+    @media only screen and (min-width: 768px)
+        padding: 0rem 1rem
     &__title
         @include sectionTitle
         @include bigBold
@@ -1095,7 +1113,8 @@ li
     position: fixed
     top: 0
     width: 100%
-    z-index: 4
+    @media only screen and ( min-width: 768px )
+        padding: 11rem 0
     &__defaultMsg
         padding: 0 2rem
         text-align: center
@@ -1131,7 +1150,7 @@ li
             border: none
             color: $white
             font-size: 1rem
-            padding: 0 .5rem
+            padding: .5rem
             height: 100%
             width: 100%
             user-select: auto
@@ -1221,7 +1240,7 @@ li
     bottom: 0
     left: 0
     width: 100%
-    z-index: 5
+    z-index: 9995
     &__list
         display: flex
         justify-content: center
@@ -1242,6 +1261,8 @@ li
             i
                 font-size: 1.5rem
                 margin: .25rem 0
+                @media only screen and (min-width: 768px)
+                    font-size: 2rem
         &--active
             button
                 color: $white
@@ -1461,16 +1482,61 @@ li
     max-width: 100vw
     z-index: 11
 
-
-        
-.touchStart
-    background: $green
-    position: relative
+.loadingBubbles
+    align-items: center
+    display: flex
+    justify-content: center
     position: fixed
-    left: 0
+    height: 100vh
+    width: 100%
+    background: $black
     top: 0
-    min-height: 100vh
-    min-width: 100vw
+    left: 0
+    z-index: 3
+    span
+        animation: bubbleLoad 1s ease-in-out alternate infinite
+        background: $white
+        border-radius: 50%
+        min-height: 1.5rem
+        min-width: 1.5rem 
+        margin: 0 1rem 3rem 1rem
+        :nth-of-type(1)
+        &:nth-of-type(2)
+            animation-delay: .33s
+        &:nth-of-type(3)
+            animation-delay: .66s
+        @media only screen and (min-width: 768px)
+            min-height: 3rem
+            min-width: 3rem 
+
+@keyframes bubbleLoad
+    0%
+        transform: scale(0)
+    100%
+        transform: scale(1)
+
+.mountError
+    @include flexCol
+    align-items: center
+    background: $black
+    color: $white
+    justify-content: center
+    position: fixed
+    top: 0
+    left: 0
+    height: 100vh
+    width: 100%
+    z-index: 3
+    p
+        @include bigBold
+        margin-bottom: 3rem
+        text-align: center
+    button
+        @include midBold
+        background: $white
+        color: $black
+        border-radius: 40px
+        padding: 1rem 2rem
 
 .overlay
     @include pseudo
@@ -1479,7 +1545,7 @@ li
     max-height: -webkit-fill-available
     position: fixed
     width: 100%
-    z-index: 10
+    z-index: 9998
     &::before
         @include scrimGradient($black, 'to top')
         opacity: 1
@@ -1560,7 +1626,7 @@ li
     left: 0
     position: fixed
     width: 100%
-    z-index: 3
+    z-index: 9000
     &__top
         align-items: center
         display: flex
@@ -1580,6 +1646,13 @@ li
     &__title
         @include bigBold
         padding: 0 1rem
+    &__mockInput
+        background: $grey !important
+        border-radius: 10px
+        padding: 1rem !important
+        top: .5rem
+        right: 4rem
+        position: absolute
         
 .mngLibrary
     display: flex
@@ -1695,15 +1768,12 @@ li
     display: flex
     top: 0
     left: 0
-    padding-bottom: 3.6rem
     width: 100%
-    z-index: 9
+    z-index: 9888
     &__controls
         background: $black
         bottom: 0
         display: flex
-        min-height: 3.6rem
-        max-height: 3.6rem
         position: fixed
         width: 100%
         button
@@ -1716,6 +1786,8 @@ li
             i
                 font-size: 1.5rem
                 margin: .25rem 0
+                @media only screen and ( min-width: 768px )
+                    font-size: 2rem
     &__relative
         @include flexCol
         position: relative
@@ -1767,8 +1839,11 @@ li
             pointer-events: none
             z-index: 1
     &--top
+        border-bottom: solid $lightGreen 1px
         grid-template-rows: 1fr auto
         grid-template-columns: 1fr auto
+    &--bottom
+        border-top: solid $lightGreen 1px
     &__imgContainer
         background: $black
         grid-column: 1/2
@@ -1891,7 +1966,7 @@ li
     max-height: -webkit-fill-available
     position: fixed
     width: 100%
-    z-index: 995
+    z-index: 9996
     &::before
         @include scrimGradient($black, 'to bottom')
         opacity: 1
@@ -1934,7 +2009,7 @@ li
     padding: 0 1rem
     position: fixed
     width: 100%
-    z-index: 12
+    z-index: 9999
     p
         @include pseudo
         @include shadowA

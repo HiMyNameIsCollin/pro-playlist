@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useContext } from 'react'
+import { DbHookContext } from '../Dashboard'
 
 const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
 
@@ -7,14 +8,19 @@ const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
 
     const resizeBarRef = useCallback(node => {
         if (node !== null) {
-            setHeight( node.getBoundingClientRect().height )
-        }
-      }, []);
+            const ro = new ResizeObserver( entries => {
+                if( node.offsetHeight > 0 ) {
+                    setHeight( node.offsetHeight )
+                    setResizePos( (( parentHeight - navHeight ) / 2) )
 
-    useEffect(() => {
-        const maxHeight = parentHeight - height
-        setResizePos( maxHeight / 2 )
-    },[ height ])
+                }
+            })
+            ro.observe( node )
+            return () => ro.disconnect()
+        }
+      }, [])
+      
+    const { navHeight } = useContext( DbHookContext )
 
     useEffect(() => {
         if( active ) {
@@ -61,16 +67,13 @@ const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
     const stopDrag = (e) => {
         setActive(false)
     }
-
-
-
     return(
         <div 
             ref={ resizeBarRef }
             // onMouseUp={ handleCloseSortContainer } 
             onPointerDown={ () => setActive( true )}
             onTouchStart={ () => setActive( true )}
-            style={{ top: !resizePos ? (window.innerHeight / 2 ) : resizePos - ( height / 2 )}}
+            style={{ top: resizePos - ( height / 2 )}}
             className={` sortContainer__resize ${ active && 'sortContainer__resize--active'}`}>
 
         </div>

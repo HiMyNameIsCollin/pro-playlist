@@ -148,7 +148,7 @@ const useApiCall = () => {
         } 
     },[ tokenFetchComplete ])
 
-    return { finalizeRoute, apiError, apiIsPending, apiPayload }
+    return { finalizeRoute, apiError, apiIsPending, apiPayload, setApiPayload }
 }
 
 export default useApiCall

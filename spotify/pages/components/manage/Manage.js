@@ -16,26 +16,22 @@ const Manage = ({  toBeManaged, setToBeManaged, manageState, setManageState }) =
     const manageContainerListTypeRef = useRef( 'bar' )
     const totalLikedSongsRef = useRef(0)
 
-    const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall()
     const [ data, setData ] = useState( [] )
     const [ likedPlaylist, setLikedPlaylist ] = useState()
     const [ managerPlaylist, setManagerPlaylist ] = useState()
     const [ activeFilter, setActiveFilter ] = useState( undefined )
-    const [ subFilter, setSubFilter ] = useState( false )
     const [ sort , setSort ] = useState( 'Alphabetical' )
     const [ manageOverlay, setManageOverlay ] = useState( { } )
     const [ transitionComplete, setTransitionComplete ] = useState( false )
     const sortFilters = [ 'Recently added', 'Alphabetical', 'Creator' ]
     const { user_info, my_albums, my_playlists, followed_artists, my_liked_tracks, recently_played } = useContext( DbFetchedContext )
-    const { dashboardState, sortContainerOpen, setSortContainerOpen, selectOverlay, setSelectOverlay, dashboardRef , activeManageItem, setActiveManageItem,} = useContext( DbHookContext )
+    const { sortContainerOpen, setSortContainerOpen, selectOverlay, setSelectOverlay, dashboardRef , activeManageItem, setActiveManageItem, navHeight } = useContext( DbHookContext )
     const manageHookState = {
         activeManageItem,
-        setActiveManageItem
+        setActiveManageItem,
+        manageState, 
+        setManageState
     }
-
-    useEffect(() => {
-        if( apiPayload ) console.log(apiPayload)
-    }, [ apiPayload ])
 
     useEffect(() => {
         if( my_liked_tracks.length > 0 && my_liked_tracks.length >= totalLikedSongsRef.current){
@@ -81,7 +77,7 @@ const Manage = ({  toBeManaged, setToBeManaged, manageState, setManageState }) =
         } else if( !activeFilter ){
             sortByFilter( [ ...my_albums, ...my_playlists, ...followed_artists ] )
         }
-    }, [activeFilter, subFilter, sort, my_albums, my_playlists, followed_artists ])
+    }, [activeFilter, sort, my_albums, my_playlists, followed_artists ])
 
     useEffect(() => {
         if( manageOverlay.type ) setManageOverlay({})
@@ -133,12 +129,12 @@ const Manage = ({  toBeManaged, setToBeManaged, manageState, setManageState }) =
     }
 
     const manageTrans = useTransition( sortContainerOpen, {
-        from: { opacity: 0 },
-        enter: { opacity: 1 },
-        leave:  { opacity: 0 }
-    })
-    const fadeOut = useSpring({
-        opacity: sortContainerOpen ? 0 : 1
+        from: { opacity: 0 , paddingBottom: navHeight },
+        enter: { opacity: 1, },
+        leave:  item => async ( next ) => {
+            await new Promise(resolve => setTimeout( resolve, 500 ))
+            await next( { opacity: 0 })
+        }
     })
 
     const manageOverlayTrans = useTransition( manageOverlay, {
@@ -147,11 +143,29 @@ const Manage = ({  toBeManaged, setToBeManaged, manageState, setManageState }) =
         leave: { opacity: 0, pointerEvents: 'none' },
     })
 
-    const overlayTrans = useTransition( manageState , {
+    const searchOverlayTrans = useTransition( manageState , {
         initial: { opacity: 0 },
         from: { opacity: 0, transform: 'translateX(0%)' },
-        enter: { opacity: 1 },
-        leave: item => !activeManageItem.type ? { opacity: 0 } : { transform: 'translateX(-100%' }
+        enter: { opacity: 1, zIndex: 9989, delay: 250 },
+        leave: item => async( next, cancel ) => {
+            if( !activeManageItem.type ){
+                await next( { opacity: 0 } )
+            }else {
+                await next( { transform: 'translateX(-100%)' })
+            }
+        }
+    })
+
+    const { transYForOverlay, transXForOverlay, mockInputWidth, opacForOverlay } = useSpring({
+        transYForOverlay: manageState === 'search' ? '-200%' : '0%',
+        transXForOverlay: manageState === 'search' ? '150%' : '0%',
+        mockInputWidth: manageState === 'search' ? `${((window.innerWidth - 5 * 16) * 100 )/ window.innerWidth }%`  : '0%',
+        opacForOverlay: manageState === 'search' ? 1 : 0
+    })
+
+    const hideForOverlay = useSpring({
+        opacity: manageState === 'search' ? 0 : 1,
+        delay: manageState === 'search' ? 250 : 0
     })
 
     const newPlaylistMenu = () => {
@@ -178,46 +192,65 @@ const Manage = ({  toBeManaged, setToBeManaged, manageState, setManageState }) =
                     style={ props } />
                 ))
             }
-            
-            <animated.div style={ fadeOut } id='managePage' >
-                <header 
-                style={{ 
-                    display: dashboardState === 'manage' && manageState === 'default' ? 'block': 'none' ,
-                    top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 
-                }}
-                className='mngHeader'>
-                    <div className='mngHeader__top'>
-                        <div className='mngHeader__imgContainer'>
-                        {
-                        user_info.images &&
-                        <img src={ user_info.images[0].url } alt={ `${ user_info.display_name }'s profile photo `} />
-                        }
-                        </div>
-                        <h1 className='mngHeader__title'>
-                            Manage
-                        </h1>
-                        <i 
-                        onClick={ () => setManageState( 'search' ) }
-                        className="fas fa-search"></i>
-                        <i 
-                        onClick={ newPlaylistMenu }
-                        className="fas fa-plus"></i>
-                    </div>
-                    <ManageFilters 
-                    activeFilter={ activeFilter } 
-                    setActiveFilter={ setActiveFilter } 
-                    subFilter={ subFilter } 
-                    setSubFilter={ setSubFilter }/>
-                </header>
-                <div style={{ position: 'absolute' }} className={ `page page--manage`} >
-                    
-                {
-                overlayTrans(( props, item) => (
+            {
+                searchOverlayTrans(( props, item) => (
                     item === 'search' &&
                     <SearchOverlay style={ props } setActiveItem={ setActiveManageItem } searchState={ manageState } setSearchState={ setManageState } />
 
                 ))
-                }
+            }
+            
+            <animated.div style={ hideForOverlay } id='managePage' >
+                <header 
+                style={{ 
+                    top: selectOverlay[0] ? dashboardRef.current.scrollTop : 0 
+                }}
+                className='mngHeader'>
+                    <div className='mngHeader__top'>
+                        <animated.div 
+                        style={{
+                            transform: transYForOverlay.to( t => `translateY(${t})`)
+                        }}
+                        className='mngHeader__imgContainer'>
+                        {
+                        user_info.images &&
+                        <img src={ user_info.images[0].url } alt={ `${ user_info.display_name }'s profile photo `} />
+                        }
+                        </animated.div>
+                        <animated.h1
+                        style={{
+                            transform: transYForOverlay.to( t => `translateY(${t})`)
+                        }}
+                        className='mngHeader__title'>
+                            Manage
+                        </animated.h1>
+                        <animated.input
+                        className='mngHeader__mockInput'
+                        style={{
+                            opacity: opacForOverlay.to( o => o ),
+                            width: mockInputWidth.to( w => w )
+                        }} 
+                        type='text' />
+                        <animated.i
+                        style={{
+                            transform: transXForOverlay.to( t => `translateX(${t})`)
+                        }}
+                        onClick={ () => setManageState( 'search' ) }
+                        className="fas fa-search"/>
+                        <animated.i 
+                        style={{
+                            transform: transYForOverlay.to( t => `translateY(${t})`)
+                        }}
+                        onClick={ newPlaylistMenu }
+                        className="fas fa-plus"/>
+                    </div>
+                    <ManageFilters 
+                    activeFilter={ activeFilter } 
+                    setActiveFilter={ setActiveFilter } />
+                </header>
+                <div style={{ position: 'absolute' }} className={ `page page--manage`} >
+                    
+                
                 
                     <ManageLibrary 
                     transitionComplete={ transitionComplete }

@@ -16,7 +16,7 @@ const Welcome = ({ style }) => {
     const { activeHomeItem, setActiveHomeItem, } = useContext( DbHookContext )
     const { recently_played, new_releases, featured_playlists, my_top_artists , my_playlists} = useContext( DbFetchedContext )
 
-    const { transitionComplete, setTransitionComplete, setTransMinHeight } = useContext( HomePageSettingsContext )
+    const { transitionComplete, setTransitionComplete, setTransMinHeight, handleScrollHistory } = useContext( HomePageSettingsContext )
     const thisComponentRef = useRef() 
 
     const thisComponent = useCallback(node => {
@@ -34,8 +34,8 @@ const Welcome = ({ style }) => {
     useEffect(() => {
         if( transitionComplete && !activeHomeItem.type ) {
             thisComponentRef.current.classList.add('fadeIn')
+            handleScrollHistory()
             setTransitionComplete(false)
-            thisComponentRef.current.style.minHeight = '100vh'
         }
     }, [ transitionComplete ])
 
