@@ -420,7 +420,7 @@ li {
   }
 }
 .collection > * {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 .collection__meta {
   color: #FFFFFF;

@@ -19,8 +19,8 @@ const Banner = () => {
         }
         if( my_top_artists.length > 0 &&  followed_artists.length > 0 && new_releases.length > 0 && !data.type ){
             if( !myNewReleasesRef.current[0] ){
-                let result = new_releases.reduce(( acc, val ) => findArtists( acc, val, [...my_top_artists, ...followed_artists ]),[])
-                if( result ) {
+                let result = new_releases.reduce(( acc, val ) => findArtists( acc, val, [ ...followed_artists, ...my_top_artists ] ),[])
+                if( result.length > 0 ) {
                     setData( result[ Math.floor( Math.random() * result.length ) ] )
                     myNewReleasesRef.current = [ ...myNewReleasesRef.current, ...result ]
                 }           

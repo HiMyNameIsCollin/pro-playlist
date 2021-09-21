@@ -153,7 +153,6 @@ const Collection = ({ style, type, page, data }) => {
 
     useEffect(() => {
         if( collection.id && !selectOverlay[ 0 ] ) {
-
             let tracksRoute = routes.tracks.substr( 0, routes.tracks.length - 6 )
             tracksRoute += `${collection.id}`
             tracksRoute += '/tracks'

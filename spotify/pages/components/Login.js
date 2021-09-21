@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react'
 
 const Login = () => {
     const authorize = 'https://accounts.spotify.com/authorize'
-    const redirect_uri = location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://spotify-himynameiscollin.vercel.app/'
+    const redirect_uri = `${window.location.origin}/`
 
     const signIn = () => {
       let url = authorize

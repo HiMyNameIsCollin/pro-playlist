@@ -9,7 +9,7 @@ const useApiCall = () => {
     const [apiError, setApiError] = useState(false)
     const [apiIsPending, setApiPending] = useState(false)
     const [apiPayload, setApiPayload] = useState(null)
-    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken( location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://proplaylist-himynameiscollin.vercel.app/' )
+    const { tokenError, tokenIsPending, tokenFetchComplete, setTokenFetchComplete, setTokenBody } = useFetchToken( `${window.location.origin}/` )
     const thisCallRef = useRef( [] )
 
     const fetchApi = ( route, method, requestID, config, body,  ) => {

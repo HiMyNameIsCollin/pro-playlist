@@ -12,6 +12,7 @@ export const whichPicture = (arr, pref) => {
         if ( arr[0] ) return arr[0].url
     } else if ( pref === 'lrg'){
         if( arr[0] ) return arr[0].url
+        return '//logo.clearbit.com/spotify.com'
     }
     
 }

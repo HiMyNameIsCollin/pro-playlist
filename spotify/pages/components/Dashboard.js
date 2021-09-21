@@ -301,7 +301,7 @@ const Dashboard = ({ setLoaded, audioRef , height}) => {
 
     useEffect(() => {
         if( dashboardNavRef.current === dashboardState ){
-            let hideMe = true
+            let hideMe = false
             if(scrollPosition <= scrollRef.current || scrollPosition > 98) {
                 hideMe = false
             } else {
@@ -441,7 +441,6 @@ const Dashboard = ({ setLoaded, audioRef , height}) => {
     })
 
     const overlayTrans = useTransition(overlay.type, {
-        initial: { opacity: 0 },
         from: { opacity: 0 },
         enter: { opacity: 1 } ,
         leave: { opacity: 0 }
