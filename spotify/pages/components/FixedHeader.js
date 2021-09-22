@@ -9,21 +9,23 @@ const FixedHeader = ({ style, page, }) => {
 
     const [ mounted, setMounted ] = useState(false)
 
-    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef } = useContext( DbHookContext )
+    const { setActiveHomeItem, homePageHistoryRef, searchPageHistoryRef, scrollPosition } = useContext( DbHookContext )
     const searchContext = useContext( SearchHookContext ) 
     const setActiveSearchItem = searchContext ? searchContext.setActiveSearchItem : null
     const { transitionComplete, activeHeader, headerScrolled } = useContext( page === 'search' ? SearchPageSettingsContext : HomePageSettingsContext )
     const setActiveItem = page === 'home' ? setActiveHomeItem : setActiveSearchItem
     const thisComponentRef = useRef()
 
+    const { headerScroll } = activeHeader
+
     useEffect(() => {
         if( transitionComplete ) setTimeout(() => setMounted( true ), 1000)
     }, [ transitionComplete ])
 
     const { fadeIn, textScroll, btnMove} = useSpring({
-        fadeIn: (mounted) ? `${ 0 + ( headerScrolled * 0.01 )}`: `0` ,
-        textScroll: (mounted) ?  `${ 200 - ( headerScrolled * 2 )}` : `0` ,
-        btnMove: (mounted) ? `${ 50 -( headerScrolled / 2 )}` : `0`,
+        fadeIn: (mounted) ? headerScroll ? `${ 0 + ( headerScrolled * 0.01 )}`: `${ scrollPosition * 0.01 }` : `0` ,
+        textScroll: (mounted) ? headerScroll ? `${ 200 - ( headerScrolled * 2 )}` : `${ 100 - scrollPosition }` : `0` ,
+        btnMove: (mounted) ? headerScroll ? `${ 50 -( headerScrolled / 2 )}` : `${ 50 - ( scrollPosition / 2) }` :  `0`,
     })
 
     const handleBackBtn = () => {

@@ -72,7 +72,7 @@ const NewPlaylistForm = ({  menuData, pos, newPlaylistRef }) => {
         <animated.div style={ shrink } className='selectOverlay__menu' >
             <SelectOverlayHeader menuData={ menuData }/>
             <form onSubmit={ handleCreatePlaylist} className='newPlaylistForm'>
-                <label forHtml='newPlaylistFormInput'> Give your playlist a name. </label>
+                <label forhtml='newPlaylistFormInput'> Give your playlist a name. </label>
                 <textarea 
                 onClick={ (e) => {
                     e.target.select()

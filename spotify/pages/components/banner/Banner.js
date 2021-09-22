@@ -2,7 +2,6 @@ import DynamicTitle from '../DynamicTitle'
 import ReleaseCard from './ReleaseCard'
 import { useContext , useEffect, useState } from 'react'
 import { DbFetchedContext, DbHookContext } from '../Dashboard'
-import useApiCall from '../../hooks/useApiCall'
 
 const Banner = () => {
 

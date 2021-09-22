@@ -165,28 +165,28 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
                 
             ))
             }
-            {
-            pageTransition(( props, item) => (
-                item.type === 'artist' ?
-                <Artist 
-                style={ props }
-                data={ item } 
-                page='home' />
-                :
-                item.type === 'album' ?
-                <Collection
-                style={ props }
-                type='album'
-                page='home'
-                data={ item } />
-                :
-                item.type === 'playlist' &&
-                <Collection
-                style={ props }
-                type='playlist' 
-                page='home' 
-                data={ item } />
-                    
+        {
+        pageTransition(( props, item) => (
+            item.type === 'artist' ?
+            <Artist 
+            style={ props }
+            data={ item } 
+            page='home' />
+            :
+            item.type === 'album' ?
+            <Collection
+            style={ props }
+            type='album'
+            page='home'
+            data={ item } />
+            :
+            item.type === 'playlist' &&
+            <Collection
+            style={ props }
+            type='playlist' 
+            page='home' 
+            data={ item } />
+                
         ))
         }
         </HomePageSettingsContext.Provider>

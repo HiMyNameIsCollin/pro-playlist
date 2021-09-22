@@ -205,6 +205,7 @@ const Dashboard = ({ setLoaded, audioRef , height}) => {
     const myNewReleasesRef = useRef( [] )
     const shrinkRef = useRef()
     const newPlaylistRef = useRef( {} )
+    const tracksAddedToPlaylistRef = useRef( [] )
 
     const { user_info, player_info, my_top_genres, my_playlists, featured_playlists, new_releases, my_albums, recently_played, my_top_tracks, my_top_artists, all_categories, available_genre_seeds, followed_artists, my_liked_tracks, my_top_categories, generated_fields } = { ...state }
 
@@ -310,12 +311,7 @@ const Dashboard = ({ setLoaded, audioRef , height}) => {
             if (scrollPosition < 1){
                 hideMe = false
             }
-            if( hideMe ){
-                window.scrollTo(0, 100)
-
-            } else {
-                window.scrollTo(0, 0)
-            }
+            
             setHiddenUI( hideMe )
             scrollRef.current = scrollPosition
         } else {
@@ -358,7 +354,6 @@ const Dashboard = ({ setLoaded, audioRef , height}) => {
 
     const firstFetch = () => {
         const market = user_info.country
-        // finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
         finalizeRoute( 'get', routes.featured_playlists, null, null, null, `market=${market}`)
         finalizeRoute( 'get', routes.new_releases, null, null ,null, 'limit=50' , `market=${market}`)
         finalizeRoute( 'get', routes.my_liked_tracks, null,{ fetchAll: true,  }, null,'limit=50' )
@@ -368,7 +363,7 @@ const Dashboard = ({ setLoaded, audioRef , height}) => {
         finalizeRoute( 'get', routes.available_genre_seeds, null, null, null, `market=${market}` )
         finalizeRoute( 'get', routes.my_top_tracks, null, { fetchAll: true,  } )
         finalizeRoute( 'get', routes.my_top_artists, null , { fetchAll: true,  })
-        finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true,  }, null, 'type=artist')
+        finalizeRoute('get', routes.followed_artists, null, { fetchAll: true,  }, null, 'type=artist')
         finalizeRoute( 'get', routes.all_categories, null,{ fetchAll: true, limit: null }, null, 'limit=50') 
     }
 
@@ -376,11 +371,10 @@ const Dashboard = ({ setLoaded, audioRef , height}) => {
         const market = user_info.country
         switch( String(cmd) ){
             case 'all':
-                // finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
                 finalizeRoute( 'get', routes.my_albums, null, { fetchAll: true  } , null, 'limit=50', `market=${market}` )
                 finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true }, null, 'limit=50', `market=${market}` )
                 finalizeRoute( 'get', routes.recently_played, null, { fetchAll: true }, null, 'limit=50' ) 
-                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
+                finalizeRoute('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
                 break
             case 'player_info':
                 finalizeRoute( 'get', routes.player_info, null, null, null,  `market=${market}`)
@@ -392,7 +386,7 @@ const Dashboard = ({ setLoaded, audioRef , height}) => {
                 finalizeRoute( 'get', routes.my_playlists, null, { fetchAll: true }, null, 'limit=50', `market=${market}` )
                 break    
             case 'followed_artists':
-                finalizeRoute ('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
+                finalizeRoute('get', routes.followed_artists, null, { fetchAll: true }, null, 'type=artist')
                 break
         }
     }
@@ -463,6 +457,7 @@ const Dashboard = ({ setLoaded, audioRef , height}) => {
         homePageHistoryRef,
         searchPageHistoryRef,
         myNewReleasesRef,
+        tracksAddedToPlaylistRef,
         activeHomeItem, 
         setActiveHomeItem, 
         activeSearchItem, 

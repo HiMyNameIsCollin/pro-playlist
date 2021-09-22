@@ -76,9 +76,10 @@ const Collection = ({ style, type, page, data }) => {
                     }
                 })
                 // const allSongs = songs.filter( x => x.preview_url)
+
                 return{
                     ...state,
-                    tracks: state.tracks = type === 'playlist' ? songs : [...state.tracks, ...songs]
+                    tracks: state.tracks = [...state.tracks, ...songs]
                 }
             case routes.recommendations :
                 const recommendations = action.tracks.map(track => track.album)
@@ -98,7 +99,7 @@ const Collection = ({ style, type, page, data }) => {
     
     const [ headerMounted, setHeaderMounted ] = useState( undefined )
 
-    const { setOverlay, activeHomeItem, setActiveHomeItem, selectOverlay, setSelectOverlay, dashboardRef } = useContext( DbHookContext )
+    const { setOverlay, activeHomeItem, setActiveHomeItem, selectOverlay, setSelectOverlay, dashboardRef, tracksAddedToPlaylistRef } = useContext( DbHookContext )
     const { available_genre_seeds, user_info } = useContext( DbFetchedContext )
     const searchContext = useContext( SearchHookContext )
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
@@ -106,6 +107,7 @@ const Collection = ({ style, type, page, data }) => {
     const { setTransMinHeight, transitionComplete ,} = useContext( page==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
     
     const { collection, artists, tracks, recommendations } = {...state}
+
     const thisComponentRef = useRef() 
     const selectedTrackRef = useRef()
 
@@ -123,7 +125,17 @@ const Collection = ({ style, type, page, data }) => {
 
     useEffect(() => {
         if( headerMounted ){
-            thisComponentRef.current.classList.add('fadeIn')
+            if( selectedTrackRef.current ){
+                // Scrolls track into view if selected from home page tab
+                const ele = document.querySelector(`[data-trackId='${ selectedTrackRef.current }']`)
+                if(ele){
+                    const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
+                    dashboardRef.current.scrollTo({ left: 0, top: thisFar, behavior: 'smooth' })
+                }
+            }
+            setTimeout(() => {
+                thisComponentRef.current.classList.add('fadeIn')
+            }, 500)
         }
     },[ headerMounted ])
 
@@ -152,12 +164,22 @@ const Collection = ({ style, type, page, data }) => {
     }, [apiPayload])
 
     useEffect(() => {
-        if( collection.id && !selectOverlay[ 0 ] ) {
+        if( collection.id ) {
             let tracksRoute = routes.tracks.substr( 0, routes.tracks.length - 6 )
             tracksRoute += `${collection.id}`
             tracksRoute += '/tracks'
-            const limit = type === 'playlist' ? null : 'limit=50'
-            finalizeRoute( 'get', tracksRoute , collection.id, {fetchAll: true}, null, type )
+            finalizeRoute( 'get', tracksRoute , collection.id, {fetchAll: true}, null, 'limit=50' )
+        } 
+    }, [ collection ])
+
+    useEffect(() => {
+        if( collection.id && !selectOverlay[ 0 ] && tracksAddedToPlaylistRef.current[0]) {
+            
+            let newTracks = {}
+            newTracks['route'] = routes.tracks
+            newTracks['items'] = tracksAddedToPlaylistRef.current
+            tracksAddedToPlaylistRef.current = [] 
+            dispatch( newTracks )
         } 
     }, [ collection, selectOverlay ])
 
@@ -173,17 +195,6 @@ const Collection = ({ style, type, page, data }) => {
 
         }
     }, [ collection, artists, tracks ])
-
-    useEffect(() => {
-        if( selectedTrackRef.current && !transitionComplete ){
-            // Scrolls track into view if selected from home page tab
-            const ele = document.querySelector(`[data-trackId='${ selectedTrackRef.current }']`)
-            if(ele){
-                const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
-                dashboardRef.current.scrollTo({ left: 0, top: thisFar, behavior: 'smooth' })
-            }
-        }
-    },[ transitionComplete ])
 
     const handleGetRecommendationsBtn = () => {
         const overlay = { page: searchContext? 'search' : 'home', type: 'trackRecommendations', data: tracks, context: collection }
@@ -220,7 +231,8 @@ const Collection = ({ style, type, page, data }) => {
             pageType={ searchContext ? 'search' : 'home'}
             setActiveItem={ setActiveItem }
             data={{collection, tracks, artists,}}
-            setHeaderMounted={ setHeaderMounted } />
+            setHeaderMounted={ setHeaderMounted }
+            parent={ thisComponentRef } />
 
             <TracksContainer type='collection' data={ state } setOverlay={ setOverlay }/>
             {

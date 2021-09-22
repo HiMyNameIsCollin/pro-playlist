@@ -22,7 +22,7 @@ const SortContainer = ({ style, setActiveItem,  }) => {
 
     const [ dragging, setDragging ] = useState( false )
     const [ height, setHeight ] = useState( 0 )
-    const [ resizePos, setResizePos ] = useState(0)
+    const [ resizePos, setResizePos ] = useState( 0 )
     const [ clickLoc, setClickLoc ] = useState( 0 )
     const originalBottomItemsRef = useRef( [] )
     const originalTopItemsRef = useRef( [] )

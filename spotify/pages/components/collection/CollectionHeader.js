@@ -8,7 +8,7 @@ import { DbHookContext } from '../Dashboard'
 import { SearchPageSettingsContext } from '../search/Search'
 import { HomePageSettingsContext } from '../Home'
 
-const CollectionHeader = ({ pageType, data, setActiveItem, setHeaderMounted }) => {
+const CollectionHeader = ({ pageType, data, setActiveItem, setHeaderMounted, parent  }) => {
     const [ colors, setColors ] = useState( undefined )
     const [ elementHeight, setElementHeight ] = useState(null)
     const [ backgroundImage, setBackgroundImage ] = useState(null)
@@ -21,7 +21,7 @@ const CollectionHeader = ({ pageType, data, setActiveItem, setHeaderMounted }) =
     const { collection, artists, tracks } = { ...data }
     const { setOverlay, scrollPosition, setActiveManageItem, setDashboardState, } = useContext( DbHookContext )
 
-    const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled ,handleScrollHistory} = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
+    const { transitionComplete, setTransitionComplete, transMinHeight, setActiveHeader, headerScrolled, setHeaderScrolled ,handleScrollHistory} = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
 
     const thisHeaderRefCb = useCallback( node => {
         if( node ){
@@ -77,7 +77,9 @@ const CollectionHeader = ({ pageType, data, setActiveItem, setHeaderMounted }) =
             handleScrollHistory()
 
             setTimeout(() => {
-                setActiveHeader( {data : collection.name} )
+                console.log( parent.current.offsetHeight, elementHeight )
+                const headerScroll = ( elementHeight * 3 ) < parent.current.offsetHeight ? true : false
+                setActiveHeader( { data : collection.name, headerScroll: headerScroll } )
                 colors.forEach((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
                 setHeaderMounted( true )
                 setTransitionComplete( false )

@@ -1,7 +1,5 @@
 import { useEffect, useState, useContext, useReducer, useRef, createContext } from 'react'
 import { useTransition, useSpring, animated } from 'react-spring'
-import useApiCall from '../../hooks/useApiCall'
-
 import { DbHookContext, DbFetchedContext } from '../Dashboard'
 import ManageFilters from './ManageFilters'
 import SortContainer from './SortContainer'

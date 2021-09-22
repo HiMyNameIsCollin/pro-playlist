@@ -42,8 +42,10 @@ const Container = () => {
           initAudio()
           setAuth(true)
         } else {
-          const refresh_token = localStorage.getItem('refresh_token')
-          refreshToken(refresh_token, setTokenBody)
+          // const refresh_token = localStorage.getItem('refresh_token')
+          // refreshToken(refresh_token, setTokenBody)
+          localStorage.removeItem('access_token')
+          setLoaded(true)
         }
       } else {
           if(window.location.search.length > 0){
@@ -100,12 +102,15 @@ const Container = () => {
     return(
     <>
       
-      <div className='orientation'>
+      <div
+      style={{ display: window.innerHeight > window.innerWidth ? 'none' : 'flex' , }} 
+      className='orientation'>
         <p> This project is designed for mobile devices in portrait orientation. </p> 
       </div>
       
       <main 
       style={{
+        display: window.innerHeight > window.innerWidth ? 'block' : 'none' ,
         minHeight: height, 
       }}
       className='container'>

@@ -10,7 +10,7 @@ import useApiCall from '../../hooks/useApiCall'
 const TrackRecommendationsMenu = ({ menuData, pos }) => {
 
     const { finalizeRoute , apiError, apiIsPending, apiPayload  } = useApiCall()
-    const { selectOverlay, setMessageOverlay } = useContext( DbHookContext )
+    const { selectOverlay, setMessageOverlay, tracksAddedToPlaylistRef } = useContext( DbHookContext )
     const { my_liked_tracks, my_top_tracks, available_genre_seeds, my_top_artists } = useContext( DbFetchedContext )
     const alteredPlaylistRef = useRef( {} )
     const tracksAddedRef = useRef( [] )
@@ -47,6 +47,7 @@ const TrackRecommendationsMenu = ({ menuData, pos }) => {
     }
 
     const handleAddToPlaylist = ( item ) => {
+        tracksAddedToPlaylistRef.current = [ ...tracksAddedToPlaylistRef.current, item ]
         alteredPlaylistRef.current = { track: item.name, playlist: menuData.context.name }
         tracksAddedRef.current = [...tracksAddedRef.current, item.id ]
         finalizeRoute('post', `${ addToPlaylistRoute.substr(0, 12) }/${ menuData.context.id }/tracks`, menuData.context.id, null, null, `uris=${ item.uri }`)

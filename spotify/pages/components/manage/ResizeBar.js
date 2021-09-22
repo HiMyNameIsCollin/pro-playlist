@@ -73,7 +73,7 @@ const ResizeBar = ({ parentHeight, resizePos, setResizePos }) => {
             // onMouseUp={ handleCloseSortContainer } 
             onPointerDown={ () => setActive( true )}
             onTouchStart={ () => setActive( true )}
-            style={{ top: resizePos - ( height / 2 )}}
+            style={{ top: height ? resizePos - ( height / 2 ) : (( parentHeight - navHeight ) / 2) }}
             className={` sortContainer__resize ${ active && 'sortContainer__resize--active'}`}>
 
         </div>
