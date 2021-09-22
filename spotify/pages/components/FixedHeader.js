@@ -19,13 +19,14 @@ const FixedHeader = ({ style, page, }) => {
     const { headerScroll } = activeHeader
 
     useEffect(() => {
-        if( transitionComplete ) setTimeout(() => setMounted( true ), 1000)
+        if( transitionComplete ) setTimeout(() => setMounted( true ), 1500)
     }, [ transitionComplete ])
 
     const { fadeIn, textScroll, btnMove} = useSpring({
-        fadeIn: (mounted) ? headerScroll ? `${ 0 + ( headerScrolled * 0.01 )}`: `${ scrollPosition * 0.01 }` : `0` ,
-        textScroll: (mounted) ? headerScroll ? `${ 200 - ( headerScrolled * 2 )}` : `${ 100 - scrollPosition }` : `0` ,
-        btnMove: (mounted) ? headerScroll ? `${ 50 -( headerScrolled / 2 )}` : `${ 50 - ( scrollPosition / 2) }` :  `0`,
+        fadeIn: headerScroll ? `${ 0 + ( headerScrolled * 0.01 )}`: `${ scrollPosition * 0.01 }` ,
+        textScroll:  headerScroll ? `${ 200 - ( headerScrolled * 2 )}` : `${ 100 - scrollPosition }` ,
+        btnMove:  headerScroll ? `${ 50 -( headerScrolled / 2 )}` : `${ 50 - ( scrollPosition / 2) }` ,
+        
     })
 
     const handleBackBtn = () => {
@@ -53,6 +54,7 @@ const FixedHeader = ({ style, page, }) => {
         <animated.div
         className='fixedHeader__main'
         style={{ 
+            display: mounted ? 'flex' : 'none',
             opacity: fadeIn.to( y => y)
         }} >
 

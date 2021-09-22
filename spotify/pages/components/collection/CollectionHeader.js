@@ -21,7 +21,7 @@ const CollectionHeader = ({ pageType, data, setActiveItem, setHeaderMounted, par
     const { collection, artists, tracks } = { ...data }
     const { setOverlay, scrollPosition, setActiveManageItem, setDashboardState, } = useContext( DbHookContext )
 
-    const { transitionComplete, setTransitionComplete, transMinHeight, setActiveHeader, headerScrolled, setHeaderScrolled ,handleScrollHistory} = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
+    const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled ,handleScrollHistory} = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
 
     const thisHeaderRefCb = useCallback( node => {
         if( node ){
@@ -40,6 +40,7 @@ const CollectionHeader = ({ pageType, data, setActiveItem, setHeaderMounted, par
             headerImageRef.current = node 
             waitForMount()
         }
+        return () => headerImageRef.current = undefined
     },[])
 
 
@@ -74,10 +75,7 @@ const CollectionHeader = ({ pageType, data, setActiveItem, setHeaderMounted, par
             transitionCompleteRef.current = true 
         }
         if( colors && transitionCompleteRef.current ){
-            handleScrollHistory()
-
             setTimeout(() => {
-                console.log( parent.current.offsetHeight, elementHeight )
                 const headerScroll = ( elementHeight * 3 ) < parent.current.offsetHeight ? true : false
                 setActiveHeader( { data : collection.name, headerScroll: headerScroll } )
                 colors.forEach((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))

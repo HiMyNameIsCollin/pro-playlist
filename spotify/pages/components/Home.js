@@ -46,11 +46,13 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
 
     const handleScrollHistory = () => {
         if( homePageHistoryRef.current.length > 0 && 
-            activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id){
+            (activeHomeItem.id === homePageHistoryRef.current[ homePageHistoryRef.current.length - 1].activeItem.id ||
+            !activeHomeItem.id )){
             const lastItem = homePageHistoryRef.current.pop()
+            console.log( lastItem )
             dashboardRef.current.scroll({
                 left: 0,
-                top: lastItem.scroll - ( window.innerHeight / 2 ) ,
+                top: lastItem.scroll - ( window.innerHeight / 2 ),
                 behavior: 'auto'
             })
         } else {
@@ -59,8 +61,11 @@ const Home = ({ transMinHeight, setTransMinHeight, currActiveHomeRef }) => {
                 top: 0 ,
                 behavior: 'auto'
             })
+
         }
     }
+
+
 
     const homePageSettingsState = {
         headerScrolled,

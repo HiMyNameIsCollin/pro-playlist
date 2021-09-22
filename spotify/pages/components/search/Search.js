@@ -122,7 +122,8 @@ const Search = ({
 
     const handleScrollHistory = () => {
         if( searchPageHistoryRef.current.length > 0 && 
-            activeSearchItem.id === searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1].activeItem.id ){
+            (activeSearchItem.id === searchPageHistoryRef.current[ searchPageHistoryRef.current.length - 1].activeItem.id ||
+            !activeSearchItem.id )){
             const lastItem = searchPageHistoryRef.current.pop()
             dashboardRef.current.scroll({
                 left: 0,

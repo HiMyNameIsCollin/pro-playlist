@@ -22,7 +22,7 @@ const ArtistHeader = ({ pageType, data, setHeaderMounted }) => {
 
     const { scrollPosition, setActiveManageItem, setDashboardState } = useContext( DbHookContext )
     const { followed_artists } = useContext( DbFetchedContext )
-    const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled , handleScrollHistory} = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
+    const { transitionComplete, setTransitionComplete, setActiveHeader, headerScrolled, setHeaderScrolled } = useContext( pageType ==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
 
     const headerImageRefCb = useCallback( node => {
         if( headerImageRef.current ){
@@ -54,9 +54,9 @@ const ArtistHeader = ({ pageType, data, setHeaderMounted }) => {
             transitionCompleteRef.current = true 
         }
         if(colors && transitionCompleteRef.current ) {
-            handleScrollHistory()
 
             setTimeout(() => {
+
                 setTransitionComplete(false)
                 colors.map((clr, i) => document.documentElement.style.setProperty(`--headerColor${pageType}${i}`, clr))
                 setActiveHeader( {data : artist.name} )

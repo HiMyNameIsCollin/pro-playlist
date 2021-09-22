@@ -104,7 +104,7 @@ const Collection = ({ style, type, page, data }) => {
     const searchContext = useContext( SearchHookContext )
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
-    const { setTransMinHeight, transitionComplete ,} = useContext( page==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
+    const { setTransMinHeight, handleScrollHistory ,} = useContext( page==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
     
     const { collection, artists, tracks, recommendations } = {...state}
 
@@ -125,12 +125,13 @@ const Collection = ({ style, type, page, data }) => {
 
     useEffect(() => {
         if( headerMounted ){
+            handleScrollHistory()
             if( selectedTrackRef.current ){
                 // Scrolls track into view if selected from home page tab
                 const ele = document.querySelector(`[data-trackId='${ selectedTrackRef.current }']`)
                 if(ele){
                     const thisFar = ele.getBoundingClientRect().top + window.pageYOffset + -80
-                    dashboardRef.current.scrollTo({ left: 0, top: thisFar, behavior: 'smooth' })
+                    dashboardRef.current.scrollTo({ left: 0, top: thisFar, behavior: 'auto' })
                 }
             }
             setTimeout(() => {

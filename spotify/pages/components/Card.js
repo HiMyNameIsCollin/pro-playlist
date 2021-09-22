@@ -71,7 +71,7 @@ const Card = ({ type, item, setActiveItem }) => {
             {
                 item.tracks && 
                 <p className='card__meta'>
-                    { item.tracks.total }songs
+                    { item.tracks.total } songs
                 </p>
             }
         </div>

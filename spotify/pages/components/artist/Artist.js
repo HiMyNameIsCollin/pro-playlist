@@ -84,7 +84,7 @@ const Artist = ({ style, page }) => {
     const searchContext = useContext( SearchHookContext )
     const activeItem = searchContext ? searchContext.activeSearchItem : activeHomeItem
     const setActiveItem = searchContext ? searchContext.setActiveSearchItem : setActiveHomeItem
-    const { setTransMinHeight , transitionComplete } = useContext( page==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
+    const { setTransMinHeight , handleScrollHistory } = useContext( page==='search' ? SearchPageSettingsContext : HomePageSettingsContext)
 
     const thisComponentRef = useRef() 
     const firstMountRef = useRef() 
@@ -112,7 +112,10 @@ const Artist = ({ style, page }) => {
     }, [ user_info])
 
     useEffect(() => {
-        if( headerMounted ) thisComponentRef.current.classList.add('fadeIn')
+        if( headerMounted ) {
+            handleScrollHistory()
+            thisComponentRef.current.classList.add('fadeIn')
+        }
     }, [ headerMounted ])
 
     useEffect(() => {
